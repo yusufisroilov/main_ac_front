@@ -1,0 +1,10 @@
+
+@media only screen and (max-width: 450px)
+{
+    .card-wizard .mat-form-field {
+        width: 60%;
+        font-size: 14px;
+        top: 3px;
+    }
+
+}

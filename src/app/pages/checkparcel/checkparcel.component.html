@@ -1,0 +1,73 @@
+<div class="wrapper wrapper-full-page">
+     <div class="page-header lock-page header-filter" style="background-image: url('./assets/img/login2.jpg'); background-size: cover; background-position: top center;"> 
+     <!--   <div class="page-header lock-page header-filter" style="background-image: url('./assets/img/bg22.jpg'); background-size: cover; background-position: top center;">   -->
+        <!--   you can change the color of the filter page using: data-color="blue | green | orange | red | purple" -->
+        <div class="container">
+          <div class="row">
+            <div class="col-md-4 ml-auto mr-auto">
+              <div class="card card-profile text-center">
+                <div class="card-header ">
+                  <div class="card-avatar">
+                    <a href="#pablo">
+                      <img class="img" src=".\assets\img\delivery1.png">
+                    </a>
+                  </div>
+                </div>
+                <div class="card-body ">
+                  <h4 class="card-title">Check the delivery</h4> 
+                  <mat-form-field class="example-full-width">
+                    <input ng-model="trnum"  
+                    [(ngModel)]="inputValue" 
+                    [value]="inputValue" 
+                    matInput 
+                    placeholder="Tracking Number"
+                    type="text"
+                    id="username" name="username" ngModel 
+                    style="color: black;"
+                    (change)="updateMyValue($event.target.value)" 
+                    >
+                  </mat-form-field>
+                </div>
+                <div class="card-footer justify-content-center">
+                  <a href="#pablo" (click)="checkDelivery()" class="btn btn-primary btn-round">Check</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <footer class="footer ">
+        <div class="container">
+          <!-- <nav class="pull-left">
+            <ul>
+              <li>
+                <a href="http://acargo.uz/">
+                  Xizmatlar haqida
+                </a>
+              </li>
+              <li>
+                <a href="http://acargo.uz/">
+                  Biz haqimizda
+                </a>
+              </li>
+              <li>
+                <a href="http://acargo.uz/">
+                  Blog
+                </a>
+              </li>
+              <li>
+                <a href="http://acargo.uz/">
+                  Shartlar
+                </a>
+              </li>
+            </ul>
+          </nav> -->
+          <div class="copyright pull-right">
+            &copy;
+              {{test | date: 'yyyy'}}, siz uchun <i class="material-icons">favorite</i>imiz bilan
+            <a href="https://www.yumasoft.uz" target="_blank">YUMA SOFT</a> tomonidan yaratildi!
+          </div>
+        </div>
+      </footer>
+    </div>
+    

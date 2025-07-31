@@ -1,0 +1,908 @@
+<div class="main-content">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="card3 col-md-2">
+        <div class="">
+          <br />
+          <br />
+          <button
+            mat-raised-button=""
+            (click)="yuborishniBelgilash()"
+            class="mat-focus-indicator btn btn-primary mat-raised-button mat-button-base"
+          >
+            <span class="mat-button-wrapper"
+              ><span class="btn-label"> </span> Yuborishni tasdiqlash
+            </span>
+            <span
+              matripple=""
+              class="mat-ripple mat-button-ripple"
+              ng-reflect-disabled="false"
+              ng-reflect-centered="false"
+              ng-reflect-trigger="[object HTMLButtonElement]"
+            ></span
+            ><span class="mat-button-focus-overlay"></span>
+          </button>
+        </div>
+      </div>
+      <!-- <div class="card3 col-md-6 " style="display: flex;">
+         
+          <h3 style="margin-right: 10px;"> <a (click) = "givePartyNum()"> <i  class="btn-label material-icons">bookmark_add</i></a>Reys: {{currentParty}}</h3>
+          <h2 style="font-weight: 700;"> ---- for future use ------</h2>
+        
+         
+        </div>  -->
+
+      <div class="card3 col-md-4">
+        <!-- <div class="" >
+          <button mat-raised-button=""  (click)="recordParcel()"  class="mat-focus-indicator btn btn-success mat-raised-button mat-button-base">
+            <span class="mat-button-wrapper"><span class="btn-label">
+              <i class="material-icons">check</i></span> TOSHKENTGA KELDI </span>
+              <span matripple="" class="mat-ripple mat-button-ripple" ng-reflect-disabled="false" ng-reflect-centered="false" ng-reflect-trigger="[object HTMLButtonElement]"></span><span class="mat-button-focus-overlay"></span>
+          </button>
+          </div> -->
+      </div>
+    </div>
+
+    <div class="col-md-12 ml-auto mr-auto">
+      <div class="card">
+        <div class="card-header card-header-tabs card-header-info">
+          <div class="nav-tabs-navigation">
+            <div class="nav-tabs-wrapper">
+              <span class="nav-tabs-title">Yetkazmalar:</span>
+              <ul class="nav nav-tabs" data-tabs="tabs">
+                <li class="nav-item">
+                  <a class="nav-link active" href="#profile" data-toggle="tab">
+                    <i class="material-icons">archive</i> Qabul qilingan
+                    <div class="ripple-container"></div>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#messages" data-toggle="tab">
+                    <i class="material-icons">local_shipping</i> Yuborilgan
+                    <div class="ripple-container"></div>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#settings" data-toggle="tab">
+                    <i class="material-icons">check_box</i> Yetkazilgan
+                    <div class="ripple-container"></div>
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="tab-content">
+            <div class="tab-pane active" id="profile">
+              <div class="card-body">
+                <div class="toolbar">
+                  <!-- Here you can write extra buttons/actions for the toolbar-->
+                </div>
+                <div class="material-datatables">
+                  <div class="row">
+                    <div class="col-sm-4 col-lg-3">
+                      <mat-form-field>
+                        <mat-select
+                          placeholder="Yetkazish turi bo'yicha"
+                          name="status"
+                        >
+                          <mat-option
+                            [value]="null"
+                            (click)="getListOfDeliveriesWithFilter('')"
+                            >None</mat-option
+                          >
+                          <mat-option
+                            *ngFor="let orst of deliveryTypes"
+                            [value]="orst.id"
+                            (click)="getListOfDeliveriesWithFilter(orst.id)"
+                          >
+                            {{ orst.nameUz }}
+                          </mat-option>
+                        </mat-select>
+                      </mat-form-field>
+                    </div>
+                    <!-- <div class="col-sm-4 col-lg-3">
+                              <mat-form-field>
+                                  <mat-select placeholder="Turi bo'yicha filter" name="type">
+                                    <mat-option [value]="null" (click)="getListOfParcelsMoreParties('','','','','type')">None</mat-option>
+                                    <mat-option *ngFor="let orty of orderTypesList" [value]="orty.id" (click)="getListOfParcelsMoreParties('',orty.id,'','','type')">
+                                      {{ orty.descriptionUz }}
+                                    </mat-option>
+                                  </mat-select>
+                              </mat-form-field>
+                          </div> -->
+
+                    <!-- <div class="col-sm-2 col-lg-1" style="display: inline-flex;">
+                                <mat-form-field class="example-full-width">
+                                  <input matInput type="text" style="font-size: large;" placeholder="IDsi" (input)="getListOfParcelsMoreParties('','',$event.target.value,'','ownerid')">
+                                </mat-form-field>
+                              </div>
+                              <div class="col-sm-3 col-lg-2" style="display: inline-flex;">
+                                <mat-form-field class="example-full-width">
+                                  <input matInput type="text" style="font-size: large;" placeholder="Partiya 101 kabi" (input)="getListOfParcelsMoreParties('','','',+$event.target.value,'partnum')">
+                                </mat-form-field>
+                              </div>
+                              <div class="col-sm-5 col-lg-3">
+                                <mat-form-field class="example-full-width">
+                                  <input matInput type="text" style="font-size: large;" placeholder="Search with Tracking Number" (input)="getListOfParcelsWithSearch($event.target.value)">  
+                                </mat-form-field>
+                              </div> -->
+                    <!--   <div class="col-sm-6 col-lg-3">
+                                    <div class="dropdown">
+                                        <button mat-raised-button href="#pablo" class="dropdown-toggle btn btn-primary btn-round btn-block" data-toggle="dropdown">Dropdown
+                                            <b class="caret"></b>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-left">
+                                            <li *ngFor="let rk of orderStatusTypeList; let i = index">
+                                              <a href="#pablo">{{rk.descriptionEn}}</a>
+                                          </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6 col-lg-3">
+                                  <div class="dropdown">
+                                    <button mat-raised-button href="#pablo" class="dropdown-toggle btn btn-primary btn-round btn-block" data-toggle="dropdown">Product Type
+                                        <b class="caret"></b>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-left">
+                                        <li class="dropdown-header">Order Types</li>
+                                        <li *ngFor="let rw of orderTypesList; let i = index">
+                                            <a href="#pablo">{{rw.descriptionEn}}</a>
+                                        </li>
+                                    </ul>
+                                </div> 
+                                
+                            </div> -->
+                  </div>
+                  <div class="table-responsive">
+                    <ul class="pagination" *ngIf="needPagination">
+                      <!--  <li class="page-item">
+                                    <a mat-button class="page-link" aria-label="Previous">
+                                      <span aria-hidden="true"><i class="fa fa-angle-double-left" aria-hidden="true"></i></span>
+                                    </a>
+                                  </li> -->
+                      <li
+                        class="page-item"
+                        [ngClass]="{ active: currentPage == i }"
+                        *ngFor="let page of mypages; index as i"
+                      >
+                        <a
+                          mat-button
+                          class="page-link"
+                          (click)="pagebyNum(i)"
+                          >{{ i + 1 }}</a
+                        >
+                      </li>
+                      <!-- <li class="page-item">
+                                    <a mat-button class="page-link" aria-label="Next">
+                                      <span aria-hidden="true"><i class="fa fa-angle-double-right" aria-hidden="true"></i></span>
+                                    </a>
+                                  </li> -->
+                    </ul>
+                    <table
+                      class="table table-striped table-no-bordered table-hover"
+                      cellspacing="0"
+                      width="100%"
+                      style="width: 100%"
+                    >
+                      <thead>
+                        <tr>
+                          <th class="text-center">No</th>
+                          <th class="text-center">ID si</th>
+                          <th class="text-center">Ism</th>
+                          <th class="text-center">Tel Nomer</th>
+                          <th class="text-center">Viloyat</th>
+                          <th class="text-center">Tuman</th>
+                          <th class="text-center">Turi</th>
+                          <th class="text-center">Location</th>
+                          <th class="text-center">Yaratilgan</th>
+                          <!-- <th class="text-center">Yetkazilgan</th> -->
+                          <th class="text-center">Amallar</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr
+                          *ngFor="let row of allData; let i = index"
+                          class="text-center"
+                        >
+                          <!--  [ngClass]="{'table-danger': row.orderType == 7}" -->
+                          <td>{{ i + 1 }}</td>
+                          <td>C{{ row.ownerID }}</td>
+                          <td>{{ row.ownerName }}</td>
+                          <td>{{ row.additionalPhoneNumber }}</td>
+                          <td>{{ row.region }}</td>
+                          <td>{{ row.town }}</td>
+                          <td>{{ deliveryTypeText[i] }}</td>
+                          <td>---</td>
+                          <td>{{ row.registeredDate | slice : 2 : 16 }}</td>
+                          <!-- <td>{{row.deliveredDate | slice:2:16}} </td> -->
+
+                          <td style="display: flex">
+                            <!-- <button mat-raised-button class="btn btn-link btn-info btn-just-icon visibility" data-toggle="modal" data-target="#myModal" ><i class="material-icons" (click)="getInfoOfParcel(row.trackingNumber)">visibility</i></button> -->
+                            <!-- <a  class="btn btn-link btn-success btn-just-icon edit"><i (click)="editParcel(row.trackingNumber,row.ownerID,row.russianName,row.quantity,row.orderType,row.foreignName)" class="material-icons">edit</i></a> -->
+
+                            <a
+                              class="btn btn-link btn-info btn-just-icon remove"
+                              ><i
+                                (click)="
+                                  printChek1(
+                                    row.id,
+                                    deliveryTypeText[i],
+                                    row.ownerID,
+                                    row.ownerName,
+                                    row.additionalPhoneNumber,
+                                    row.region,
+                                    row.town
+                                  )
+                                "
+                                class="material-icons"
+                                >print</i
+                              ></a
+                            >
+                            <a class="btn btn-link btn-warning btn-just-icon"
+                              ><i
+                                (click)="
+                                  printChek2(
+                                    row.id,
+                                    deliveryTypeText[i],
+                                    row.ownerID,
+                                    row.ownerName,
+                                    row.additionalPhoneNumber,
+                                    row.region,
+                                    row.town
+                                  )
+                                "
+                                class="material-icons"
+                                >receipt_long</i
+                              ></a
+                            >
+                            <a
+                              class="btn btn-link btn-primary btn-just-icon edit"
+                              ><i
+                                (click)="changeStatusSent(row.id)"
+                                class="material-icons"
+                                >local_shipping</i
+                              ></a
+                            >
+                            <a
+                              class="btn btn-link btn-danger btn-just-icon edit"
+                              ><i
+                                (click)="deleteNewDelivey(row.id)"
+                                class="material-icons"
+                                >delete</i
+                              ></a
+                            >
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  <ul class="pagination" *ngIf="needPagination">
+                    <li class="page-item">
+                      <a mat-button class="page-link" aria-label="Previous">
+                        <span aria-hidden="true"
+                          ><i
+                            class="fa fa-angle-double-left"
+                            aria-hidden="true"
+                          ></i
+                        ></span>
+                      </a>
+                    </li>
+                    <li
+                      class="page-item"
+                      [ngClass]="{ active: currentPage == i }"
+                      *ngFor="let page of mypages; index as i"
+                    >
+                      <a mat-button class="page-link" (click)="pagebyNum(i)">{{
+                        i + 1
+                      }}</a>
+                    </li>
+                    <li class="page-item">
+                      <a mat-button class="page-link" aria-label="Next">
+                        <span aria-hidden="true"
+                          ><i
+                            class="fa fa-angle-double-right"
+                            aria-hidden="true"
+                          ></i
+                        ></span>
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <div class="tab-pane" id="messages">
+              <div class="card-body">
+                <div class="toolbar">
+                  <!-- Here you can write extra buttons/actions for the toolbar-->
+                </div>
+                <div class="material-datatables">
+                  <div class="row">
+                    Yuborilganlar
+                    <!-- <div class="col-sm-4 col-lg-3">
+                            <mat-form-field>
+                                <mat-select placeholder="Turi bo'yicha filter" name="type">
+                                  <mat-option [value]="null" (click)="getListOfParcelsMoreParties('','','','','type')">None</mat-option>
+                                  <mat-option *ngFor="let orty of orderTypesList" [value]="orty.id" (click)="getListOfParcelsMoreParties('',orty.id,'','','type')">
+                                    {{ orty.descriptionUz }}
+                                  </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div> -->
+
+                    <!-- <div class="col-sm-2 col-lg-1" style="display: inline-flex;">
+                              <mat-form-field class="example-full-width">
+                                <input matInput type="text" style="font-size: large;" placeholder="IDsi" (input)="getListOfParcelsMoreParties('','',$event.target.value,'','ownerid')">
+                              </mat-form-field>
+                            </div>
+                            <div class="col-sm-3 col-lg-2" style="display: inline-flex;">
+                              <mat-form-field class="example-full-width">
+                                <input matInput type="text" style="font-size: large;" placeholder="Partiya 101 kabi" (input)="getListOfParcelsMoreParties('','','',+$event.target.value,'partnum')">
+                              </mat-form-field>
+                            </div>
+                            <div class="col-sm-5 col-lg-3">
+                              <mat-form-field class="example-full-width">
+                                <input matInput type="text" style="font-size: large;" placeholder="Search with Tracking Number" (input)="getListOfParcelsWithSearch($event.target.value)">  
+                              </mat-form-field>
+                            </div> -->
+                    <!--   <div class="col-sm-6 col-lg-3">
+                                  <div class="dropdown">
+                                      <button mat-raised-button href="#pablo" class="dropdown-toggle btn btn-primary btn-round btn-block" data-toggle="dropdown">Dropdown
+                                          <b class="caret"></b>
+                                      </button>
+                                      <ul class="dropdown-menu dropdown-menu-left">
+                                          <li *ngFor="let rk of orderStatusTypeList; let i = index">
+                                            <a href="#pablo">{{rk.descriptionEn}}</a>
+                                        </li>
+                                      </ul>
+                                  </div>
+                              </div>
+                              <div class="col-sm-6 col-lg-3">
+                                <div class="dropdown">
+                                  <button mat-raised-button href="#pablo" class="dropdown-toggle btn btn-primary btn-round btn-block" data-toggle="dropdown">Product Type
+                                      <b class="caret"></b>
+                                  </button>
+                                  <ul class="dropdown-menu dropdown-menu-left">
+                                      <li class="dropdown-header">Order Types</li>
+                                      <li *ngFor="let rw of orderTypesList; let i = index">
+                                          <a href="#pablo">{{rw.descriptionEn}}</a>
+                                      </li>
+                                  </ul>
+                              </div> 
+                              
+                          </div> -->
+                  </div>
+                  <div class="table-responsive">
+                    <ul class="pagination" *ngIf="needPagination">
+                      <!--  <li class="page-item">
+                                  <a mat-button class="page-link" aria-label="Previous">
+                                    <span aria-hidden="true"><i class="fa fa-angle-double-left" aria-hidden="true"></i></span>
+                                  </a>
+                                </li> -->
+                      <li
+                        class="page-item"
+                        [ngClass]="{ active: currentPage == i }"
+                        *ngFor="let page of mypages; index as i"
+                      >
+                        <a
+                          mat-button
+                          class="page-link"
+                          (click)="pagebyNum(i)"
+                          >{{ i + 1 }}</a
+                        >
+                      </li>
+                      <!-- <li class="page-item">
+                                  <a mat-button class="page-link" aria-label="Next">
+                                    <span aria-hidden="true"><i class="fa fa-angle-double-right" aria-hidden="true"></i></span>
+                                  </a>
+                                </li> -->
+                    </ul>
+                    <table
+                      class="table table-striped table-no-bordered table-hover"
+                      cellspacing="0"
+                      width="100%"
+                      style="width: 100%"
+                    >
+                      <thead>
+                        <tr>
+                          <th class="text-center">No</th>
+                          <th class="text-center">ID si</th>
+                          <th class="text-center">Ism</th>
+                          <th class="text-center">Tel Nomer</th>
+                          <th class="text-center">Viloyat</th>
+                          <th class="text-center">Tuman</th>
+                          <th class="text-center">Turi</th>
+                          <th class="text-center">Location</th>
+                          <th class="text-center">Yaratilgan</th>
+                          <!-- <th class="text-center">Yetkazilgan</th> -->
+                          <th class="text-center">Amallar</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr
+                          *ngFor="let row of allDataSent; let i = index"
+                          class="text-center"
+                        >
+                          <!--  [ngClass]="{'table-danger': row.orderType == 7}" -->
+                          <td>{{ i + 1 }}</td>
+                          <td>C{{ row.ownerID }}</td>
+                          <td>{{ row.ownerName }}</td>
+                          <td>{{ row.additionalPhoneNumber }}</td>
+                          <td>{{ row.region }}</td>
+                          <td>{{ row.town }}</td>
+                          <td>{{ deliveryTypeText[i] }}</td>
+                          <td>---</td>
+                          <td>{{ row.registeredDate | slice : 2 : 16 }}</td>
+                          <!-- <td>{{row.deliveredDate | slice:2:16}} </td> -->
+
+                          <td style="display: flex">
+                            <!-- <button mat-raised-button class="btn btn-link btn-info btn-just-icon visibility" data-toggle="modal" data-target="#myModal" ><i class="material-icons" (click)="getInfoOfParcel(row.trackingNumber)">visibility</i></button> -->
+                            <!-- <a  class="btn btn-link btn-success btn-just-icon edit"><i (click)="editParcel(row.trackingNumber,row.ownerID,row.russianName,row.quantity,row.orderType,row.foreignName)" class="material-icons">edit</i></a> -->
+
+                            <a
+                              class="btn btn-link btn-primary btn-just-icon edit"
+                              ><i
+                                (click)="changeStatusSent(row.id)"
+                                class="material-icons"
+                                >local_shipping</i
+                              ></a
+                            >
+                            <a
+                              class="btn btn-link btn-danger btn-just-icon edit"
+                              ><i
+                                (click)="deleteNewDelivey(row.id)"
+                                class="material-icons"
+                                >delete</i
+                              ></a
+                            >
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  <ul class="pagination" *ngIf="needPagination">
+                    <li class="page-item">
+                      <a mat-button class="page-link" aria-label="Previous">
+                        <span aria-hidden="true"
+                          ><i
+                            class="fa fa-angle-double-left"
+                            aria-hidden="true"
+                          ></i
+                        ></span>
+                      </a>
+                    </li>
+                    <li
+                      class="page-item"
+                      [ngClass]="{ active: currentPage == i }"
+                      *ngFor="let page of mypages; index as i"
+                    >
+                      <a mat-button class="page-link" (click)="pagebyNum(i)">{{
+                        i + 1
+                      }}</a>
+                    </li>
+                    <li class="page-item">
+                      <a mat-button class="page-link" aria-label="Next">
+                        <span aria-hidden="true"
+                          ><i
+                            class="fa fa-angle-double-right"
+                            aria-hidden="true"
+                          ></i
+                        ></span>
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div #printSection1 id="print-section1" *ngIf="printCondition1">
+        <table cellspacing="0" border="0">
+          <colgroup width="287"></colgroup>
+          <colgroup span="2" width="146"></colgroup>
+          <tr>
+            <td colspan="2" height="78" align="left" valign="middle">
+              <font face="Times New Roman" size="6" color="#000000"
+                >ActiveCargo</font
+              >
+            </td>
+            <td align="center" valign="top">
+              <font face="Times New Roman" size="7" color="#000000">AC</font>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="3" height="87" align="center" valign="middle">
+              <b
+                ><font face="Times New Roman" size="7" color="#000000"
+                  >C{{ chekId }}</font
+                ></b
+              >
+            </td>
+          </tr>
+          <tr>
+            <td colspan="3" height="56" align="center" valign="middle">
+              <font face="Times New Roman" size="6" color="#000000">{{
+                chekName
+              }}</font>
+            </td>
+          </tr>
+          <tr>
+            <td
+              colspan="3"
+              height="58"
+              align="center"
+              valign="middle"
+              sdval="998970303357"
+              sdnum="1033;0;0"
+            >
+              <b
+                ><font face="Times New Roman" size="6" color="#000000">{{
+                  chekphone
+                }}</font></b
+              >
+            </td>
+          </tr>
+          <tr>
+            <td
+              style="
+                border-top: 1px solid #000000;
+                border-bottom: 1px solid #000000;
+                border-left: 1px solid #000000;
+                border-right: 1px solid #000000;
+              "
+              colspan="2"
+              height="60"
+              align="center"
+              valign="middle"
+            >
+              <u
+                ><font face="Times New Roman" size="6" color="#000000">{{
+                  chekDelType
+                }}</font></u
+              >
+            </td>
+            <td
+              style="
+                border-top: 1px solid #000000;
+                border-bottom: 1px solid #000000;
+                border-left: 1px solid #000000;
+                border-right: 1px solid #000000;
+              "
+              align="center"
+              valign="middle"
+              sdval="44864"
+              sdnum="1033;1033;M/D/YYYY"
+            >
+              <font face="Times New Roman" size="5" color="#000000">{{
+                myDate | date : "shortDate"
+              }}</font>
+            </td>
+          </tr>
+          <tr>
+            <td
+              style="
+                border-top: 1px solid #000000;
+                border-bottom: 1px solid #000000;
+                border-left: 1px solid #000000;
+                border-right: 1px solid #000000;
+              "
+              colspan="3"
+              height="86"
+              align="left"
+              valign="top"
+            >
+              <font face="Times New Roman" size="6" color="#000000"
+                >Manzil: {{ chekRegion }}, {{ chekTuman }}</font
+              >
+            </td>
+          </tr>
+          <tr>
+            <td
+              style="
+                border-top: 1px solid #000000;
+                border-left: 1px solid #000000;
+                border-right: 1px solid #000000;
+              "
+              height="60"
+              align="left"
+              valign="middle"
+            >
+              <font face="Times New Roman" size="5" color="#000000"
+                >Og'irligi: _____ kg</font
+              >
+            </td>
+            <td
+              style="
+                border-top: 1px solid #000000;
+                border-left: 1px solid #000000;
+                border-right: 1px solid #000000;
+              "
+              colspan="2"
+              align="left"
+              valign="middle"
+            >
+              <font face="Times New Roman" size="5" color="#000000"
+                >Soni: _____ ta</font
+              >
+            </td>
+          </tr>
+          <tr>
+            <td
+              style="
+                border-top: 1px solid #000000;
+                border-left: 1px solid #000000;
+                border-right: 1px solid #000000;
+              "
+              height="34"
+              align="center"
+              valign="top"
+            >
+              <font face="Times New Roman" size="5" color="#000000"
+                >Kargo to'lovi:</font
+              >
+            </td>
+            <td
+              style="
+                border-top: 1px solid #000000;
+                border-left: 1px solid #000000;
+                border-right: 1px solid #000000;
+              "
+              colspan="2"
+              align="center"
+              valign="top"
+            >
+              <font face="Times New Roman" size="5" color="#000000"
+                >Yetkazish to'lovi</font
+              >
+            </td>
+          </tr>
+          <tr>
+            <td
+              style="
+                border-left: 1px solid #000000;
+                border-right: 1px solid #000000;
+              "
+              height="60"
+              align="left"
+              valign="middle"
+            >
+              <font face="Times New Roman" size="5" color="#000000"
+                >Naqd: ______
+              </font>
+            </td>
+            <td
+              style="
+                border-left: 1px solid #000000;
+                border-right: 1px solid #000000;
+              "
+              colspan="2"
+              align="left"
+              valign="middle"
+            >
+              <font face="Times New Roman" size="5" color="#000000"
+                >Naqd: _____
+              </font>
+            </td>
+          </tr>
+          <tr>
+            <td
+              style="
+                border-bottom: 1px solid #000000;
+                border-left: 1px solid #000000;
+                border-right: 1px solid #000000;
+              "
+              height="60"
+              align="left"
+              valign="middle"
+            >
+              <font face="Times New Roman" size="5" color="#000000"
+                >Naqdsiz: _______
+              </font>
+            </td>
+            <td
+              style="
+                border-bottom: 1px solid #000000;
+                border-left: 1px solid #000000;
+                border-right: 1px solid #000000;
+              "
+              colspan="2"
+              align="left"
+              valign="middle"
+            >
+              <font face="Times New Roman" size="5" color="#000000"
+                >Naqdsiz: _______
+              </font>
+            </td>
+          </tr>
+          <tr>
+            <td
+              style="
+                border-top: 1px solid #000000;
+                border-bottom: 1px solid #000000;
+              "
+              height="60"
+              align="left"
+              valign="top"
+            >
+              <font face="Times New Roman" size="4" color="#000000"
+                >Qo'shimcha izohlar:</font
+              >
+            </td>
+            <td
+              style="
+                border-top: 1px solid #000000;
+                border-bottom: 1px solid #000000;
+              "
+              align="left"
+              valign="middle"
+            >
+              <font face="Times New Roman" size="5" color="#000000"
+                ><br
+              /></font>
+            </td>
+            <td
+              style="
+                border-top: 1px solid #000000;
+                border-bottom: 1px solid #000000;
+              "
+              align="left"
+              valign="middle"
+            >
+              <font face="Times New Roman" size="5" color="#000000"
+                ><br
+              /></font>
+            </td>
+          </tr>
+          <tr>
+            <td
+              style="
+                border-top: 1px solid #000000;
+                border-bottom: 1px solid #000000;
+              "
+              height="60"
+              align="left"
+              valign="middle"
+            >
+              <font face="Times New Roman" size="5" color="#000000"
+                ><br
+              /></font>
+            </td>
+            <td
+              style="
+                border-top: 1px solid #000000;
+                border-bottom: 1px solid #000000;
+              "
+              align="left"
+              valign="middle"
+            >
+              <font face="Times New Roman" size="5" color="#000000"
+                ><br
+              /></font>
+            </td>
+            <td
+              style="
+                border-top: 1px solid #000000;
+                border-bottom: 1px solid #000000;
+              "
+              align="left"
+              valign="middle"
+            >
+              <font face="Times New Roman" size="5" color="#000000"
+                ><br
+              /></font>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="3" height="38" align="center" valign="bottom">
+              <font face="Times New Roman" size="3" color="#000000"
+                >Qabul qilganingizni tasdiqlash uchun ismingiz va imzoingizni
+                qoldiring:</font
+              >
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2" height="38" align="center" valign="top">
+              <font face="Times New Roman" size="5" color="#000000"
+                >Ism sharf:</font
+              >
+            </td>
+            <td align="center" valign="top">
+              <font face="Times New Roman" size="5" color="#000000">Imzo:</font>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2" height="42" align="center" valign="bottom">
+              <font size="3" color="#000000"
+                >____________________________________________</font
+              >
+            </td>
+            <td align="center" valign="bottom">
+              <font size="3" color="#000000">______________</font>
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- end col-md-12 -->
+    </div>
+
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card" id="listcard">
+          <!-- end content-->
+
+          <div #printSection2 id="print-section2" *ngIf="printCondition2">
+            Active Cargo
+            <div>
+              <span style="font-size: 20px"
+                ><u>{{ chekDelType }}</u></span
+              >
+            </div>
+            <div>
+              <span style="font-size: 32px"
+                ><strong>{{ chekId }}</strong></span
+              >
+            </div>
+
+            <div></div>
+
+            <div style="margin: 2px 6px">
+              <strong>{{ chekName }}</strong>
+            </div>
+            <div style="margin: 2px 6px; font-size: 24px">
+              <strong>{{ chekphone }}</strong>
+            </div>
+
+            <div>
+              <span style="font-size: 14px; font-size: 24px">
+                {{ chekRegion }}</span
+              >
+              <br />
+              <span style="font-size: 14px"> {{ chekIzoh }}</span>
+            </div>
+
+            <br />
+          </div>
+
+          <div #printSection3 id="print-section3" *ngIf="printCondition3">
+            Active Cargo
+            <div>
+              <span style="font-size: 20px"
+                ><u>{{ chekDelType }}</u></span
+              >
+            </div>
+            <div>
+              <span style="font-size: 36px"
+                ><strong>C{{ chekId }}</strong></span
+              >
+            </div>
+
+            <div></div>
+
+            <div style="margin: 2px 6px">
+              <strong>{{ chekName }}</strong>
+            </div>
+            <div style="margin: 2px 6px">
+              <strong>{{ chekphone }}</strong>
+            </div>
+
+            <div>
+              <span style="font-size: 14px"> {{ chekRegion }}</span>
+              <span style="font-size: 14px"> {{ chekTuman }}</span>
+            </div>
+
+            <br />
+          </div>
+        </div>
+        <!--  end card  -->
+      </div>
+      <!-- end col-md-12 -->
+    </div>
+    <!-- end row -->
+  </div>
+</div>

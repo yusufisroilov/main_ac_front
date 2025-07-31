@@ -1,0 +1,381 @@
+<div class="wrapper wrapper-full-page">
+  <div
+    class="page-header login-page header-filter"
+    filter-color="black"
+    style="
+      background-image: url('./assets/img/login2.jpg');
+      background-size: cover;
+      background-position: top center;
+    "
+  >
+    <!--   you can change the color of the filter page using: data-color="blue | purple | green | orange | red | rose " -->
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-4 col-md-6 col-sm-6 ml-auto mr-auto">
+          <form
+            class="form"
+            method=""
+            #f="ngForm"
+            (ngSubmit)="submitDelivery(f.value)"
+            action=""
+          >
+            <div class="card card-login">
+              <div class="card-header card-header-primary text-center">
+                <h4 class="card-title">QULAY YETKAZISH</h4>
+                <!-- <div class="social-line">
+                      <a href="#pablo" class="btn btn-just-icon btn-link btn-white">
+                        <i class="fa fa-facebook-square"></i>
+                      </a>
+                      <a href="#pablo" class="btn btn-just-icon btn-link btn-white">
+                        <i class="fa fa-twitter"></i>
+                      </a>
+                      <a href="#pablo" class="btn btn-just-icon btn-link btn-white">
+                        <i class="fa fa-google-plus"></i>
+                      </a>
+                    </div> -->
+              </div>
+              <div class="card-body">
+                <p class="text-center">
+                  Siz oxirgi Partiya yukni qayerdan va nimadan yuborishni bizga
+                  yozib qoldiring!
+                </p>
+                <span>
+                  <div *ngIf="invalidLogin" class="alert alert-danger">
+                    Nimadir xato
+                  </div>
+                </span>
+                <!-- <span class="bmd-form-group">
+                        <div class="input-group">
+                          <div class="input-group-prepend">
+                            <span class="input-group-text">
+                              <i class="material-icons">person</i>
+                            </span>
+                          </div>
+                          <input ng-model="recName"  [value]="inputValue" type="text" id="recName" name="recName" ngModel class="form-control" placeholder="Yuk oluvchi ismi" ng-minlength="10" minlength="12" >
+                        </div>
+                      </span> -->
+
+                <div style="display: flex">
+                  <span class="bmd-form-group">
+                    <div class="input-group">
+                      <div class="input-group-prepend">
+                        <span class="input-group-text"> ID </span>
+                      </div>
+                      <input
+                        ng-model="ownerID"
+                        [(ngModel)]="ownerQuID"
+                        type="text"
+                        id="ownerID"
+                        name="ownerID"
+                        ngModel
+                        class="form-control"
+                        readonly
+                      />
+                    </div>
+                  </span>
+                  <span style="display: none" class="bmd-form-group">
+                    <div class="input-group">
+                      <div class="input-group-prepend"></div>
+                      <input
+                        ng-model="financeID"
+                        [(ngModel)]="financeId"
+                        type="text"
+                        id="financeID"
+                        name="financeID"
+                        ngModel
+                        class="form-control"
+                        readonly
+                      />
+                    </div>
+                  </span>
+                </div>
+
+                <span class="bmd-form-group">
+                  <div class="input-group">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text">
+                        <i class="material-icons">phone</i>
+                      </span>
+                    </div>
+                    <input
+                      ng-model="phone"
+                      [value]="inputValue"
+                      type="text"
+                      id="additionalPhoneNumber"
+                      name="additionalPhoneNumber"
+                      ngModel
+                      class="form-control"
+                      placeholder="Oluvchi tel raqami: 998998099048"
+                      ng-minlength="10"
+                      minlength="12"
+                    />
+                  </div>
+                </span>
+
+                <!--
+                     <p style="padding: 22px 4px 0px 0px;">+998</p>
+                      (focusin)="addPrefix($event)" 
+                    <span class="bmd-form-group">
+                      <div class="input-group">
+                        <div class="input-group-prepend">
+                          <span class="input-group-text">
+                            <i class="material-icons">email</i>
+                          </span>
+                        </div>
+                        <input type="email" class="form-control" placeholder="Email...">
+                      </div>
+                    </span>  -->
+
+                <span class="bmd-form-group">
+                  <div class="input-group">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text">
+                        <i class="material-icons"> local_shipping </i>
+                      </span>
+                    </div>
+                    <div class="col-md-8 col-sm-4">
+                      <mat-form-field>
+                        <mat-select
+                          ng-model="deliveryType"
+                          id="deliveryType"
+                          name="deliveryType"
+                          ngModel
+                          placeholder="Yuborish usuli:"
+                          (selectionChange)="holdChange($event.value)"
+                        >
+                          <mat-option
+                            *ngFor="let delivery of typeOfDel"
+                            [value]="delivery.id"
+                          >
+                            {{ delivery.nameUz }}
+                          </mat-option>
+                        </mat-select>
+                      </mat-form-field>
+                    </div>
+                  </div>
+                </span>
+              </div>
+
+              <div *ngIf="ozimolibketaman" class="ozimolibketaman">
+                <p class="text-center">
+                  Sizni Kutamiz, Ish vaqtimiz 10:00 dan 19:00 gacha! Manzilimiz
+                  Chilonzor tumani, Dombrabod qurilish materiallar bozori, 3
+                  qavat 182 do'kon!
+                </p>
+                <agm-map [latitude]="lat" [longitude]="lng">
+                  <agm-marker [latitude]="lat" [longitude]="lng"></agm-marker>
+                </agm-map>
+              </div>
+
+              <div *ngIf="fargo" class="fargobts">
+                <span class="bmd-form-group">
+                  <p class="text-center">
+                    Qayerga yuborishimizni pastda yozib qoldiing! Yozilgan
+                    manzilingizga eng yaqin FARGO/BTS ofesigacha yuboriladi.
+                    To'lov qilib activecargo_yuk ga screenshot yuborishni
+                    unitmang!
+                  </p>
+
+                  <p class="text-center">Saqlash tugmasini bosing.</p>
+
+                  <div class="input-group">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text">
+                        <i class="material-icons">map</i> Viloyat:
+                      </span>
+                    </div>
+
+                    <input
+                      ng-model="region"
+                      type="text"
+                      id="region"
+                      name="region"
+                      ngModel
+                      class="form-control"
+                      placeholder="Viloyat/Shaxar"
+                    />
+                  </div>
+
+                  <div class="input-group">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text">
+                        <i class="material-icons">map</i>Tuman:
+                      </span>
+                    </div>
+
+                    <input
+                      ng-model="town"
+                      type="text"
+                      id="town"
+                      name="town"
+                      ngModel
+                      class="form-control"
+                      placeholder="Tuman"
+                    />
+                  </div>
+                </span>
+              </div>
+
+              <div *ngIf="bts" class="fargobts">
+                <span class="bmd-form-group">
+                  <p class="text-center">
+                    Vodiy tarqatish moshinamizdan yuborish uchun pastda yozib
+                    qoldiing! Andijon, Farg'ona, Namangan, Qo'qon shaxarlariga
+                    uyigacha yetkazishni reja qilganmiz. Boshqa tumanlarga
+                    Shaxar markazidan tumanga yuradigan taksilardan beriladi.
+                    To'lov qilib activecargo_yuk ga screenshot yuborishni
+                    unitmang!
+                  </p>
+
+                  <p class="text-center">Saqlash tugmasini bosing.</p>
+
+                  <div class="input-group">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text">
+                        <i class="material-icons">map</i> Viloyat:
+                      </span>
+                    </div>
+
+                    <input
+                      ng-model="region"
+                      type="text"
+                      id="region"
+                      name="region"
+                      ngModel
+                      class="form-control"
+                      placeholder="Viloyat/Shaxar"
+                    />
+                  </div>
+
+                  <div class="input-group">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text">
+                        <i class="material-icons">map</i> To'liq manzil:
+                      </span>
+                    </div>
+
+                    <input
+                      ng-model="town"
+                      type="text"
+                      id="town"
+                      name="town"
+                      ngModel
+                      class="form-control"
+                      placeholder="Tuman, ko'cha, uy"
+                    />
+                  </div>
+                </span>
+              </div>
+
+              <div *ngIf="yandex" class="yandex">
+                <span class="bmd-form-group">
+                  <p class="text-center">
+                    Yandex lar Faqat Toshkent Shaxarga navbati bilan yuboriladi
+                    asosan 15:00 dan keyin. Saqlash tugmasini bosib, telegramdan
+                    to'lov screenshot va lokatsiya yuborib qo'ying!
+                  </p>
+
+                  <p class="text-center">Saqlash tugmasini bosing.</p>
+
+                  <div class="input-group">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text">
+                        <i class="material-icons">map</i> Viloyat:
+                      </span>
+                    </div>
+
+                    <input
+                      ng-model="region"
+                      readonly
+                      [(ngModel)]="yandexRegion"
+                      type="text"
+                      id="region"
+                      name="region"
+                      ngModel
+                      class="form-control"
+                    />
+                  </div>
+
+                  <div class="input-group">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text">
+                        <i class="material-icons">map</i>Tuman:
+                      </span>
+                    </div>
+
+                    <input
+                      ng-model="town"
+                      type="text"
+                      id="town"
+                      name="town"
+                      ngModel
+                      class="form-control"
+                      placeholder="Tuman"
+                    />
+                  </div>
+                </span>
+              </div>
+
+              <div *ngIf="taksidan" class="taksidan">
+                <span class="bmd-form-group">
+                  <p class="text-center">
+                    Yuborgan taksichingizga bizning manzil, va sizga yuborilgan
+                    sms yuborib qo'ying. ID ingizni eslating.
+                  </p>
+
+                  <p class="text-center">Saqlash tugmasini bosing.</p>
+                </span>
+              </div>
+              <div class="card-footer justify-content-center">
+                <button
+                  href="#pablo"
+                  class="btn btn-primary btn-round"
+                  type="submit"
+                >
+                  <b>Saqlash</b>
+                </button>
+              </div>
+
+              <!-- <p class="text-center"> <a href="/#/pages/lock" class="alert-link"> Parolni unitdingizmi? </a></p>   -->
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <footer class="footer">
+      <div class="container">
+        <!-- <nav class="pull-left">
+              <ul>
+                <li>
+                  <a href="http://acargo.uz/">
+                    Xizmatlar haqida
+                  </a>
+                </li>
+                <li>
+                  <a href="http://acargo.uz/">
+                    Biz haqimizda
+                  </a>
+                </li>
+                <li>
+                  <a href="http://acargo.uz/">
+                    Blog
+                  </a>
+                </li>
+                <li>
+                  <a href="http://acargo.uz/">
+                    Shartlar
+                  </a>
+                </li>
+              </ul>
+            </nav> -->
+        <div class="copyright pull-right">
+          &copy;
+          {{ test | date : "yyyy" }}, siz uchun
+          <i class="material-icons">favorite</i>imiz bilan
+          <a href="https://www.yumasoft.uz" target="_blank">YUMA SOFT</a>
+          tomonidan yaratildi!
+        </div>
+      </div>
+    </footer>
+  </div>
+</div>

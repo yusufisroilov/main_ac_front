@@ -1,0 +1,37 @@
+.myboxtable > .table > thead > tr > th, .myboxtable >.table > tbody > tr > th, 
+.myboxtable > .table > tfoot > tr > th, .myboxtable >.table > thead > tr > td,
+.myboxtable > .table > tbody > tr > td, .myboxtable >.table > tfoot > tr > td {
+    padding: 4px 4px;
+    vertical-align: middle;
+}
+
+.form-control, label, input::placeholder {
+    line-height: 2.1;
+}
+ 
+.printdoc td
+{
+    border-top: 1px solid #000000; 
+    border-bottom: 1px solid #000000; 
+    border-left: 1px solid #000000;
+    border-right: 1px solid #000000
+}
+
+.printdoc th
+{
+    border-top: 1px solid #000000; 
+    border-bottom: 1px solid #000000; 
+    border-left: 1px solid #000000;
+    border-right: 1px solid #000000
+}
+
+.printdoc .views-table
+{
+    color: #000;
+    font-weight: 300;
+}
+
+.btnprint
+{
+    margin: 12px;
+}   

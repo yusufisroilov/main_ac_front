@@ -1,0 +1,93 @@
+<div class="main-content">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-3 ml-auto">
+        <!-- <div class="card-body">
+          <a href="/#/addreceivers" mat-raised-button class="btn btn-success"
+            >Qabul qiluvchi qo'shing
+          </a>
+        </div> -->
+      </div>
+      <div class="col-md-12">
+        <div class="card" style="margin-top: 0">
+          <div class="card-header card-header-primary card-header-icon">
+            <div class="card-icon">
+              <i class="material-icons">assignment</i>
+            </div>
+            <h4 class="card-title">Qabul qiluvchilar</h4>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th class="text-center">{{ tableData1.headerRow[0] }}</th>
+                    <th class="text-center">{{ tableData1.headerRow[1] }}</th>
+                    <th>{{ tableData1.headerRow[2] }}</th>
+                    <th>{{ tableData1.headerRow[3] }}</th>
+                    <th class="text-left">{{ tableData1.headerRow[4] }}</th>
+                    <th class="text-right">{{ tableData1.headerRow[5] }}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let receiver of receivers">
+                    <td class="text-center">{{ receiver.id }}</td>
+                    <td class="text-center">
+                      {{ receiver.first_name }} {{ receiver.last_name }}
+                    </td>
+                    <td>{{ receiver.phone_number }}</td>
+                    <td>{{ receiver.passport }}</td>
+                    <td>{{ receiver.street }} {{ receiver.apartment }}</td>
+                    <!-- <td class="text-right">{{receiver.first_name}}</td> -->
+                    <!-- <td class="td-actions text-right">
+                      <button
+                        mat-raised-button
+                        type="button"
+                        class="btn btn-success"
+                      >
+                        <i
+                          (click)="editReceiver(receiver)"
+                          class="material-icons"
+                          >edit</i
+                        >
+                      </button>
+                      <button
+                        mat-raised-button
+                        type="button"
+                        class="btn btn-danger"
+                        (click)="deleteReceivers(receiver)"
+                      >
+                        <i class="material-icons">close</i>
+                      </button>
+                    </td> -->
+                  </tr>
+                </tbody>
+              </table>
+              <ul class="pagination" *ngIf="needPagination">
+                <!--  <li class="page-item">
+                              <a mat-button class="page-link" aria-label="Previous">
+                                <span aria-hidden="true"><i class="fa fa-angle-double-left" aria-hidden="true"></i></span>
+                              </a>
+                            </li> -->
+                <li
+                  class="page-item"
+                  [ngClass]="{ active: currentPage == i }"
+                  *ngFor="let page of mypages; index as i"
+                >
+                  <a mat-button class="page-link" (click)="pagebyNum(i)">{{
+                    i + 1
+                  }}</a>
+                </li>
+                <!-- <li class="page-item">
+                              <a mat-button class="page-link" aria-label="Next">
+                                <span aria-hidden="true"><i class="fa fa-angle-double-right" aria-hidden="true"></i></span>
+                              </a>
+                            </li> -->
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

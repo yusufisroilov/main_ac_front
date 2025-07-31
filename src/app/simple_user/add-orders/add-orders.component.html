@@ -1,0 +1,869 @@
+<div class="main-content">
+  <div class="container-fluid" id="listcard" style="margin-top: 20px">
+    <div class="row">
+      <div class="card1 col-md-4">
+        <button
+          mat-raised-button=""
+          *ngIf="!conditionParty; else closeParty"
+          (click)="openPartyFunc()"
+          class="mat-focus-indicator btn btn-success mat-raised-button mat-button-base"
+        >
+          <span class="mat-button-wrapper"
+            ><span class="btn-label">
+              <i class="material-icons">flight</i></span
+            >
+            Open New Party
+          </span>
+          <span
+            matripple=""
+            class="mat-ripple mat-button-ripple"
+            ng-reflect-disabled="false"
+            ng-reflect-centered="false"
+            ng-reflect-trigger="[object HTMLButtonElement]"
+          ></span
+          ><span class="mat-button-focus-overlay"></span>
+        </button>
+        <ng-template #closeParty>
+          <button
+            mat-raised-button=""
+            (click)="showSwal('open-party')"
+            class="mat-focus-indicator btn btn-danger mat-raised-button mat-button-base"
+          >
+            <span class="mat-button-wrapper">
+              <i class="material-icons">close</i> Close THE Party </span
+            ><span
+              matripple=""
+              class="mat-ripple mat-button-ripple"
+              ng-reflect-disabled="false"
+              ng-reflect-centered="false"
+              ng-reflect-trigger="[object HTMLButtonElement]"
+            ></span
+            ><span class="mat-button-focus-overlay"></span>
+          </button>
+        </ng-template>
+      </div>
+      <div class="card2 col-md-4">
+        <div class="">
+          <button
+            mat-raised-button=""
+            *ngIf="conditionBox"
+            (click)="openNewBoxFunc()"
+            class="mat-focus-indicator btn btn-success mat-raised-button mat-button-base"
+          >
+            <span class="mat-button-wrapper"
+              ><span class="btn-label">
+                <i class="material-icons">folder_open</i></span
+              >
+              Open New BOX</span
+            >
+            <span
+              matripple=""
+              class="mat-ripple mat-button-ripple"
+              ng-reflect-disabled="false"
+              ng-reflect-centered="false"
+              ng-reflect-trigger="[object HTMLButtonElement]"
+            ></span
+            ><span class="mat-button-focus-overlay"></span>
+          </button>
+        </div>
+        <div class="">
+          <button
+            mat-raised-button=""
+            *ngIf="!conditionBox && conditionParty"
+            (click)="showSwal('input-closebox')"
+            class="mat-focus-indicator btn btn-danger mat-raised-button mat-button-base"
+          >
+            <span class="mat-button-wrapper">
+              <i class="material-icons">close</i> Close THE BOX </span
+            ><span
+              matripple=""
+              class="mat-ripple mat-button-ripple"
+              ng-reflect-disabled="false"
+              ng-reflect-centered="false"
+              ng-reflect-trigger="[object HTMLButtonElement]"
+            ></span
+            ><span class="mat-button-focus-overlay"></span>
+          </button>
+        </div>
+      </div>
+      <div class="card3 col-md-4">
+        <div class="">
+          <button
+            mat-raised-button=""
+            *ngIf="!conditionBox && conditionScan"
+            (click)="scanParcel()"
+            class="mat-focus-indicator btn btn-success mat-raised-button mat-button-base"
+          >
+            <span class="mat-button-wrapper"
+              ><span class="btn-label">
+                <i class="material-icons">check</i></span
+              >
+              Start Scan
+            </span>
+            <span
+              matripple=""
+              class="mat-ripple mat-button-ripple"
+              ng-reflect-disabled="false"
+              ng-reflect-centered="false"
+              ng-reflect-trigger="[object HTMLButtonElement]"
+            ></span
+            ><span class="mat-button-focus-overlay"></span>
+          </button>
+          <button
+            mat-raised-button=""
+            *ngIf="!conditionBox && conditionScan"
+            (click)="scanParcelAndPrint()"
+            class="mat-focus-indicator btn btn-info mat-raised-button mat-button-base"
+          >
+            <span class="mat-button-wrapper"
+              ><span class="btn-label">
+                <i class="material-icons">receipt_long</i></span
+              >
+              Scan&Print
+            </span>
+            <span
+              matripple=""
+              class="mat-ripple mat-button-ripple"
+              ng-reflect-disabled="false"
+              ng-reflect-centered="false"
+              ng-reflect-trigger="[object HTMLButtonElement]"
+            ></span
+            ><span class="mat-button-focus-overlay"></span>
+          </button>
+        </div>
+        <div class="col-md-6 ml-auto mr-auto">
+          <!-- Classic Modal -->
+          <div
+            class="modal fade"
+            id="myModal"
+            tabindex="-1"
+            role="dialog"
+            aria-labelledby="myModalLabel"
+            aria-hidden="true"
+          >
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h4 class="modal-title">Scan Parcel</h4>
+                  <button
+                    mat-button
+                    type="button"
+                    class="close"
+                    data-dismiss="modal"
+                    aria-hidden="true"
+                  >
+                    <i class="material-icons">clear</i>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <div class="md-form input-group mb-3">
+                    <div class="input-group-prepend">
+                      <span
+                        class="input-group-text md-addon"
+                        id="inputGroupMaterial-sizing-default"
+                      ></span>
+                    </div>
+                    <input
+                      #myinput
+                      type="text"
+                      class="form-control"
+                      aria-label="Sizing example input"
+                      aria-describedby="inputGroupMaterial-sizing-default"
+                      autofocus
+                    />
+                  </div>
+                  <div class="md-form input-group mb-3">
+                    <div class="input-group-prepend">
+                      <span
+                        class="input-group-text md-addon"
+                        id="inputGroupMaterial-sizing-default"
+                        >Product:</span
+                      >
+                    </div>
+                    <input
+                      type="text"
+                      class="form-control"
+                      aria-label="Sizing example input"
+                      aria-describedby="inputGroupMaterial-sizing-default"
+                    />
+                  </div>
+                  <div class="md-form input-group mb-3">
+                    <div class="input-group-prepend">
+                      <span
+                        class="input-group-text md-addon"
+                        id="inputGroupMaterial-sizing-default"
+                        >Owner ID:</span
+                      >
+                    </div>
+                    <input
+                      type="text"
+                      class="form-control"
+                      aria-label="Sizing example input"
+                      aria-describedby="inputGroupMaterial-sizing-default"
+                    />
+                  </div>
+                  <div class="md-form input-group mb-3">
+                    <div class="input-group-prepend">
+                      <span
+                        class="input-group-text md-addon"
+                        id="inputGroupMaterial-sizing-default"
+                        >Comment:</span
+                      >
+                    </div>
+                    <input
+                      type="text"
+                      class="form-control"
+                      aria-label="Sizing example input"
+                      aria-describedby="inputGroupMaterial-sizing-default"
+                    />
+                  </div>
+                </div>
+
+                <div class="modal-footer">
+                  <button mat-raised-button type="button" class="btn btn-link">
+                    Nice Button
+                  </button>
+                  <button
+                    mat-raised-button
+                    type="button"
+                    class="btn btn-danger btn-link"
+                    data-dismiss="modal"
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!--  End Modal -->
+        </div>
+      </div>
+
+      <div *ngIf="!conditionBox && conditionParty" class="col-md-12">
+        <div class="card">
+          <div class="card-header card-header-success card-header-icon">
+            <div class="card-icon">
+              <i class="material-icons">assignment</i>
+            </div>
+            <h4 class="card-title">
+              {{ boxMessage }}. <b>Total items: {{ total_count }}</b>
+            </h4>
+            <p>Be careful: No more than 30 items in the box.</p>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive myboxtable">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th class="text-center">No</th>
+                    <th class="text-center">{{ tableData1.headerRow[0] }}</th>
+                    <th>{{ tableData1.headerRow[1] }}</th>
+                    <th>{{ tableData1.headerRow[2] }}</th>
+                    <th>{{ tableData1.headerRow[3] }}</th>
+                    <th>{{ tableData1.headerRow[4] }}</th>
+                    <th>{{ tableData1.headerRow[5] }}</th>
+                    <th class="text-right">{{ tableData1.headerRow[6] }}</th>
+                    <th class="text-right">{{ tableData1.headerRow[7] }}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let row of thingsInBox; let i = index">
+                    <td class="text-center">{{ i + 1 }}</td>
+                    <td class="text-center">{{ row.owner_id }}</td>
+                    <td>{{ row.tracking_number }}</td>
+                    <td>{{ row.name_ru }}</td>
+                    <td>{{ row.name_foreign }}</td>
+                    <td>{{ row.quantity }}</td>
+                    <td>{{ row.weight }}</td>
+                    <td class="text-right">$ {{ row.price }}</td>
+                    <td class="td-actions text-right">
+                      <!--  <button mat-raised-button type="button" class="btn btn-info">
+                        <i class="material-icons">visibility</i>
+                      </button>
+                      <button mat-raised-button type="button" class="btn btn-success">
+                        <i class="material-icons">edit</i>
+                      </button> -->
+                      <button
+                        mat-raised-button
+                        type="button"
+                        class="btn btn-danger"
+                        (click)="
+                          removeParcelFromBox(
+                            row.tracking_number,
+                            row.box_number
+                          )
+                        "
+                      >
+                        <i class="material-icons">close</i>
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="conditionParty" class="col-md-12">
+        <div class="card card-plain">
+          <div class="card-header card-header-icon card-header-rose">
+            <div class="card-icon">
+              <i class="material-icons">receipt_long</i>
+            </div>
+            <h4 class="card-title mt-0">
+              {{ consignmentMessage }}! Opened date is:
+              {{ openDate | date : "yyyy-MM-dd" }}. Now:
+              <b>{{ currentWeight }} kg</b>
+            </h4>
+            <p class="card-category">
+              Below is list of the boxes in the Party.
+            </p>
+          </div>
+          <div class="card-body">
+            <div class="col-sm-6 col-lg-3" style="display: inline-flex">
+              <mat-form-field class="example-full-width">
+                <input
+                  matInput
+                  type="text"
+                  style="font-size: large"
+                  placeholder="Search LOT"
+                  (input)="assignSerchBox($event.target.value)"
+                />
+              </mat-form-field>
+            </div>
+
+            <div class="table-responsive">
+              <table class="table table-hover">
+                <thead>
+                  <tr>
+                    <th *ngFor="let cell of tableData2.headerRow">
+                      {{ cell }}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr
+                    *ngFor="let box of boxes; let i = index"
+                    [ngClass]="{
+                      'table-success': box.receiver_id != null,
+                      'table-info': box.status
+                    }"
+                  >
+                    <td class="text-center">{{ i + 1 }}</td>
+                    <!-- <td >{{box.boxNumber}}</td> -->
+                    <td *ngIf="box.isLastOrder == 'N'; else elseBlockBox">
+                      {{ box.box_number }}
+                    </td>
+                    <ng-template #elseBlockBox>
+                      <td style="font-weight: bold; color: blue">
+                        {{ box.box_number }}
+                      </td>
+                    </ng-template>
+                    <td>{{ box.open_date | slice : 0 : 16 }}</td>
+                    <td>{{ box.receiver_id }}</td>
+                    <td>{{ box.total_sum }}</td>
+                    <td>{{ box.weight }} kg</td>
+                    <td
+                      *ngIf="box.status; else elseBlock"
+                      style="font-weight: bold; color: green"
+                    >
+                      OPEN
+                    </td>
+                    <ng-template #elseBlock>
+                      <td style="font-weight: bold; color: red">CLOSED</td>
+                    </ng-template>
+
+                    <td class="td-actions text-right">
+                      <button
+                        (click)="reOpenBox(box.box_number)"
+                        mat-raised-button
+                        type="button"
+                        class="btn btn-info btn-link"
+                      >
+                        REOPEN<i class="material-icons">list</i>
+                      </button>
+                      <button
+                        (click)="editBoxFunc(box.box_number)"
+                        mat-raised-button
+                        type="button"
+                        class="btn btn-success btn-link"
+                      >
+                        <i class="material-icons">edit</i>
+                      </button>
+                      <button
+                        (click)="deleteBoxFunc(box.box_number)"
+                        mat-raised-button
+                        type="button"
+                        class="btn btn-danger btn-link"
+                      >
+                        <i class="material-icons">delete</i>
+                      </button>
+                      <button
+                        (click)="takeBoxData2(box.box_number)"
+                        mat-raised-button
+                        type="button"
+                        class="btn btn-danger btn-link"
+                      >
+                        PRINT<i class="material-icons">print</i>
+                      </button>
+                      <button
+                        (click)="takeBoxDataLabel(box.box_number)"
+                        mat-raised-button
+                        type="button"
+                        class="btn btn-warning btn-link"
+                      >
+                        PR LB<i class="material-icons">print</i>
+                      </button>
+
+                      <!-- <button mat-raised-button type="button" class="btn btn-danger {{row[7]}}">
+                                        <i class="material-icons">close</i> 
+                                    </button> -->
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div #printSection id="print-section" *ngIf="printLabelCond">
+              <div>
+                <span style="font-size: 18px"
+                  ><strong>{{ labelNumber }}</strong></span
+                >
+              </div>
+
+              <div>
+                <ngx-barcode
+                  [bc-value]="barcodeVal"
+                  [bc-display-value]="true"
+                ></ngx-barcode>
+              </div>
+
+              <div style="display: inline-flex">
+                <div style="margin: 2px 6px">
+                  <strong>{{ nameOfProduct }}</strong>
+                </div>
+                <div style="margin: 2px 6px">
+                  <strong>{{ quantityOfProduct }}шт</strong>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="main-content" *ngIf="printButtonCond">
+      <div class="container-fluid printdoc">
+        <div class="row">
+          <div class="col-md-6">
+            <div class="card-body">
+              <form method="#" action="#" style="display: inline-flex">
+                <mat-form-field class="example-full-width">
+                  <input
+                    matInput
+                    placeholder="Box Number:"
+                    type="text"
+                    (input)="takeBoxData($event.target.value)"
+                  />
+                </mat-form-field>
+
+                <button
+                  *ngIf="printButtonCond"
+                  mat-raised-button
+                  class="btn btnprint btn-success"
+                  style="margin: 12px"
+                  (click)="printBigDoc()"
+                >
+                  <span class="btn-label">
+                    <i class="material-icons">print</i>
+                  </span>
+                  Print
+                </button>
+              </form>
+            </div>
+          </div>
+
+          <div #printSection id="print-section" class="col-md-12">
+            <table cellspacing="0" border="0">
+              <colgroup width="75"></colgroup>
+              <colgroup width="480"></colgroup>
+              <colgroup width="160"></colgroup>
+              <colgroup width="258"></colgroup>
+              <colgroup width="80"></colgroup>
+              <tbody>
+                <tr>
+                  <td colspan="3" valign="bottom" height="20" align="center">
+                    <b
+                      ><font face="Times New Roman" color="#000000"
+                        ><b>INVOICE</b></font
+                      ></b
+                    >
+                  </td>
+                  <td
+                    style="
+                      border-top: 1px solid #000000;
+                      border-bottom: 1px solid #000000;
+                      border-left: 1px solid #000000;
+                    "
+                    valign="bottom"
+                    align="center"
+                  >
+                    <b
+                      ><font face="Times New Roman" color="#000000"
+                        >ТАМОЖЕННАЯ ДЕКЛАРАЦИЯ</font
+                      ></b
+                    >
+                  </td>
+                  <td valign="bottom" align="center">
+                    <b
+                      ><font face="Times New Roman" color="#000000"
+                        >INVOICE</font
+                      ></b
+                    >
+                  </td>
+                </tr>
+                <tr>
+                  <td rowspan="3" valign="middle" height="100" align="center">
+                    <b
+                      ><font face="Times New Roman" color="#000000">Из</font></b
+                    >
+                  </td>
+                  <td valign="bottom" align="left">
+                    <b
+                      ><font face="Times New Roman" color="#000000"
+                        >Фамилия: Kent Lee
+                      </font></b
+                    >
+                  </td>
+                  <td rowspan="2" valign="bottom" align="center">
+                    <b
+                      ><font face="Times New Roman" color="#000000"
+                        >Таможенная ссылка отправителя если имеется
+                      </font></b
+                    >
+                  </td>
+                  <td colspan="2" valign="middle" align="center">
+                    <b
+                      ><font face="Times New Roman" color="#000000"
+                        >№ Отправления
+                      </font>
+                    </b>
+                  </td>
+                </tr>
+                <tr>
+                  <td valign="middle" align="left">
+                    <b
+                      ><font face="Times New Roman" color="#000000"
+                        >Компания: {{ company_name }}
+                      </font></b
+                    >
+                  </td>
+                  <td colspan="2" rowspan="3" valign="middle" align="center">
+                    <b
+                      ><font size="6" face="Times New Roman" color="#000000"
+                        ><br /><span
+                          style="display: flex; justify-content: center"
+                          >{{ box_number }}</span
+                        ></font
+                      ></b
+                    >
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="2" valign="middle" align="left">
+                    <b
+                      ><font face="Times New Roman" color="#000000"
+                        >Улица: {{ company_address }} <br />
+                        Почтовый индекс Город: {{ company_index }} Страна:
+                        {{ country_name }}</font
+                      ></b
+                    >
+                  </td>
+                </tr>
+                <tr>
+                  <td rowspan="3" valign="middle" height="75" align="center">
+                    <b><font face="Times New Roman" color="#000000">В</font></b>
+                  </td>
+                  <td colspan="2" rowspan="3" valign="top" align="left">
+                    <b
+                      ><font face="Times New Roman" color="#000000">
+                        Фамилия и адрес получателя включая страну В:
+                        <div class="fieldrecinfo">
+                          {{ receiver_id }} {{ receiver_name }}
+                          {{ receiver_passport }} {{ phone_number }} <br />
+                          {{ receiver_address }}
+                        </div>
+                        <br /></font
+                    ></b>
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="2" valign="middle" align="center">
+                    <b
+                      ><font face="Times New Roman" color="#000000"
+                        >Реквизты импортера (если имеются) (ИНН/№НДС/индекс
+                        импортера)</font
+                      ></b
+                    >
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="2" valign="bottom" align="center">
+                    <b
+                      ><font face="Times New Roman" color="#000000"
+                        >№ телефона факса е-маил : 00860579-81560701</font
+                      ></b
+                    >
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <table class="views-table" cellspacing="0" border="0">
+              <thead>
+                <tr>
+                  <th>№</th>
+                  <th>Подробное описание</th>
+                  <th>Количество</th>
+                  <th>Tracking Number</th>
+                  <th>Вес Нетто (кг)</th>
+                  <th>Cтоимость</th>
+                  <!--    <th>Код ТНВЭД (7)</th> -->
+                  <th>Страна приосхождения/отправления (8)</th>
+                </tr>
+              </thead>
+              <tbody cellspacing="0" border="0">
+                <tr class="odd" *ngFor="let data of orders; let i = index">
+                  <td style="text-align: center">{{ i + 1 }}</td>
+                  <td>{{ data.russianName }} {{ data.quantity }}шт</td>
+                  <td style="text-align: center">{{ data.quantity }}</td>
+                  <td>{{ data.trackingNumber }}</td>
+                  <td style="text-align: center">{{ data.weight }}</td>
+                  <td style="text-align: center">{{ data.price }}</td>
+                  <!--  <td> </td> -->
+                  <td>{{ country_name }}</td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr class="view-footer-number">
+                  <td class="view-footer views-field views-field-title">-</td>
+                  <td class="view-footer views-field views-field-title">
+                    Итого
+                  </td>
+                  <td
+                    class="view-footer views-field views-field-field-quantity-1"
+                    style="text-align: center"
+                  >
+                    {{ total_amount }}
+                  </td>
+                  <td
+                    class="view-footer views-field views-field-field-tracking-number2"
+                  ></td>
+                  <td
+                    class="view-footer views-field views-field-field-item-weight"
+                    style="text-align: center"
+                  >
+                    {{ total_weight }}
+                  </td>
+                  <td
+                    class="view-footer views-field views-field-field-item-priceflt"
+                    style="text-align: center"
+                  >
+                    {{ total_price }}
+                  </td>
+                  <!--  <td class="view-footer views-field views-field-nothing-1  ">
+                        </td> -->
+                  <td
+                    class="view-footer views-field views-field-nothing-2"
+                  ></td>
+                </tr>
+              </tfoot>
+            </table>
+
+            <table cellspacing="0" border="0">
+              <tbody>
+                <colgroup width="550"></colgroup>
+                <colgroup width="503"></colgroup>
+                <tr>
+                  <td colspan="4" valign="bottom" height="20" align="left">
+                    <font face="Times New Roman" color="#000000"
+                      >Катогория отправления (10) Коммерчческий образец
+                      Поменение Подарок-X Документ Прочее</font
+                    >
+                  </td>
+                  <td colspan="1" valign="bottom" align="left">
+                    <font face="Times New Roman" color="#000000"
+                      >Учреждение подачи/Дата подачи: {{ print_time }}
+                    </font>
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="4" valign="bottom" height="20" align="left">
+                    <font face="Times New Roman" color="#000000"
+                      >Подтверждаю точность сведений в настоящей момент
+                      декларации, а так же, что это отправение не содержит
+                      никаких опасных предметов, запрещенной почтовой
+                      службой</font
+                    >
+                  </td>
+                  <td colspan="1" valign="bottom" align="left">
+                    <font face="Times New Roman" color="#000000">
+                      Дата и подпись отправителя___________</font
+                    >
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <!--
+                  <table cellspacing="0" border="0">
+                      <colgroup width="64" span="2"></colgroup>
+                      <colgroup width="85"></colgroup>
+                      <colgroup width="80"></colgroup>
+                      <colgroup width="194"></colgroup>
+                      <colgroup width="117"></colgroup>
+                      <colgroup width="108"></colgroup>
+                      <colgroup width="64" span="5"></colgroup>
+                      <tbody><tr>
+                          <td   colspan="4" valign="bottom" height="20" align="left"><font face="Times New Roman" color="#000000">Катогория отправления (10)</font></td>
+                          <td   colspan="2" valign="bottom" align="left"><font face="Times New Roman" color="#000000">Коммерчческий образец</font></td>
+                          <td   rowspan="3" valign="top" align="center"><font face="Times New Roman" color="#000000">Поменение</font></td>
+                          <td   colspan="5" valign="top" align="left"><font face="Times New Roman" color="#000000">Почтовые сборы/расходы (9)</font></td>
+                          </tr>
+                      <tr>
+                          <td   colspan="4" valign="bottom" height="20" align="left"><font face="Times New Roman" color="#000000">Подарок  X</font></td>
+                          <td   colspan="2" valign="bottom" align="left"><font face="Times New Roman" color="#000000">Возврат товара</font></td>
+                          <td   colspan="5" valign="top" align="left"><font face="Times New Roman" color="#000000">Учреждение подачи/Дата подачи</font></td>
+                          </tr>
+                      <tr>
+                          <td   colspan="4" valign="bottom" height="20" align="left"><font face="Times New Roman" color="#000000">Документ</font></td>
+                          <td   colspan="2" valign="bottom" align="left"><font face="Times New Roman" color="#000000">Прочее</font></td>
+                          <td   colspan="5" valign="top" align="left"><font face="Times New Roman" color="#000000">Китай  {{myDate | date: 'dd.MM.yyyy' }}</font></td>
+                          </tr>
+                      <tr>
+                          <td   colspan="7" rowspan="2" valign="top" height="40" align="left"><font face="Times New Roman" color="#000000">Примечения (11) ( напр, товар подлежащий карантину/санитарному, фитосанитарному контролю или подпадающий под другие под другие ограничения</font></td>
+                          <td   colspan="5" rowspan="5" valign="top" align="left"><font face="Times New Roman" color="#000000">Подтверждаю точность сведений в настоящей момент декларации, а так же, что это отправение не содержит никаких опасных предметов, запрещенной почтовой службой                                                                                  Дата и подпись отправителя___________</font></td>
+                          </tr>
+                      <tr>
+                          </tr>
+                      <tr>
+                          <td   colspan="3" valign="bottom" height="20" align="center"><font face="Times New Roman" color="#000000">Лицензия (12)</font></td>
+                          <td   colspan="3" valign="bottom" align="center"><font face="Times New Roman" color="#000000">Сертификат (13)</font></td>
+                          <td   valign="bottom" align="left"><font face="Times New Roman" color="#000000">Счет (14)</font></td>
+                          </tr>
+                      <tr>
+                          <td   colspan="3" valign="bottom" height="20" align="center"><font face="Times New Roman" color="#000000">№ лицензии (-ий)</font></td>
+                          <td   colspan="3" valign="bottom" align="center"><font face="Times New Roman" color="#000000">№ сертификата </font></td>
+                          <td   valign="bottom" align="center"><font face="Times New Roman" color="#000000"><br></font></td>
+                          </tr>
+                      <tr>
+                          <td  colspan="3" valign="bottom" height="20" align="center"><font face="Times New Roman" color="#000000"><br></font></td>
+                          <td   colspan="3" valign="bottom" align="center"><font face="Times New Roman" color="#000000"><br></font></td>
+                          <td   valign="bottom" align="center"><font face="Times New Roman" color="#000000"><br></font></td>
+                          </tr>
+                  </tbody>
+              </table>
+  -->
+          </div>
+        </div>
+
+        <div #printSection2 id="print-section2" class="col-md-12">
+          <table
+            border="0"
+            cellpadding="0"
+            cellspacing="0"
+            id="sheet0"
+            class="sheet0"
+          >
+            <col class="col0" />
+            <col class="col1" />
+            <col class="col2" />
+            <col class="col3" />
+            <col class="col4" />
+            <col class="col5" />
+            <tbody>
+              <tr class="row0">
+                <td class="column0 style25 s style25" colspan="2">
+                  Invoice / Инвойс
+                </td>
+                <td class="column2 style5 s style6" rowspan="3">Из: Dan:</td>
+                <td class="column3 style12 s style12" colspan="3">
+                  taobao.com и pingduoduo.com
+                </td>
+              </tr>
+              <tr class="row1">
+                <td class="column0 style8 s style9" colspan="2">
+                  <ngx-barcode
+                    [bc-value]="box_number"
+                    [bc-display-value]="false"
+                    [bc-height]="50"
+                  ></ngx-barcode>
+                </td>
+                <td class="column3 style13 s style15" colspan="3">
+                  Компания: {{ company_name }}
+                </td>
+              </tr>
+              <tr class="row2">
+                <td class="column0 style27 s style28" colspan="2">
+                  {{ box_number }}
+                </td>
+                <td class="column3 style10 s style11" colspan="3">
+                  Адрес: {{ company_address }} {{ company_index }} .
+                  {{ country_name }}
+                </td>
+              </tr>
+              <tr class="row3">
+                <td class="column0 style4 s">В: Ga:</td>
+                <td class="column1 style26 s">
+                  {{ receiver_name }} {{ receiver_passport }} {{ phone_number }}
+                </td>
+                <td class="column2 style5 s style24" colspan="4">
+                  &nbsp;&nbsp;Адрес: {{ receiver_address }}
+                </td>
+              </tr>
+              <tr class="row4">
+                <td class="column0 style1 null"></td>
+                <td class="column1 style2 s">Подробное описание:</td>
+                <td class="column2 style2 s">Количество</td>
+                <td class="column3 style23 s style23" colspan="2">
+                  Номер отсл
+                </td>
+                <td class="column5 style2 s">Cтоимость</td>
+              </tr>
+              <tr class="row5" *ngFor="let data of orders; let i = index">
+                <td class="column0 style3 n">{{ i + 1 }}</td>
+                <td class="column1 style18 s">
+                  {{ data.russianName }} {{ data.quantity }}шт
+                </td>
+                <td class="column2 style3 n">{{ data.quantity }}</td>
+                <td class="column3 style7 n style7" colspan="2">
+                  {{ data.trackingNumber }}
+                </td>
+                <td class="column5 style16 n">{{ data.price }}</td>
+              </tr>
+              <tr class="row6">
+                <td class="column0 style3 null"></td>
+                <td class="column1 style17 null"></td>
+                <td class="column2 style3 n">{{ total_amount }}</td>
+                <td class="column3 style5 s style5" colspan="2">
+                  Вес Нетто (кг): {{ total_weight }}
+                </td>
+                <td class="column5 style3 n">{{ total_price }}</td>
+              </tr>
+
+              <tr class="row8">
+                <td class="column0">&nbsp;</td>
+                <td class="column1 style21 s">{{ print_time }}</td>
+                <td class="column2 style20 null"></td>
+                <td class="column3 style19 s style19" colspan="3">
+                  {{ box_number }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

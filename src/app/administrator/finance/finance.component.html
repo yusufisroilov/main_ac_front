@@ -1,0 +1,408 @@
+<div class="main-content">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="card3 col-md-4">
+        <div class="d-flex align-items-center">
+          <!-- smaller blue button -->
+          <button
+            type="button"
+            mat-raised-button
+            (click)="findConsignmentByName()"
+            class="btn btn-primary btn-sm me-2"
+          >
+            <i class="material-icons">flight_land</i>
+            PARTIYA BELGILASH
+          </button>
+
+          <!-- smaller green button -->
+          <button
+            type="button"
+            mat-raised-button
+            (click)="recordFinance()"
+            class="btn btn-success btn-sm"
+          >
+            <i class="material-icons">add</i>
+            XISOB QO'SHISH
+          </button>
+        </div>
+      </div>
+
+      <!-- 2) Last entered -->
+      <div class="col-md-4 text-center" *ngIf="showLastFinance">
+        <h5 class="mb-0">
+          <i class="material-icons align-middle">keyboard_arrow_right</i>
+          <span class="align-middle">Oxirgi kiritilgan: {{ enteredLast }}</span>
+        </h5>
+      </div>
+
+      <!-- 3) Before last -->
+      <div class="col-md-4 text-center" *ngIf="showLastFinance">
+        <h5 class="mb-0">
+          <i class="material-icons align-middle">keyboard_double_arrow_right</i>
+          <span class="align-middle"
+            >Oxirgidan oldingi: {{ enteredBeforeLast }}</span
+          >
+        </h5>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card" id="listcard">
+          <div
+            class="card-header row card-header-success card-header-icon"
+            style="display: inline-flex"
+          >
+            <div class="col align-self-start">
+              <div class="card-icon">
+                <i class="material-icons">assignment</i>
+              </div>
+              <h4 class="card-title">
+                XISOB KITOBLAR JADVALI. Hozirda Ochiq Reys:
+                <b style="font-size: x-large"> {{ currentParty }} </b>
+              </h4>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="toolbar">
+              <!-- Here you can write extra buttons/actions for the toolbar-->
+            </div>
+            <div class="material-datatables">
+              <div class="row">
+                <div class="col-sm-3 col-lg-3" style="display: inline-flex">
+                  <mat-form-field class="example-full-width">
+                    <input
+                      matInput
+                      type="text"
+                      style="font-size: large"
+                      placeholder="Mijoz IDsi"
+                      (input)="getListOfFinanceWithFilter($event.target.value)"
+                    />
+                  </mat-form-field>
+                </div>
+                <!--
+                            <div class="col-sm-3 col-lg-1">
+                              <div  style="display: inline-flex;">
+                                <div class="input-group-prepend">
+                                  <span class="input-group-text" id="basic-addon1">CU</span>
+                                </div>
+                                <mat-form-field class="example-full-width">
+                                  <input matInput type="text" style="font-size: large;" placeholder="Partiya raqami" (input)="openCurrentParty($event.target.value)">
+                                </mat-form-field>
+                              </div>
+                          </div>
+                          <div class="col-sm-2 col-lg-1">
+                            <button mat-raised-button (click)="openFinanceParty()" class="btn btn-success btn-round btn-block" >Ochish</button>
+                          </div> -->
+                <div class="col-sm-4 col-lg-3">
+                  <mat-form-field>
+                    <mat-select placeholder="Yetkazilish bo'yicha!">
+                      <mat-option value="Hammasi" (click)="getListwithFiltr('')"
+                        >Hammasi</mat-option
+                      >
+                      <mat-option
+                        value="Yetkazilgan"
+                        (click)="getListwithFiltr('true')"
+                        >Yetkazilgan</mat-option
+                      >
+                      <mat-option
+                        value="Yetkazilmagan"
+                        (click)="getListwithFiltr('false')"
+                        >Yetkazilmagan</mat-option
+                      >
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+                <div class="col-sm-4 col-lg-3">
+                  <mat-form-field>
+                    <mat-select placeholder="Qarzdorligi">
+                      <mat-option value="Hammasi" (click)="getListwithFiltr('')"
+                        >Hammasi</mat-option
+                      >
+                      <mat-option
+                        value="Yetkazilgan"
+                        (click)="getListwithFiltr('true')"
+                        >Qarzdor</mat-option
+                      >
+                      <mat-option
+                        value="Yetkazilmagan"
+                        (click)="getListwithFiltr('false')"
+                        >Qarzi yo'q</mat-option
+                      >
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+
+                <div class="col-sm-4 col-lg-3">
+                  <button
+                    mat-raised-button
+                    (click)="gototransactions()"
+                    class="btn btn-blue btn-round btn-block"
+                  >
+                    Tranzaksiyalar
+                  </button>
+                </div>
+                <!--
+                            <div class="col-sm-5 col-lg-3">
+                              <mat-form-field class="example-full-width">
+                                <input matInput type="text" style="font-size: large;" placeholder="Search with Tracking Number" (input)="getListOfParcelsWithSearch($event.target.value)">  
+                              </mat-form-field>
+                            </div>
+                        -->
+              </div>
+              <div class="table-responsive">
+                <ul class="pagination" *ngIf="needPagination">
+                  <!--  <li class="page-item">
+                                  <a mat-button class="page-link" aria-label="Previous">
+                                    <span aria-hidden="true"><i class="fa fa-angle-double-left" aria-hidden="true"></i></span>
+                                  </a>
+                                </li> -->
+                  <li
+                    class="page-item"
+                    [ngClass]="{ active: currentPage == i }"
+                    *ngFor="let page of mypages; index as i"
+                  >
+                    <a mat-button class="page-link" (click)="pagebyNum(i)">{{
+                      i + 1
+                    }}</a>
+                  </li>
+                  <!-- <li class="page-item">
+                                  <a mat-button class="page-link" aria-label="Next">
+                                    <span aria-hidden="true"><i class="fa fa-angle-double-right" aria-hidden="true"></i></span>
+                                  </a>
+                                </li> -->
+                </ul>
+                <table
+                  class="table table-striped table-no-bordered table-hover"
+                  cellspacing="0"
+                  width="100%"
+                  style="width: 100%"
+                >
+                  <thead>
+                    <tr>
+                      <th class="text-center">{{ dataTable.headerRow[0] }}</th>
+                      <th class="text-center">{{ dataTable.headerRow[1] }}</th>
+                      <th class="text-center">{{ dataTable.headerRow[2] }}</th>
+                      <th class="text-center">{{ dataTable.headerRow[3] }}</th>
+                      <th class="text-center">{{ dataTable.headerRow[4] }}</th>
+                      <th class="text-center">{{ dataTable.headerRow[5] }}</th>
+                      <th class="text-center">{{ dataTable.headerRow[6] }}</th>
+                      <th class="text-center">{{ dataTable.headerRow[7] }}</th>
+                      <th class="text-center">{{ dataTable.headerRow[8] }}</th>
+                      <th>Qarz UZS</th>
+                      <th><i class="material-icons">local_shipping</i></th>
+                      <th class="text-center">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr
+                      *ngFor="let row of allData; let i = index"
+                      class="text-center"
+                      [ngClass]="{
+                        'table-success': checkDebt(row.debt) === 'less'
+                      }"
+                    >
+                      <td>{{ i + 1 }}</td>
+                      <td>{{ row.owner_id }} ID</td>
+                      <td>{{ row.weight }} kg</td>
+                      <td>{{ row.sum_usd | currency }}</td>
+                      <td>
+                        {{ row.sum_uzs | currency : " " : "symbol" : "4.0-0" }}
+                      </td>
+                      <td>{{ row.paid_usd_cash }}</td>
+                      <td>
+                        {{
+                          row.paid_uzs_cash
+                            | currency : " " : "symbol" : "4.0-0"
+                        }}
+                      </td>
+                      <td>
+                        {{
+                          row.paid_plastic | currency : " " : "symbol" : "4.0-0"
+                        }}
+                      </td>
+                      <td>{{ row.debt }}$</td>
+                      <td>
+                        {{ row.debt_uzs | currency : " " : "symbol" : "4.0-0" }}
+                      </td>
+                      <td
+                        *ngIf="row.delivered; else elseBlock"
+                        style="font-weight: bold; color: green"
+                      >
+                        <i class="material-icons">verified</i>
+                      </td>
+                      <ng-template #elseBlock>
+                        <td>
+                          <a class="btn btn-link btn-warning btn-just-icon">
+                            <i
+                              (click)="deliveredFunc(row.id, row.owner_id)"
+                              class="material-icons"
+                              >local_shipping</i
+                            >
+                          </a>
+                        </td>
+                      </ng-template>
+                      <td>
+                        <a class="btn btn-link btn-info btn-just-icon"
+                          ><i
+                            (click)="addFinance(row.id)"
+                            class="material-icons"
+                            >loupe</i
+                          ></a
+                        >
+                        <a class="btn btn-link btn-success btn-just-icon"
+                          ><i
+                            (click)="
+                              editFinance(
+                                row.id,
+                                row.weight,
+                                row.paid_usd_cash,
+                                row.paid_uzs_cash,
+                                row.paid_plastic,
+                                row.owner_id
+                              )
+                            "
+                            class="material-icons"
+                            >edit</i
+                          ></a
+                        >
+                        <!--   <a class="btn btn-link btn-warning btn-just-icon visibility"><i (click)="addFinance(row.id)" class="material-icons"><span class="material-icons">local_shipping</span></i></a> 
+                                           <a href="javascript:void(0s" class="btn btn-link btn-danger btn-just-icon remove"><i (click)="deleteParcel(row.trackingNumber)"  class="material-icons">close</i></a> -->
+                      </td>
+                    </tr>
+                  </tbody>
+                  <tfoot>
+                    <tr>
+                      <th class="text-center"></th>
+                      <th class="text-center">JAMI</th>
+                      <th class="text-center">{{ totalWeight | number : "1.2-2" }}kg</th>
+                      <th class="text-center">{{ totalUSD | currency }}</th>
+                      <th class="text-center">
+                        {{ totalUZS | currency : " " : "symbol" : "4.0-0" }}
+                      </th>
+                      <th class="text-center">{{ totalPaidUSD }}</th>
+                      <th class="text-center">
+                        {{ totalPaidUZS | currency : " " : "symbol" : "4.0-0" }}
+                      </th>
+                      <th class="text-center">
+                        {{
+                          totalPaidPlastic | currency : " " : "symbol" : "4.0-0"
+                        }}
+                      </th>
+                      <th class="text-center">{{ totalDebtUSD }}</th>
+                      <th class="text-center">
+                        {{ totalDebtUZS | currency : " " : "symbol" : "4.0-0" }}
+                      </th>
+                      <th><i class="material-icons">local_shipping</i></th>
+                      <th class="text-center">Actions</th>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+              <ul class="pagination" *ngIf="needPagination">
+                <li class="page-item">
+                  <a mat-button class="page-link" aria-label="Previous">
+                    <span aria-hidden="true"
+                      ><i class="fa fa-angle-double-left" aria-hidden="true"></i
+                    ></span>
+                  </a>
+                </li>
+                <li
+                  class="page-item"
+                  [ngClass]="{ active: currentPage == i }"
+                  *ngFor="let page of mypages; index as i"
+                >
+                  <a mat-button class="page-link" (click)="pagebyNum(i)">{{
+                    i + 1
+                  }}</a>
+                </li>
+                <li class="page-item">
+                  <a mat-button class="page-link" aria-label="Next">
+                    <span aria-hidden="true"
+                      ><i
+                        class="fa fa-angle-double-right"
+                        aria-hidden="true"
+                      ></i
+                    ></span>
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <!-- end content-->
+        </div>
+        <!--  end card  -->
+      </div>
+      <!-- end col-md-12 -->
+
+      <!-- Classic Modal -->
+      <div
+        class="modal fade"
+        id="myModal"
+        tabindex="-1"
+        role="dialog"
+        aria-labelledby="myModalLabel"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog">
+          <div *ngFor="let row of allData">
+            <div class="modal-content" *ngIf="row.tracking_number == '3424234'">
+              <div class="modal-header">
+                <h4 class="modal-title">Trek nomeri:</h4>
+                <button
+                  mat-button
+                  type="button"
+                  class="close"
+                  data-dismiss="modal"
+                  aria-hidden="true"
+                >
+                  <i class="material-icons">clear</i>
+                </button>
+              </div>
+              <div class="modal-body">
+                <b>Xitoy xodim tarifi: </b>
+                <p>CU1010100006</p>
+                <br />
+                <b>Rus tilida tarifi: </b>
+                <p>CU1010100006</p>
+                <br />
+                <b>Buyurtma turi: </b>
+                <p>CU1010100006</p>
+                <br />
+                <b>Buyurtma soni: </b>
+                <p>CU1010100006</p>
+                <br />
+                <b>Buyurtma hozirda: </b>
+                <p>CU1010100006</p>
+                <br />
+                <b>Kiritlgan sana: </b>
+                <p>CU1010100006</p>
+                <br />
+                <b>Xitoy ombodirga kelgan vaqt: </b>
+                <p>CU1010100006</p>
+                <br />
+                <b>Xitoy Airportga jo'natilgan vaqt vaqt: </b>
+                <p>CU1010100006</p>
+                <br />
+              </div>
+              <div class="modal-footer">
+                <button mat-raised-button type="button" class="btn btn-link">
+                  Nice Button
+                </button>
+                <button
+                  mat-raised-button
+                  type="button"
+                  class="btn btn-danger btn-link"
+                  data-dismiss="modal"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!--  End Modal -->
+    </div>
+    <!-- end row -->
+  </div>
+</div>

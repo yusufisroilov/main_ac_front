@@ -1,0 +1,378 @@
+<div class="main-content">
+  <div class="container-fluid">
+    <div class="row" id="buyurtmalar" *ngIf="showTheList">
+      <div class="col-md-12">
+        <div class="card">
+          <div
+            class="card-header row card-header-info card-header-icon"
+            style="display: inline-flex"
+          >
+            <div class="col align-self-start">
+              <div class="card-icon">
+                <i class="material-icons">assignment</i>
+              </div>
+              <h4 class="card-title">
+                {{ currentBox }} dagi buyurtmalar ro'yhati:
+                {{ currentBoxOwner }} ga biriktirilgan!
+              </h4>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="toolbar">
+              <!-- Here you can write extra buttons/actions for the toolbar              -->
+            </div>
+            <div class="material-datatables">
+              <div class="row">
+                <div class="col-auto">
+                  <button
+                    mat-raised-button
+                    class="btn btn-warning btn-sm"
+                    (click)="closeListOfBoxItemsLog()"
+                  >
+                    Jadvalni yopish
+                  </button>
+                  <button
+                    mat-raised-button
+                    class="btn btn-info btn-sm"
+                    (click)="putOwnerBox()"
+                  >
+                    RID Biriktirish
+                  </button>
+                  <button
+                    mat-raised-button
+                    class="btn btn-primary btn-sm"
+                    (click)="goToNPrevBox()"
+                  >
+                    <<
+                  </button>
+                  <button
+                    mat-raised-button
+                    class="btn btn-primary btn-sm"
+                    (click)="goToNextBox()"
+                  >
+                    >>
+                  </button>
+                </div>
+                <!-- 
+                      <div class="col-sm-6 col-lg-3">
+                        <mat-form-field class="example-full-width">
+                          <input matInput type="text" style="font-size: large;" placeholder="Trek nomer orqali izlash. . ." (input)="getListOfParcelsWithSearch($event.target.value)">  
+                        </mat-form-field>
+                      </div>
+
+                       <div class="col-sm-6 col-lg-3">
+                            <div class="dropdown">
+                                <button mat-raised-button href="#pablo" class="dropdown-toggle btn btn-primary btn-round btn-block" data-toggle="dropdown">Dropdown
+                                    <b class="caret"></b>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-left">
+                                    <li *ngFor="let rk of orderStatusTypeList; let i = index">
+                                      <a href="#pablo">{{rk.descriptionEn}}</a>
+                                  </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-lg-3">
+                          <div class="dropdown">
+                            <button mat-raised-button href="#pablo" class="dropdown-toggle btn btn-primary btn-round btn-block" data-toggle="dropdown">Product Type
+                                <b class="caret"></b>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-left">
+                                <li class="dropdown-header">Order Types</li>
+                                <li *ngFor="let rw of orderTypesList; let i = index">
+                                    <a href="#pablo">{{rw.descriptionEn}}</a>
+                                </li>
+                            </ul>
+                        </div> 
+                        
+                    </div> -->
+              </div>
+              <div class="table-responsive">
+                <table
+                  class="table table-striped table-no-bordered table-hover"
+                  cellspacing="0"
+                  width="100%"
+                  style="width: 100%"
+                >
+                  <thead>
+                    <tr>
+                      <th class="text-center">{{ dataTable2.headerRow[0] }}</th>
+                      <th class="text-center">Egasi</th>
+                      <th class="text-center">{{ dataTable2.headerRow[1] }}</th>
+                      <th class="text-center">{{ dataTable2.headerRow[2] }}</th>
+                      <th class="text-center">{{ dataTable2.headerRow[3] }}</th>
+                      <th class="text-center">{{ dataTable2.headerRow[4] }}</th>
+                      <th class="text-center">{{ dataTable2.headerRow[5] }}</th>
+                      <th class="text-center">{{ dataTable2.headerRow[6] }}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr
+                      *ngFor="let row of boxOrdersData; let i = index"
+                      class="text-center table-danger"
+                      [ngClass]="{ 'table-danger': row.orderType == 9 }"
+                    >
+                      <td>{{ i + 1 }}</td>
+                      <td>{{ row.owner_id }}</td>
+                      <td>{{ row.tracking_number }}</td>
+                      <td>{{ row.name_foreign }}</td>
+                      <td>{{ row.name_ru }}</td>
+                      <td>{{ row.quantity }}</td>
+                      <td>{{ row.price }}</td>
+                      <td>
+                        <!--  <button mat-raised-button class="btn btn-link btn-info btn-just-icon visibility" data-toggle="modal" data-target="#myModal" ><i class="material-icons" (click)="getInfoOfParcel(row.trackingNumber)">visibility</i></button>
+                                   <a href="javascript:void(0" class="btn btn-link btn-primary btn-just-icon edit"><i (click)="editParcel(row.trackingNumber,row.foreignName,row.quantity,row.orderType)" class="material-icons">edit</i></a> -->
+                        <a
+                          href="javascript:void(0s"
+                          class="btn btn-link btn-success btn-just-icon"
+                          ><i
+                            (click)="
+                              editParcel(
+                                row.trackingNumber,
+                                row.price,
+                                row.foreignName,
+                                row.quantity,
+                                row.russianName,
+                                row.ownerID,
+                                row.orderType
+                              )
+                            "
+                            class="material-icons"
+                            >edit</i
+                          ></a
+                        >
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+
+                <ul class="pagination" *ngIf="needPagination">
+                  <!--  <li class="page-item">
+                            <a mat-button class="page-link" aria-label="Previous">
+                              <span aria-hidden="true"><i class="fa fa-angle-double-left" aria-hidden="true"></i></span>
+                            </a>
+                          </li> -->
+                  <li
+                    class="page-item"
+                    [ngClass]="{ active: currentPage == i }"
+                    *ngFor="let page of mypages; index as i"
+                  >
+                    <a mat-button class="page-link" (click)="pagebyNum(i)">{{
+                      i + 1
+                    }}</a>
+                  </li>
+                  <!-- <li class="page-item">
+                            <a mat-button class="page-link" aria-label="Next">
+                              <span aria-hidden="true"><i class="fa fa-angle-double-right" aria-hidden="true"></i></span>
+                            </a>
+                          </li> -->
+                </ul>
+              </div>
+
+              <div class="col-auto">
+                <button
+                  mat-raised-button
+                  class="btn btn-warning btn-sm"
+                  (click)="closeListOfBoxItemsLog()"
+                >
+                  Jadvalni yopish
+                </button>
+              </div>
+            </div>
+          </div>
+          <!-- end content-->
+        </div>
+        <!--  end card  -->
+      </div>
+      <!-- end col-md-12 -->
+    </div>
+
+    <!-- Classic Modal
+                              <div class="modal fade" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                  <div *ngFor="let row of allData; let i = index">
+                                    <div class="modal-content" *ngIf="row.trackingNumber == trackingNum2 ">
+                                      <div class="modal-header">
+                                        <h4 class="modal-title">Trek nomeri: {{row.trackingNumber}}</h4>
+                                        <button mat-button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                          <i class="material-icons">clear</i>
+                                        </button>
+                                      </div>
+                                      <div class="modal-body">
+                                       <div class="row"> <b>Xitoy xodim tarifi: &nbsp; </b><p>{{row.foreignName}}</p> </div>
+                                       <div class="row"> <b>Rus tilida tarifi: &nbsp; </b><p>{{row.russianName}}</p> </div>
+                                       <div class="row"> <b>Buyurtma turi:&nbsp;</b><p>{{orderTypeText[i]}}</p> </div>
+                                       <div class="row"> <b>Buyurtma soni:&nbsp;  </b><p>{{row.quantity}}</p> </div>
+                                       <div class="row"> <b>Buyurtma hozirda: &nbsp; </b><p>{{ orderStatusText[i]}}</p> </div>
+                                      <!- <div class="row"> <b>Kiritlgan sana: &nbsp; </b><p> . . .</p> </div> ->
+                                       <div class="row"> <b>Xitoy ombodirga kelgan vaqt: &nbsp; </b><p>{{row.inForeignWarehouseDate}}</p> </div>
+                                       <div class="row"> <b>Xitoy Airportga jo'natilgan vaqt vaqt: &nbsp;</b><p>{{row.onWayToAirportDate}}</p> </div>
+                                        
+                                      </div>
+                                      <div class="modal-footer">
+                                       <!- <button mat-raised-button type="button" class="btn btn-link">Nice Button</button> ->
+                                        <button mat-raised-button type="button" class="btn btn-danger btn-link" data-dismiss="modal">YOPISH</button>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                              <!-  End Modal -->
+    <!-- end row -->
+
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card">
+          <div
+            class="card-header row card-header-primary card-header-icon"
+            style="display: inline-flex"
+          >
+            <div class="col align-self-start">
+              <div class="card-icon">
+                <i class="material-icons">assignment</i>
+              </div>
+              <h4 class="card-title">
+                Kelayotgan Pariyadagi Korobkalar ro'yhati, hozirda
+                {{ totalWeight }} kg
+              </h4>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="toolbar">
+              <!-- Here you can write extra buttons/actions for the toolbar              -->
+            </div>
+            <div class="material-datatables">
+              <div class="row">
+                <div class="col-sm-6 col-lg-3">
+                  <mat-form-field class="example-full-width">
+                    <input
+                      matInput
+                      type="text"
+                      style="font-size: large"
+                      placeholder="Biriktirilgan RID bo'yicha. . ."
+                      (input)="getListOfBoxesWithFilter($event.target.value)"
+                    />
+                  </mat-form-field>
+                </div>
+                <!--   <div class="col-sm-6 col-lg-3">
+                            <div class="dropdown">
+                                <button mat-raised-button href="#pablo" class="dropdown-toggle btn btn-primary btn-round btn-block" data-toggle="dropdown">Dropdown
+                                    <b class="caret"></b>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-left">
+                                    <li *ngFor="let rk of orderStatusTypeList; let i = index">
+                                      <a href="#pablo">{{rk.descriptionEn}}</a>
+                                  </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-lg-3">
+                          <div class="dropdown">
+                            <button mat-raised-button href="#pablo" class="dropdown-toggle btn btn-primary btn-round btn-block" data-toggle="dropdown">Product Type
+                                <b class="caret"></b>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-left">
+                                <li class="dropdown-header">Order Types</li>
+                                <li *ngFor="let rw of orderTypesList; let i = index">
+                                    <a href="#pablo">{{rw.descriptionEn}}</a>
+                                </li>
+                            </ul>
+                        </div> 
+                        
+                    </div> -->
+              </div>
+              <div class="table-responsive">
+                <table
+                  class="table table-striped table-no-bordered table-hover"
+                  cellspacing="0"
+                  width="100%"
+                  style="width: 100%"
+                >
+                  <thead>
+                    <tr>
+                      <th class="text-center">{{ dataTable.headerRow[0] }}</th>
+                      <th class="text-center">{{ dataTable.headerRow[1] }}</th>
+                      <th class="text-center">{{ dataTable.headerRow[2] }}</th>
+                      <th class="text-center">{{ dataTable.headerRow[3] }}</th>
+                      <th class="text-center">{{ dataTable.headerRow[4] }}</th>
+                      <th class="text-center">{{ dataTable.headerRow[5] }}</th>
+                      <th class="text-center">{{ dataTable.headerRow[6] }}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr
+                      *ngFor="let box of allBoxesData; let i = index"
+                      class="text-center"
+                      [ngClass]="{
+                        'table-success': box.receiver_id != null,
+                        'table-info': box.box_number == currentBox
+                      }"
+                    >
+                      <td>{{ i + 1 }}</td>
+                      <td>{{ box.box_number }}</td>
+                      <td>{{ box.receiver_id }}</td>
+                      <td>{{ box.total_sum }}</td>
+                      <td>{{ box.weight }}</td>
+
+                      <td>{{ box.weight }}</td>
+                      <td>
+                        <button
+                          mat-raised-button
+                          class="btn btn-link btn-info btn-just-icon visibility"
+                        >
+                          <i
+                            class="material-icons"
+                            (click)="
+                              getListOfParcels(box.box_number, box.receiver_id)
+                            "
+                            >visibility</i
+                          >
+                        </button>
+                        <!-- <a href="javascript:void(0" class="btn btn-link btn-primary btn-just-icon edit" data-toggle="modal" data-target="#myModal"><i (click)="editParcel(row.trackingNumber,row.foreignName,row.quantity,row.orderType)" class="material-icons">edit</i></a> -->
+                        <a
+                          href="javascript:void(0s"
+                          class="btn btn-link btn-success btn-just-icon"
+                          ><i
+                            (click)="editBox(box.box_number, box.receiver_id)"
+                            class="material-icons"
+                            >edit</i
+                          ></a
+                        >
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+                <ul class="pagination" *ngIf="needPagination">
+                  <!--  <li class="page-item">
+                            <a mat-button class="page-link" aria-label="Previous">
+                              <span aria-hidden="true"><i class="fa fa-angle-double-left" aria-hidden="true"></i></span>
+                            </a>
+                          </li> -->
+                  <li
+                    class="page-item"
+                    [ngClass]="{ active: currentPage == i }"
+                    *ngFor="let page of mypages; index as i"
+                  >
+                    <a mat-button class="page-link" (click)="pagebyNum(i)">{{
+                      i + 1
+                    }}</a>
+                  </li>
+                  <!-- <li class="page-item">
+                            <a mat-button class="page-link" aria-label="Next">
+                              <span aria-hidden="true"><i class="fa fa-angle-double-right" aria-hidden="true"></i></span>
+                            </a>
+                          </li> -->
+                </ul>
+              </div>
+            </div>
+          </div>
+          <!-- end content-->
+        </div>
+        <!--  end card  -->
+      </div>
+      <!-- end col-md-12 -->
+    </div>
+
+    <!-- end row -->
+  </div>
+</div>

@@ -1,0 +1,143 @@
+<div class="main-content">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="card3 col-md-4">
+        <div class="" *ngIf="hideForManager">
+          <button
+            mat-raised-button=""
+            (click)="recordParcel()"
+            class="mat-focus-indicator btn btn-warning mat-raised-button mat-button-base"
+          >
+            <span class="mat-button-wrapper"
+              ><span class="btn-label">
+                <i class="material-icons">delivery_dining</i></span
+              >
+              SCAN PARCEL
+            </span>
+            <span
+              matripple=""
+              class="mat-ripple mat-button-ripple"
+              ng-reflect-disabled="false"
+              ng-reflect-centered="false"
+              ng-reflect-trigger="[object HTMLButtonElement]"
+            ></span
+            ><span class="mat-button-focus-overlay"></span>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card">
+          <div
+            class="card-header row card-header-info card-header-icon"
+            style="display: inline-flex"
+          >
+            <div class="col align-self-start">
+              <div class="card-icon">
+                <i class="material-icons">assignment</i>
+              </div>
+              <h4 class="card-title">All Deliveries List</h4>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="toolbar">
+              <!-- Here you can write extra buttons/actions for the toolbar-->
+            </div>
+            <div class="material-datatables">
+              <div class="row">
+                <div class="col-sm-6 col-lg-3">
+                  <mat-form-field class="example-full-width">
+                    <input
+                      matInput
+                      type="text"
+                      style="font-size: large"
+                      placeholder="Search with Tracking Number"
+                      (input)="getListOfParcelsWithSearch($event.target.value)"
+                    />
+                  </mat-form-field>
+                </div>
+              </div>
+              <div class="table-responsive">
+                <ul class="pagination" *ngIf="needPagination">
+                  <!--  <li class="page-item">
+                                <a mat-button class="page-link" aria-label="Previous">
+                                  <span aria-hidden="true"><i class="fa fa-angle-double-left" aria-hidden="true"></i></span>
+                                </a>
+                              </li> -->
+                  <li
+                    class="page-item"
+                    [ngClass]="{ active: currentPage == i }"
+                    *ngFor="let page of mypages; index as i"
+                  >
+                    <a mat-button class="page-link" (click)="pagebyNum(i)">{{
+                      i + 1
+                    }}</a>
+                  </li>
+                  <!-- <li class="page-item">
+                                <a mat-button class="page-link" aria-label="Next">
+                                  <span aria-hidden="true"><i class="fa fa-angle-double-right" aria-hidden="true"></i></span>
+                                </a>
+                              </li> -->
+                </ul>
+                <table
+                  class="table table-striped table-no-bordered table-hover"
+                  cellspacing="0"
+                  width="100%"
+                  style="width: 100%"
+                >
+                  <thead>
+                    <tr>
+                      <th class="text-center">No</th>
+                      <th class="text-center">Tracking Number</th>
+                      <th class="text-center">Scanned Time</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr
+                      *ngFor="let row of allData; let i = index"
+                      class="text-center table-danger"
+                      [ngClass]="{
+                        'table-danger': row.orderType == 7,
+                        boldclass: i == 0
+                      }"
+                    >
+                      <td>{{ i + 1 }}</td>
+                      <td>{{ row.tracking_number }}</td>
+                      <td>{{ row.arrivedDate | slice : 0 : 16 }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+                <ul class="pagination" *ngIf="needPagination">
+                  <!--  <li class="page-item">
+                                  <a mat-button class="page-link" aria-label="Previous">
+                                    <span aria-hidden="true"><i class="fa fa-angle-double-left" aria-hidden="true"></i></span>
+                                  </a>
+                                </li> -->
+                  <li
+                    class="page-item"
+                    [ngClass]="{ active: currentPage == i }"
+                    *ngFor="let page of mypages; index as i"
+                  >
+                    <a mat-button class="page-link" (click)="pagebyNum(i)">{{
+                      i + 1
+                    }}</a>
+                  </li>
+                  <!-- <li class="page-item">
+                                  <a mat-button class="page-link" aria-label="Next">
+                                    <span aria-hidden="true"><i class="fa fa-angle-double-right" aria-hidden="true"></i></span>
+                                  </a>
+                                </li> -->
+                </ul>
+              </div>
+            </div>
+          </div>
+          <!-- end content-->
+        </div>
+        <!--  end card  -->
+      </div>
+      <!-- end col-md-12 -->
+    </div>
+    <!-- end row -->
+  </div>
+</div>

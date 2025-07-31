@@ -1,0 +1,65 @@
+
+
+<div class="wrapper wrapper-full-page">
+  <div class="page-header lock-page header-filter" style="background-image: url('./assets/img/hmphoto.jpeg'); background-size: cover; background-position: top center;"> 
+ <!-- <div class="page-header lock-page header-filter" style="background-image: url('./assets/img/bg22.jpg'); background-size: cover; background-position: top center;"> -->
+   <!--   you can change the color of the filter page using: data-color="blue | green | orange | red | purple" -->
+   <div class="container">
+     <div class="row">
+       <div class="col-md-4 ml-auto mr-auto">
+         <div class="card card-profile text-center">
+           <div class="card-header ">
+             <div class="card-avatar">
+               <a >
+                 <img class="img" src="./assets/img/faces/hmlogoPNG.PNG">
+               </a>
+             </div>
+           </div>
+           <div class="card-body ">
+<!--             
+             [(ngModel)]="inputValue" 
+             [value]="inputValue"  -->
+             <h4 class="card-title">Введите номер отслеживания и найдите свою посылку!</h4> 
+             <mat-form-field class="example-full-width">
+               <input ng-model="phone" 
+               matInput 
+               placeholder="Номер отслеживания"
+               type="text"
+               id="username" name="username" ngModel 
+               style="color: black;"
+               (change)="updateMyValue($event.target.value)" 
+               >
+             </mat-form-field>
+             <a  (click)="checkParcel()" class="btn btn-info btn-round">Проверять</a>
+           </div>
+           <!-- <div class="card-footer justify-content-center">
+           
+          
+           </div> -->
+         
+         </div>
+
+         <div *ngIf="comemessage" class="card card-profile text-center">
+        
+           <div class="card-body ">
+
+             <h5 class="card-title">Hомер отслеживания: {{trackingNumber}} </h5> 
+             <h5 class="card-title" >Текущее состояние: <b> {{orderStatusDescriptionRU}} </b></h5>
+             <h5 class="card-title" *ngIf="boxNumber"> Партия товара: <b> CU{{boxNumber | slice:2:5}} </b>   </h5>
+             <h3 class="card-title">------------------</h3>
+             <h5 class="card-title" *ngIf="in_foreign_warehouse_date">Дата прибытия на склад в Китае: {{in_foreign_warehouse_date | slice:0:10}} </h5> 
+             <h5 class="card-title" *ngIf="in_foreign_airport_date">Дата товар в аэропорту Китая: {{in_foreign_airport_date | slice:0:10}} </h5> 
+             <h5 class="card-title" *ngIf="in_uzb_airport_date">Товары в аэропорту Ташкента: {{in_uzb_airport_date | slice:0:10}} </h5> 
+             <h5 class="card-title" *ngIf="in_uzb_warehouse_date">Товар на складе в Ташкенте: {{in_uzb_warehouse_date | slice:0:10}} </h5> 
+             Дата: 
+           </div>
+      
+         </div>
+
+         
+       </div>
+     </div>
+   </div>
+ </div>
+
+</div>

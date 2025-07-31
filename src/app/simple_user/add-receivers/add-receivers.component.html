@@ -1,0 +1,388 @@
+<div class="main-content">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-8 mr-auto ml-auto">
+        <!--      Wizard container        -->
+        <div class="wizard-container">
+          <div class="card card-wizard" data-color="blue" id="wizardProfile">
+            <form
+              [formGroup]="type"
+              #f="ngForm"
+              (ngSubmit)="addReceivers(f.value)"
+            >
+              <!--        You can switch " data-color="primary" "  with one of the next bright colors: "green", "orange", "red", "blue"       -->
+              <div class="card-header text-center">
+                <h3 class="card-title">Qabul qiluvchi</h3>
+                <!-- <h5 class="card-description">This information will let us know more about you.</h5> -->
+                <span>
+                  <div *ngIf="checkPassport" class="alert alert-danger">
+                    {{ checkPassportMessage }}
+                  </div>
+                </span>
+              </div>
+              <div class="wizard-navigation">
+                <ul class="nav nav-pills">
+                  <li class="nav-item">
+                    <a
+                      class="nav-link active"
+                      href="#about"
+                      data-toggle="tab"
+                      role="tab"
+                    >
+                      Shaxsiy ma'lumot
+                    </a>
+                  </li>
+                  <!--   <li class="nav-item">
+                      <a class="nav-link" href="#account" data-toggle="tab" role="tab">
+                        Account
+                      </a>
+                    </li> -->
+                  <li class="nav-item">
+                    <a
+                      class="nav-link"
+                      href="#address"
+                      data-toggle="tab"
+                      role="tab"
+                    >
+                      Manzil
+                    </a>
+                  </li>
+                </ul>
+              </div>
+              <div class="card-body">
+                <div class="tab-content">
+                  <div class="tab-pane active" id="about">
+                    <h5 class="info-text">
+                      Qabul qiluvchi haqida ma'lumotlarni kiriting!
+                    </h5>
+                    <div class="row justify-content-center">
+                      <div class="col-sm-4">
+                        <!--  <legend>Pasport rasmi</legend>
+                            <div class="fileinput fileinput-new text-center" data-provides="fileinput">
+                                <div class="fileinput-new thumbnail">
+                                    <img src="./assets/img/image_placeholder.jpg" alt="...">
+                                </div>
+                                <div class="fileinput-preview fileinput-exists thumbnail"></div>
+                                <div>
+                                    <span class="btn btn-rose btn-round btn-file">
+                                        <span class="fileinput-new">Rasm qo'shish</span>
+                                        <span class="fileinput-exists">O'zgartirish</span>
+                                        <input type="file" name="..." />
+                                    </span>
+                                    <a href="#pablo" class="btn btn-danger btn-round fileinput-exists" data-dismiss="fileinput"><i class="fa fa-times"></i> O'chirish</a>
+                                </div>
+                            </div> -->
+                      </div>
+                      <div class="col-sm-6">
+                        <div
+                          *ngIf="showOnlyForManagers"
+                          class="input-group form-control-lg"
+                          style="width: 60%"
+                        >
+                          <div style="display: flex">
+                            <div class="input-group-prepend">
+                              <span class="input-group-text">
+                                <i class="material-icons">font_download</i>
+                              </span>
+                            </div>
+                            <mat-form-field
+                              class="example-full-width has-label"
+                            >
+                              <input
+                                type="text"
+                                name="parentID"
+                                matInput
+                                id="text"
+                                size="6"
+                                placeholder="Egasini IDsi"
+                                ngModel
+                                formControlName="parentID"
+                                [(ngModel)]="parentIDval"
+                                maxlength="5"
+                              />
+                            </mat-form-field>
+                          </div>
+                        </div>
+                        <div class="input-group form-control-lg">
+                          <div class="input-group-prepend">
+                            <span class="input-group-text">
+                              <i class="material-icons"></i>
+                            </span>
+                          </div>
+                          <mat-form-field class="example-full-width has-label">
+                            <input
+                              type="text"
+                              name="first_name"
+                              matInput
+                              id="text"
+                              placeholder="Ism"
+                              ngModel
+                              formControlName="first_name"
+                              [(ngModel)]="edFirstName"
+                            />
+                          </mat-form-field>
+                        </div>
+                        <div class="input-group form-control-lg">
+                          <div class="input-group-prepend">
+                            <span class="input-group-text">
+                              <i class="material-icons"></i>
+                            </span>
+                          </div>
+                          <mat-form-field class="example-full-width has-label">
+                            <input
+                              type="text"
+                              name="last_name"
+                              matInput
+                              id="text"
+                              placeholder="Familiya"
+                              ngModel
+                              formControlName="last_name"
+                              [(ngModel)]="edLastName"
+                            />
+                          </mat-form-field>
+                        </div>
+                        <div style="display: flex">
+                          <div
+                            class="input-group form-control-lg"
+                            style="width: 60%"
+                          >
+                            <div style="display: flex">
+                              <div class="input-group-prepend">
+                                <span class="input-group-text">
+                                  <i class="material-icons">font_download</i>
+                                </span>
+                              </div>
+                              <mat-form-field
+                                class="example-full-width has-label"
+                              >
+                                <input
+                                  type="text"
+                                  name="pass_ser"
+                                  matInput
+                                  id="text"
+                                  size="6"
+                                  placeholder="Seriyasi"
+                                  ngModel
+                                  formControlName="pass_ser"
+                                  [(ngModel)]="edPassSer"
+                                  maxlength="2"
+                                />
+                              </mat-form-field>
+                            </div>
+                          </div>
+                          <div class="input-group form-control-lg">
+                            <div style="display: flex">
+                              <div class="input-group-prepend">
+                                <span class="input-group-text">
+                                  <i class="material-icons">article</i>
+                                </span>
+                              </div>
+                              <mat-form-field
+                                class="example-full-width has-label"
+                              >
+                                <input
+                                  type="text"
+                                  name="pass_num"
+                                  matInput
+                                  id="text"
+                                  placeholder="Raqami"
+                                  ngModel
+                                  formControlName="pass_num"
+                                  [(ngModel)]="edPassNum"
+                                  maxlength="7"
+                                />
+                              </mat-form-field>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="input-group form-control-lg">
+                          <div class="input-group-prepend">
+                            <span class="input-group-text">
+                              <i class="material-icons">fingerprint</i>
+                            </span>
+                          </div>
+                          <mat-form-field class="example-full-width has-label">
+                            <input
+                              type="text"
+                              name="pinfl"
+                              matInput
+                              id="text"
+                              placeholder="Passport PINFL"
+                              ngModel
+                              formControlName="pinfl"
+                              [(ngModel)]="pinfl"
+                              maxlength="14"
+                            />
+                          </mat-form-field>
+                        </div>
+                      </div>
+                      <div class="col-lg-10 mt-3">
+                        <div class="input-group form-control-lg">
+                          <div class="input-group-prepend">
+                            <span class="input-group-text">
+                              <i class="material-icons">phone</i>
+                            </span>
+                          </div>
+                          <mat-form-field class="example-full-width">
+                            <input
+                              matInput
+                              placeholder="Telefon nomer . . . "
+                              (focusin)="addPrefix($event)"
+                              type="text"
+                              id="phone_number"
+                              name="phone_number"
+                              ngModel
+                              formControlName="phone_number"
+                              [(ngModel)]="edPhoneNumber"
+                              maxlength="12"
+                            />
+                          </mat-form-field>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <!--     <div class="tab-pane" id="account">
+                      <h5 class="info-text"> What are you doing? (checkboxes) </h5>
+                      <div class="row justify-content-center">
+                        <div class="col-lg-10">
+                          <div class="row">
+                            <div class="col-sm-4">
+                              <div class="choice" data-toggle="wizard-checkbox">
+                                <input type="checkbox" name="jobb" value="Design">
+                                <div class="icon">
+                                  <i class="fa fa-pencil"></i>
+                                </div>
+                                <h6>Design</h6>
+                              </div>
+                            </div>
+                            <div class="col-sm-4">
+                              <div class="choice" data-toggle="wizard-checkbox">
+                                <input type="checkbox" name="jobb" value="Code">
+                                <div class="icon">
+                                  <i class="fa fa-terminal"></i>
+                                </div>
+                                <h6>Code</h6>
+                              </div>
+                            </div>
+                            <div class="col-sm-4">
+                              <div class="choice" data-toggle="wizard-checkbox">
+                                <input type="checkbox" name="jobb" value="Develop">
+                                <div class="icon">
+                                  <i class="fa fa-laptop"></i>
+                                </div>
+                                <h6>Develop</h6>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div> -->
+                  <div class="tab-pane" id="address">
+                    <div class="row justify-content-center">
+                      <div class="col-sm-12">
+                        <h5 class="info-text">Manzilni kiriting</h5>
+                      </div>
+                      <div class="col-sm-5">
+                        <mat-form-field>
+                          <mat-select
+                            placeholder="Viloyatni tanlang"
+                            (selectionChange)="takeDistricts($event)"
+                            name="region_id"
+                            ngModel
+                            formControlName="region_id"
+                            [(ngModel)]="edRegion"
+                          >
+                            <mat-option
+                              *ngFor="let city of regions"
+                              [value]="city.code"
+                            >
+                              {{ city.name }}
+                            </mat-option>
+                          </mat-select>
+                        </mat-form-field>
+                      </div>
+                      <div class="col-sm-5">
+                        <mat-form-field>
+                          <mat-select
+                            placeholder="Tuman tanlang"
+                            name="district_id"
+                            ngModel
+                            formControlName="district_id"
+                            [(ngModel)]="edDistrict"
+                          >
+                            <mat-option
+                              *ngFor="let district of districts"
+                              [value]="district.code"
+                            >
+                              {{ district.name }}
+                            </mat-option>
+                          </mat-select>
+                        </mat-form-field>
+                      </div>
+                      <div class="col-sm-7">
+                        <mat-form-field class="example-full-width">
+                          <input
+                            matInput
+                            type="text"
+                            placeholder="Manzil"
+                            id="street"
+                            name="street"
+                            ngModel
+                            formControlName="street"
+                            [(ngModel)]="edStreet"
+                          />
+                        </mat-form-field>
+                      </div>
+                      <div class="col-sm-3">
+                        <mat-form-field class="example-full-width">
+                          <input
+                            matInput
+                            type="text"
+                            placeholder="Uy raqami"
+                            id="apartment"
+                            name="apartment"
+                            ngModel
+                            formControlName="apartment"
+                            [(ngModel)]="edAppartmantNum"
+                          />
+                        </mat-form-field>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="card-footer">
+                <div class="mr-auto">
+                  <input
+                    type="button"
+                    class="btn btn-previous btn-fill btn-default btn-wd disabled"
+                    name="previous"
+                    value="Oldingisi"
+                  />
+                </div>
+                <div class="ml-auto">
+                  <input
+                    type="button"
+                    class="btn btn-next btn-fill btn-primary btn-wd"
+                    name="next"
+                    value="Keyingisi"
+                  />
+                  <input
+                    type="button"
+                    type="submit"
+                    class="btn btn-finish btn-fill btn-primary btn-wd"
+                    name="finish"
+                    value="Saqlash"
+                    style="display: none"
+                  />
+                </div>
+                <div class="clearfix"></div>
+              </div>
+            </form>
+          </div>
+        </div>
+        <!-- wizard container -->
+      </div>
+    </div>
+  </div>
+</div>

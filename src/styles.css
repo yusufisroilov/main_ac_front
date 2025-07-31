@@ -1,0 +1,10 @@
+/* You can add global styles to this file, and also import other style files */
+@media print {
+    app-root > * { display: none; }
+    app-root app-print-layout { display: block; }
+  }
+
+  .table > thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td {
+    padding: 3px 3px;
+    vertical-align: middle;
+  }

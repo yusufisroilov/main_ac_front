@@ -1,0 +1,113 @@
+
+<div class="wrapper wrapper-full-page">
+  <div class="page-header login-page header-filter" filter-color="black" style="background-image: url('./assets/img/login2.jpg'); background-size: cover; background-position: top center;"> 
+ 
+   <!--   you can change the color of the filter page using: data-color="blue | purple | green | orange | red | rose " -->
+   <div class="container">
+     <div class="row">
+       <div class="col-lg-4 col-md-6 col-sm-6 ml-auto mr-auto">
+         <form class="form" method="" #f="ngForm" (ngSubmit)=signIn(f.value) action="">
+           <div class="card card-login ">
+             <div class="card-header card-header-primary text-center">
+               <h4 class="card-title">Kirish</h4>
+               <!-- <div class="social-line">
+                 <a href="#pablo" class="btn btn-just-icon btn-link btn-white">
+                   <i class="fa fa-facebook-square"></i>
+                 </a>
+                 <a href="#pablo" class="btn btn-just-icon btn-link btn-white">
+                   <i class="fa fa-twitter"></i>
+                 </a>
+                 <a href="#pablo" class="btn btn-just-icon btn-link btn-white">
+                   <i class="fa fa-google-plus"></i>
+                 </a>
+               </div> -->
+             </div>
+             <div class="card-body ">
+               <p class="text-center">yoki <a href="https://t.me/activecargo_admin" class="alert-link"> ro'yhatdan o'tish uchun bosing! </a></p>  
+               <span>
+                 <div *ngIf="invalidLogin" class="alert alert-danger">
+                   Noto'g'ri login yoki parol!
+                 </div> 
+               </span>
+
+               <span class="bmd-form-group">
+                 <div class="input-group">
+                   <div class="input-group-prepend">
+                     <span class="input-group-text">
+                       <i class="material-icons">phone</i>
+                     </span>
+                   </div>
+                  <!-- <span class="input-group-text" style="padding-right: 0;padding-left: 0" matPrefix>+998 &nbsp;</span> -->
+                   <input ng-model="phone"  [(ngModel)]="inputValue" [value]="inputValue" type="text" id="username" name="username" ngModel class="form-control" placeholder="998991234567" ng-minlength="10" minlength="12" >
+                 </div>
+               </span>
+              <!--
+                <p style="padding: 22px 4px 0px 0px;">+998</p>
+                 (focusin)="addPrefix($event)" 
+               <span class="bmd-form-group">
+                 <div class="input-group">
+                   <div class="input-group-prepend">
+                     <span class="input-group-text">
+                       <i class="material-icons">email</i>
+                     </span>
+                   </div>
+                   <input type="email" class="form-control" placeholder="Email...">
+                 </div>
+               </span>  -->
+               <span class="bmd-form-group">
+                 <div class="input-group">
+                   <div class="input-group-prepend">
+                     <span class="input-group-text">
+                       <i class="material-icons">lock_outline</i>
+                     </span>
+                   </div>
+                   <input type="password"  id="password" name="password" ngModel class="form-control" placeholder="Parol...">
+                 </div>
+               </span>
+             </div>     
+             <div class="card-footer justify-content-center">
+              
+               <button href="#pablo" class="btn btn-primary btn-round"  type="submit"><b>Kirish</b></button>
+             </div>
+
+             <p class="text-center"> <a href="https://t.me/activecargo_admin" class="alert-link"> Parolni unitdingizmi? Bizga yozing! </a></p>  
+           </div>
+         </form>
+       </div>
+     </div>
+   </div>
+   <footer class="footer ">
+     <div class="container">
+       <nav class="pull-left">
+         <ul>
+           <li>
+             <a href="http://acargo.uz/">
+               Xizmatlar haqida
+             </a>
+           </li>
+           <li>
+             <a href="http://acargo.uz/">
+               Biz haqimizda
+             </a>
+           </li>
+           <li>
+             <a href="http://acargo.uz/">
+               Blog
+             </a>
+           </li>
+           <li>
+             <a href="http://acargo.uz/">
+               Shartlar
+             </a>
+           </li>
+         </ul>
+       </nav>
+       <div class="copyright pull-right">
+         &copy;
+           {{test | date: 'yyyy'}}, siz uchun <i class="material-icons">favorite</i>imiz bilan
+         <a href="https://www.yumasoft.uz" target="_blank">YUMA SOFT</a> tomonidan yaratildi!
+       </div>
+     </div>
+   </footer>
+ </div>
+</div>

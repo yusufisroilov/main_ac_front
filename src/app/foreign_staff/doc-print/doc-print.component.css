@@ -1,0 +1,26 @@
+td
+{
+    border-top: 1px solid #000000; 
+    border-bottom: 1px solid #000000; 
+    border-left: 1px solid #000000;
+    border-right: 1px solid #000000
+}
+
+th
+{
+    border-top: 1px solid #000000; 
+    border-bottom: 1px solid #000000; 
+    border-left: 1px solid #000000;
+    border-right: 1px solid #000000
+}
+
+.views-table
+{
+    color: #000;
+    font-weight: 300;
+}
+
+.btnprint
+{
+    margin: 12px;
+}

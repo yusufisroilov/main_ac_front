@@ -1,0 +1,469 @@
+<div class="main-content">
+    <div class="container-fluid">
+      <!-- <div class="row">
+          <div class="col-md-12">
+              <div class="card">
+                <div class="card-header card-header-success card-header-icon">
+                  <div class="card-icon">
+                    <i class="material-icons"></i>
+                  </div>
+                  <h4 class="card-title">Global Sales by Top Locations</h4>
+                </div>
+                  <div class="card-body">
+                      <div class="row">
+                          <div class="col-md-6">
+                              <app-md-table
+                                [data]="tableData">
+                            </app-md-table>
+                          </div>
+                          <div class="col-md-6 ml-auto mr-auto">
+                              <div id="worldMap" class="map"></div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+      <div class="row">
+        <div class="col-md-4">
+          <div class="card card-chart">
+            <div class="card-header card-header-rose" data-header-animation="true">
+              <div class="ct-chart" id="websiteViewsChart"></div>
+            </div>
+            <div class="card-body">
+              <div class="card-actions">
+                <button mat-raised-button type="button" class="btn btn-danger btn-link fix-broken-card">
+                  <i class="material-icons">build</i> Fix Header!
+                </button>
+                <button mat-raised-button type="button" class="btn btn-info btn-link" matTooltip="Refresh" [matTooltipPosition]="'below'">
+                  <i class="material-icons">refresh</i>
+                </button>
+                <button mat-raised-button type="button" class="btn btn-default btn-link" matTooltip="Change Date" [matTooltipPosition]="'below'">
+                  <i class="material-icons">edit</i>
+                </button>
+              </div>
+              <h4 class="card-title">Website Views</h4>
+              <p class="card-category">Last Campaign Performance</p>
+            </div>
+            <div class="card-footer">
+              <div class="stats">
+                <i class="material-icons">access_time</i> campaign sent 2 days ago
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card card-chart">
+            <div class="card-header card-header-success" data-header-animation="true">
+              <div class="ct-chart" id="dailySalesChart"></div>
+            </div>
+            <div class="card-body">
+              <div class="card-actions">
+                <button mat-raised-button type="button" class="btn btn-danger btn-link fix-broken-card">
+                  <i class="material-icons">build</i> Fix Header!
+                </button>
+                <button mat-raised-button type="button" class="btn btn-info btn-link" matTooltip="Refresh" [matTooltipPosition]="'below'">
+                  <i class="material-icons">refresh</i>
+                </button>
+                <button mat-raised-button type="button" class="btn btn-default btn-link" matTooltip="Change Date" [matTooltipPosition]="'below'">
+                  <i class="material-icons">edit</i>
+                </button>
+              </div>
+              <h4 class="card-title">Daily Sales</h4>
+              <p class="card-category">
+                <span class="text-success"><i class="fa fa-long-arrow-up"></i> 55% </span> increase in today sales.</p>
+            </div>
+            <div class="card-footer">
+              <div class="stats">
+                <i class="material-icons">access_time</i> updated 4 minutes ago
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card card-chart">
+            <div class="card-header card-header-info" data-header-animation="true">
+              <div class="ct-chart" id="completedTasksChart"></div>
+            </div>
+            <div class="card-body">
+              <div class="card-actions">
+                <button mat-raised-button type="button" class="btn btn-danger btn-link fix-broken-card">
+                  <i class="material-icons">build</i> Fix Header!
+                </button>
+                <button mat-raised-button type="button" class="btn btn-info btn-link" matTooltip="Refresh" [matTooltipPosition]="'below'">
+                  <i class="material-icons">refresh</i>
+                </button>
+                <button mat-raised-button type="button" class="btn btn-default btn-link" matTooltip="Change Date" [matTooltipPosition]="'below'">
+                  <i class="material-icons">edit</i>
+                </button>
+              </div>
+              <h4 class="card-title">Completed Tasks</h4>
+              <p class="card-category">Last Campaign Performance</p>
+            </div>
+            <div class="card-footer">
+              <div class="stats">
+                <i class="material-icons">access_time</i> campaign sent 2 days ago
+              </div>
+            </div>
+          </div>
+        </div>
+      </div> 
+      <button mat-raised-button class="btn btn-raised btn-round btn-danger" data-toggle="modal" data-target="#noticeModal">
+        Muhim E'lon
+     </button>-->
+
+      <div class="row">
+        <div class="col-lg-3 col-md-6 col-sm-6">
+          <div class="card card-stats">
+            <div class="card-header card-header-warning card-header-icon">
+              <div class="card-icon">
+                <i class="material-icons">account_box</i>
+              </div>
+              <p class="card-category">SIZNING ID</p>
+              <h3 class="card-title" style="font-weight: bold;">{{id}}</h3>
+            </div>
+            <div class="card-footer">
+              <div class="stats">
+                <i class="material-icons text-danger">warning</i>
+                <a href="#pablo">ID ingizni yodingizda tuting!</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        
+       <!-- <div class="col-lg-3 col-md-6 col-sm-6">
+          <div class="card card-stats">
+            <div class="card-header card-header-rose card-header-icon">
+              <div class="card-icon">
+                <i class="material-icons">equalizer</i>
+              </div>
+              <p class="card-category">Website Visits</p>
+              <h3 class="card-title">1255</h3>
+            </div>
+            <div class="card-footer">
+              <div class="stats">
+                <i class="material-icons">local_offer</i> Tracked from Google Analytics
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-3 col-md-6 col-sm-6">
+          <div class="card card-stats">
+            <div class="card-header card-header-success card-header-icon">
+              <div class="card-icon">
+                <i class="material-icons">store</i>
+              </div>
+              <p class="card-category">Revenue</p>
+              <h3 class="card-title">$34,245</h3>
+            </div>
+            <div class="card-footer">
+              <div class="stats">
+                <i class="material-icons">date_range</i> Last 24 Hours
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-3 col-md-6 col-sm-6">
+          <div class="card card-stats">
+            <div class="card-header card-header-info card-header-icon">
+              <div class="card-icon">
+                <i class="fa fa-twitter"></i>
+              </div>
+              <p class="card-category">Followers</p>
+              <h3 class="card-title">+245</h3>
+            </div>
+            <div class="card-footer">
+              <div class="stats">
+                <i class="material-icons">update</i> Just Updated
+              </div>
+            </div>
+          </div>
+        </div> -->
+      </div>
+
+      <div class="row">
+        <div class="col-md-8 ml-auto mr-auto">
+          <div class="page-categories">
+            <!-- <h3 class="title text-center">Hurmatli {{firstname}} {{lastname}} Active Cargo ni tanlaganingizdan Mamnunmiz!</h3>
+            <h4 class="text-center">Quyida siz yodda tutishingiz lozim bo'lgan bazi qisqa ma'lumotlar!</h4>
+           -->
+            <br />
+            <!-- <ul class="nav nav-pills nav-pills-warning nav-pills-icons justify-content-center" role="tablist">
+              <li class="nav-item">
+                <a class="nav-link active" data-toggle="tab" href="#yoddatuting" role="tablist">
+                  <i class="material-icons">info</i> YODDA TUTING
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#link9" role="tablist">
+                  <i class="material-icons">gavel</i> ISHLASH TARTIBI
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#link8" role="tablist">
+                  <i class="material-icons">location_on</i> XITOY MANZILI
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#link10" role="tablist">
+                  <i class="material-icons">help_outline</i> YORDAM KERAKMI?
+                </a>
+              </li>
+            </ul>
+            <div class="tab-content tab-space tab-subcategories">
+              <div class="tab-pane active" id="yoddatuting">
+                <div class="card">
+                  <div class="card-header">
+                    <h4 class="card-title"><b>Quydagilarni siz doimo yodingizda tutishingiz lozim!</b></h4>
+                    <p class="card-category">
+                      Bu ma'lumotlar sizga biz bilan ishlashda juda zarurdir!
+                    </p>
+                  </div>
+                  <div class="card-body">
+                   1. <b> Sizning ID: {{id}} </b> Siz doim biz sizga bergan ID ni yodda tutishingiz lozim! Qachonki siz bizga murojat qilganingizda xodimlarimiz IDingizni so'rashsa, ushbu raqamni aytasiz. 
+                    <br>
+                   2. <b> Siz <a href="/#/receivers" style="color:blue;"> bu yerdan </a> eng kamida bitta Qabul qiluvchi qo'shib qo'yishingiz kerak.</b> Sizning yuklaringiz qabul qiluvchi nomiga keladi. Bu yerga o'zingizni yoki Tanishlaringizni kiritishingiz mumkin. Pasport raqam va Ism sharf ma'lumotlari to'g'ri bo'lishi shart. Yuklaringizgiz ko'paysa Xodimlarimiz sizga murojat qilishadi.
+                    <br>
+                   3. <b> Siz buyurtmalar bo'limi orqali </b> yuklaringiz haqida ma'lumotlarni bilib borishingiz mumkin. Har bir buyurtmangiz bu yerda sizga doim qayerdaligi, nimaligi va boshqa ma'lumotlar orqali ko'rinib turadi. Siz bergan buyurtmangizni sistemaga kiritishingiz shart emas, xodimlarimiz o'zlari sizga kelgan yuklarni sizning nomingizga kirgazib qo'yishadi.
+                    <br>
+                    <b>Mumkin emas:</b> Har qanday arzon qimmat bujiteriyalar(taqinchoqlar), Har qanday Suyuqlikka, gazga, magnitga ega qurilmalar. Kasmetikalar, Shampun, Tish pastalari, Kleylar, Yog'lar, Dorilar, balzamlar, Kontakt linzalar, Spreylar, Dronlar, Har qanday Tibbiyot (Meditsinaga) ga oid jo'natmalar va O'z.R qonunlarida taqiqlangan har qanday buyurtmalar yetkazib berilmaydi. Bunday buyurtmalar qilinganida javobgarlik ActiveCargo zimmasida emas.
+                  </div>
+                </div>
+              </div>
+              <div class="tab-pane" id="link9">
+                <div class="card">
+                  <div class="card-header">
+                    <h4 class="card-title"><b>Biz bilan qanday ishlanadi?</b></h4>
+                    <p class="card-category">
+                      Quyida siz biz bilan ishlash haqida qisqacha ma'lumotga ega bo'lasiz!
+                    </p>
+                  </div>
+                  <div class="card-body">
+                    1. <b> Siz avvalo </b> Taobao yoki boshqa internet do'konlaridan ro'yhatdan o'tishingiz kerak bo'ladi, yoki Xitoyda tanishingiz, yoki Xitoyda bo'lsangiz o'zingiz biz bergan manzilga to'g'ridan to'g'ri jo'natishingiz ham mumkin.
+                    <br> <br>
+                   2. <b> Ro'yhatdan o'tganingizdan keyin </b> biz sizga bergan manzilni taobaoga yoki boshqa internet do'konga kiritishingiz lozim. O'zi yuboradiganlar ushbu manzil va berilgan ID dan foydalanadilar. 
+                    <br> <br>
+                   3. <b> Kiritilgan manzilni </b> bizning xodimlarimizga telegram orqali screenshot jo'natib tekshirtirasiz. Hammasi to'g'ri deganmizdan keyin. Buyurutmalarni boshlashingiz mumkin.
+                    <br>
+                  
+                  </div>
+                </div>
+              </div>
+              <div class="tab-pane" id="link8">
+                <div class="card">
+                  <div class="card-header">
+                    <h4 class="card-title"> <b>Bizning Xitoydagi Manzilimiz </b></h4>
+                    <p class="card-category">
+                     
+                    </p>
+                  </div>
+                  <div class="card-body">
+                 <!-   <label for="clipboard-example-textarea">Manzil: </label> <br>
+                  <textarea id="clipboard-example-textarea" cols="50" rows="2" [(ngModel)]="xitoyManzili" style=" -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; width: 100%;" ></textarea> <br>
+                <button [cdkCopyToClipboard]="xitoyManzili">Kopya qilish uchun bosing!</button> ->
+                    <button  mat-raised-button class="btn btn-primary"> <a style="color: #ffffff;" href="https://t.me/acargo_newline">Manzil olish uchun bosing!</a></button>
+                    <!- <b> Ushbu manzildan foydalaning! </b>  <br>     <br>
+                    <b>国际仓C{{id}}<br> 18028594657<br> 广东省广州市白云区太和镇南村三姓南街43号1楼档口(原好客源超市) C{{id}} <br>510440 </b><br> ->
+                
+                    <br>Tepada ko'rsatilgan manzil bo'yicha buyurtmalar berishingiz mumkin. Taobaoga manzilni o'rnatganingizdan keyin telegramdan bizning <h4><a href="https://t.me/acargo_newline" target="_blank"> ADMIN </a> </h4>ga screenshot jo'natib tekshirtirb olishingizni so'raymiz. Qanday kiritishni bilmasangiz ham albatta yozing. Telegramda: acargo_newline deb izlang.
+                    </div>
+                </div>
+              </div>
+              <div class="tab-pane" id="link10">
+                <div class="card">
+                  <div class="card-header">
+                    <h4 class="card-title">Sizga yordam kerakmi?</h4>
+                    <p class="card-category">
+                     Biz doim sizga yordam berishdan ma'mnunmiz!
+                    </p>
+                  </div>
+                  <div class="card-body">
+                    Bizning telefon nomerimiz <a href="tel:+998-99-0099-048" target="_blank">+998 99 0099 048</a>
+                    <br>
+                    Biznga telegramdan yozish uchun: <a href="https://t.me/activecargo_admin" target="_blank">@activecargo_admin</a>
+                    <br> 
+                    Yangiliklar uchun telegram kanal: <a href="https://t.me/activecargo" target="_blank">@activecargo</a>
+                    <br> 
+                  </div>
+                </div>
+              </div>
+            </div> -->
+          </div>
+        </div>
+      </div>
+     
+    <!--
+      <h3>Manage Listings</h3>
+      <br>
+      <div class="row">
+        <div class="col-md-4">
+          <div class="card card-product">
+            <div class="card-header card-header-image" data-header-animation="true">
+              <a href="#pablo">
+                <img class="img" src="./assets/img/card-2.jpg">
+              </a>
+            </div>
+            <div class="card-body">
+              <div class="card-actions text-center">
+                <button mat-raised-button type="button" class="btn btn-danger btn-link fix-broken-card">
+                  <i class="material-icons">build</i> Fix Header!
+                </button>
+                <button mat-raised-button type="button" class="btn btn-default btn-link" matTooltip="View" [matTooltipPosition]="'below'">
+                  <i class="material-icons">art_track</i>
+                </button>
+                <button mat-raised-button type="button" class="btn btn-success btn-link" matTooltip="Edit" [matTooltipPosition]="'below'">
+                  <i class="material-icons">edit</i>
+                </button>
+                <button mat-raised-button type="button" class="btn btn-danger btn-link" matTooltip="Remove" [matTooltipPosition]="'below'">
+                  <i class="material-icons">close</i>
+                </button>
+              </div>
+              <h4 class="card-title">
+                <a href="#pablo">Cozy 5 Stars Apartment</a>
+              </h4>
+              <div class="card-description">
+                The place is close to Barceloneta Beach and bus stop just 2 min by walk and near to "Naviglio" where you can enjoy the main night life in Barcelona.
+              </div>
+            </div>
+            <div class="card-footer">
+              <div class="price">
+                <h4>$899/night</h4>
+              </div>
+              <div class="stats">
+                <p class="card-category"><i class="material-icons">place</i> Barcelona, Spain</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card card-product">
+            <div class="card-header card-header-image" data-header-animation="true">
+              <a href="#pablo">
+                <img class="img" src="./assets/img/card-3.jpg">
+              </a>
+            </div>
+            <div class="card-body">
+              <div class="card-actions text-center">
+                <button mat-raised-button type="button" class="btn btn-danger btn-link fix-broken-card">
+                  <i class="material-icons">build</i> Fix Header!
+                </button>
+                <button mat-raised-button type="button" class="btn btn-default btn-link" matTooltip="View" [matTooltipPosition]="'below'">
+                  <i class="material-icons">art_track</i>
+                </button>
+                <button mat-raised-button type="button" class="btn btn-success btn-link" matTooltip="Edit" [matTooltipPosition]="'below'">
+                  <i class="material-icons">edit</i>
+                </button>
+                <button mat-raised-button type="button" class="btn btn-danger btn-link" matTooltip="Remove" [matTooltipPosition]="'below'">
+                  <i class="material-icons">close</i>
+                </button>
+              </div>
+              <h4 class="card-title">
+                <a href="#pablo">Office Studio</a>
+              </h4>
+              <div class="card-description">
+                The place is close to Metro Station and bus stop just 2 min by walk and near to "Naviglio" where you can enjoy the night life in London, UK.
+              </div>
+            </div>
+            <div class="card-footer">
+              <div class="price">
+                <h4>$1.119/night</h4>
+              </div>
+              <div class="stats">
+                <p class="card-category"><i class="material-icons">place</i> London, UK</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card card-product">
+            <div class="card-header card-header-image" data-header-animation="true">
+              <a href="#pablo">
+                <img class="img" src="./assets/img/card-1.jpg">
+              </a>
+            </div>
+            <div class="card-body">
+              <div class="card-actions text-center">
+                <button mat-raised-button type="button" class="btn btn-danger btn-link fix-broken-card">
+                  <i class="material-icons">build</i> Fix Header!
+                </button>
+                <button mat-raised-button type="button" class="btn btn-default btn-link" matTooltip="View" [matTooltipPosition]="'below'">
+                  <i class="material-icons">art_track</i>
+                </button>
+                <button mat-raised-button type="button" class="btn btn-success btn-link" matTooltip="Edit" [matTooltipPosition]="'below'">
+                  <i class="material-icons">edit</i>
+                </button>
+                <button mat-raised-button type="button" class="btn btn-danger btn-link" matTooltip="Remove" [matTooltipPosition]="'below'">
+                  <i class="material-icons">close</i>
+                </button>
+              </div>
+              <h4 class="card-title">
+                <a href="#pablo">Beautiful Castle</a>
+              </h4>
+              <div class="card-description">
+                The place is close to Metro Station and bus stop just 2 min by walk and near to "Naviglio" where you can enjoy the main night life in Milan.
+              </div>
+            </div>
+            <div class="card-footer">
+              <div class="price">
+                <h4>$459/night</h4>
+              </div>
+              <div class="stats">
+                <p class="card-category"><i class="material-icons">place</i> Milan, Italy</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    -->
+     <!-- notice modal -->
+     <div class="modal fade" id="noticeModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-notice">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="myModalLabel">How Do You Become an Affiliate?</h5>
+            <button mat-button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+              <i class="material-icons">close</i>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="instruction">
+              <div class="row">
+                <div class="col-md-8">
+                  <strong>1. Register</strong>
+                  <p class="description">The first step is to create an account at
+                    <a href="https://www.creative-tim.com/">Creative Tim</a>. You can choose a social network or go for the classic version, whatever works best for you.</p>
+                </div>
+                <div class="col-md-4">
+                  <div class="picture">
+                    <img src="./assets/img/card-1.jpg" alt="Thumbnail Image" class="rounded img-fluid">
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="instruction">
+              <div class="row">
+                <div class="col-md-8">
+                  <strong>2. Apply</strong>
+                  <p class="description">The first step is to create an account at
+                    <a href="https://www.creative-tim.com/">Creative Tim</a>. You can choose a social network or go for the classic version, whatever works best for you.</p>
+                </div>
+                <div class="col-md-4">
+                  <div class="picture">
+                    <img src="./assets/img/card-2.jpg" alt="Thumbnail Image" class="rounded img-fluid">
+                  </div>
+                </div>
+              </div>
+            </div>
+            <p>If you have more questions, don't hesitate to contact us or send us a tweet @creativetim. We're here to help!</p>
+          </div>
+          <div class="modal-footer justify-content-center">
+            <button mat-raised-button type="button" class="btn btn-info btn-round" data-dismiss="modal">Sounds good!</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- end notice modal -->
+    </div>
+</div>

@@ -1,0 +1,369 @@
+<div class="main-content">
+  <div class="container-fluid">
+    <div class="row" style="margin-top: 25px">
+      <div class="card3 col-md-2">
+        <div class="">
+          <button
+            mat-raised-button=""
+            (click)="recordParcel()"
+            class="mat-focus-indicator btn btn-success mat-raised-button mat-button-base"
+          >
+            <span class="mat-button-wrapper"
+              ><span class="btn-label">
+                <i class="material-icons">check</i></span
+              >
+              OFFICE SCAN
+            </span>
+            <span
+              matripple=""
+              class="mat-ripple mat-button-ripple"
+              ng-reflect-disabled="false"
+              ng-reflect-centered="false"
+              ng-reflect-trigger="[object HTMLButtonElement]"
+            ></span
+            ><span class="mat-button-focus-overlay"></span>
+          </button>
+          <!-- <button mat-raised-button=""  (click)="giveId()"  class="mat-focus-indicator btn btn-info mat-raised-button mat-button-base">
+          <span class="mat-button-wrapper"><span class="btn-label">
+            <i class="material-icons">contact_page</i></span> ID BELGILASH </span>
+            <span matripple="" class="mat-ripple mat-button-ripple" ng-reflect-disabled="false" ng-reflect-centered="false" ng-reflect-trigger="[object HTMLButtonElement]"></span><span class="mat-button-focus-overlay"></span>
+        </button> -->
+        </div>
+      </div>
+      <!-- <div class="card3 col-md-6 " style="display: flex;">
+       
+        <h3 style="margin-right: 10px;"> <a (click) = "givePartyNum()"> <i  class="btn-label material-icons">bookmark_add</i></a>Reys: {{currentParty}}</h3>
+        <h2 style="font-weight: 700;"> HOZIRGI ID: {{currentOwnerID}} ({{totalLeftCountItems}} dan - {{leftCountItems}} ta qoldi)</h2>
+      
+       
+      </div>  -->
+      <div class="card3 col-md-4">
+        <div class=""></div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card" id="listcard">
+          <div
+            class="card-header row card-header-info card-header-icon"
+            style="display: inline-flex"
+          >
+            <div class="col align-self-start">
+              <div class="card-icon">
+                <i class="material-icons">assignment</i>
+              </div>
+              <h4 class="card-title">Hamma Buyurtmalar ro'yhati</h4>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="toolbar">
+              <!-- Here you can write extra buttons/actions for the toolbar-->
+            </div>
+            <div class="material-datatables">
+              <div class="row">
+                <!-- <div class="col-sm-4 col-lg-3" >
+                              <mat-form-field>
+                                  <mat-select placeholder="Qayerdaligi bo'yicha" name="status">
+                                    <mat-option [value]="null" (click)="getListOfParcelsWithFilter('','','','','status')">None</mat-option>
+                                    <mat-option *ngFor="let orst of orderStatusTypeList" [value]="orst.id" (click)="getListOfParcelsMoreParties(orst.id,'','','','status')">
+                                      {{ orst.description_uz}}
+                                    </mat-option>
+                                  </mat-select>
+                              </mat-form-field>
+                          </div> -->
+                <!-- <div class="col-sm-4 col-lg-3">
+                            <mat-form-field>
+                                <mat-select placeholder="Turi bo'yicha filter" name="type">
+                                  <mat-option [value]="null" (click)="getListOfParcelsMoreParties('','','','','type')">None</mat-option>
+                                  <mat-option *ngFor="let orty of orderTypesList" [value]="orty.id" (click)="getListOfParcelsMoreParties('',orty.id,'','','type')">
+                                    {{ orty.description_uz }}
+                                  </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div> -->
+
+                <div class="col-sm-2 col-lg-1" style="display: inline-flex">
+                  <mat-form-field class="example-full-width">
+                    <input
+                      matInput
+                      type="text"
+                      style="font-size: large"
+                      placeholder="IDsi"
+                      (input)="
+                        getListOfParcelsWithFilter(
+                          '',
+                          '',
+                          $event.target.value,
+                          '',
+                          'ownerid'
+                        )
+                      "
+                    />
+                  </mat-form-field>
+                </div>
+                <div class="col-sm-3 col-lg-2" style="display: inline-flex">
+                  <mat-form-field class="example-full-width">
+                    <input
+                      matInput
+                      type="text"
+                      style="font-size: large"
+                      placeholder="Partiya 101 kabi"
+                      (input)="
+                        getListOfParcelsWithFilter(
+                          '',
+                          '',
+                          '',
+                          $event.target.value,
+                          'partnum'
+                        )
+                      "
+                    />
+                  </mat-form-field>
+                </div>
+                <div class="col-sm-5 col-lg-3">
+                  <mat-form-field class="example-full-width">
+                    <input
+                      matInput
+                      type="text"
+                      style="font-size: large"
+                      placeholder="Search with Tracking Number"
+                      (input)="getListOfParcelsWithSearch($event.target.value)"
+                    />
+                  </mat-form-field>
+                </div>
+                <!--   <div class="col-sm-6 col-lg-3">
+                                  <div class="dropdown">
+                                      <button mat-raised-button href="#pablo" class="dropdown-toggle btn btn-primary btn-round btn-block" data-toggle="dropdown">Dropdown
+                                          <b class="caret"></b>
+                                      </button>
+                                      <ul class="dropdown-menu dropdown-menu-left">
+                                          <li *ngFor="let rk of orderStatusTypeList; let i = index">
+                                            <a href="#pablo">{{rk.descriptionEn}}</a>
+                                        </li>
+                                      </ul>
+                                  </div>
+                              </div>
+                              <div class="col-sm-6 col-lg-3">
+                                <div class="dropdown">
+                                  <button mat-raised-button href="#pablo" class="dropdown-toggle btn btn-primary btn-round btn-block" data-toggle="dropdown">Product Type
+                                      <b class="caret"></b>
+                                  </button>
+                                  <ul class="dropdown-menu dropdown-menu-left">
+                                      <li class="dropdown-header">Order Types</li>
+                                      <li *ngFor="let rw of orderTypesList; let i = index">
+                                          <a href="#pablo">{{rw.descriptionEn}}</a>
+                                      </li>
+                                  </ul>
+                              </div> 
+                              
+                          </div> -->
+              </div>
+              <div class="table-responsive">
+                <ul class="pagination" *ngIf="needPagination">
+                  <!--  <li class="page-item">
+                                  <a mat-button class="page-link" aria-label="Previous">
+                                    <span aria-hidden="true"><i class="fa fa-angle-double-left" aria-hidden="true"></i></span>
+                                  </a>
+                                </li> -->
+                  <li
+                    class="page-item"
+                    [ngClass]="{ active: currentPage == i }"
+                    *ngFor="let page of mypages; index as i"
+                  >
+                    <a mat-button class="page-link" (click)="pagebyNum(i)">{{
+                      i + 1
+                    }}</a>
+                  </li>
+                  <!-- <li class="page-item">
+                                  <a mat-button class="page-link" aria-label="Next">
+                                    <span aria-hidden="true"><i class="fa fa-angle-double-right" aria-hidden="true"></i></span>
+                                  </a>
+                                </li> -->
+                </ul>
+                <table
+                  class="table table-striped table-no-bordered table-hover"
+                  cellspacing="0"
+                  width="100%"
+                  style="width: 100%"
+                >
+                  <thead>
+                    <tr>
+                      <th class="text-center">No</th>
+                      <th class="text-center">Client ID</th>
+                      <th class="text-center">Rus Name</th>
+                      <!-- <th class="text-center">{{ dataTable.headerRow[1] }}</th> -->
+                      <th class="text-center">{{ dataTable.headerRow[2] }}</th>
+                      <th class="text-center">{{ dataTable.headerRow[3] }}</th>
+                      <th class="text-center">{{ dataTable.headerRow[4] }}</th>
+                      <th class="text-center">{{ dataTable.headerRow[5] }}</th>
+                      <th class="text-center">Box Number</th>
+                      <th class="text-center">Xitoyga kegan</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr
+                      *ngFor="let row of allData; let i = index"
+                      class="text-center table-danger"
+                      [ngClass]="{ 'table-danger': row.orderType == 7 }"
+                    >
+                      <td>{{ i + 1 }}</td>
+                      <td>{{ row.owner_id }}</td>
+                      <td>{{ row.name_ru }}</td>
+                      <!-- <td>{{row.name_foreign}}</td> -->
+                      <td>{{ row.tracking_number }}</td>
+                      <td>{{ row.quantity }}</td>
+                      <td>{{ orderTypeText[i] }}</td>
+                      <td>{{ orderStatusText[i] }}</td>
+                      <td>{{ row.box_number }}</td>
+                     
+                        <td>{{ row.in_foreign_warehouse_date | date : "longDate" }}</td>
+
+                     
+
+                      <td>
+                        <button
+                          mat-raised-button
+                          class="btn btn-link btn-info btn-just-icon visibility"
+                          data-toggle="modal"
+                          data-target="#myModal"
+                        >
+                          <i
+                            class="material-icons"
+                            (click)="getInfoOfParcel(row.tracking_number)"
+                            >visibility</i
+                          >
+                        </button>
+                        <!-- <a  class="btn btn-link btn-success btn-just-icon edit"><i (click)="editParcel(row.trackingNumber,row.ownerID,row.russianName,row.quantity,row.orderType,row.foreignName)" class="material-icons">edit</i></a> -->
+                        <!--   <a href="javascript:void(0s" class="btn btn-link btn-danger btn-just-icon remove"><i (click)="deleteParcel(row.trackingNumber)"  class="material-icons">close</i></a> -->
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <ul class="pagination" *ngIf="needPagination">
+                <li class="page-item">
+                  <a mat-button class="page-link" aria-label="Previous">
+                    <span aria-hidden="true"
+                      ><i class="fa fa-angle-double-left" aria-hidden="true"></i
+                    ></span>
+                  </a>
+                </li>
+                <li
+                  class="page-item"
+                  [ngClass]="{ active: currentPage == i }"
+                  *ngFor="let page of mypages; index as i"
+                >
+                  <a mat-button class="page-link" (click)="pagebyNum(i)">{{
+                    i + 1
+                  }}</a>
+                </li>
+                <li class="page-item">
+                  <a mat-button class="page-link" aria-label="Next">
+                    <span aria-hidden="true"
+                      ><i
+                        class="fa fa-angle-double-right"
+                        aria-hidden="true"
+                      ></i
+                    ></span>
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <!-- end content-->
+        </div>
+        <!--  end card  -->
+      </div>
+      <!-- end col-md-12 -->
+
+      <!-- Classic Modal -->
+      <div
+        class="modal fade"
+        id="myModal"
+        tabindex="-1"
+        role="dialog"
+        aria-labelledby="myModalLabel"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog">
+          <div *ngFor="let row of allData; let i = index">
+            <div
+              class="modal-content"
+              *ngIf="row.tracking_number == trackingNum2"
+            >
+              <div class="modal-header">
+                <h4 class="modal-title">
+                  Trek nomeri: {{ row.tracking_number }}
+                </h4>
+                <button
+                  mat-button
+                  type="button"
+                  class="close"
+                  data-dismiss="modal"
+                  aria-hidden="true"
+                >
+                  <i class="material-icons">clear</i>
+                </button>
+              </div>
+              <div class="modal-body">
+                <div class="row">
+                  <b>Rus tilida tarifi: &nbsp; </b>
+                  <p>{{ row.name_ru }}</p>
+                </div>
+                <div class="row">
+                  <b>Buyurtma turi:&nbsp;</b>
+                  <p>{{ orderTypeText[i] }}</p>
+                </div>
+                <div class="row">
+                  <b>Buyurtma soni:&nbsp; </b>
+                  <p>{{ row.quantity }} dona</p>
+                </div>
+                <div class="row">
+                  <b>Buyurtma hozirda: &nbsp; </b>
+                  <p>{{ orderStatusText[i] }}</p>
+                </div>
+            <!-- <div class="row"> <b>Kiritlgan sana: &nbsp; </b><p> . . .</p> </div> -->
+              <div *ngIf="row.in_foreign_warehouse_date" class="row">
+                <b>Xitoy omboridga kelgan vaqt: &nbsp; </b>
+                <p>{{ row.in_foreign_warehouse_date | date : "medium" }}</p>
+              </div>
+              <div *ngIf="row.in_foreign_airport_date" class="row">
+                <b>Xitoy Aeraportdagi vaqt: &nbsp;</b>
+                <p>{{ row.in_foreign_airport_date | date : "medium" }}</p>
+              </div>
+              <div *ngIf="row.in_uzb_airport_date" class="row">
+                <b>O'zbekiston Aerportiga kelgan vaqt: &nbsp;</b>
+                <p>{{ row.in_uzb_airport_date | date : "medium" }}</p>
+              </div>
+              <div *ngIf="row.in_cpt_date" class="row">
+                <b>Bojxonadagi vaqti: &nbsp;</b>
+                <p>{{ row.in_cpt_date | date : "medium" }}</p>
+              </div>
+              <div *ngIf="row.in_uzb_warehouse_date" class="row">
+                <b>Toshkent omboriga kelgan vaqt: &nbsp;</b>
+                <p>{{ row.in_uzb_warehouse_date | date : "medium" }}</p>
+              </div>
+                <!-- <div *ngIf="row.clientSentDate" class="row"> <b>Mijozga yuborilgan vaqt: &nbsp;</b><p>{{row.clientSentDate | slice:0:19 }}</p> </div>
+                                           <div *ngIf="row.clientReceiveDate" class="row"> <b>Mijoz qabul qilgan vaqt: &nbsp;</b><p>{{row.clientReceiveDate | slice:0:19 }}</p> </div>
+                                             -->
+              </div>
+              <div class="modal-footer">
+                <!-- <button mat-raised-button type="button" class="btn btn-link">Nice Button</button> -->
+                <button
+                  mat-raised-button
+                  type="button"
+                  class="btn btn-danger btn-link"
+                  data-dismiss="modal"
+                >
+                  YOPISH
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!--  End Modal -->
+    </div>
+    <!-- end row -->
+  </div>
+</div>
