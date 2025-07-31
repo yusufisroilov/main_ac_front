@@ -75,7 +75,10 @@ export class OrderBoxesComponent implements OnInit {
     let ownerid = localStorage.getItem("id");
 
     return this.http
-      .get(GlobalVars.baseUrl + "/consignments/for_client?id=" + ownerid, this.options)
+      .get(
+        GlobalVars.baseUrl + "/consignments/for_client?id=" + ownerid,
+        this.options
+      )
       .subscribe(
         (response) => {
           this.allDataBoxes = response.json().consignments;

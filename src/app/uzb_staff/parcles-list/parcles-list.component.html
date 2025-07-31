@@ -215,10 +215,10 @@
                       <td>{{ orderTypeText[i] }}</td>
                       <td>{{ orderStatusText[i] }}</td>
                       <td>{{ row.box_number }}</td>
-                     
-                        <td>{{ row.in_foreign_warehouse_date | date : "longDate" }}</td>
 
-                     
+                      <td>
+                        {{ row.in_foreign_warehouse_date | date : "longDate" }}
+                      </td>
 
                       <td>
                         <button
@@ -322,27 +322,27 @@
                   <b>Buyurtma hozirda: &nbsp; </b>
                   <p>{{ orderStatusText[i] }}</p>
                 </div>
-            <!-- <div class="row"> <b>Kiritlgan sana: &nbsp; </b><p> . . .</p> </div> -->
-              <div *ngIf="row.in_foreign_warehouse_date" class="row">
-                <b>Xitoy omboridga kelgan vaqt: &nbsp; </b>
-                <p>{{ row.in_foreign_warehouse_date | date : "medium" }}</p>
-              </div>
-              <div *ngIf="row.in_foreign_airport_date" class="row">
-                <b>Xitoy Aeraportdagi vaqt: &nbsp;</b>
-                <p>{{ row.in_foreign_airport_date | date : "medium" }}</p>
-              </div>
-              <div *ngIf="row.in_uzb_airport_date" class="row">
-                <b>O'zbekiston Aerportiga kelgan vaqt: &nbsp;</b>
-                <p>{{ row.in_uzb_airport_date | date : "medium" }}</p>
-              </div>
-              <div *ngIf="row.in_cpt_date" class="row">
-                <b>Bojxonadagi vaqti: &nbsp;</b>
-                <p>{{ row.in_cpt_date | date : "medium" }}</p>
-              </div>
-              <div *ngIf="row.in_uzb_warehouse_date" class="row">
-                <b>Toshkent omboriga kelgan vaqt: &nbsp;</b>
-                <p>{{ row.in_uzb_warehouse_date | date : "medium" }}</p>
-              </div>
+                <!-- <div class="row"> <b>Kiritlgan sana: &nbsp; </b><p> . . .</p> </div> -->
+                <div *ngIf="row.in_foreign_warehouse_date" class="row">
+                  <b>Xitoy omboridga kelgan vaqt: &nbsp; </b>
+                  <p>{{ row.in_foreign_warehouse_date | date : "medium" }}</p>
+                </div>
+                <div *ngIf="row.in_foreign_airport_date" class="row">
+                  <b>Xitoy Aeraportdagi vaqt: &nbsp;</b>
+                  <p>{{ row.in_foreign_airport_date | date : "medium" }}</p>
+                </div>
+                <div *ngIf="row.in_uzb_airport_date" class="row">
+                  <b>O'zbekiston Aerportiga kelgan vaqt: &nbsp;</b>
+                  <p>{{ row.in_uzb_airport_date | date : "medium" }}</p>
+                </div>
+                <div *ngIf="row.in_cpt_date" class="row">
+                  <b>Bojxonadagi vaqti: &nbsp;</b>
+                  <p>{{ row.in_cpt_date | date : "medium" }}</p>
+                </div>
+                <div *ngIf="row.in_uzb_warehouse_date" class="row">
+                  <b>Toshkent omboriga kelgan vaqt: &nbsp;</b>
+                  <p>{{ row.in_uzb_warehouse_date | date : "medium" }}</p>
+                </div>
                 <!-- <div *ngIf="row.clientSentDate" class="row"> <b>Mijozga yuborilgan vaqt: &nbsp;</b><p>{{row.clientSentDate | slice:0:19 }}</p> </div>
                                            <div *ngIf="row.clientReceiveDate" class="row"> <b>Mijoz qabul qilgan vaqt: &nbsp;</b><p>{{row.clientReceiveDate | slice:0:19 }}</p> </div>
                                              -->
