@@ -1,17 +1,25 @@
-.table > thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td {
-    padding: 3px 3px;
-    vertical-align: middle;
-  }
+.table > thead > tr > th,
+.table > tbody > tr > th,
+.table > tfoot > tr > th,
+.table > thead > tr > td,
+.table > tbody > tr > td,
+.table > tfoot > tr > td {
+  padding: 3px 3px;
+  vertical-align: middle;
+}
 
-  .table-yellow1
-  {
-    background: yellow;
+.table-yellow1 {
+  background: yellow;
+}
 
-  }
+.table-red1 {
+  background: red;
+}
 
-  .table-red1
-  {
-    background: red;
-  }
+.table-warn {
+  background-color: #4c56a4;
+}
 
-  
+.table-warn:hover {
+  background-color: #6972b7;
+}

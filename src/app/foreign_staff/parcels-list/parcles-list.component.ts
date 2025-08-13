@@ -699,10 +699,11 @@ export class ParclesListComponent implements OnInit, AfterViewInit {
                 },
                 (error) => {
                   if (error.status == 400) {
+                    this.registredMessage = error.json().message;
                     swal
                       .fire(
                         "Not Added",
-                        "BAD REQUEST: WRONG TYPE OF INPUT",
+                        "Not Added:  " + this.registredMessage,
                         "error"
                       )
                       .then((result) => {
@@ -761,10 +762,7 @@ export class ParclesListComponent implements OnInit, AfterViewInit {
     }
   }
 
-
   /* 8888888888888888888823423412341238421348  */
-
-
 
   alonePrintLabel(trekNomerL) {
     this.http
@@ -788,7 +786,7 @@ export class ParclesListComponent implements OnInit, AfterViewInit {
             // this.labelsDataStorage=JSON.parse(localStorage.getItem("labelsTemp1"));
 
             let justTxt = response.json().tracking_number;
-            
+
             this.box_number = response.json().box_number;
             this.total_price = response.json().total_price;
             this.total_weight = response.json().weight;
@@ -1011,8 +1009,7 @@ export class ParclesListComponent implements OnInit, AfterViewInit {
   ${this.printContents}
   
   </body>
-    </html>`
-);
+    </html>`);
 
     //
     this.popupWin.document.close();
@@ -1144,15 +1141,14 @@ export class ParclesListComponent implements OnInit, AfterViewInit {
   ${this.printContents}
   
   </body>
-    </html>`
-);
-    
+    </html>`);
+
     // this.popupWin.document.write(`
     //       <html>
     //         <head>
     //           <title>Print tab</title>
     //           <style>
-              
+
     //           html { font-family:Calibri, Arial, Helvetica, sans-serif; font-size:11pt;   }
     //           a.comment-indicator:hover + div.comment { background:#ffd; position:absolute; display:block; border:1px solid black; padding:0.5em }
     //           a.comment-indicator { background:red; display:inline-block; border:1px solid black; width:0.5em; height:0.5em }
@@ -1242,7 +1238,7 @@ export class ParclesListComponent implements OnInit, AfterViewInit {
     //           </style>
     //         </head>
     //     <body onload="window.print(); window.close();"> ${this.printContents}
-        
+
     //     </body>
     //       </html>`);
 
@@ -1545,7 +1541,7 @@ export class ParclesListComponent implements OnInit, AfterViewInit {
       "_blank",
       "top=0,left=0,height=100%,width=auto"
     );
-    
+
     this.popupWin.document.open();
 
     this.popupWin.document.write(`
@@ -1662,17 +1658,14 @@ export class ParclesListComponent implements OnInit, AfterViewInit {
         ${this.printContents}
         
         </body>
-          </html>`
-    );
-
-
+          </html>`);
 
     // this.popupWin.document.write(`
     //       <html>
     //         <head>
     //           <title>Print tab</title>
     //           <style>
-              
+
     //           html { font-family:Calibri, Arial, Helvetica, sans-serif; font-size:11pt;   }
     //           a.comment-indicator:hover + div.comment { background:#ffd; position:absolute; display:block; border:1px solid black; padding:0.5em }
     //           a.comment-indicator { background:red; display:inline-block; border:1px solid black; width:0.5em; height:0.5em }
@@ -1762,7 +1755,7 @@ export class ParclesListComponent implements OnInit, AfterViewInit {
     //           </style>
     //         </head>
     //     <body onload="window.print(); window.close();"> ${this.printContents}
-        
+
     //     </body>
     //       </html>`);
 

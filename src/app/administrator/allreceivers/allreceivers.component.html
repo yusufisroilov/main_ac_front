@@ -160,8 +160,9 @@
                       *ngFor="let row of allRecs; let i = index"
                       class="text-center table-danger"
                       [ngClass]="{
-                        'table-danger': row.statusQuarter == 2,
-                        'table-warning': row.statusQuarter == 1
+                        'table-warn': row.deleted_date != null,
+                        'table-danger':
+                          row.status == false && row.deleted_date == null
                       }"
                     >
                       <td>{{ row.parent_id }}</td>
@@ -172,16 +173,16 @@
                       <td>{{ row.pinfl }}</td>
                       <td>
                         <a
-                        (click)="
-                        putAdressInfo(
-                          row.id,
-                          row.parent_id,
-                          row.region_id,
-                          row.district_id,
-                          row.street,
-                          row.apartment
-                        )
-                      "
+                          (click)="
+                            putAdressInfo(
+                              row.id,
+                              row.parent_id,
+                              row.region_id,
+                              row.district_id,
+                              row.street,
+                              row.apartment
+                            )
+                          "
                           data-toggle="modal"
                           data-target="#myModal15"
                           class="btn btn-link btn-info btn-just-icon"
@@ -217,9 +218,19 @@
                           class="btn btn-link btn-success btn-just-icon"
                           ><i class="material-icons">edit</i></a
                         >
-                        <!--  <a *ngIf="row.statusQuarter == 2" class="btn btn-link btn-danger btn-just-icon "><i  class="material-icons">lock</i></a>
-                                      <a *ngIf="row.statusQuarter == 0 || row.statusQuarter == 1" (click)="changeStatus(row.id, ' vaqtincha toxtatishni')"  class="btn btn-link btn-success btn-just-icon "><i  class="material-icons">lock_open</i></a>
-                                    -->
+                        <a
+                          *ngIf="row.status == false"
+                          class="btn btn-link btn-danger btn-just-icon"
+                          ><i class="material-icons">lock</i></a
+                        >
+                        <a
+                          *ngIf="row.status == true"
+                          (click)="
+                            changeStatus(row.id, ' vaqtincha toxtatishni')
+                          "
+                          class="btn btn-link btn-success btn-just-icon"
+                          ><i class="material-icons">lock_open</i></a
+                        >
 
                         <a
                           (click)="changeParentID(row.id)"
