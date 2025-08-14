@@ -17,7 +17,7 @@
 }
 
 .table-warn {
-  background-color: #4c56a4;
+  background-color: #4c56a4 !important;
 }
 
 .table-warn:hover {
