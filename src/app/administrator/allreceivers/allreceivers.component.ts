@@ -86,6 +86,7 @@ export class AllreceiversComponent implements OnInit {
 
       dataRows: [],
     };
+    this.getListOfRecs();
   }
 
   pagebyNum(ipage) {

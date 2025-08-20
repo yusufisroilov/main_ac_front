@@ -3,17 +3,13 @@
     <div class="row">
       <div class="col-md-3 ml-auto">
         <div class="card-body">
-          <a href="/#/addreceivers" mat-raised-button class="btn btn-success"
-            >Qabul qiluvchi qo'shing
+          <a href="/#/addreceivers" mat-raised-button class="btn btn-success">Qabul qiluvchi qo'shing
           </a>
         </div>
       </div>
       <div class="col-md-12">
         <div class="card" id="listcard">
-          <div
-            class="card-header row card-header-primary card-header-icon"
-            style="display: inline-flex"
-          >
+          <div class="card-header row card-header-primary card-header-icon" style="display: inline-flex">
             <div class="col align-self-start">
               <div class="card-icon">
                 <i class="material-icons">assignment</i>
@@ -29,69 +25,41 @@
               <div class="row">
                 <div class="col-sm-6 col-lg-3">
                   <mat-form-field class="example-full-width">
-                    <input
-                      matInput
-                      type="text"
-                      style="font-size: large"
-                      placeholder="User ID bo'yicha. . ."
-                      (input)="
+                    <input matInput type="text" style="font-size: large" placeholder="User ID bo'yicha. . ." (input)="
                         getListOfRecsWithFilter($event.target.value, '', '', '')
-                      "
-                    />
+                      " />
                   </mat-form-field>
                 </div>
                 <div class="col-sm-6 col-lg-3">
                   <mat-form-field class="example-full-width">
-                    <input
-                      matInput
-                      type="text"
-                      style="font-size: large"
-                      placeholder="RID bo'yicha"
-                      (input)="
+                    <input matInput type="text" style="font-size: large" placeholder="RID bo'yicha" (input)="
                         getListOfRecsWithFilter('', '', $event.target.value, '')
-                      "
-                    />
+                      " />
                   </mat-form-field>
                 </div>
                 <div class="col-sm-6 col-lg-3">
                   <mat-form-field class="example-full-width">
-                    <input
-                      matInput
-                      type="text"
-                      style="font-size: large"
-                      placeholder="Pasport raqami"
-                      (input)="
+                    <input matInput type="text" style="font-size: large" placeholder="Pasport raqami" (input)="
                         getListOfRecsWithFilter('', $event.target.value, '', '')
-                      "
-                    />
+                      " />
                   </mat-form-field>
                 </div>
                 <div class="col-sm-6 col-lg-3">
                   <div class="dropdown">
-                    <button
-                      mat-raised-button
-                      (click)="getListOfRecsWithFilter('', '', '', '')"
-                      class="dropdown-toggle btn btn-primary btn-round btn-block"
-                      data-toggle="dropdown"
-                    >
+                    <button mat-raised-button (click)="getListOfRecsWithFilter('', '', '', '')"
+                      class="dropdown-toggle btn btn-primary btn-round btn-block" data-toggle="dropdown">
                       LIMIT
                       <b class="caret"></b>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-left">
                       <li>
-                        <a (click)="getListOfRecsWithFilter('', '', '', '0')"
-                          >Limit ochiq</a
-                        >
+                        <a (click)="getListOfRecsWithFilter('', '', '', '0')">Limit ochiq</a>
                       </li>
                       <li>
-                        <a (click)="getListOfRecsWithFilter('', '', '', '1')"
-                          >Yaqinlashgan</a
-                        >
+                        <a (click)="getListOfRecsWithFilter('', '', '', '1')">Yaqinlashgan</a>
                       </li>
                       <li>
-                        <a (click)="getListOfRecsWithFilter('', '', '', '2')"
-                          >Limit to'lgan</a
-                        >
+                        <a (click)="getListOfRecsWithFilter('', '', '', '2')">Limit to'lgan</a>
                       </li>
                     </ul>
                   </div>
@@ -118,14 +86,11 @@
                               <span aria-hidden="true"><i class="fa fa-angle-double-left" aria-hidden="true"></i></span>
                             </a>
                           </li> -->
-                  <li
-                    class="page-item"
-                    [ngClass]="{ active: currentPage == i }"
-                    *ngFor="let page of mypages; index as i"
-                  >
+                  <li class="page-item" [ngClass]="{ active: currentPage == i }"
+                    *ngFor="let page of mypages; index as i">
                     <a mat-button class="page-link" (click)="pagebyNum(i)">{{
                       i + 1
-                    }}</a>
+                      }}</a>
                   </li>
                   <!-- <li class="page-item">
                             <a mat-button class="page-link" aria-label="Next">
@@ -133,12 +98,8 @@
                             </a>
                           </li> -->
                 </ul>
-                <table
-                  class="table table-striped table-no-bordered table-hover"
-                  cellspacing="0"
-                  width="100%"
-                  style="width: 100%"
-                >
+                <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%"
+                  style="width: 100%">
                   <thead>
                     <tr>
                       <th class="text-center">{{ dataTable.headerRow[0] }}</th>
@@ -156,15 +117,11 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <tr
-                      *ngFor="let row of allRecs; let i = index"
-                      class="text-center table-danger"
-                      [ngClass]="{
+                    <tr *ngFor="let row of allRecs; let i = index" class="text-center table-danger" [ngClass]="{
                         'table-warn': row.deleted_date != null,
                         'table-danger':
                           row.status == false && row.deleted_date == null
-                      }"
-                    >
+                      }">
                       <td>{{ row.parent_id }}</td>
                       <td>{{ row.id }}</td>
                       <td>{{ row.phone_number | slice : 3 : 16 }}</td>
@@ -172,8 +129,7 @@
                       <td>{{ row.passport }}</td>
                       <td>{{ row.pinfl }}</td>
                       <td>
-                        <a
-                          (click)="
+                        <a (click)="
                             putAdressInfo(
                               row.id,
                               row.parent_id,
@@ -182,12 +138,8 @@
                               row.street,
                               row.apartment
                             )
-                          "
-                          data-toggle="modal"
-                          data-target="#myModal15"
-                          class="btn btn-link btn-info btn-just-icon"
-                          ><i class="material-icons">pin_drop</i></a
-                        >
+                          " data-toggle="modal" data-target="#myModal15" class="btn btn-link btn-info btn-just-icon"><i
+                            class="material-icons">pin_drop</i></a>
                       </td>
                       <!--<td>{{row.region_id}} {{row.district_id}} {{row.street}},{{row.apartment}}</td> -->
                       <td>{{ row.sum_per_quarter }}</td>
@@ -197,8 +149,7 @@
                       <td>
                         <!-- <button mat-raised-button class="btn btn-link btn-info btn-just-icon visibility" data-toggle="modal" data-target="#myModal" ><i class="material-icons" (click)="getInfoOfParcel(row.trackingNumber)">visibility</i></button> -->
                         <!-- <a href="javascript:void(0" class="btn btn-link btn-primary btn-just-icon edit"><i (click)="editParcel(row.trackingNumber,row.foreignName,row.quantity,row.orderType)" class="material-icons">edit</i></a> -->
-                        <a
-                          (click)="
+                        <a (click)="
                             editReceiver(
                               row.id,
                               row.parent_id,
@@ -214,34 +165,17 @@
                               row.street,
                               row.apartment
                             )
-                          "
-                          class="btn btn-link btn-success btn-just-icon"
-                          ><i class="material-icons">edit</i></a
-                        >
-                        <a
-                          *ngIf="row.status == false"
-                          class="btn btn-link btn-danger btn-just-icon"
-                          ><i class="material-icons">lock</i></a
-                        >
-                        <a
-                          *ngIf="row.status == true"
-                          (click)="
+                          " class="btn btn-link btn-success btn-just-icon"><i class="material-icons">edit</i></a>
+                        <a *ngIf="row.status == false" class="btn btn-link btn-danger btn-just-icon"><i
+                            class="material-icons">lock</i></a>
+                        <a *ngIf="row.status == true" (click)="
                             changeStatus(row.id, ' vaqtincha toxtatishni')
-                          "
-                          class="btn btn-link btn-success btn-just-icon"
-                          ><i class="material-icons">lock_open</i></a
-                        >
+                          " class="btn btn-link btn-success btn-just-icon"><i class="material-icons">lock_open</i></a>
 
-                        <a
-                          (click)="changeParentID(row.id)"
-                          class="btn btn-link btn-primary btn-just-icon"
-                          ><i class="material-icons">manage_accounts</i></a
-                        >
-                        <a
-                          (click)="deleteRec(row.id)"
-                          class="btn btn-link btn-danger btn-just-icon"
-                          ><i class="material-icons">delete</i></a
-                        >
+                        <a (click)="changeParentID(row.id)" class="btn btn-link btn-primary btn-just-icon"><i
+                            class="material-icons">manage_accounts</i></a>
+                        <a (click)="deleteRec(row.id)" class="btn btn-link btn-danger btn-just-icon"><i
+                            class="material-icons">delete</i></a>
                       </td>
                     </tr>
                   </tbody>
@@ -252,14 +186,11 @@
                                 <span aria-hidden="true"><i class="fa fa-angle-double-left" aria-hidden="true"></i></span>
                               </a>
                             </li> -->
-                  <li
-                    class="page-item"
-                    [ngClass]="{ active: currentPage == i }"
-                    *ngFor="let page of mypages; index as i"
-                  >
+                  <li class="page-item" [ngClass]="{ active: currentPage == i }"
+                    *ngFor="let page of mypages; index as i">
                     <a mat-button class="page-link" (click)="pagebyNum(i)">{{
                       i + 1
-                    }}</a>
+                      }}</a>
                   </li>
                   <!-- <li class="page-item">
                               <a mat-button class="page-link" aria-label="Next">
@@ -277,14 +208,8 @@
       <!-- end col-md-12 -->
     </div>
     <!-- Classic Modal -->
-    <div
-      class="modal fade"
-      id="myModal15"
-      tabindex="-1"
-      role="dialog"
-      aria-labelledby="myModalLabel"
-      aria-hidden="true"
-    >
+    <div class="modal fade" id="myModal15" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+      aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-body">
@@ -301,12 +226,7 @@
           </div>
           <div class="modal-footer">
             <!-- <button mat-raised-button type="button" class="btn btn-link">Nice Button</button> -->
-            <button
-              mat-raised-button
-              type="button"
-              class="btn btn-danger btn-link"
-              data-dismiss="modal"
-            >
+            <button mat-raised-button type="button" class="btn btn-danger btn-link" data-dismiss="modal">
               YOPIQ
             </button>
           </div>

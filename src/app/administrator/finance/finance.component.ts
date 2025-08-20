@@ -604,7 +604,6 @@ export class FinanceComponent implements OnInit {
     this.getListOfFinance();
   }
 
- 
   editFinance(finId, weight, usd, cash, card, ownerId) {
     swal
       .fire({
@@ -775,9 +774,8 @@ export class FinanceComponent implements OnInit {
       });
   }
 
-
   checkDebt(debt) {
-    if (debt <= 1) {
+    if (debt <= 5000) {
       this.allPaid = "less";
       return this.allPaid;
     } else {
@@ -929,11 +927,11 @@ export class FinanceComponent implements OnInit {
           if (cond == "true") {
             this.allData = response
               .json()
-              .finances.filter((r) => r.debt_uzs > 1);
+              .finances.filter((r) => r.debt_uzs > 5000);
           } else if (cond == "false") {
             this.allData = response
               .json()
-              .finances.filter((r) => r.debt_uzs < 1);
+              .finances.filter((r) => r.debt_uzs < 5000);
           } else {
             this.allData = response.json().finances;
           }
