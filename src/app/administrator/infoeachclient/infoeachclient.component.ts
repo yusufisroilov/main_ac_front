@@ -359,8 +359,6 @@ export class InfoeachclientComponent implements OnInit {
       .subscribe(
         (response) => {
           this.allData = response.json().orders;
-          console.log("all orders ", this.allData);
-
           this.showTheList = true;
           for (let index = 0; index < this.allData.length; index++) {
             const element = this.allData[index];
