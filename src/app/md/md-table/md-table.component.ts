@@ -1,4 +1,4 @@
-import {Component, Input, ChangeDetectionStrategy} from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy } from "@angular/core";
 
 export interface TableData {
   headerRow: string[];
@@ -6,9 +6,9 @@ export interface TableData {
 }
 
 @Component({
-  selector: 'app-md-table',
-  templateUrl: './md-table.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  selector: "app-md-table",
+  templateUrl: "./md-table.component.html",
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MdTableComponent {
   @Input()
@@ -23,5 +23,5 @@ export class MdTableComponent {
   @Input()
   public data: TableData;
 
-  constructor() { }
+  constructor() {}
 }

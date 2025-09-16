@@ -1,0 +1,423 @@
+<!-- src/app/pages/delivery-requests/admin-delivery-requests.component.html -->
+<div class="main-content">
+    <div class="container-fluid">
+
+        <!-- Page Header -->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header card-header-icon card-header-primary">
+                        <div class="card-icon">
+                            <i class="material-icons">assignment</i>
+                        </div>
+                        <h4 class="card-title">Yetkazish So'rovlari</h4>
+                        <p class="card-category">Mijozlardan kelgan yetkazish so'rovlarini boshqarish</p>
+                    </div>
+                    <div class="card-body">
+
+                        <!-- Filters -->
+                        <div class="row mb-3">
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label class="bmd-label-floating">Yetkazish Turi</label>
+                                    <select class="form-control" [(ngModel)]="filterDeliveryType">
+                                        <option value="">Barchasi</option>
+                                        <option value="EMU">EMU Post</option>
+                                        <option value="Yandex">Yandex</option>
+                                        <option value="Own-Courier">Kuryer</option>
+                                        <option value="Pick-up">Olib ketish</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label class="bmd-label-floating">Shoshilinch</label>
+                                    <select class="form-control" [(ngModel)]="filterUrgent">
+                                        <option value="">Barchasi</option>
+                                        <option value="true">Shoshilinch</option>
+                                        <option value="false">Oddiy</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label class="bmd-label-floating">Mijoz ID</label>
+                                    <input type="text" class="form-control" [(ngModel)]="filterCustomerId"
+                                        placeholder="Mijoz ID kiriting">
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label>&nbsp;</label>
+                                    <div>
+                                        <button class="btn btn-primary mr-2" (click)="applyFilters()"
+                                            [disabled]="loadingRequests">
+                                            <i class="material-icons">search</i>
+                                            Qidirish
+                                        </button>
+
+                                        <button class="btn btn-secondary" (click)="clearFilters()">
+                                            <i class="material-icons">clear</i>
+                                            Tozalash
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Requests Table -->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header card-header-info">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h4 class="card-title mb-1">Kutilayotgan So'rovlar</h4>
+                                <p class="card-category mb-0">
+                                    <span *ngIf="totalRequests > 0">{{totalRequests}} ta so'rov kutilmoqda</span>
+                                    <span *ngIf="totalRequests === 0">Hozircha yangi so'rov yo'q</span>
+                                </p>
+                            </div>
+                            <div>
+                                <button class="btn btn-sm btn-outline-light" (click)="loadPendingRequests()"
+                                    [disabled]="loadingRequests" title="So'rovlarni yangilash">
+                                    <i class="material-icons" *ngIf="!loadingRequests">refresh</i>
+                                    <i class="fa fa-spinner fa-spin" *ngIf="loadingRequests"></i>
+                                    <span class="d-none d-md-inline ml-1">Yangilash</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+
+                        <!-- Loading indicator -->
+                        <div *ngIf="loadingRequests" class="text-center p-4">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="sr-only">Yuklanmoqda...</span>
+                            </div>
+                            <p class="mt-2">So'rovlar yuklanmoqda...</p>
+                        </div>
+
+                        <!-- Requests table -->
+                        <div *ngIf="!loadingRequests && pendingRequests.length > 0">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead class="text-primary">
+                                        <tr>
+                                            <th>No</th>
+                                            <th>Mijoz ID</th>
+                                            <th>Telefon</th>
+                                            <th>Yetkazish turi</th>
+                                            <th>Qutillar</th>
+                                            <th>Holat</th>
+                                            <th>Vaqt</th>
+                                            <th>Amallar</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let request of pendingRequests; let i = index"
+                                            [class.table-warning]="request.is_urgent">
+                                            <td>{{ i + 1}}</td>
+                                            <td>
+                                                {{request.owner_id}}
+                                                <span *ngIf="request.is_urgent"
+                                                    class="badge badge-danger ml-1">Shoshilinch</span>
+                                            </td>
+                                            <td>{{request.customer_phone}}</td>
+                                            <td>{{getDeliveryTypeText(request.delivery_type)}}</td>
+                                            <td>{{request.total_packages}} ta</td>
+                                            <td>
+                                                <span class="badge" [class.badge-warning]="request.status === 'pending'"
+                                                    [class.badge-success]="request.status === 'approved'"
+                                                    [class.badge-danger]="request.status === 'rejected'">
+                                                    {{getStatusText(request.status)}}
+                                                </span>
+                                            </td>
+                                            <td>{{request.created_at | date:'short'}}</td>
+                                            <td>
+                                                <button class="btn btn-sm btn-info mr-1"
+                                                    (click)="viewRequestDetails(request.id)">
+                                                    Ko'rish
+                                                </button>
+                                                <button class="btn btn-sm btn-success mr-1"
+                                                    (click)="showApprovalFormForRequest(request.id)"
+                                                    *ngIf="request.status === 'pending'">
+                                                    Tasdiqlash
+                                                </button>
+                                                <button class="btn btn-sm btn-danger"
+                                                    (click)="showRejectionFormForRequest(request.id)"
+                                                    *ngIf="request.status === 'pending'">
+                                                    Rad etish
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- Pagination -->
+                            <div class="row mt-3" *ngIf="totalPages > 1">
+                                <div class="col-md-12">
+                                    <nav aria-label="Page navigation">
+                                        <ul class="pagination justify-content-center">
+                                            <li class="page-item" [class.disabled]="currentPage === 0">
+                                                <a class="page-link" (click)="goToPage(currentPage - 1)">Oldingi</a>
+                                            </li>
+
+                                            <li class="page-item"
+                                                *ngFor="let page of [].constructor(totalPages); let i = index"
+                                                [class.active]="i === currentPage">
+                                                <a class="page-link" (click)="goToPage(i)">{{i + 1}}</a>
+                                            </li>
+
+                                            <li class="page-item" [class.disabled]="currentPage === totalPages - 1">
+                                                <a class="page-link" (click)="goToPage(currentPage + 1)">Keyingi</a>
+                                            </li>
+                                        </ul>
+                                    </nav>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- No requests message -->
+                        <div *ngIf="!loadingRequests && pendingRequests.length === 0" class="text-center p-4">
+                            <i class="material-icons" style="font-size: 48px; color: #ccc;">assignment_late</i>
+                            <h5 class="mt-2">Kutilayotgan so'rov yo'q</h5>
+                            <p class="text-muted">Hozircha kutilayotgan yetkazish so'rovlari mavjud emas</p>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Request Details Modal -->
+<div class="modal fade" id="requestDetailsModal" tabindex="-1" [class.show]="showRequestDetails"
+    [style.display]="showRequestDetails ? 'block' : 'none'">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content" *ngIf="selectedRequest">
+            <div class="modal-header">
+                <h5 class="modal-title">So'rov Tafsilotlari - #{{selectedRequest.id}}</h5>
+                <button type="button" class="close" (click)="closeModal()">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+                <!-- Request Info -->
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Mijoz Ma'lumotlari</h6>
+                        <p><strong>Mijoz ID:</strong> {{selectedRequest.owner_id}}</p>
+                        <p><strong>Telefon:</strong> {{selectedRequest.customer_phone}}</p>
+                        <p><strong>Yetkazish turi:</strong> {{getDeliveryTypeText(selectedRequest.delivery_type)}}</p>
+                        <p *ngIf="selectedRequest.is_urgent" class="text-danger">
+                            <strong><i class="material-icons">priority_high</i> Shoshilinch yetkazish</strong>
+                        </p>
+                    </div>
+
+                    <div class="col-md-6">
+                        <h6>Yetkazish Ma'lumotlari</h6>
+                        <p><strong>Jami qutillar:</strong> {{selectedRequest.total_packages}} ta</p>
+                        <p *ngIf="selectedRequest.delivery_address">
+                            <strong>Manzil:</strong> {{selectedRequest.delivery_address}}
+                        </p>
+                        <p *ngIf="selectedRequest.emu_branch_id">
+                            <strong>EMU Filiali:</strong> {{loadBranchByid(selectedRequest.emu_branch_id)}}
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Notes -->
+                <div class="row" *ngIf="selectedRequest.notes">
+                    <div class="col-md-12">
+                        <h6>Mijoz Izohi</h6>
+                        <p class="alert alert-info">{{selectedRequest.notes}}</p>
+                    </div>
+                </div>
+
+                <!-- Packages Table -->
+                <div class="row">
+                    <div class="col-md-12">
+                        <h6>Qutillar Ro'yxati</h6>
+                        <div class="table-responsive" *ngIf="requestPackages.length > 0">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Barcode</th>
+                                        <th>Consignment</th>
+                                        <th>Mahsulotlar</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let pkg of requestPackages">
+                                        <td>{{pkg.barcode}}</td>
+                                        <td>{{pkg.consignment_name}}</td>
+                                        <td>{{pkg.items_count || 0}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" (click)="closeModal()">Yopish</button>
+                <button type="button" class="btn btn-success mr-2"
+                    (click)="showApprovalFormForRequest(selectedRequest.id)"
+                    *ngIf="selectedRequest.status === 'pending'">
+                    Tasdiqlash
+                </button>
+                <button type="button" class="btn btn-danger" (click)="showRejectionFormForRequest(selectedRequest.id)"
+                    *ngIf="selectedRequest.status === 'pending'">
+                    Rad etish
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Approval Form Modal -->
+<div class="modal fade" id="approvalModal" tabindex="-1" [class.show]="showApprovalForm"
+    [style.display]="showApprovalForm ? 'block' : 'none'">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content" *ngIf="selectedRequest">
+            <div class="modal-header">
+                <h5 class="modal-title">So'rovni Tasdiqlash - Mijoz: K{{selectedRequest.owner_id}}</h5>
+                <button type="button" class="close" (click)="closeModal()">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+                <form>
+                    <div class="row">
+
+                        <!-- Delivery Fee -->
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="bmd-label-floating">Yetkazish To'lovi (UZS)</label>
+                                <input type="number" class="form-control" [(ngModel)]="deliveryFee" name="deliveryFee"
+                                    min="0">
+                            </div>
+                        </div>
+
+                        <!-- Yandex Fee (if Yandex delivery) -->
+                        <div class="col-md-6" *ngIf="selectedRequest.delivery_type === 'Yandex'">
+                            <div class="form-group">
+                                <label class="bmd-label-floating">Yandex To'lovi (UZS)</label>
+                                <input type="number" class="form-control" [(ngModel)]="yandexFee" name="yandexFee"
+                                    min="0">
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Courier Details (if Own-Courier delivery) -->
+                    <div class="row" *ngIf="selectedRequest.delivery_type === 'Own-Courier'">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="bmd-label-floating">Kuryer Ismi *</label>
+                                <input type="text" class="form-control" [(ngModel)]="courierName" name="courierName"
+                                    required>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="bmd-label-floating">Kuryer Telefoni *</label>
+                                <input type="tel" class="form-control" [(ngModel)]="courierPhone" name="courierPhone"
+                                    required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Admin Notes -->
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="form-group">
+                                <label class="bmd-label-floating">Admin Izohi</label>
+                                <textarea class="form-control" [(ngModel)]="adminNotes" name="adminNotes" rows="3"
+                                    placeholder="Yetkazish bo'yicha qo'shimcha ma'lumot"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="bmd-label-floating">Tasdiqlovchi</label>
+                                <input type="text" class="form-control" [(ngModel)]="processedBy" name="processedBy">
+                            </div>
+                        </div>
+                    </div>
+
+                </form>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" (click)="closeModal()">Bekor qilish</button>
+                <button type="button" class="btn btn-success" (click)="approveDeliveryRequest()"
+                    [disabled]="processingRequest">
+                    <span *ngIf="processingRequest" class="spinner-border spinner-border-sm mr-1"></span>
+                    <i class="material-icons" *ngIf="!processingRequest">check</i>
+                    Tasdiqlash va Yetkazish Yaratish
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Rejection Form Modal -->
+<div class="modal fade" id="rejectionModal" tabindex="-1" [class.show]="showRejectionForm"
+    [style.display]="showRejectionForm ? 'block' : 'none'">
+    <div class="modal-dialog">
+        <div class="modal-content" *ngIf="selectedRequest">
+            <div class="modal-header">
+                <h5 class="modal-title">So'rovni Rad Etish - Mijoz: {{selectedRequest.customer_id}}</h5>
+                <button type="button" class="close" (click)="closeModal()">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+                <form>
+                    <div class="form-group">
+                        <label class="bmd-label-floating">Rad Etish Sababi *</label>
+                        <textarea class="form-control" [(ngModel)]="rejectionReason" name="rejectionReason" rows="4"
+                            placeholder="Nima uchun so'rov rad etilayotganini tushuntiring..." required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="bmd-label-floating">Rad Etuvchi</label>
+                        <input type="text" class="form-control" [(ngModel)]="processedBy" name="processedBy">
+                    </div>
+                </form>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" (click)="closeModal()">Bekor qilish</button>
+                <button type="button" class="btn btn-danger" (click)="rejectDeliveryRequest()"
+                    [disabled]="processingRequest || !rejectionReason.trim()">
+                    <span *ngIf="processingRequest" class="spinner-border spinner-border-sm mr-1"></span>
+                    <i class="material-icons" *ngIf="!processingRequest">close</i>
+                    Rad Etish
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal backdrop -->
+<div class="modal-backdrop fade show" *ngIf="showRequestDetails || showApprovalForm || showRejectionForm"
+    (click)="closeModal()"></div>

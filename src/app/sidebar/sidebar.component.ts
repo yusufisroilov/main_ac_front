@@ -41,12 +41,19 @@ export const ROUTES: RouteInfo[] = [
     type: "link",
     icontype: "local_mall",
   },
-    {
-      path: "/orderboxes",
-      title: "Jo'natmalar",
-      type: "link",
-      icontype: "cases",
-    },
+  {
+    path: "/orderboxes",
+    title: "Jo'natmalar",
+    type: "link",
+    icontype: "cases",
+  },
+  {
+    path: "/uzm/delivery-requests",
+    title: "Yetkazib berish so'rovi",
+    type: "link",
+    icontype: "car",
+  },
+
   {
     path: "/archive",
     title: "Arxiv",
@@ -246,6 +253,7 @@ export const managerROUTES: RouteInfo[] = [
     type: "link",
     icontype: "people_alt",
   },
+
   {
     path: "/uzm/allreceivers",
     title: "Hamma Qabul qilivchilar",
@@ -295,10 +303,28 @@ export const managerROUTES: RouteInfo[] = [
     icontype: "badge",
   },
   {
+    path: "/uzm/warehouse-inventory",
+    title: "Warehouse Inventories",
+    type: "link",
+    icontype: "package",
+  },
+  {
     path: "/uzs/deliveries",
     title: "Yetkazmalar",
     type: "link",
     icontype: "local_shipping",
+  },
+  {
+    path: "/uzm/deliveries-list",
+    title: "Deliveries List",
+    type: "link",
+    icontype: "package",
+  },
+  {
+    path: "/uzm/admin-del-requests",
+    title: "Delivery Requests",
+    type: "link",
+    icontype: "deliver",
   },
   {
     path: "/uzm/transactions",

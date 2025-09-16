@@ -1,0 +1,419 @@
+<!-- src/app/pages/package-tracking/package-tracking.component.html -->
+<div class="main-content">
+    <div class="container-fluid">
+
+        <!-- Page Header with Stats -->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header card-header-icon card-header-primary">
+                        <div class="card-icon">
+                            <i class="material-icons">inventory_2</i>
+                        </div>
+                        <h4 class="card-title">Ombor Qutilari</h4>
+                        <p class="card-category">Omborda qolgan qutillarni kuzatish va boshqarish</p>
+                    </div>
+                    <div class="card-body">
+
+                        <!-- Summary Cards -->
+                        <div class="row" *ngIf="inventorySummary">
+                            <div class="col-lg-3 col-md-6 col-sm-6">
+                                <div class="card card-stats">
+                                    <div class="card-header card-header-warning card-header-icon">
+                                        <div class="card-icon">
+                                            <i class="material-icons">inventory</i>
+                                        </div>
+                                        <p class="card-category">Jami Qutillar</p>
+                                        <h3 class="card-title">{{inventorySummary.total_packages}}</h3>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-md-6 col-sm-6">
+                                <div class="card card-stats">
+                                    <div class="card-header card-header-success card-header-icon">
+                                        <div class="card-icon">
+                                            <i class="material-icons">people</i>
+                                        </div>
+                                        <p class="card-category">Mijozlar</p>
+                                        <h3 class="card-title">{{inventorySummary.total_customers}}</h3>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-md-6 col-sm-6">
+                                <div class="card card-stats">
+                                    <div class="card-header card-header-info card-header-icon">
+                                        <div class="card-icon">
+                                            <i class="material-icons">link</i>
+                                        </div>
+                                        <p class="card-category">Bog'langan</p>
+                                        <h3 class="card-title">{{inventorySummary.tied_packages}}</h3>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-md-6 col-sm-6">
+                                <div class="card card-stats">
+                                    <div class="card-header card-header-danger card-header-icon">
+                                        <div class="card-icon">
+                                            <i class="material-icons">pending_actions</i>
+                                        </div>
+                                        <p class="card-category">Mahsulotlar</p>
+                                        <h3 class="card-title">{{inventorySummary.total_items}}</h3>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <button class="btn btn-primary mr-2" (click)="showAddPackageForm()">
+                                    <i class="material-icons">add_box</i>
+                                    Yangi Quti Qo'shish
+                                </button>
+
+                                <button class="btn btn-info mr-2" (click)="showTyingInterface()">
+                                    <i class="material-icons">link</i>
+                                    Qutillarni Bog'lash
+                                </button>
+
+                                <button class="btn btn-warning mr-2" (click)="showInventoryView()">
+                                    <i class="material-icons">view_list</i>
+                                    Inventar Ko'rish
+                                </button>
+
+                                <button class="btn btn-success" (click)="loadWarehouseInventory()"
+                                    [disabled]="loadingInventory">
+                                    <i class="material-icons">refresh</i>
+                                    Yangilash
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add Package Form -->
+        <div class="row" *ngIf="showAddForm">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header card-header-success">
+                        <h4 class="card-title">Yangi Quti Qo'shish</h4>
+                        <p class="card-category">Ombordagi yangi qutini ro'yxatga olish</p>
+                    </div>
+                    <div class="card-body">
+                        <form>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="bmd-label-floating">Mijoz ID *</label>
+                                        <input type="text" class="form-control" [(ngModel)]="newPackage.owner_id"
+                                            name="ownerId" required>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="bmd-label-floating">Consignment Nomi *</label>
+                                        <input type="text" class="form-control"
+                                            [(ngModel)]="newPackage.consignment_name" name="consignmentName" required>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Preview barcode -->
+                            <div class="row" *ngIf="newPackage.owner_id && newPackage.consignment_name">
+                                <div class="col-md-12">
+                                    <div class="alert alert-info">
+                                        <strong>Barcode Preview:</strong>
+                                        K{{newPackage.owner_id}}-{{newPackage.consignment_name}}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-12 text-right">
+                                    <button type="button" class="btn btn-secondary mr-2" (click)="cancelAddPackage()">
+                                        Bekor qilish
+                                    </button>
+                                    <button type="button" class="btn btn-success" (click)="addPackage()"
+                                        [disabled]="!newPackage.owner_id || !newPackage.consignment_name || addingPackage">
+                                        <span *ngIf="addingPackage"
+                                            class="spinner-border spinner-border-sm mr-1"></span>
+                                        <i class="material-icons" *ngIf="!addingPackage">add</i>
+                                        Qo'shish
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Package Tying Interface -->
+        <div class="row" *ngIf="showTyingView">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header card-header-info">
+                        <h4 class="card-title">Qutillarni Bog'lash</h4>
+                        <p class="card-category">Yangi kelgan qutillarni mavjud qutillar bilan bog'lash</p>
+                    </div>
+                    <div class="card-body">
+
+                        <!-- Consignment selector -->
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="bmd-label-floating">Consignment Nomini Kiriting</label>
+                                    <input type="text" class="form-control" [(ngModel)]="selectedConsignment"
+                                        name="selectedConsignment">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <button class="btn btn-primary mt-3" (click)="findPackagesToTie()"
+                                    [disabled]="!selectedConsignment || loadingPackagesToTie">
+                                    <span *ngIf="loadingPackagesToTie"
+                                        class="spinner-border spinner-border-sm mr-1"></span>
+                                    <i class="material-icons" *ngIf="!loadingPackagesToTie">search</i>
+                                    Bog'lash Kerak Bo'lganlarni Topish
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Packages to tie table -->
+                        <div *ngIf="packagesToTie.length > 0">
+                            <h5 class="mt-4 mb-3">Bog'lash Kerak Bo'lgan Qutillar ({{packagesToTie.length}} mijoz)</h5>
+
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead class="text-primary">
+                                        <tr>
+                                            <th>Mijoz ID</th>
+                                            <th>Yangi Quti</th>
+                                            <th>Mavjud Qutillar</th>
+                                            <th>Jami Qutillar</th>
+                                            <th>Holat</th>
+                                            <th>Amallar</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let package of packagesToTie">
+                                            <td><strong>{{package.owner_id}}</strong></td>
+                                            <td>
+                                                <small class="text-primary">
+                                                    {{package.new_package.consignment}}
+                                                </small>
+                                            </td>
+                                            <td>
+                                                <small>{{package.existing_packages.length}} ta quti</small><br>
+                                                <small class="text-muted">
+                                                    Consignments:
+                                                    {{getUniqueConsignments(package.existing_packages).join(', ')}}
+                                                </small>
+                                            </td>
+                                            <td>{{package.total_packages}} ta</td>
+                                            <td>
+                                                <span *ngIf="package.already_has_tie_group" class="badge badge-info">
+                                                    Qisman bog'langan
+                                                </span>
+                                                <span *ngIf="!package.already_has_tie_group"
+                                                    class="badge badge-warning">
+                                                    Bog'lanmagan
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <button class="btn btn-sm btn-success"
+                                                    (click)="tiePackagesForCustomer(package.owner_id)">
+                                                    <i class="material-icons">link</i>
+                                                    Bog'lash
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- No packages to tie -->
+                        <div *ngIf="selectedConsignment && packagesToTie.length === 0 && !loadingPackagesToTie"
+                            class="text-center p-4">
+                            <i class="material-icons" style="font-size: 48px; color: #ccc;">link_off</i>
+                            <h5 class="mt-2">Bog'lash kerak bo'lgan quti yo'q</h5>
+                            <p class="text-muted">Bu consignmentda bog'lash kerak bo'lgan mijozlar topilmadi</p>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Warehouse Inventory View -->
+        <div class="row" *ngIf="showInventory">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header card-header-warning">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h4 class="card-title mb-1">Ombor Inventari</h4>
+                                <p class="card-category mb-0">
+                                    Jami {{warehouseInventory.length}} mijoz, {{getTotalPackages()}} quti
+                                </p>
+                            </div>
+                            <div>
+                                <!-- Filter controls -->
+                                <div class="form-group mb-0">
+                                    <input type="text" class="form-control form-control-sm"
+                                        [(ngModel)]="filterCustomerId" placeholder="Mijoz ID bo'yicha filter">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+
+                        <!-- Loading indicator -->
+                        <div *ngIf="loadingInventory" class="text-center p-4">
+                            <div class="spinner-border text-primary" role="status"></div>
+                            <p class="mt-2">Inventar yuklanmoqda...</p>
+                        </div>
+
+                        <!-- Inventory table -->
+                        <div *ngIf="!loadingInventory && getFilteredInventory().length > 0">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead class="text-primary">
+                                        <tr>
+                                            <th>Mijoz ID</th>
+                                            <th>Qutillar Soni</th>
+                                            <th>Quti Guruhlari</th>
+                                            <th>Consignmentlar</th>
+                                            <th>Eng Eski Quti</th>
+                                            <th>Amallar</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let customer of getFilteredInventory()">
+                                            <td><strong>{{customer.owner_id}}</strong></td>
+                                            <td>{{customer.total_packages}} ta</td>
+                                            <td>
+                                                <span *ngFor="let group of customer.package_groups" class="mr-2">
+                                                    <span *ngIf="group.type === 'tied'" class="badge badge-info">
+                                                        🔗 {{group.package_count}} bog'langan
+                                                    </span>
+                                                    <span *ngIf="group.type === 'single'" class="badge badge-secondary">
+                                                        📦 Yagona
+                                                    </span>
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <small>{{getAllConsignments(customer).join(', ')}}</small>
+                                            </td>
+                                            <td>
+                                                <small>{{customer.oldest_package_date | date:'short'}}</small>
+                                            </td>
+                                            <td>
+                                                <button class="btn btn-sm btn-info mr-1"
+                                                    (click)="viewCustomerDetails(customer)">
+                                                    Ko'rish
+                                                </button>
+                                                <button class="btn btn-sm btn-warning"
+                                                    (click)="showUntieOptions(customer)">
+                                                    Ajratish
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- No inventory -->
+                        <div *ngIf="!loadingInventory && getFilteredInventory().length === 0" class="text-center p-4">
+                            <i class="material-icons" style="font-size: 48px; color: #ccc;">inventory_2</i>
+                            <h5 class="mt-2">Inventar bo'sh</h5>
+                            <p class="text-muted">Omborda qutillar mavjud emas</p>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Customer Details Modal -->
+<div class="modal fade" [class.show]="showCustomerModal" [style.display]="showCustomerModal ? 'block' : 'none'">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content" *ngIf="selectedCustomer">
+            <div class="modal-header">
+                <h5 class="modal-title">Mijoz Qutilari - K{{selectedCustomer.owner_id}}</h5>
+                <button type="button" class="close" (click)="closeModal()">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+                <div class="row mb-3">
+                    <div class="col-md-12">
+                        <h6>Umumiy Ma'lumot</h6>
+                        <p><strong>Jami qutillar:</strong> {{selectedCustomer.total_packages}} ta</p>
+                        <p><strong>Bog'langan guruhlari:</strong> {{selectedCustomer}} ta</p>
+                        <p><strong>Alohida qutilari:</strong> {{selectedCustomer}} ta</p>
+                    </div>
+                </div>
+
+                <!-- Package groups -->
+                <div *ngFor="let group of selectedCustomer.package_groups" class="mb-3">
+                    <div class="card">
+                        <div class="card-header" [class.bg-info]="group.type === 'tied'"
+                            [class.bg-secondary]="group.type === 'single'">
+                            <h6 class="mb-0 text-white">
+                                <span *ngIf="group.type === 'tied'">🔗 Bog'langan Guruh ({{group.package_count}}
+                                    quti)</span>
+                                <span *ngIf="group.type === 'single'">📦 Alohida Quti</span>
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Barcode</th>
+                                            <th>Partiya</th>
+                                            <th>Items</th>
+                                            <th>Sana</th>
+                                            <th *ngIf="group.type === 'tied'">Amallar</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let pkg of group.packages">
+                                            <td><code>{{pkg.barcode}}</code></td>
+                                            <td>{{pkg.consignment}}</td>
+                                            <td>{{pkg.items_count || 0}}</td>
+                                            <td><small>{{pkg.created_at | date:'short'}}adssdsa</small></td>
+                                            <td *ngIf="group.type === 'tied'">
+                                                <button class="btn btn-sm btn-warning"
+                                                    (click)="untiePackage(selectedCustomer.owner_id, pkg.consignment)">
+                                                    Ajratish
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" (click)="closeModal()">Yopish</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal backdrop -->
+<div class="modal-backdrop fade show" *ngIf="showCustomerModal" (click)="closeModal()"></div>
