@@ -51,7 +51,7 @@ export const ROUTES: RouteInfo[] = [
     path: "/uzm/delivery-requests",
     title: "Yetkazib berish so'rovi",
     type: "link",
-    icontype: "car",
+    icontype: "local_shipping",
   },
 
   {
@@ -304,9 +304,9 @@ export const managerROUTES: RouteInfo[] = [
   },
   {
     path: "/uzm/warehouse-inventory",
-    title: "Warehouse Inventories",
+    title: "Officedagi Yuklar",
     type: "link",
-    icontype: "package",
+    icontype: "inventory_2",
   },
   {
     path: "/uzs/deliveries",
@@ -316,15 +316,15 @@ export const managerROUTES: RouteInfo[] = [
   },
   {
     path: "/uzm/deliveries-list",
-    title: "Deliveries List",
+    title: "Yetkazmalar Ro'yxati",
     type: "link",
-    icontype: "package",
+    icontype: "list_alt",
   },
   {
     path: "/uzm/admin-del-requests",
-    title: "Delivery Requests",
+    title: "Yetkazish So'rovlari",
     type: "link",
-    icontype: "deliver",
+    icontype: "assignment",
   },
   {
     path: "/uzm/transactions",

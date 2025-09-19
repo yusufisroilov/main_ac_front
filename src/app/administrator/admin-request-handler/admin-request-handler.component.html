@@ -3,6 +3,7 @@
     <div class="container-fluid">
 
         <!-- Page Header -->
+        <!-- Page Header -->
         <div class="row">
             <div class="col-md-12">
                 <div class="card">
@@ -66,6 +67,18 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="col-md-12">
+                                <button class="btn btn-primary mr-2" (click)="showArchiveTableView()">
+                                    <i class="material-icons">archive</i>
+                                    So'rovlar Arxive
+                                </button>
+                            </div>
+                            <div class="col-md-12">
+                                <button class="btn btn-primary mr-2" (click)="showPendingTableView()">
+                                    <i class="material-icons">schedule</i>
+                                    Kutilayotgan So'rovlar
+                                </button>
+                            </div>
                         </div>
 
                     </div>
@@ -74,7 +87,126 @@
         </div>
 
         <!-- Requests Table -->
-        <div class="row">
+        <div class="row" *ngIf="showArchiveTable">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header card-header-info">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h4 class="card-title mb-1">Arxiv So'rovlar</h4>
+                                <p class="card-category mb-0">
+                                    <span *ngIf="totalArchiveRequests > 0">{{totalRequests}} ta arxive so'rovlar
+                                        bor.</span>
+                                    <span *ngIf="totalArchiveRequests === 0">Hozircha arxiv so'rov yo'q</span>
+                                </p>
+                            </div>
+                            <div>
+                                <button class="btn btn-sm btn-outline-light" (click)="loadPendingRequests()"
+                                    [disabled]="loadingRequests" title="So'rovlarni yangilash">
+                                    <i class="material-icons" *ngIf="!loadingRequests">refresh</i>
+                                    <i class="fa fa-spinner fa-spin" *ngIf="loadingRequests"></i>
+                                    <span class="d-none d-md-inline ml-1">Yangilash</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+
+                        <!-- Loading indicator -->
+                        <div *ngIf="loadingRequests" class="text-center p-4">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="sr-only">Yuklanmoqda...</span>
+                            </div>
+                            <p class="mt-2">So'rovlar yuklanmoqda...</p>
+                        </div>
+
+                        <!-- Requests table -->
+                        <div *ngIf="!loadingRequests && archivedRequets.length > 0">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead class="text-primary">
+                                        <tr>
+                                            <th>No</th>
+                                            <th>Mijoz ID</th>
+                                            <th>So'ralgan Qutilar</th>
+                                            <th>Telefon</th>
+                                            <th>Yetkazish turi</th>
+                                            <th>Qutillar</th>
+                                            <th>Holat</th>
+                                            <th>Vaqt</th>
+                                            <th>Amallar</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let request of archivedRequets; let i = index"
+                                            [class.table-warning]="request.is_urgent">
+                                            <td>{{ i + 1}}</td>
+                                            <td>
+                                                {{request.owner_id}}
+                                                <span *ngIf="request.is_urgent"
+                                                    class="badge badge-danger ml-1">Shoshilinch</span>
+                                            </td>
+                                            <td>{{request.requested_packages}}</td>
+                                            <td>{{request.customer_phone}}</td>
+                                            <td>{{getDeliveryTypeText(request.delivery_type)}}</td>
+                                            <td>{{request.total_packages}} ta</td>
+                                            <td>
+                                                <span class="badge" [class.badge-warning]="request.status === 'pending'"
+                                                    [class.badge-success]="request.status === 'approved'"
+                                                    [class.badge-danger]="request.status === 'rejected'">
+                                                    {{getStatusText(request.status)}}
+                                                </span>
+                                            </td>
+                                            <td>{{request.created_at | date:'short'}}</td>
+                                            <td>
+                                                <button class="btn btn-sm btn-info mr-1"
+                                                    (click)="viewRequestDetails(request.id)">
+                                                    Ko'rish
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- Pagination -->
+                            <div class="row mt-3" *ngIf="totalPages > 1">
+                                <div class="col-md-12">
+                                    <nav aria-label="Page navigation">
+                                        <ul class="pagination justify-content-center">
+                                            <li class="page-item" [class.disabled]="currentPage === 0">
+                                                <a class="page-link" (click)="goToPage(currentPage - 1)">Oldingi</a>
+                                            </li>
+
+                                            <li class="page-item"
+                                                *ngFor="let page of [].constructor(totalPages); let i = index"
+                                                [class.active]="i === currentPage">
+                                                <a class="page-link" (click)="goToPage(i)">{{i + 1}}</a>
+                                            </li>
+
+                                            <li class="page-item" [class.disabled]="currentPage === totalPages - 1">
+                                                <a class="page-link" (click)="goToPage(currentPage + 1)">Keyingi</a>
+                                            </li>
+                                        </ul>
+                                    </nav>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <!-- No requests message -->
+                        <div *ngIf="!loadingRequests && pendingRequests.length === 0" class="text-center p-4">
+                            <i class="material-icons" style="font-size: 48px; color: #ccc;">assignment_late</i>
+                            <h5 class="mt-2">Kutilayotgan so'rov yo'q</h5>
+                            <p class="text-muted">Hozircha kutilayotgan yetkazish so'rovlari mavjud emas</p>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Requests Table -->
+        <div class="row" *ngIf="!showArchiveTable">
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-header card-header-info">
@@ -114,6 +246,7 @@
                                         <tr>
                                             <th>No</th>
                                             <th>Mijoz ID</th>
+                                            <th>So'ralgan Qutilar</th>
                                             <th>Telefon</th>
                                             <th>Yetkazish turi</th>
                                             <th>Qutillar</th>
@@ -131,6 +264,7 @@
                                                 <span *ngIf="request.is_urgent"
                                                     class="badge badge-danger ml-1">Shoshilinch</span>
                                             </td>
+                                            <td>{{request.requested_packages}}</td>
                                             <td>{{request.customer_phone}}</td>
                                             <td>{{getDeliveryTypeText(request.delivery_type)}}</td>
                                             <td>{{request.total_packages}} ta</td>
@@ -186,6 +320,7 @@
                                 </div>
                             </div>
                         </div>
+
 
                         <!-- No requests message -->
                         <div *ngIf="!loadingRequests && pendingRequests.length === 0" class="text-center p-4">
@@ -256,7 +391,7 @@
                                 <thead>
                                     <tr>
                                         <th>Barcode</th>
-                                        <th>Consignment</th>
+                                        <th>Partiya</th>
                                         <th>Mahsulotlar</th>
                                     </tr>
                                 </thead>

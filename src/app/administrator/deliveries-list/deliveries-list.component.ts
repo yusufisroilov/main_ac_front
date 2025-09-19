@@ -161,6 +161,9 @@ export class DeliveriesListComponent {
           if (result.status === "success") {
             this.selectedCustomerId = this.customerIdInput;
             this.customerPackages = result.data.package_groups || [];
+
+            console.log("customer packages ", this.customerPackages);
+
             this.customerPackages.forEach((group) => (group.selected = false));
           } else {
             swal.fire(
@@ -394,6 +397,8 @@ export class DeliveriesListComponent {
           const result = response.json();
           if (result.status === "success") {
             this.deliveries = result.data.deliveries || [];
+            console.log("deliveries ", this.deliveries);
+
             this.totalDeliveries = result.data.pagination.total;
             this.totalPages = Math.ceil(
               this.totalDeliveries / this.deliveriesPerPage
@@ -453,12 +458,39 @@ export class DeliveriesListComponent {
     return pages;
   }
 
-  // View delivery details
-  viewDeliveryDetails(delivery: Delivery) {
-    this.selectedDelivery = delivery;
+  viewDeliveryDetails(delivery_id: any) {
+    console.log("delivery id ", delivery_id);
+
+    this.http
+      .get(
+        GlobalVars.baseUrl + "/deliveries/detail?delivery_id=" + delivery_id,
+        this.options
+      )
+      .subscribe(
+        (response) => {
+          const result = response.json();
+          if (result.status === "success") {
+            this.selectedDelivery = result.data || [];
+
+            console.log("delivery detail ", this.selectedDelivery);
+          }
+        },
+        (error) => {
+          console.error("Error loading request packages:", error);
+          if (error.status == 403) {
+            this.authService.logout();
+          }
+        }
+      );
     this.showDetailsModal = true;
   }
-
+  showBarcodes(delivery: any) {
+    if (delivery.package_barcodes) {
+      return delivery.package_barcodes.join(", ");
+    } else {
+      return delivery.barcode;
+    }
+  }
   // Update delivery status
   updateDeliveryStatus(delivery: Delivery) {
     this.selectedDelivery = delivery;

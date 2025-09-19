@@ -75,7 +75,7 @@
                         <div *ngIf="selectedCustomerId && customerPackages.length > 0">
                             <div class="row">
                                 <div class="col-md-12">
-                                    <h5>Mijoz: {{selectedCustomerId}} - Qutillar</h5>
+                                    <h5>Mijoz: K{{selectedCustomerId}} - Qutillar</h5>
 
                                     <div class="table-responsive">
                                         <table class="table table-striped">
@@ -418,7 +418,7 @@
                                             <td><small>{{delivery.created_date | date:'short'}}</small></td>
                                             <td>
                                                 <button class="btn btn-sm btn-info mr-1"
-                                                    (click)="viewDeliveryDetails(delivery)">
+                                                    (click)="viewDeliveryDetails(delivery.id)">
                                                     Ko'rish
                                                 </button>
                                                 <button class="btn btn-sm btn-warning"
@@ -483,6 +483,7 @@
                     <div class="col-md-6">
                         <h6>Asosiy Ma'lumotlar</h6>
                         <p><strong>Mijoz ID:</strong> {{selectedDelivery.owner_id}}</p>
+                        <p><strong>Mijoz ID:</strong> {{showBarcodes(selectedDelivery)}}</p>
                         <p><strong>Telefon:</strong> {{selectedDelivery.customer_phone}}</p>
                         <p><strong>Yetkazish turi:</strong> {{getDeliveryTypeText(selectedDelivery.delivery_type)}}</p>
                         <p><strong>Qutillar soni:</strong> {{selectedDelivery.total_packages}} ta</p>

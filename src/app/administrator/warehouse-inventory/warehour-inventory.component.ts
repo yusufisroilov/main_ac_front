@@ -475,4 +475,16 @@ export class WarehouseInventoryComponent implements OnInit {
     });
     return Array.from(consignments);
   }
+  countTiedPacForCus(packages: any[]) {
+    return packages.filter((g) => g.type === "tied").length;
+  }
+  countSinglePacForCus(packages: any[]) {
+    return packages.filter((g) => g.type === "single").length;
+  }
+
+  logGroupPackages(selectedCustomer: any[]) {
+    for (let item of this.selectedCustomer.package_groups) {
+      console.log("tiem ", item);
+    }
+  }
 }

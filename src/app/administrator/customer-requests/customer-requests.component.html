@@ -70,7 +70,7 @@
                                             <th>No</th>
                                             <th>Quti turi</th>
                                             <th>Qutillar soni</th>
-                                            <th>Consignmentlar</th>
+                                            <th>Partiyalar</th>
                                             <th>Tanlash</th>
                                         </tr>
                                     </thead>
@@ -306,6 +306,8 @@
                                     <thead class="text-primary">
                                         <tr>
                                             <th>No</th>
+                                            <th>Mijoz IDsi</th>
+                                            <th>So'ralgan Quti(lar)</th>
                                             <th>Telefon</th>
                                             <th>Yetkazish turi</th>
                                             <th>Qutillar</th>
@@ -323,6 +325,7 @@
                                                 <span *ngIf="request.is_urgent"
                                                     class="badge badge-danger ml-1">Shoshilinch</span>
                                             </td>
+                                            <td>{{request.requested_packages}}</td>
                                             <td>{{request.customer_phone}}</td>
                                             <td>{{getDeliveryTypeText(request.delivery_type)}}</td>
                                             <td>{{request.total_packages}} ta</td>
@@ -330,7 +333,9 @@
                                             <td>
                                                 <span class="badge" [class.badge-warning]="request.status === 'pending'"
                                                     [class.badge-success]="request.status === 'approved'"
-                                                    [class.badge-danger]="request.status === 'rejected'">
+                                                    [class.badge-danger]="request.status === 'rejected'"
+                                                    [class.badge-danger]="request.status === 'cancelled'">
+
                                                     {{getStatusText(request.status)}}
                                                 </span>
                                             </td>

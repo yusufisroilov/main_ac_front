@@ -55,6 +55,10 @@ export class AdminRequestHandlerComponent {
 
   // Data properties
   pendingRequests: DeliveryRequest[] = [];
+  archivedRequets: DeliveryRequest[] = [];
+
+  showArchiveTable: boolean = false;
+  showPendingTable: boolean = true;
   selectedRequest: DeliveryRequest | null = null;
   requestPackages: RequestPackage[] = [];
 
@@ -67,6 +71,7 @@ export class AdminRequestHandlerComponent {
   currentPage: number = 0;
   requestsPerPage: number = 10;
   totalRequests: number = 0;
+  totalArchiveRequests: number = 0;
   totalPages: number = 0;
 
   // Modal states
@@ -107,6 +112,7 @@ export class AdminRequestHandlerComponent {
     this.initializeTables();
     this.loadPendingRequests();
     this.loadEmuBranches();
+    this.showPendingTable = true;
     this.processedBy = localStorage.getItem("username") || "";
   }
 
@@ -135,6 +141,7 @@ export class AdminRequestHandlerComponent {
   loadPendingRequests() {
     this.loadingRequests = true;
 
+    this.hideAllViews();
     let params = new HttpParams()
       .set("limit", this.requestsPerPage.toString())
       .set("offset", (this.currentPage * this.requestsPerPage).toString());
@@ -188,7 +195,79 @@ export class AdminRequestHandlerComponent {
         }
       );
   }
+  // Load pending delivery requests
+  loadArchivedRequests() {
+    this.loadingRequests = true;
 
+    let params = new HttpParams()
+      .set("limit", this.requestsPerPage.toString())
+      .set("offset", (this.currentPage * this.requestsPerPage).toString());
+
+    if (this.filterDeliveryType) {
+      params = params.set("delivery_type", this.filterDeliveryType);
+    }
+    if (this.filterUrgent) {
+      params = params.set("is_urgent", this.filterUrgent);
+    }
+    if (this.filterCustomerId) {
+      params = params.set("owner_id", this.filterCustomerId);
+    }
+
+    this.http
+      .get(
+        GlobalVars.baseUrl + "/requests/archive?" + params.toString(),
+        this.options
+      )
+      .subscribe(
+        (response) => {
+          const result = response.json();
+          if (result.status === "success") {
+            this.archivedRequets = result.data.requests || [];
+            this.totalArchiveRequests = result.data.pagination.total;
+            console.log("Total archived requests ", this.totalArchiveRequests);
+
+            this.totalPages = Math.ceil(
+              this.totalArchiveRequests / this.requestsPerPage
+            );
+            this.updateRequestsTable();
+          } else {
+            swal.fire(
+              "Xatolik",
+              result.message || "So'rovlarni yuklashda xatolik",
+              "error"
+            );
+          }
+          this.loadingRequests = false;
+        },
+        (error) => {
+          swal.fire(
+            "Xatolik",
+            `So'rovlarni yuklashda xatolik: ${
+              error.json()?.error || error.message
+            }`,
+            "error"
+          );
+          this.loadingRequests = false;
+          if (error.status == 403) {
+            this.authService.logout();
+          }
+        }
+      );
+  }
+  showArchiveTableView() {
+    this.showArchiveTable = true;
+    this.showPendingTable = false;
+    this.loadArchivedRequests();
+  }
+  showPendingTableView() {
+    this.showPendingTable = true;
+    this.showArchiveTable = false;
+    this.loadPendingRequests();
+  }
+  hideAllViews() {
+    this.showArchiveTable = false;
+    this.showPendingTable = false;
+  }
   // Update requests table
   updateRequestsTable() {
     this.dataTable.dataRows = [];
@@ -246,7 +325,12 @@ export class AdminRequestHandlerComponent {
 
   // View request details
   viewRequestDetails(requestId: number) {
-    const request = this.pendingRequests.find((r) => r.id === requestId);
+    let request: any;
+    if (this.showArchiveTable) {
+      request = this.archivedRequets.find((r) => r.id === requestId);
+    } else {
+      request = this.pendingRequests.find((r) => r.id === requestId);
+    }
 
     if (!request) {
       swal.fire("Xatolik", "So'rov topilmadi", "error");
@@ -254,8 +338,6 @@ export class AdminRequestHandlerComponent {
     }
 
     this.selectedRequest = request;
-    console.log("rewquest ", this.selectedRequest);
-
     this.loadRequestPackages(requestId);
     this.showRequestDetails = true;
   }

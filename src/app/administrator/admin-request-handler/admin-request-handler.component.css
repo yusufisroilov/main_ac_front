@@ -1,0 +1,46 @@
+.filter-section {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.9),
+    rgba(248, 249, 250, 0.9)
+  );
+  border-radius: 12px;
+  padding: 24px;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.btn-group .btn {
+  border-radius: 8px 0 0 8px;
+  font-weight: 500;
+  padding: 12px 24px;
+  transition: all 0.3s ease;
+}
+
+.btn-group .btn:last-child {
+  border-radius: 0 8px 8px 0;
+}
+
+.btn-group .btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
+}
+
+.form-label {
+  font-weight: 600;
+  color: #495057;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+}
+
+.form-label i {
+  font-size: 18px;
+  opacity: 0.7;
+}
+
+.badge-light {
+  background-color: rgba(255, 255, 255, 0.9);
+  color: #495057;
+  font-weight: 600;
+}

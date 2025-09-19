@@ -359,8 +359,10 @@
                     <div class="col-md-12">
                         <h6>Umumiy Ma'lumot</h6>
                         <p><strong>Jami qutillar:</strong> {{selectedCustomer.total_packages}} ta</p>
-                        <p><strong>Bog'langan guruhlari:</strong> {{selectedCustomer}} ta</p>
-                        <p><strong>Alohida qutilari:</strong> {{selectedCustomer}} ta</p>
+                        <p><strong>Bog'langan guruhlari:</strong>
+                            {{countTiedPacForCus(selectedCustomer.package_groups)}} ta</p>
+                        <p><strong>Alohida qutilari:</strong> {{countSinglePacForCus(selectedCustomer.package_groups)}}
+                            ta</p>
                     </div>
                 </div>
 
@@ -382,7 +384,7 @@
                                         <tr>
                                             <th>Barcode</th>
                                             <th>Partiya</th>
-                                            <th>Items</th>
+                                            <th>Buyumlar</th>
                                             <th>Sana</th>
                                             <th *ngIf="group.type === 'tied'">Amallar</th>
                                         </tr>
@@ -392,7 +394,7 @@
                                             <td><code>{{pkg.barcode}}</code></td>
                                             <td>{{pkg.consignment}}</td>
                                             <td>{{pkg.items_count || 0}}</td>
-                                            <td><small>{{pkg.created_at | date:'short'}}adssdsa</small></td>
+                                            <td><small>{{pkg.created_at | date:'short'}}</small></td>
                                             <td *ngIf="group.type === 'tied'">
                                                 <button class="btn btn-sm btn-warning"
                                                     (click)="untiePackage(selectedCustomer.owner_id, pkg.consignment)">

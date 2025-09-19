@@ -586,6 +586,8 @@ export class CustomerRequestsComponent {
       return "Tasdiqlandi";
     } else if (status === "rejected") {
       return "Rad Qilindi";
+    } else if (status === "cancelled") {
+      return "Bekor Qilindi";
     }
   }
   // Cancel delivery request
