@@ -557,7 +557,7 @@ export class BigBoxesComponent implements OnInit {
             )
             .subscribe(
               (response) => {
-                console.log("response json ", response.json().message);
+                // console.log("response json ", response.json().message);
 
                 if (response.json().status == "error") {
                   swal

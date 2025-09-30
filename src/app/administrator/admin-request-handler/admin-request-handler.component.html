@@ -1,8 +1,7 @@
-<!-- src/app/pages/delivery-requests/admin-delivery-requests.component.html -->
+<!-- Complete admin-request-handler.component.html -->
 <div class="main-content">
     <div class="container-fluid">
 
-        <!-- Page Header -->
         <!-- Page Header -->
         <div class="row">
             <div class="col-md-12">
@@ -67,16 +66,21 @@
                                     </div>
                                 </div>
                             </div>
+                        </div>
+
+                        <!-- View Toggle Buttons -->
+                        <div class="row mb-3">
                             <div class="col-md-12">
-                                <button class="btn btn-primary mr-2" (click)="showArchiveTableView()">
-                                    <i class="material-icons">archive</i>
-                                    So'rovlar Arxive
-                                </button>
-                            </div>
-                            <div class="col-md-12">
-                                <button class="btn btn-primary mr-2" (click)="showPendingTableView()">
+                                <button class="btn btn-info mr-2" [class.btn-primary]="!showArchiveTable"
+                                    [class.btn-outline-primary]="showArchiveTable" (click)="showPendingTableView()">
                                     <i class="material-icons">schedule</i>
                                     Kutilayotgan So'rovlar
+                                </button>
+
+                                <button class="btn btn-info mr-2" [class.btn-primary]="showArchiveTable"
+                                    [class.btn-outline-primary]="!showArchiveTable" (click)="showArchiveTableView()">
+                                    <i class="material-icons">archive</i>
+                                    So'rovlar Arxiv
                                 </button>
                             </div>
                         </div>
@@ -86,7 +90,7 @@
             </div>
         </div>
 
-        <!-- Requests Table -->
+        <!-- Archive Requests Table -->
         <div class="row" *ngIf="showArchiveTable">
             <div class="col-md-12">
                 <div class="card">
@@ -95,13 +99,13 @@
                             <div>
                                 <h4 class="card-title mb-1">Arxiv So'rovlar</h4>
                                 <p class="card-category mb-0">
-                                    <span *ngIf="totalArchiveRequests > 0">{{totalRequests}} ta arxive so'rovlar
-                                        bor.</span>
+                                    <span *ngIf="totalArchiveRequests > 0">{{totalArchiveRequests}} ta arxiv so'rov
+                                        bor</span>
                                     <span *ngIf="totalArchiveRequests === 0">Hozircha arxiv so'rov yo'q</span>
                                 </p>
                             </div>
                             <div>
-                                <button class="btn btn-sm btn-outline-light" (click)="loadPendingRequests()"
+                                <button class="btn btn-sm btn-outline-light" (click)="loadArchivedRequests()"
                                     [disabled]="loadingRequests" title="So'rovlarni yangilash">
                                     <i class="material-icons" *ngIf="!loadingRequests">refresh</i>
                                     <i class="fa fa-spinner fa-spin" *ngIf="loadingRequests"></i>
@@ -120,7 +124,7 @@
                             <p class="mt-2">So'rovlar yuklanmoqda...</p>
                         </div>
 
-                        <!-- Requests table -->
+                        <!-- Archive Requests table -->
                         <div *ngIf="!loadingRequests && archivedRequets.length > 0">
                             <div class="table-responsive">
                                 <table class="table table-hover">
@@ -128,7 +132,6 @@
                                         <tr>
                                             <th>No</th>
                                             <th>Mijoz ID</th>
-                                            <th>So'ralgan Qutilar</th>
                                             <th>Telefon</th>
                                             <th>Yetkazish turi</th>
                                             <th>Qutillar</th>
@@ -140,26 +143,26 @@
                                     <tbody>
                                         <tr *ngFor="let request of archivedRequets; let i = index"
                                             [class.table-warning]="request.is_urgent">
-                                            <td>{{ i + 1}}</td>
+                                            <td>{{i + 1}}</td>
                                             <td>
                                                 {{request.owner_id}}
                                                 <span *ngIf="request.is_urgent"
                                                     class="badge badge-danger ml-1">Shoshilinch</span>
                                             </td>
-                                            <td>{{request.requested_packages}}</td>
                                             <td>{{request.customer_phone}}</td>
                                             <td>{{getDeliveryTypeText(request.delivery_type)}}</td>
                                             <td>{{request.total_packages}} ta</td>
                                             <td>
-                                                <span class="badge" [class.badge-warning]="request.status === 'pending'"
+                                                <span class="badge"
                                                     [class.badge-success]="request.status === 'approved'"
-                                                    [class.badge-danger]="request.status === 'rejected'">
+                                                    [class.badge-danger]="request.status === 'rejected'"
+                                                    [class.badge-secondary]="request.status === 'cancelled'">
                                                     {{getStatusText(request.status)}}
                                                 </span>
                                             </td>
                                             <td>{{request.created_at | date:'short'}}</td>
                                             <td>
-                                                <button class="btn btn-sm btn-info mr-1"
+                                                <button class="btn btn-sm btn-info"
                                                     (click)="viewRequestDetails(request.id)">
                                                     Ko'rish
                                                 </button>
@@ -168,44 +171,21 @@
                                     </tbody>
                                 </table>
                             </div>
-
-                            <!-- Pagination -->
-                            <div class="row mt-3" *ngIf="totalPages > 1">
-                                <div class="col-md-12">
-                                    <nav aria-label="Page navigation">
-                                        <ul class="pagination justify-content-center">
-                                            <li class="page-item" [class.disabled]="currentPage === 0">
-                                                <a class="page-link" (click)="goToPage(currentPage - 1)">Oldingi</a>
-                                            </li>
-
-                                            <li class="page-item"
-                                                *ngFor="let page of [].constructor(totalPages); let i = index"
-                                                [class.active]="i === currentPage">
-                                                <a class="page-link" (click)="goToPage(i)">{{i + 1}}</a>
-                                            </li>
-
-                                            <li class="page-item" [class.disabled]="currentPage === totalPages - 1">
-                                                <a class="page-link" (click)="goToPage(currentPage + 1)">Keyingi</a>
-                                            </li>
-                                        </ul>
-                                    </nav>
-                                </div>
-                            </div>
                         </div>
 
-
-                        <!-- No requests message -->
-                        <div *ngIf="!loadingRequests && pendingRequests.length === 0" class="text-center p-4">
-                            <i class="material-icons" style="font-size: 48px; color: #ccc;">assignment_late</i>
-                            <h5 class="mt-2">Kutilayotgan so'rov yo'q</h5>
-                            <p class="text-muted">Hozircha kutilayotgan yetkazish so'rovlari mavjud emas</p>
+                        <!-- No archived requests message -->
+                        <div *ngIf="!loadingRequests && archivedRequets.length === 0" class="text-center p-4">
+                            <i class="material-icons" style="font-size: 48px; color: #ccc;">archive</i>
+                            <h5 class="mt-2">Arxiv so'rov yo'q</h5>
+                            <p class="text-muted">Hozircha arxivlangan yetkazish so'rovlari mavjud emas</p>
                         </div>
 
                     </div>
                 </div>
             </div>
         </div>
-        <!-- Requests Table -->
+
+        <!-- Pending Requests Table -->
         <div class="row" *ngIf="!showArchiveTable">
             <div class="col-md-12">
                 <div class="card">
@@ -238,7 +218,7 @@
                             <p class="mt-2">So'rovlar yuklanmoqda...</p>
                         </div>
 
-                        <!-- Requests table -->
+                        <!-- Pending Requests table -->
                         <div *ngIf="!loadingRequests && pendingRequests.length > 0">
                             <div class="table-responsive">
                                 <table class="table table-hover">
@@ -246,7 +226,6 @@
                                         <tr>
                                             <th>No</th>
                                             <th>Mijoz ID</th>
-                                            <th>So'ralgan Qutilar</th>
                                             <th>Telefon</th>
                                             <th>Yetkazish turi</th>
                                             <th>Qutillar</th>
@@ -258,22 +237,18 @@
                                     <tbody>
                                         <tr *ngFor="let request of pendingRequests; let i = index"
                                             [class.table-warning]="request.is_urgent">
-                                            <td>{{ i + 1}}</td>
+                                            <td>{{i + 1}}</td>
                                             <td>
                                                 {{request.owner_id}}
                                                 <span *ngIf="request.is_urgent"
                                                     class="badge badge-danger ml-1">Shoshilinch</span>
                                             </td>
-                                            <td>{{request.requested_packages}}</td>
                                             <td>{{request.customer_phone}}</td>
                                             <td>{{getDeliveryTypeText(request.delivery_type)}}</td>
                                             <td>{{request.total_packages}} ta</td>
                                             <td>
-                                                <span class="badge" [class.badge-warning]="request.status === 'pending'"
-                                                    [class.badge-success]="request.status === 'approved'"
-                                                    [class.badge-danger]="request.status === 'rejected'">
-                                                    {{getStatusText(request.status)}}
-                                                </span>
+                                                <span
+                                                    class="badge badge-warning">{{getStatusText(request.status)}}</span>
                                             </td>
                                             <td>{{request.created_at | date:'short'}}</td>
                                             <td>
@@ -296,33 +271,9 @@
                                     </tbody>
                                 </table>
                             </div>
-
-                            <!-- Pagination -->
-                            <div class="row mt-3" *ngIf="totalPages > 1">
-                                <div class="col-md-12">
-                                    <nav aria-label="Page navigation">
-                                        <ul class="pagination justify-content-center">
-                                            <li class="page-item" [class.disabled]="currentPage === 0">
-                                                <a class="page-link" (click)="goToPage(currentPage - 1)">Oldingi</a>
-                                            </li>
-
-                                            <li class="page-item"
-                                                *ngFor="let page of [].constructor(totalPages); let i = index"
-                                                [class.active]="i === currentPage">
-                                                <a class="page-link" (click)="goToPage(i)">{{i + 1}}</a>
-                                            </li>
-
-                                            <li class="page-item" [class.disabled]="currentPage === totalPages - 1">
-                                                <a class="page-link" (click)="goToPage(currentPage + 1)">Keyingi</a>
-                                            </li>
-                                        </ul>
-                                    </nav>
-                                </div>
-                            </div>
                         </div>
 
-
-                        <!-- No requests message -->
+                        <!-- No pending requests message -->
                         <div *ngIf="!loadingRequests && pendingRequests.length === 0" class="text-center p-4">
                             <i class="material-icons" style="font-size: 48px; color: #ccc;">assignment_late</i>
                             <h5 class="mt-2">Kutilayotgan so'rov yo'q</h5>
@@ -338,20 +289,20 @@
 </div>
 
 <!-- Request Details Modal -->
-<div class="modal fade" id="requestDetailsModal" tabindex="-1" [class.show]="showRequestDetails"
-    [style.display]="showRequestDetails ? 'block' : 'none'">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content" *ngIf="selectedRequest">
-            <div class="modal-header">
-                <h5 class="modal-title">So'rov Tafsilotlari - #{{selectedRequest.id}}</h5>
+<div class="modal" [class.show]="showRequestDetails" [style.display]="showRequestDetails ? 'block' : 'none'"
+    style="z-index: 1050;" *ngIf="showRequestDetails">
+    <div class="modal-dialog modal-xl" style="max-height: 80vh; margin-top: 5vh;">
+        <div class="modal-content" style="height: 85vh; display: flex; flex-direction: column;">
+            <div class="modal-header" style="flex-shrink: 0;">
+                <h5 class="modal-title">So'rov Tafsilotlari - #{{selectedRequest?.id}}</h5>
                 <button type="button" class="close" (click)="closeModal()">
                     <span>&times;</span>
                 </button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body" style="flex: 1; overflow-y: auto; padding: 20px;" *ngIf="selectedRequest">
 
                 <!-- Request Info -->
-                <div class="row">
+                <div class="row mb-4">
                     <div class="col-md-6">
                         <h6>Mijoz Ma'lumotlari</h6>
                         <p><strong>Mijoz ID:</strong> {{selectedRequest.owner_id}}</p>
@@ -369,13 +320,109 @@
                             <strong>Manzil:</strong> {{selectedRequest.delivery_address}}
                         </p>
                         <p *ngIf="selectedRequest.emu_branch_id">
-                            <strong>EMU Filiali:</strong> {{loadBranchByid(selectedRequest.emu_branch_id)}}
+                            <strong>Filialimiz:</strong> {{loadBranchByid(selectedRequest.emu_branch_id)}}
                         </p>
                     </div>
                 </div>
 
-                <!-- Notes -->
-                <div class="row" *ngIf="selectedRequest.notes">
+                <!-- Payment Information Section -->
+                <div class="row mb-4" *ngIf="selectedRequest.payment_amount || paymentImageUrls.length > 0">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-header" [class.card-header-success]="selectedRequest.payment_verified"
+                                [class.card-header-warning]="!selectedRequest.payment_verified">
+                                <h6 class="card-title">
+                                    <i class="material-icons">payment</i>
+                                    To'lov Ma'lumotlari
+                                    <span class="badge badge-success ml-2"
+                                        *ngIf="selectedRequest.payment_verified">Tasdiqlangan</span>
+                                    <span class="badge badge-warning ml-2"
+                                        *ngIf="!selectedRequest.payment_verified">Kutilmoqda</span>
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <!-- Payment Amount -->
+                                <div class="row mb-3" *ngIf="selectedRequest.payment_amount">
+                                    <div class="col-md-4">
+                                        <p><strong>To'lov Miqdori:</strong></p>
+                                        <h5 class="text-success">{{selectedRequest.payment_amount | number:'1.0-0'}} UZS
+                                        </h5>
+                                    </div>
+
+                                    <div class="col-md-4" *ngIf="selectedRequest.payment_verified">
+                                        <p><strong>Tasdiqlash Holati:</strong></p>
+                                        <span class="badge badge-success">
+                                            <i class="material-icons">check_circle</i> Tasdiqlangan
+                                        </span>
+                                    </div>
+
+                                    <div class="col-md-4" *ngIf="selectedRequest.payment_notes">
+                                        <p><strong>Admin Izohi:</strong></p>
+                                        <small class="text-muted">{{selectedRequest.payment_notes}}</small>
+                                    </div>
+                                </div>
+
+                                <!-- Payment Images -->
+                                <div class="row mb-3" *ngIf="paymentImageUrls && paymentImageUrls.length > 0">
+                                    <div class="col-md-12">
+                                        <h6>To'lov Rasmlari ({{paymentImageUrls.length}} ta):</h6>
+                                        <div class="row">
+                                            <div class="col-md-3 mb-3"
+                                                *ngFor="let imageUrl of paymentImageUrls; let i = index">
+                                                <div class="card">
+                                                    <img [src]="imageUrl" class="card-img-top"
+                                                        style="height: 150px; object-fit: cover; cursor: pointer;"
+                                                        (click)="showFullImage(imageUrl, i)"
+                                                        [alt]="'To\'lov rasmi ' + (i + 1)"
+                                                        onerror="this.src='assets/img/placeholder.png'">
+                                                    <div class="card-body p-2">
+                                                        <small class="text-muted">Rasm {{i + 1}}</small>
+                                                        <button class="btn btn-sm btn-info float-right"
+                                                            (click)="showFullImage(imageUrl, i)"
+                                                            title="Katta ko'rinishda ko'rish">
+                                                            <i class="material-icons">zoom_in</i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- No payment images message -->
+                                <div class="row mb-3" *ngIf="!paymentImageUrls || paymentImageUrls.length === 0">
+                                    <div class="col-md-12">
+                                        <div class="alert alert-info">
+                                            <i class="material-icons">info</i>
+                                            Mijoz tomonidan to'lov rasmi yuklanmagan
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Payment Verification Actions -->
+                                <div class="row"
+                                    *ngIf="!selectedRequest.payment_verified && selectedRequest.status === 'pending'">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label>To'lovni tasdiqlash:</label>
+                                            <div class="btn-group">
+                                                <button class="btn btn-success" (click)="verifyPayment(true)">
+                                                    <i class="material-icons">check</i> To'lov To'g'ri
+                                                </button>
+                                                <button class="btn btn-warning" (click)="showPaymentNotesForm()">
+                                                    <i class="material-icons">note</i> Izoh Qo'shish
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Customer Notes -->
+                <div class="row mb-4" *ngIf="selectedRequest.notes">
                     <div class="col-md-12">
                         <h6>Mijoz Izohi</h6>
                         <p class="alert alert-info">{{selectedRequest.notes}}</p>
@@ -408,7 +455,7 @@
                 </div>
 
             </div>
-            <div class="modal-footer">
+            <div class="modal-footer" style="flex-shrink: 0;">
                 <button type="button" class="btn btn-secondary" (click)="closeModal()">Yopish</button>
                 <button type="button" class="btn btn-success mr-2"
                     (click)="showApprovalFormForRequest(selectedRequest.id)"
@@ -424,22 +471,51 @@
     </div>
 </div>
 
-<!-- Approval Form Modal -->
-<div class="modal fade" id="approvalModal" tabindex="-1" [class.show]="showApprovalForm"
-    [style.display]="showApprovalForm ? 'block' : 'none'">
+<!-- Full Image Modal -->
+<div class="modal" [class.show]="showFullImageModal" [style.display]="showFullImageModal ? 'block' : 'none'"
+    style="z-index: 1060;" *ngIf="showFullImageModal">
     <div class="modal-dialog modal-lg">
-        <div class="modal-content" *ngIf="selectedRequest">
+        <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">So'rovni Tasdiqlash - Mijoz: K{{selectedRequest.owner_id}}</h5>
+                <h5 class="modal-title">To'lov Rasmi {{currentImageIndex + 1}}</h5>
+                <button type="button" class="close" (click)="closeFullImageModal()">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body text-center">
+                <img [src]="currentFullImageUrl" class="img-fluid" style="max-height: 70vh; width: auto;"
+                    [alt]="'To\'lov rasmi ' + (currentImageIndex + 1)" onerror="this.src='assets/img/placeholder.png'">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" (click)="previousImage()"
+                    [disabled]="currentImageIndex === 0 || paymentImageUrls.length <= 1">
+                    <i class="material-icons">navigate_before</i> Oldingi
+                </button>
+                <button type="button" class="btn btn-secondary" (click)="nextImage()"
+                    [disabled]="currentImageIndex === paymentImageUrls.length - 1 || paymentImageUrls.length <= 1">
+                    Keyingi <i class="material-icons">navigate_next</i>
+                </button>
+                <button type="button" class="btn btn-primary" (click)="closeFullImageModal()">Yopish</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Approval Form Modal -->
+<div class="modal" [class.show]="showApprovalForm" [style.display]="showApprovalForm ? 'block' : 'none'"
+    style="z-index: 1050;" *ngIf="showApprovalForm">
+    <div class="modal-dialog modal-lg" style="max-height: 90vh; margin-top: 5vh;">
+        <div class="modal-content" style="height: 80vh; display: flex; flex-direction: column;">
+            <div class="modal-header" style="flex-shrink: 0;">
+                <h5 class="modal-title">So'rovni Tasdiqlash - Mijoz: {{selectedRequest?.owner_id}}</h5>
                 <button type="button" class="close" (click)="closeModal()">
                     <span>&times;</span>
                 </button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body" style="flex: 1; overflow-y: auto; padding: 20px;" *ngIf="selectedRequest">
 
                 <form>
                     <div class="row">
-
                         <!-- Delivery Fee -->
                         <div class="col-md-6">
                             <div class="form-group">
@@ -457,7 +533,6 @@
                                     min="0">
                             </div>
                         </div>
-
                     </div>
 
                     <!-- Courier Details (if Own-Courier delivery) -->
@@ -496,11 +571,10 @@
                             </div>
                         </div>
                     </div>
-
                 </form>
 
             </div>
-            <div class="modal-footer">
+            <div class="modal-footer" style="flex-shrink: 0;">
                 <button type="button" class="btn btn-secondary" (click)="closeModal()">Bekor qilish</button>
                 <button type="button" class="btn btn-success" (click)="approveDeliveryRequest()"
                     [disabled]="processingRequest">
@@ -514,17 +588,17 @@
 </div>
 
 <!-- Rejection Form Modal -->
-<div class="modal fade" id="rejectionModal" tabindex="-1" [class.show]="showRejectionForm"
-    [style.display]="showRejectionForm ? 'block' : 'none'">
-    <div class="modal-dialog">
-        <div class="modal-content" *ngIf="selectedRequest">
-            <div class="modal-header">
-                <h5 class="modal-title">So'rovni Rad Etish - Mijoz: {{selectedRequest.customer_id}}</h5>
+<div class="modal" [class.show]="showRejectionForm" [style.display]="showRejectionForm ? 'block' : 'none'"
+    style="z-index: 1050;" *ngIf="showRejectionForm">
+    <div class="modal-dialog" style="max-height: 90vh; margin-top: 5vh;">
+        <div class="modal-content" style="height: 70vh; display: flex; flex-direction: column;">
+            <div class="modal-header" style="flex-shrink: 0;">
+                <h5 class="modal-title">So'rovni Rad Etish - Mijoz: {{selectedRequest?.owner_id}}</h5>
                 <button type="button" class="close" (click)="closeModal()">
                     <span>&times;</span>
                 </button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body" style="flex: 1; overflow-y: auto; padding: 20px;" *ngIf="selectedRequest">
 
                 <form>
                     <div class="form-group">
@@ -540,7 +614,7 @@
                 </form>
 
             </div>
-            <div class="modal-footer">
+            <div class="modal-footer" style="flex-shrink: 0;">
                 <button type="button" class="btn btn-secondary" (click)="closeModal()">Bekor qilish</button>
                 <button type="button" class="btn btn-danger" (click)="rejectDeliveryRequest()"
                     [disabled]="processingRequest || !rejectionReason.trim()">
@@ -554,5 +628,6 @@
 </div>
 
 <!-- Modal backdrop -->
-<div class="modal-backdrop fade show" *ngIf="showRequestDetails || showApprovalForm || showRejectionForm"
-    (click)="closeModal()"></div>
+<div class="modal-backdrop fade show"
+    *ngIf="showRequestDetails || showApprovalForm || showRejectionForm || showFullImageModal" style="z-index: 1040;">
+</div>

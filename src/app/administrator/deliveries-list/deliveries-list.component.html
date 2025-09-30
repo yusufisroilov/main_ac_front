@@ -140,7 +140,7 @@
                                                     <option value="Pick-up">O'zim olaman</option>
                                                     <option value="Yandex">Yandex</option>
                                                     <option value="Own-Courier">Kuryer</option>
-                                                    <option value="EMU">EMU Post</option>
+                                                    <option value="EMU">Bizning Filialimiz</option>
                                                 </select>
                                             </div>
                                         </div>
@@ -172,7 +172,7 @@
                                                 </div>
                                                 <div class="col-md-6">
                                                     <div class="form-group">
-                                                        <label class="bmd-label-floating">EMU Filiali *</label>
+                                                        <label class="bmd-label-floating">Bizning Filialimiz</label>
                                                         <select class="form-control" [(ngModel)]="selectedBranchId"
                                                             name="selectedBranchId"
                                                             [disabled]="!selectedRegionId || loadingBranches">
@@ -316,9 +316,9 @@
                                     <label class="bmd-label-floating">Holat</label>
                                     <select class="form-control" [(ngModel)]="filterStatus" (change)="applyFilters()">
                                         <option value="">Barchasi</option>
+                                        <option value="collected">Yig'ilgan</option>
                                         <option value="created">Yaratilgan</option>
                                         <option value="sent">Yuborilgan</option>
-                                        <option value="delivered">Yetkazilgan</option>
                                         <option value="returned">Qaytarilgan</option>
                                         <option value="cancelled">Bekor qilingan</option>
                                     </select>
@@ -483,7 +483,9 @@
                     <div class="col-md-6">
                         <h6>Asosiy Ma'lumotlar</h6>
                         <p><strong>Mijoz ID:</strong> {{selectedDelivery.owner_id}}</p>
-                        <p><strong>Mijoz ID:</strong> {{showBarcodes(selectedDelivery)}}</p>
+                        <p><strong>Barkod:</strong> {{showBarcodes(selectedDelivery)}}</p>
+                        <p><strong>Yuk Kilosi:</strong> {{selectedDelivery.weight ? selectedDelivery.weight :
+                            'Kiritilmagan'}}</p>
                         <p><strong>Telefon:</strong> {{selectedDelivery.customer_phone}}</p>
                         <p><strong>Yetkazish turi:</strong> {{getDeliveryTypeText(selectedDelivery.delivery_type)}}</p>
                         <p><strong>Qutillar soni:</strong> {{selectedDelivery.total_packages}} ta</p>
@@ -506,10 +508,14 @@
                         </p>
                         <p><strong>Yaratilgan:</strong> {{selectedDelivery.created_date | date:'short'}}</p>
                         <p *ngIf="selectedDelivery.sent_date">
-                            <strong>Yuborilgan:</strong> {{selectedDelivery.sent_date | date:'full'}}
+                            <strong>Yuborilgan:</strong> {{selectedDelivery.sent_date | date:'short'}}
                         </p>
                         <p *ngIf="selectedDelivery.delivered_date">
                             <strong>Yetkazilgan:</strong> {{selectedDelivery.delivered_date | date:'full'}}
+                        </p>
+                        <p>
+                            <strong>Oxirgi o'zgartirilgan Sana:</strong> {{selectedDelivery.updated_at |
+                            date:'short'}}
                         </p>
                     </div>
                 </div>
@@ -547,8 +553,7 @@
                         <label class="bmd-label-floating">Yangi Holat *</label>
                         <select class="form-control" [(ngModel)]="newStatus" name="newStatus">
                             <option value="">Holatni tanlang</option>
-                            <option value="sent">Yuborilgan</option>
-                            <option value="delivered">Yetkazilgan</option>
+                            <option value="sent">Yetkazilgan</option>
                             <option value="returned">Qaytarilgan</option>
                             <option value="cancelled">Bekor qilingan</option>
                         </select>

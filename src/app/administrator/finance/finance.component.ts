@@ -285,7 +285,7 @@ export class FinanceComponent implements OnInit {
     if (id == "") {
       this.currentFinID = "";
     }
-    console.log("current id ", this.currentFinID);
+    // console.log("current id ", this.currentFinID);
 
     return this.http
       .get(

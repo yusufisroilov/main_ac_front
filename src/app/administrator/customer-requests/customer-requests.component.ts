@@ -1,4 +1,4 @@
-// src/app/pages/delivery-requests/customer-delivery-request.component.ts
+// Fixed customer-requests.component.ts
 import { TableData } from "src/app/md/md-table/md-table.component";
 import {
   AfterViewInit,
@@ -28,23 +28,35 @@ interface PackageGroup {
 
 interface DeliveryRequest {
   id?: number;
-  customer_id: string;
+  owner_id: string;
   customer_phone: string;
   delivery_type: string;
-  requested_packages: string[];
+  requested_packages: string; // This is stored as JSON string in DB
+  total_packages: number;
   delivery_address?: string;
   emu_branch_id?: number;
   notes?: string;
   is_urgent?: boolean;
   status: string;
   created_at?: Date;
+  payment_amount?: number;
+  payment_images?: string[];
 }
+
+// Interface for image handling
+interface PaymentImage {
+  file: File;
+  preview: string;
+  name: string;
+  size: number;
+}
+
 @Component({
   selector: "app-customer-requests",
   templateUrl: "./customer-requests.component.html",
   styleUrls: ["./customer-requests.component.css"],
 })
-export class CustomerRequestsComponent {
+export class CustomerRequestsComponent implements OnInit {
   public tableData1: TableData;
   public dataTable: TableData;
 
@@ -69,6 +81,7 @@ export class CustomerRequestsComponent {
   branches: any[];
   selectedRegionId: number;
   selectedBranchId: number;
+
   // Loading states
   loadingRegions: boolean;
   loadingBranches: boolean;
@@ -85,6 +98,11 @@ export class CustomerRequestsComponent {
   loadingPackages: boolean;
   submittingRequest: boolean;
 
+  // FIXED: Payment handling
+  paymentAmount: number = 0;
+  selectedPaymentImages: PaymentImage[] = [];
+  uploadingImages: boolean = false;
+
   constructor(
     public authService: AuthService,
     private changeDetectorRef: ChangeDetectorRef,
@@ -99,13 +117,10 @@ export class CustomerRequestsComponent {
     // Initialize data
     this.customerPackages = [];
     this.selectedPackages = [];
-    // Initialize data
     this.regions = [];
     this.branches = [];
-
     this.selectedRegionId = null;
     this.selectedBranchId = null;
-
     this.myDeliveryRequests = [];
 
     // Initialize UI states
@@ -123,6 +138,7 @@ export class CustomerRequestsComponent {
 
     // Initialize loading states
     this.loadingPackages = false;
+    this.loadingRegions = false;
     this.loadingBranches = false;
     this.submittingRequest = false;
   }
@@ -151,6 +167,7 @@ export class CustomerRequestsComponent {
       ],
       dataRows: [],
     };
+
     this.currentID = localStorage.getItem("id");
     this.loadCustomerPackages();
     this.loadMyDeliveryRequests();
@@ -171,8 +188,7 @@ export class CustomerRequestsComponent {
           const result = response.json();
           if (result.status === "success") {
             this.customerPackages = result.data.package_groups || [];
-
-            this.updatePackagesTable();
+            // console.log("Loaded customer packages:", this.customerPackages);
           } else {
             swal.fire(
               "Xatolik",
@@ -191,59 +207,25 @@ export class CustomerRequestsComponent {
       );
   }
 
-  // Update packages table
-  updatePackagesTable() {
-    this.dataTable.dataRows = [];
-
-    this.customerPackages.forEach((group, index) => {
-      const isSelected = group.selected || false;
-      const selectButton = `
-        <button class="btn btn-sm ${
-          isSelected ? "btn-success" : "btn-primary"
-        }" 
-                onclick="window.selectPackageGroup(${index})">
-          ${isSelected ? "✓ Tanlangan" : "Tanlash"}
-        </button>
-      `;
-
-      const typeText =
-        group.type === "tied"
-          ? `🔗 Bog'langan (${group.total_packages} ta)`
-          : "📦 Yagona quti";
-
-      this.dataTable.dataRows.push([
-        (index + 1).toString(),
-        typeText,
-        group.total_packages.toString(),
-        group.consignments.join(", "),
-        selectButton,
-      ]);
-    });
-
-    // Make selectPackageGroup available globally
-    (window as any).selectPackageGroup = (index: number) => {
-      this.selectPackageGroup(index);
-    };
-  }
-
   // Select/deselect package group
   selectPackageGroup(index: number) {
     this.customerPackages[index].selected =
       !this.customerPackages[index].selected;
     this.updateSelectedPackages();
-    this.updatePackagesTable();
   }
 
-  // Update selected packages list
+  // FIXED: Update selected packages list
   updateSelectedPackages() {
     this.selectedPackages = [];
     this.customerPackages.forEach((group) => {
       if (group.selected) {
+        // Add all barcodes from this group
         this.selectedPackages = this.selectedPackages.concat(
           group.package_barcodes
         );
       }
     });
+    // "Updated selected packages:", this.selectedPackages;
   }
 
   // Show package selection step
@@ -283,12 +265,9 @@ export class CustomerRequestsComponent {
     this.http.get(GlobalVars.baseUrl + "/regions/emu", this.options).subscribe(
       (response) => {
         const result = response.json();
-
         if (result.status === "success") {
           this.regions = result.data.regions || [];
-          console.log("regions ", this.regions);
-
-          console.log("Regions loaded:", this.regions);
+          // console.log("Regions loaded:", this.regions);
         } else {
           swal.fire(
             "Xatolik",
@@ -311,11 +290,11 @@ export class CustomerRequestsComponent {
   // Load branches when region is selected
   onRegionSelect(regionId: number) {
     this.selectedRegionId = regionId;
-    this.selectedBranchId = null; // Reset branch selection
-    this.branches = []; // Clear previous branches
+    this.selectedBranchId = null;
+    this.branches = [];
 
     if (!regionId) {
-      return; // No region selected
+      return;
     }
 
     this.loadBranches(regionId);
@@ -332,7 +311,7 @@ export class CustomerRequestsComponent {
           const result = response.json();
           if (result.status === "success") {
             this.branches = result.data.branches || [];
-            console.log("Branches loaded:", this.branches);
+            // console.log("Branches loaded:", this.branches);
           } else {
             swal.fire(
               "Xatolik",
@@ -352,68 +331,97 @@ export class CustomerRequestsComponent {
       );
   }
 
-  // When branch is selected
-  onBranchSelect(branchId: number) {
-    this.selectedBranchId = branchId;
-    // console.log("Selected branch ID:", this.selectedBranchId);
-    // console.log("Selected region ID:", this.selectedRegionId);
-
-    // Find selected branch details if needed
-    const selectedBranch = this.branches.find(
-      (branch) => branch.id === branchId
-    );
-    if (selectedBranch) {
-    }
-  }
-
-  // Get selected region name
-  getSelectedRegionName(): string {
-    if (!this.selectedRegionId) return "";
-    const region = this.regions.find(
-      (r) => r.id === Number(this.selectedRegionId)
-    );
-    return region ? region.name : "";
-  }
-
-  // Get selected branch name
-  getSelectedBranchName(): string {
-    if (!this.selectedBranchId) return "";
-    const branch = this.branches.find(
-      (b) => b.id === Number(this.selectedBranchId)
-    );
-
-    return branch ? branch.name : "";
-  }
-
-  // Reset selections
-  resetEMUSelection() {
-    this.selectedRegionId = null;
-    this.selectedBranchId = null;
-    this.branches = [];
-  }
-
-  // Check if EMU selection is complete
-  isEMUSelectionComplete(): boolean {
-    if (this.selectedRegionId && this.selectedBranchId) {
-      return true;
-    }
-    return false;
-  }
-
   // When delivery type changes
   onDeliveryTypeChange() {
     if (this.deliveryType === "EMU") {
-      // Load regions if not already loaded
       if (this.regions.length === 0) {
         this.loadRegions();
       }
     } else {
-      // Reset EMU selections if delivery type changed
-      this.resetEMUSelection();
+      this.selectedRegionId = null;
+      this.selectedBranchId = null;
+      this.branches = [];
     }
   }
 
-  // Submit delivery request
+  // FIXED: Handle payment images selection
+  onPaymentImagesSelected(event: any) {
+    const files: FileList = event.target.files;
+    if (!files || files.length === 0) return;
+
+    // Validate file count
+    if (this.selectedPaymentImages.length + files.length > 5) {
+      swal.fire("Xatolik", "Maksimal 5 ta rasm yuklash mumkin", "error");
+      return;
+    }
+
+    // Validate file sizes and types
+    const maxSize = 5 * 1024 * 1024; // 5MB
+    const allowedTypes = [
+      "image/jpeg",
+      "image/jpg",
+      "image/png",
+      "image/gif",
+      "image/webp",
+    ];
+
+    Array.from(files).forEach((file) => {
+      // Validate file type
+      if (!allowedTypes.includes(file.type)) {
+        swal.fire(
+          "Xatolik",
+          `${file.name} fayli noto'g'ri formatda. Faqat rasm fayllari ruxsat etilgan.`,
+          "error"
+        );
+        return;
+      }
+
+      // Validate file size
+      if (file.size > maxSize) {
+        swal.fire(
+          "Xatolik",
+          `${file.name} fayli juda katta (maksimal 5MB)`,
+          "error"
+        );
+        return;
+      }
+
+      // Create preview
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        const paymentImage: PaymentImage = {
+          file: file,
+          preview: e.target.result,
+          name: file.name,
+          size: file.size,
+        };
+
+        this.selectedPaymentImages.push(paymentImage);
+        // console.log("Added payment image:", paymentImage.name);
+      };
+      reader.readAsDataURL(file);
+    });
+
+    // Clear the file input
+    event.target.value = "";
+  }
+
+  // Remove payment image
+  removePaymentImage(index: number) {
+    this.selectedPaymentImages.splice(index, 1);
+    // console.log("Removed payment image at index:", index);
+  }
+
+  // Format file size
+  formatFileSize(bytes: number): string {
+    if (bytes === 0) return "0 Bytes";
+    const k = 1024;
+    const sizes = ["Bytes", "KB", "MB", "GB"];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+  }
+
+  // FIXED: Submit delivery request
   submitDeliveryRequest() {
     // Validation
     if (this.selectedPackages.length === 0) {
@@ -440,25 +448,61 @@ export class CustomerRequestsComponent {
     }
 
     this.submittingRequest = true;
+    this.uploadingImages = true;
 
-    // Prepare request data
-    const requestData = {
-      owner_id: this.currentID,
-      customer_phone: this.customerPhone.trim(),
-      delivery_type: this.deliveryType,
-      package_barcodes: this.selectedPackages,
-      delivery_address: this.deliveryAddress.trim() || null,
-      emu_branch_id: this.selectedBranchId || null,
-      notes: this.deliveryNotes.trim() || null,
-      is_urgent: this.isUrgent,
-    };
+    // Create FormData for multipart form submission
+    const formData = new FormData();
 
+    // Add regular form fields
+    formData.append("owner_id", this.currentID);
+    formData.append("customer_phone", this.customerPhone.trim());
+    formData.append("delivery_type", this.deliveryType);
+
+    // FIXED: Send barcodes as JSON array string (not double-encoded)
+    formData.append("package_barcodes", JSON.stringify(this.selectedPackages));
+
+    if (this.deliveryAddress.trim()) {
+      formData.append("delivery_address", this.deliveryAddress.trim());
+    }
+
+    if (this.selectedBranchId) {
+      formData.append("emu_branch_id", this.selectedBranchId.toString());
+    }
+
+    if (this.deliveryNotes.trim()) {
+      formData.append("notes", this.deliveryNotes.trim());
+    }
+
+    if (this.paymentAmount > 0) {
+      formData.append("payment_amount", this.paymentAmount.toString());
+    }
+
+    formData.append("is_urgent", this.isUrgent.toString());
+
+    // FIXED: Add payment images properly
+    this.selectedPaymentImages.forEach((paymentImage, index) => {
+      formData.append("payment_images", paymentImage.file);
+    });
+
+    // console.log("Submitting delivery request with:", {
+    //   owner_id: this.currentID,
+    //   delivery_type: this.deliveryType,
+    //   package_barcodes: this.selectedPackages,
+    //   payment_images_count: this.selectedPaymentImages.length,
+    // });
+
+    // Create headers for file upload (don't set Content-Type, let browser handle it)
+    const headers = new Headers();
+    headers.append("Authorization", localStorage.getItem("token"));
+
+    const options = new RequestOptions({
+      headers: headers,
+      method: "POST",
+    });
+
+    // Submit the request
     this.http
-      .post(
-        GlobalVars.baseUrl + "/requests/create",
-        JSON.stringify(requestData),
-        this.options
-      )
+      .post(GlobalVars.baseUrl + "/requests/create", formData, options)
       .subscribe(
         (response) => {
           const result = response.json();
@@ -467,7 +511,7 @@ export class CustomerRequestsComponent {
               .fire({
                 icon: "success",
                 title: "Muvaffaqiyat!",
-                text: "Yetkazish so'rovi yuborildi",
+                text: `Yetkazish so'rovi yuborildi! ${this.selectedPaymentImages.length} ta to'lov rasmi yuklandi.`,
                 customClass: {
                   confirmButton: "btn btn-success",
                 },
@@ -486,8 +530,10 @@ export class CustomerRequestsComponent {
             );
           }
           this.submittingRequest = false;
+          this.uploadingImages = false;
         },
         (error) => {
+          console.error("Upload error:", error);
           swal.fire(
             "Xatolik",
             `So'rov yuborishda xatolik: ${
@@ -496,6 +542,7 @@ export class CustomerRequestsComponent {
             "error"
           );
           this.submittingRequest = false;
+          this.uploadingImages = false;
           if (error.status == 403) {
             this.authService.logout();
           }
@@ -503,11 +550,11 @@ export class CustomerRequestsComponent {
       );
   }
 
-  // Load my delivery requests
+  // FIXED: Load my delivery requests
   loadMyDeliveryRequests() {
     this.http
       .get(
-        GlobalVars.baseUrl + "/requests/customer?owner_id" + this.currentID,
+        GlobalVars.baseUrl + "/requests/customer?owner_id=" + this.currentID,
         this.options
       )
       .subscribe(
@@ -515,8 +562,9 @@ export class CustomerRequestsComponent {
           const result = response.json();
           if (result.status === "success") {
             this.myDeliveryRequests = result.data.requests || [];
+            // console.log("my delivery requests ", this.myDeliveryRequests);
 
-            this.updateRequestsTable();
+            // console.log("Loaded delivery requests:", this.myDeliveryRequests);
           }
         },
         (error) => {
@@ -527,51 +575,27 @@ export class CustomerRequestsComponent {
         }
       );
   }
-
-  // Update requests table
-  updateRequestsTable() {
-    this.tableData1.dataRows = [];
-
-    this.myDeliveryRequests.forEach((request, index) => {
-      const statusBadge = this.getStatusBadge(request.status);
-      const actionsButton =
-        request.status === "pending"
-          ? `<button class="btn btn-sm btn-danger" onclick="window.cancelRequest(${request.id})">Bekor qilish</button>`
-          : "-";
-
-      this.tableData1.dataRows.push([
-        (index + 1).toString(),
-        this.getDeliveryTypeText(request.delivery_type),
-        statusBadge,
-        request.requested_packages.length.toString(),
-        new Date(request.created_at).toLocaleDateString("uz-UZ"),
-        actionsButton,
-      ]);
-    });
-
-    // Make cancelRequest available globally
-    (window as any).cancelRequest = (requestId: number) => {
-      this.cancelRequest(requestId);
-    };
+  // FIXED: Get requested packages barcodes from JSON string
+  getRequestedPackagesBarcodes(requestedPackagesStr: string): string[] {
+    try {
+      const packages = JSON.parse(requestedPackagesStr);
+      return Array.isArray(packages) ? packages : [requestedPackagesStr];
+    } catch {
+      // Fallback for malformed JSON - return as single item
+      return [requestedPackagesStr];
+    }
   }
 
-  // Get status badge HTML
-  getStatusBadge(status: string): string {
-    const badges = {
-      pending: '<span class="badge badge-warning">Kutilmoqda</span>',
-      approved: '<span class="badge badge-success">Tasdiqlangan</span>',
-      rejected: '<span class="badge badge-danger">Rad etilgan</span>',
-      cancelled: '<span class="badge badge-secondary">Bekor qilingan</span>',
-    };
-    return (
-      badges[status] || '<span class="badge badge-light">' + status + "</span>"
-    );
+  // Helper method to display barcodes as comma-separated string
+  getRequestedPackagesDisplay(requestedPackagesStr: string): string {
+    const barcodes = this.getRequestedPackagesBarcodes(requestedPackagesStr);
+    return barcodes.join(", ");
   }
 
   // Get delivery type text
   getDeliveryTypeText(type: string): string {
     const types = {
-      EMU: "EMU Post",
+      EMU: "Filialimiz",
       Yandex: "Yandex Yetkazish",
       "Own-Courier": "Bizning Kuryer",
       "Pick-up": "O'zim olaman",
@@ -579,17 +603,17 @@ export class CustomerRequestsComponent {
     return types[type] || type;
   }
 
-  getStatusText(status: string) {
-    if (status === "pending") {
-      return "Jarayonda";
-    } else if (status === "approved") {
-      return "Tasdiqlandi";
-    } else if (status === "rejected") {
-      return "Rad Qilindi";
-    } else if (status === "cancelled") {
-      return "Bekor Qilindi";
-    }
+  // Get status text
+  getStatusText(status: string): string {
+    const statuses = {
+      pending: "Jarayonda",
+      approved: "Tasdiqlandi",
+      rejected: "Rad Qilindi",
+      cancelled: "Bekor Qilindi",
+    };
+    return statuses[status] || status;
   }
+
   // Cancel delivery request
   cancelRequest(requestId: number) {
     swal
@@ -627,14 +651,12 @@ export class CustomerRequestsComponent {
                     buttonsStyling: false,
                   });
                   this.loadMyDeliveryRequests();
-                } else if (result.status === "error") {
+                } else {
                   swal.fire("Xatolik", result.message, "error");
                 }
               },
               (error) => {
                 const err = error.json();
-                console.log(err);
-
                 swal.fire("Xatolik", `${err.error}`, "error");
                 if (error.status == 403) {
                   this.authService.logout();
@@ -655,15 +677,16 @@ export class CustomerRequestsComponent {
     this.selectedEMUBranch = null;
     this.deliveryNotes = "";
     this.isUrgent = false;
+    this.paymentAmount = 0;
+    this.selectedPaymentImages = [];
     this.showPackageSelection = false;
     this.showCreateForm = false;
-    this.updatePackagesTable();
   }
 
   // Go back to previous step
   goBack() {
     if (this.showCreateForm) {
-      // this.showCreateRequestForm = false;
+      this.showCreateForm = false;
       this.showPackageSelection = true;
     } else if (this.showPackageSelection) {
       this.showPackageSelection = false;

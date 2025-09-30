@@ -34,6 +34,10 @@ interface DeliveryRequest {
   processed_at?: Date;
   rejection_reason?: string;
   admin_notes?: string;
+  payment_verified: boolean;
+  payment_amount: number;
+  payment_notes: string;
+  payment_images?: string[];
 }
 
 interface RequestPackage {
@@ -56,11 +60,12 @@ export class AdminRequestHandlerComponent {
   // Data properties
   pendingRequests: DeliveryRequest[] = [];
   archivedRequets: DeliveryRequest[] = [];
-
-  showArchiveTable: boolean = false;
-  showPendingTable: boolean = true;
   selectedRequest: DeliveryRequest | null = null;
   requestPackages: RequestPackage[] = [];
+
+  // View control
+  showArchiveTable: boolean = false;
+  showPendingTable: boolean = true;
 
   // Filter properties
   filterDeliveryType: string = "";
@@ -78,6 +83,7 @@ export class AdminRequestHandlerComponent {
   showRequestDetails: boolean = false;
   showApprovalForm: boolean = false;
   showRejectionForm: boolean = false;
+  showFullImageModal: boolean = false;
 
   // Form data for approval
   deliveryFee: number = 0;
@@ -94,7 +100,13 @@ export class AdminRequestHandlerComponent {
   loadingRequests: boolean = false;
   processingRequest: boolean = false;
 
-  //EMU BRANCH BY ID
+  // Payment image properties
+  paymentImageUrls: string[] = [];
+  currentFullImageUrl: string = "";
+  currentImageIndex: number = 0;
+  paymentNotes: string = "";
+
+  // EMU BRANCH BY ID
   emuBranches: any = [];
   constructor(
     public authService: AuthService,
@@ -166,6 +178,8 @@ export class AdminRequestHandlerComponent {
           const result = response.json();
           if (result.status === "success") {
             this.pendingRequests = result.data.requests || [];
+            // console.log("pending requests ", this.pendingRequests);
+
             this.totalRequests = result.data.pagination.total;
             this.totalPages = Math.ceil(
               this.totalRequests / this.requestsPerPage
@@ -224,7 +238,7 @@ export class AdminRequestHandlerComponent {
           if (result.status === "success") {
             this.archivedRequets = result.data.requests || [];
             this.totalArchiveRequests = result.data.pagination.total;
-            console.log("Total archived requests ", this.totalArchiveRequests);
+            // console.log("Total archived requests ", this.totalArchiveRequests);
 
             this.totalPages = Math.ceil(
               this.totalArchiveRequests / this.requestsPerPage
@@ -339,7 +353,166 @@ export class AdminRequestHandlerComponent {
 
     this.selectedRequest = request;
     this.loadRequestPackages(requestId);
+    this.loadPaymentImages(requestId); // Load payment images
     this.showRequestDetails = true;
+  }
+  loadPaymentImages(requestId: number) {
+    this.http
+      .get(
+        GlobalVars.baseUrl + "/requests/" + requestId + "/payment-images",
+        this.options
+      )
+      .subscribe(
+        (response) => {
+          const result = response.json();
+          if (result.status === "success") {
+            this.paymentImageUrls = result.data.payment_images || [];
+            // console.log("Loaded payment images:", this.paymentImageUrls);
+          }
+        },
+        (error) => {
+          console.error("Error loading payment images:", error);
+          this.paymentImageUrls = [];
+          if (error.status == 403) {
+            this.authService.logout();
+          }
+        }
+      );
+  }
+
+  showFullImage(imageUrl: string, index: number) {
+    this.currentFullImageUrl = imageUrl;
+    this.currentImageIndex = index;
+    this.showFullImageModal = true;
+  }
+
+  closeFullImageModal() {
+    this.showFullImageModal = false;
+    this.currentFullImageUrl = "";
+    this.currentImageIndex = 0;
+  }
+
+  nextImage() {
+    if (this.currentImageIndex < this.paymentImageUrls.length - 1) {
+      this.currentImageIndex++;
+      this.currentFullImageUrl = this.paymentImageUrls[this.currentImageIndex];
+    }
+  }
+
+  previousImage() {
+    if (this.currentImageIndex > 0) {
+      this.currentImageIndex--;
+      this.currentFullImageUrl = this.paymentImageUrls[this.currentImageIndex];
+    }
+  }
+
+  verifyPayment(verified: boolean) {
+    if (!this.selectedRequest) return;
+
+    swal
+      .fire({
+        title: verified ? "To'lovni tasdiqlash" : "To'lovni rad etish",
+        text: verified
+          ? "To'lov to'g'ri deb tasdiqlaysizmi?"
+          : "To'lov noto'g'ri deb belgilaysizmi?",
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonText: verified ? "Ha, tasdiqlash" : "Ha, rad etish",
+        cancelButtonText: "Bekor qilish",
+        customClass: {
+          confirmButton: verified ? "btn btn-success" : "btn btn-danger",
+          cancelButton: "btn btn-secondary",
+        },
+        buttonsStyling: false,
+      })
+      .then((result) => {
+        if (result.isConfirmed) {
+          this.updatePaymentVerification(verified);
+        }
+      });
+  }
+
+  updatePaymentVerification(verified: boolean) {
+    if (!this.selectedRequest) return;
+
+    const updateData = {
+      payment_verified: verified,
+      payment_notes: this.paymentNotes.trim() || null,
+    };
+
+    // You'll need to create this endpoint in your backend
+    this.http
+      .put(
+        GlobalVars.baseUrl +
+          "/requests/" +
+          this.selectedRequest.id +
+          "/verify-payment",
+        JSON.stringify(updateData),
+        this.options
+      )
+      .subscribe(
+        (response) => {
+          const result = response.json();
+          if (result.status === "success") {
+            swal.fire({
+              icon: "success",
+              title: "Muvaffaqiyat!",
+              text: verified ? "To'lov tasdiqlandi" : "To'lov rad etildi",
+              customClass: {
+                confirmButton: "btn btn-success",
+              },
+              buttonsStyling: false,
+            });
+
+            // Update local request object
+            this.selectedRequest.payment_verified = verified;
+            if (this.paymentNotes.trim()) {
+              this.selectedRequest.payment_notes = this.paymentNotes.trim();
+            }
+
+            this.paymentNotes = "";
+          } else {
+            swal.fire(
+              "Xatolik",
+              result.message || "Xatolik yuz berdi",
+              "error"
+            );
+          }
+        },
+        (error) => {
+          swal.fire("Xatolik", "To'lovni tasdiqlashda xatolik", "error");
+          console.error("Payment verification error:", error);
+          if (error.status == 403) {
+            this.authService.logout();
+          }
+        }
+      );
+  }
+
+  showPaymentNotesForm() {
+    swal
+      .fire({
+        title: "To'lov bo'yicha izoh",
+        input: "textarea",
+        inputPlaceholder: "To'lov bo'yicha izohingizni kiriting...",
+        inputValue: this.paymentNotes,
+        showCancelButton: true,
+        confirmButtonText: "Saqlash",
+        cancelButtonText: "Bekor qilish",
+        customClass: {
+          confirmButton: "btn btn-success",
+          cancelButton: "btn btn-secondary",
+        },
+        buttonsStyling: false,
+      })
+      .then((result) => {
+        if (result.isConfirmed) {
+          this.paymentNotes = result.value || "";
+          if (this.paymentNotes.trim()) {
+            this.updatePaymentVerification(false); // Save notes without verification
+          }
+        }
+      });
   }
 
   // Load packages for specific request
@@ -354,6 +527,8 @@ export class AdminRequestHandlerComponent {
           const result = response.json();
           if (result.status === "success") {
             this.requestPackages = result.data.packages || [];
+            // console.log("requested packages ", this.requestPackages);
+
             this.updatePackagesTable();
             this.loadEmuBranches();
           }
@@ -442,6 +617,38 @@ export class AdminRequestHandlerComponent {
       return;
     }
 
+    // Check if payment verification is required
+    if (
+      this.selectedRequest.payment_amount &&
+      !this.selectedRequest.payment_verified
+    ) {
+      swal
+        .fire({
+          title: "To'lov tasdiqlanmagan",
+          text: "To'lov hali tasdiqlanmagan. So'rovni tasdiqlashni davom ettirasizmi?",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonText: "Ha, davom etish",
+          cancelButtonText: "Bekor qilish",
+          customClass: {
+            confirmButton: "btn btn-warning",
+            cancelButton: "btn btn-secondary",
+          },
+          buttonsStyling: false,
+        })
+        .then((result) => {
+          if (result.isConfirmed) {
+            this.submitApproval();
+          }
+        });
+    } else {
+      this.submitApproval();
+    }
+  }
+
+  private submitApproval() {
+    if (!this.selectedRequest) return;
+
     this.processingRequest = true;
 
     const approvalData = {
@@ -451,6 +658,7 @@ export class AdminRequestHandlerComponent {
       courier_phone: this.courierPhone.trim() || null,
       admin_notes: this.adminNotes.trim() || null,
       processed_by: this.processedBy.trim() || null,
+      payment_verified: this.selectedRequest.payment_verified || false,
     };
 
     this.http
@@ -523,9 +731,8 @@ export class AdminRequestHandlerComponent {
     this.http
       .post(
         GlobalVars.baseUrl +
-          "/delivery-requests/" +
-          this.selectedRequest.id +
-          "/reject",
+          "/requests/reject?request_id=" +
+          this.selectedRequest.id,
         JSON.stringify(rejectionData),
         this.options
       )
@@ -641,7 +848,7 @@ export class AdminRequestHandlerComponent {
 
   getDeliveryTypeText(type: string): string {
     const types = {
-      EMU: "EMU Post",
+      EMU: "Filiamiz",
       Yandex: "Yandex Yetkazish",
       "Own-Courier": "Bizning Kuryer",
       "Pick-up": "O'zim olaman",

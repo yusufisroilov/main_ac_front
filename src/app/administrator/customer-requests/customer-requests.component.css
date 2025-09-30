@@ -1,0 +1,113 @@
+/* Enhanced File Input Styling */
+.custom-file {
+  position: relative;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.custom-file-input {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  height: calc(2.25rem + 2px);
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.custom-file-label {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 1;
+  height: auto;
+  min-height: calc(2.25rem + 2px);
+  padding: 1rem 1rem;
+  font-weight: 400;
+  line-height: 1.5;
+  color: #495057;
+  background-color: #fff;
+  border: 2px dashed #9c27b0;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  word-wrap: break-word;
+  white-space: normal;
+}
+
+.custom-file-label::before {
+  content: "\e2c6";
+  font-family: "Material Icons";
+  font-size: 20px;
+  margin-right: 8px;
+  color: #9c27b0;
+  flex-shrink: 0;
+}
+
+.custom-file-label::after {
+  content: "";
+  display: none;
+}
+
+.custom-file-label:hover {
+  border-color: #7b1fa2;
+  background-color: #f3e5f5;
+}
+
+.custom-file-input:focus ~ .custom-file-label {
+  border-color: #9c27b0;
+  box-shadow: 0 0 0 0.2rem rgba(156, 39, 176, 0.25);
+}
+
+.form-text.text-muted {
+  display: block;
+  margin-top: 8px;
+  font-size: 0.875rem;
+  color: #999;
+  text-align: center;
+}
+
+/* Active/Selected state */
+.custom-file-input:valid ~ .custom-file-label {
+  border-color: #4caf50;
+  background-color: #e8f5e9;
+}
+
+.custom-file-input:valid ~ .custom-file-label::before {
+  content: "\e2c6";
+  color: #4caf50;
+}
+
+/* Responsive Design for Small Screens */
+@media (max-width: 576px) {
+  .custom-file-label {
+    padding: 0.75rem 0.5rem;
+    font-size: 0.875rem;
+  }
+
+  .custom-file-label::before {
+    font-size: 18px;
+    margin-right: 6px;
+  }
+
+  .form-text.text-muted {
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 400px) {
+  .custom-file-label {
+    padding: 0.6rem 0.4rem;
+    font-size: 0.8rem;
+  }
+
+  .custom-file-label::before {
+    font-size: 16px;
+    margin-right: 4px;
+  }
+}

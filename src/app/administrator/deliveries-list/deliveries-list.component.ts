@@ -162,7 +162,7 @@ export class DeliveriesListComponent {
             this.selectedCustomerId = this.customerIdInput;
             this.customerPackages = result.data.package_groups || [];
 
-            console.log("customer packages ", this.customerPackages);
+            // console.log("customer packages ", this.customerPackages);
 
             this.customerPackages.forEach((group) => (group.selected = false));
           } else {
@@ -397,7 +397,7 @@ export class DeliveriesListComponent {
           const result = response.json();
           if (result.status === "success") {
             this.deliveries = result.data.deliveries || [];
-            console.log("deliveries ", this.deliveries);
+            // console.log("deliveries ", this.deliveries);
 
             this.totalDeliveries = result.data.pagination.total;
             this.totalPages = Math.ceil(
@@ -459,8 +459,6 @@ export class DeliveriesListComponent {
   }
 
   viewDeliveryDetails(delivery_id: any) {
-    console.log("delivery id ", delivery_id);
-
     this.http
       .get(
         GlobalVars.baseUrl + "/deliveries/detail?delivery_id=" + delivery_id,
@@ -471,8 +469,6 @@ export class DeliveriesListComponent {
           const result = response.json();
           if (result.status === "success") {
             this.selectedDelivery = result.data || [];
-
-            console.log("delivery detail ", this.selectedDelivery);
           }
         },
         (error) => {
@@ -596,7 +592,7 @@ export class DeliveriesListComponent {
   // Helper methods
   getDeliveryTypeText(type: string): string {
     const types = {
-      EMU: "EMU Post",
+      EMU: "Filialimiz",
       Yandex: "Yandex",
       "Own-Courier": "Kuryer",
       "Pick-up": "Olib ketish",
@@ -608,7 +604,7 @@ export class DeliveriesListComponent {
     const statuses = {
       created: "Yaratilgan",
       sent: "Yuborilgan",
-      delivered: "Yetkazilgan",
+      collected: "Yig'ilgan",
       returned: "Qaytarilgan",
       cancelled: "Bekor qilingan",
     };

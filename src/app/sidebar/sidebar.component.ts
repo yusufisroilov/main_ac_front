@@ -62,6 +62,28 @@ export const ROUTES: RouteInfo[] = [
   },
 ];
 
+//Menu Items
+export const EmployeeROUTE: RouteInfo[] = [
+  {
+    path: "/dashboard",
+    title: "Asosiy sahifa",
+    type: "link",
+    icontype: "dashboard",
+  },
+  {
+    path: "/uzm/deliveriesEmp",
+    title: "Employer Delivery List",
+    type: "link",
+    icontype: "local_shipping",
+  },
+  {
+    path: "/uzm/warehouse-inventory",
+    title: "Officedagi Yuklar",
+    type: "link",
+    icontype: "inventory_2",
+  },
+];
+
 export const adminROUTES: RouteInfo[] = [
   {
     path: "/dashboard",
@@ -308,17 +330,17 @@ export const managerROUTES: RouteInfo[] = [
     type: "link",
     icontype: "inventory_2",
   },
+  // {
+  //   path: "/uzs/deliveries",
+  //   title: "Yetkazmalar",
+  //   type: "link",
+  //   icontype: "local_shipping",
+  // },
   {
-    path: "/uzs/deliveries",
+    path: "/uzm/deliveries-list",
     title: "Yetkazmalar",
     type: "link",
     icontype: "local_shipping",
-  },
-  {
-    path: "/uzm/deliveries-list",
-    title: "Yetkazmalar Ro'yxati",
-    type: "link",
-    icontype: "list_alt",
   },
   {
     path: "/uzm/admin-del-requests",
@@ -391,6 +413,8 @@ export class SidebarComponent implements OnInit {
       this.menuItems = managerROUTES.filter((menuItem) => menuItem);
     } else if (this.userRole == "UZBSTAFF") {
       this.menuItems = uzbStaffROUTES.filter((menuItem) => menuItem);
+    } else if (this.userRole == "YUKCHI") {
+      this.menuItems = EmployeeROUTE.filter((menuItem) => menuItem);
     } else {
       this.menuItems = ROUTES.filter((menuItem) => menuItem);
     }

@@ -1,4 +1,4 @@
-<!-- src/app/pages/delivery-requests/customer-delivery-request.component.html -->
+<!-- Fixed customer-requests.component.html -->
 <div class="main-content">
     <div class="container-fluid">
 
@@ -62,7 +62,6 @@
 
                         <!-- Packages table -->
                         <div *ngIf="!loadingPackages && customerPackages.length > 0">
-                            <!-- Use this regular HTML table: -->
                             <div class="table-responsive">
                                 <table class="table table-striped">
                                     <thead class="text-primary">
@@ -71,6 +70,7 @@
                                             <th>Quti turi</th>
                                             <th>Qutillar soni</th>
                                             <th>Partiyalar</th>
+                                            <th>Barkodlar</th>
                                             <th>Tanlash</th>
                                         </tr>
                                     </thead>
@@ -88,6 +88,17 @@
                                             <td>{{group.total_packages}}</td>
                                             <td>{{group.consignments.join(', ')}}</td>
                                             <td>
+                                                <small class="text-monospace">
+                                                    <span
+                                                        *ngFor="let barcode of group.package_barcodes.slice(0, 2); let last = last">
+                                                        {{barcode}}<span *ngIf="!last">, </span>
+                                                    </span>
+                                                    <span *ngIf="group.package_barcodes.length > 2">
+                                                        ... (+{{group.package_barcodes.length - 2}})
+                                                    </span>
+                                                </small>
+                                            </td>
+                                            <td>
                                                 <button class="btn btn-sm" [class.btn-success]="group.selected"
                                                     [class.btn-primary]="!group.selected"
                                                     (click)="selectPackageGroup(i)">
@@ -100,14 +111,15 @@
                                 </table>
                             </div>
 
-
-
                             <!-- Selected packages info -->
                             <div class="alert alert-info mt-3" *ngIf="selectedPackages.length > 0">
                                 <strong>Tanlangan qutillar:</strong> {{selectedPackages.length}} ta
-                                <ul class="mb-0 mt-2">
-                                    <li *ngFor="let barcode of selectedPackages">{{barcode}}</li>
-                                </ul>
+                                <details class="mt-2">
+                                    <summary>Barkodlar ro'yxati</summary>
+                                    <ul class="mb-0 mt-1">
+                                        <li *ngFor="let barcode of selectedPackages">{{barcode}}</li>
+                                    </ul>
+                                </details>
                             </div>
 
                             <!-- Next button -->
@@ -142,7 +154,7 @@
                     </div>
                     <div class="card-body">
 
-                        <form>
+                        <form #deliveryForm="ngForm" (ngSubmit)="submitDeliveryRequest()">
                             <div class="row">
 
                                 <!-- Delivery Type -->
@@ -170,10 +182,8 @@
 
                             </div>
 
-                            /*
                             <!-- EMU Region and Branch Selection -->
                             <div class="row" *ngIf="deliveryType === 'EMU'">
-
                                 <!-- Region Selection -->
                                 <div class="col-md-6">
                                     <div class="form-group">
@@ -186,42 +196,20 @@
                                                 {{region.name}}
                                             </option>
                                         </select>
-                                        <small class="text-muted" *ngIf="loadingRegions">
-                                            <i class="fa fa-spinner fa-spin"></i> Viloyatlar yuklanmoqda...
-                                        </small>
                                     </div>
                                 </div>
 
                                 <!-- Branch Selection -->
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label class="bmd-label-floating">EMU Filiali *</label>
+                                        <label class="bmd-label-floating">Bizning Filialimiz </label>
                                         <select class="form-control" [(ngModel)]="selectedBranchId"
-                                            name="selectedBranchId" (change)="onBranchSelect(selectedBranchId)"
-                                            [disabled]="loadingBranches || !selectedRegionId">
+                                            name="selectedBranchId" [disabled]="loadingBranches || !selectedRegionId">
                                             <option value="">Filialni tanlang</option>
                                             <option *ngFor="let branch of branches" [value]="branch.id">
                                                 {{branch.name}}
                                             </option>
                                         </select>
-                                        <small class="text-muted" *ngIf="loadingBranches">
-                                            <i class="fa fa-spinner fa-spin"></i> Filiallar yuklanmoqda...
-                                        </small>
-                                        <small class="text-muted" *ngIf="!selectedRegionId && !loadingRegions">
-                                            Avval viloyatni tanlang
-                                        </small>
-                                    </div>
-                                </div>
-
-                            </div>
-
-                            <!-- Selected EMU Info Display -->
-                            <div class="row" *ngIf="deliveryType === 'EMU' && isEMUSelectionComplete()">
-                                <div class="col-md-12">
-                                    <div class="alert alert-info">
-                                        <strong>Tanlangan EMU:</strong><br>
-                                        Viloyat: {{getSelectedRegionName()}}<br>
-                                        Filial: {{getSelectedBranchName()}}
                                     </div>
                                 </div>
                             </div>
@@ -234,6 +222,93 @@
                                         <textarea class="form-control" [(ngModel)]="deliveryAddress"
                                             name="deliveryAddress" rows="3"
                                             placeholder="To'liq manzilni kiriting: shahar, ko'cha, uy raqami"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- FIXED PAYMENT SECTION -->
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="card">
+                                        <div class="card-header card-header-warning">
+                                            <h5 class="card-title">To'lov Ma'lumotlari</h5>
+                                            <p class="card-category">To'lov rasmlarini yuklang</p>
+                                        </div>
+                                        <div class="card-body">
+
+                                            <div class="row">
+                                                <!-- Payment Amount -->
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label class="bmd-label-floating">To'lov Miqdori (UZS)</label>
+                                                        <input type="number" class="form-control"
+                                                            [(ngModel)]="paymentAmount" name="paymentAmount" min="0"
+                                                            step="1000" placeholder="To'langan miqdorni kiriting">
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- FIXED Payment Images Upload -->
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <div class="form-group">
+                                                        <label class="bmd-label-static">To'lov Rasmlari</label>
+
+                                                        <!-- File Input -->
+                                                        <div class="custom-file">
+                                                            <input type="file" class="custom-file-input"
+                                                                id="paymentImages" #fileInput
+                                                                (change)="onPaymentImagesSelected($event)" multiple
+                                                                accept="image/*">
+                                                            <label class="custom-file-label" for="paymentImages">
+
+                                                                Rasmlarni tanlang (maksimal 5 ta)
+                                                            </label>
+                                                        </div>
+                                                        <small class="form-text text-muted">
+                                                            JPG, PNG, GIF formatida, har biri 5MB dan oshmasin
+                                                        </small>
+                                                    </div>
+
+                                                    <!-- FIXED Selected Images Preview -->
+                                                    <div class="row mt-3" *ngIf="selectedPaymentImages.length > 0">
+                                                        <div class="col-md-12">
+                                                            <h6>Tanlangan rasmlar ({{selectedPaymentImages.length}}/5):
+                                                            </h6>
+                                                            <div class="row">
+                                                                <div class="col-md-3 mb-3"
+                                                                    *ngFor="let image of selectedPaymentImages; let i = index">
+                                                                    <div class="card">
+                                                                        <img [src]="image.preview" class="card-img-top"
+                                                                            style="height: 120px; object-fit: cover;"
+                                                                            [alt]="image.name">
+                                                                        <div class="card-body p-2">
+                                                                            <small
+                                                                                class="text-muted d-block">{{image.name}}</small>
+                                                                            <small
+                                                                                class="text-info d-block">{{formatFileSize(image.size)}}</small>
+                                                                            <button type="button"
+                                                                                class="btn btn-sm btn-danger float-right mt-1"
+                                                                                (click)="removePaymentImage(i)">
+                                                                                <i class="material-icons">close</i>
+                                                                            </button>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Upload Progress -->
+                                                    <div class="progress mt-2" *ngIf="uploadingImages"
+                                                        style="height: 6px;">
+                                                        <div class="progress-bar progress-bar-striped progress-bar-animated"
+                                                            role="progressbar" style="width: 100%">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -271,11 +346,12 @@
                                         Orqaga
                                     </button>
 
-                                    <button type="button" class="btn btn-success" (click)="submitDeliveryRequest()"
-                                        [disabled]="submittingRequest">
-                                        <span *ngIf="submittingRequest"
+                                    <button type="submit" class="btn btn-success"
+                                        [disabled]="submittingRequest || uploadingImages">
+                                        <span *ngIf="submittingRequest || uploadingImages"
                                             class="spinner-border spinner-border-sm mr-1"></span>
-                                        <i class="material-icons" *ngIf="!submittingRequest">send</i>
+                                        <i class="material-icons"
+                                            *ngIf="!submittingRequest && !uploadingImages">send</i>
                                         So'rov Yuborish
                                     </button>
                                 </div>
@@ -300,7 +376,6 @@
 
                         <!-- Requests table -->
                         <div *ngIf="myDeliveryRequests.length > 0">
-                            <!-- For admin requests table: -->
                             <div class="table-responsive">
                                 <table class="table table-hover">
                                     <thead class="text-primary">
@@ -311,7 +386,9 @@
                                             <th>Telefon</th>
                                             <th>Yetkazish turi</th>
                                             <th>Qutillar</th>
+                                            <th>To'lov</th>
                                             <th>Holat</th>
+                                            <th>Admin Izohi</th>
                                             <th>Vaqt</th>
                                             <th>Amallar</th>
                                         </tr>
@@ -325,25 +402,39 @@
                                                 <span *ngIf="request.is_urgent"
                                                     class="badge badge-danger ml-1">Shoshilinch</span>
                                             </td>
-                                            <td>{{request.requested_packages}}</td>
+                                            <td>{{getRequestedPackagesBarcodes(request.requested_packages)}}</td>
                                             <td>{{request.customer_phone}}</td>
                                             <td>{{getDeliveryTypeText(request.delivery_type)}}</td>
                                             <td>{{request.total_packages}} ta</td>
-
+                                            <td>
+                                                <span *ngIf="request.payment_amount" class="text-success">
+                                                    {{request.payment_amount | number}} so'm
+                                                </span>
+                                                <span *ngIf="!request.payment_amount" class="text-muted">-</span>
+                                                <br>
+                                                <small
+                                                    *ngIf="request.payment_images && request.payment_images.length > 0"
+                                                    class="text-info">
+                                                    {{request.payment_images.length}} ta rasm
+                                                </small>
+                                            </td>
                                             <td>
                                                 <span class="badge" [class.badge-warning]="request.status === 'pending'"
                                                     [class.badge-success]="request.status === 'approved'"
                                                     [class.badge-danger]="request.status === 'rejected'"
-                                                    [class.badge-danger]="request.status === 'cancelled'">
-
+                                                    [class.badge-secondary]="request.status === 'cancelled'">
                                                     {{getStatusText(request.status)}}
                                                 </span>
                                             </td>
+                                            <td>{{request.status === 'approved' ? request.admin_notes :
+                                                request.rejection_reason }}</td>
                                             <td>{{request.created_at | date:'short'}}</td>
                                             <td>
-                                                <button class="btn btn-sm btn-info mr-1"
-                                                    (click)="cancelRequest(request.id)">
-                                                    Bekor Qilish </button>
+                                                <button *ngIf="request.status === 'pending'"
+                                                    class="btn btn-sm btn-danger" (click)="cancelRequest(request.id)">
+                                                    Bekor Qilish
+                                                </button>
+                                                <span *ngIf="request.status !== 'pending'" class="text-muted">-</span>
                                             </td>
                                         </tr>
                                     </tbody>

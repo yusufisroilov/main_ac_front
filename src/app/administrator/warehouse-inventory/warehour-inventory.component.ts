@@ -98,6 +98,7 @@ export class WarehouseInventoryComponent implements OnInit {
   addingPackage: boolean = false;
   loadingPackagesToTie: boolean = false;
 
+  autoTyingPackages: boolean = false;
   constructor(
     public authService: AuthService,
     private changeDetectorRef: ChangeDetectorRef,
@@ -245,6 +246,7 @@ export class WarehouseInventoryComponent implements OnInit {
           const result = response.json();
           if (result.status === "success") {
             this.packagesToTie = result.packages_to_tie || [];
+            // console.log("tied packages ", this.packagesToTie);
           } else {
             swal.fire(
               "Xatolik",
@@ -325,6 +327,141 @@ export class WarehouseInventoryComponent implements OnInit {
       });
   }
 
+  // NEW METHOD: Auto-tie all packages for the consignment
+  autoTieAllPackages() {
+    if (!this.selectedConsignment) {
+      swal.fire("Xatolik", "Consignment nomi kiritilmagan", "error");
+      return;
+    }
+
+    if (this.packagesToTie.length === 0) {
+      swal.fire("Xatolik", "Bog'lash uchun qutillar yo'q", "error");
+      return;
+    }
+
+    swal
+      .fire({
+        title: "Hammasini bog'lash",
+        html: `
+          <p><strong>${this.packagesToTie.length} ta mijoz</strong>ning qutilari avtomatik bog'lanadi.</p>
+          <p>Davom ettirilsinmi?</p>
+        `,
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonText: "Ha, hammasini bog'lash",
+        cancelButtonText: "Bekor qilish",
+        customClass: {
+          confirmButton: "btn btn-success",
+          cancelButton: "btn btn-secondary",
+        },
+        buttonsStyling: false,
+      })
+      .then((result) => {
+        if (result.isConfirmed) {
+          this.performAutoTie();
+        }
+      });
+  }
+
+  // Perform auto-tie API call
+  performAutoTie() {
+    this.autoTyingPackages = true;
+
+    const requestData = {
+      consignment_name: this.selectedConsignment,
+    };
+
+    this.http
+      .post(
+        GlobalVars.baseUrl + "/leftPackages/auto-tie",
+        JSON.stringify(requestData),
+        this.options
+      )
+      .subscribe(
+        (response) => {
+          const result = response.json();
+          // console.log("auto tie ", result.data);
+
+          if (result.status === "success") {
+            const data = result.data;
+
+            // Build detailed success message
+            let detailsHtml = `
+              <div class="text-left">
+                <p><strong>Consignment:</strong> ${data.consignment_name}</p>
+                <p><strong>Jami mijozlar:</strong> ${data.total_customers} ta</p>
+                <p><strong>Bog'langan mijozlar:</strong> ${data.tied_customers} ta</p>
+                <p><strong>Bog'lanmagan mijozlar:</strong> ${data.untied_customers} ta</p>
+            `;
+
+            // Show details if available
+            if (data.details && data.details.length > 0) {
+              detailsHtml += `<hr><p><strong>Tafsilotlar:</strong></p><ul class="text-left">`;
+              data.details.forEach((detail: any) => {
+                detailsHtml += `
+                  <li>
+                    <strong>K${detail.customer_id}:</strong> 
+                    ${detail.new_packages_count} ta yangi + 
+                    ${detail.total_packages_in_warehouse || 0} ta eski = 
+                    ${detail.total_tied_count} ta quti bog'landi
+                    ${
+                      detail.is_existing_group
+                        ? " (mavjud guruhga qo'shildi)"
+                        : " (yangi guruh yaratildi)"
+                    }
+                  </li>
+                `;
+              });
+              detailsHtml += `</ul>`;
+            }
+
+            detailsHtml += `</div>`;
+
+            swal
+              .fire({
+                icon: "success",
+                title: "Muvaffaqiyat!",
+                html: detailsHtml,
+                customClass: {
+                  confirmButton: "btn btn-success",
+                },
+                buttonsStyling: false,
+                width: "600px",
+              })
+              .then(() => {
+                // Refresh data
+                this.findPackagesToTie();
+                this.loadWarehouseInventory();
+              });
+          } else {
+            swal.fire(
+              "Xatolik",
+              result.message || "Qutillarni bog'lashda xatolik",
+              "error"
+            );
+          }
+
+          this.autoTyingPackages = false;
+        },
+        (error) => {
+          console.error("Auto-tie error:", error);
+
+          const errorMessage =
+            error.json()?.error ||
+            error.json()?.message ||
+            error.message ||
+            "Qutillarni bog'lashda xatolik";
+
+          swal.fire("Xatolik", errorMessage, "error");
+
+          this.autoTyingPackages = false;
+
+          if (error.status == 403) {
+            this.authService.logout();
+          }
+        }
+      );
+  }
   // Untie specific package
   untiePackage(ownerId: string, consignmentName: string) {
     swal

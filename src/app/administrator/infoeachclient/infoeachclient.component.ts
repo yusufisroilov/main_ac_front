@@ -13,6 +13,21 @@ import { Http, RequestOptions, Headers, Response } from "@angular/http";
 import { AuthService } from "src/app/pages/login/auth.service";
 
 declare var $: any;
+
+interface PackageGroup {
+  type: "tied" | "single";
+  identifier: string;
+  tie_group_id?: string;
+  total_packages: number;
+  total_items: number;
+  consignments: string[];
+  package_barcodes: string[];
+  packages: any[];
+  selected?: boolean;
+  selectionType?: "full" | "partial";
+  selectedConsignment?: string;
+}
+
 declare interface Task {
   title: string;
   checked: boolean;
@@ -27,6 +42,7 @@ export class InfoeachclientComponent implements OnInit {
   public tableData1: TableData;
   public dataTable: TableData;
 
+  // Original properties
   trackingNum: string;
   headers12: any;
   options: any;
@@ -37,34 +53,65 @@ export class InfoeachclientComponent implements OnInit {
   currentID: any;
   showTheList: any;
   trackingNum2: any;
-
   currentPage: number;
   totalPages: number;
   needPagination: boolean;
   mypages = [];
   isPageNumActive: boolean;
-
   orderTypeText: string[];
   orderStatusText: string[];
-
   orderTypesList: TypesOfOrder[];
   orderStatusTypeList: StatusOfOrder[];
-
   printContents;
   popupWin;
-
   printCondition3: boolean;
-
   idsChek: string;
   nameChek: string;
   weightChek: string;
   counterChek: string;
   izohChek: string;
-
   currentParty: string;
-
   umQarzUSZ: string;
   umQarzUSD: string;
+
+  // New delivery-related properties
+  selectedConsignmentId: string = "";
+  selectedConsignmentName: string = "";
+  selectedConsignmentWeight: string = "";
+  selectedConsignmentQuantity: string = "";
+
+  // Customer packages data
+  customerPackages: PackageGroup[] = [];
+  selectedPackageIdentifiers: string[] = [];
+  loadingCustomerPackages: boolean = false;
+
+  // Delivery form data
+  deliveryType: string = "";
+  customerPhone: string = "";
+  deliveryAddress: string = "";
+  courierName: string = "";
+  courierPhone: string = "";
+  deliveryFee: number = 0;
+  yandexFee: number = 0;
+  deliveryNotes: string = "";
+
+  // EMU data
+  regions: any[] = [];
+  branches: any[] = [];
+  selectedRegionId: number | null = null;
+  selectedBranchId: number | null = null;
+  selectedBranchName: string = "";
+
+  // Delivery creation state
+  creatingDelivery: boolean = false;
+
+  // Print delivery receipt
+  printConditionDelivery: boolean = false;
+  deliveryBarcode: string = "";
+  deliveryTypeText: string = "";
+  totalSelectedPackagesForPrint: number = 0;
+  currentDate: string = "";
+  selectedBarcodes: string = "";
 
   constructor(
     public authService: AuthService,
@@ -89,9 +136,36 @@ export class InfoeachclientComponent implements OnInit {
     this.showTheList = false;
   }
 
-  getListOfPartyBoxes(ownerid) {
-    // let ownerid = localStorage.getItem("id");
+  ngOnInit() {
+    this.dataTable = {
+      headerRow: [
+        "No",
+        "Tovar nomi",
+        "Trek nomeri",
+        "Soni",
+        "Turi",
+        "Qayerdaligi",
+        "Amallar",
+      ],
+      dataRows: [],
+    };
 
+    this.tableData1 = {
+      headerRow: [
+        "NO",
+        "Sizning ID",
+        "Partiya",
+        "Soni",
+        "Buyurtmalarni ko'rish",
+      ],
+      dataRows: [],
+    };
+
+    this.loadRegions();
+  }
+
+  // Original methods (unchanged)
+  getListOfPartyBoxes(ownerid) {
     return this.http
       .get(
         GlobalVars.baseUrl + "/consignments/for_client?id=" + ownerid,
@@ -102,7 +176,6 @@ export class InfoeachclientComponent implements OnInit {
           this.allDataBoxes = response
             .json()
             .consignments.filter((r) => r.quantity !== 0);
-          // console.log("all data ", this.allDataBoxes);
 
           this.umQarzUSZ = response.json().debt_uzs_total;
           this.umQarzUSD = response.json().debt_usd_total;
@@ -117,33 +190,6 @@ export class InfoeachclientComponent implements OnInit {
       );
   }
 
-  ngOnInit() {
-    this.dataTable = {
-      headerRow: [
-        "No",
-        "Tovar nomi",
-        "Trek nomeri",
-        "Soni",
-        "Turi",
-        "Qayerdaligi",
-        "Amallar",
-      ],
-
-      dataRows: [],
-    };
-
-    this.tableData1 = {
-      headerRow: [
-        "NO",
-        "Sizning ID",
-        "Partiya",
-        "Soni",
-        "Buyurtmalarni ko'rish",
-      ],
-      dataRows: [],
-    };
-  }
-
   pagebyNum(ipage) {
     this.currentPage = ipage;
     this.isPageNumActive = true;
@@ -156,7 +202,6 @@ export class InfoeachclientComponent implements OnInit {
 
   openListOfPart(partyNum) {
     this.openListOfPartLog();
-
     if (this.showTheList == false) {
       return false;
     }
@@ -209,7 +254,6 @@ export class InfoeachclientComponent implements OnInit {
             .subscribe(
               (response) => {
                 if (response.json().status == "error") {
-                  // swal.showValidationMessage('Not Added, check: ' + this.registredMessage);
                   swal
                     .fire("Not Added", response.json().message, "error")
                     .then((result) => {
@@ -296,7 +340,6 @@ export class InfoeachclientComponent implements OnInit {
             .subscribe(
               (response) => {
                 if (response.json().status == "error") {
-                  // swal.showValidationMessage('Not Added, check: ' + this.registredMessage);
                   swal
                     .fire("Not Added", response.json().message, "error")
                     .then((result) => {
@@ -360,6 +403,7 @@ export class InfoeachclientComponent implements OnInit {
         (response) => {
           this.allData = response.json().orders;
           this.showTheList = true;
+
           for (let index = 0; index < this.allData.length; index++) {
             const element = this.allData[index];
             this.orderTypeText[index] = GlobalVars.getDescriptionWithID(
@@ -380,7 +424,6 @@ export class InfoeachclientComponent implements OnInit {
           this.totalPages = response.json().totalPages;
           if (this.totalPages > 1) {
             this.needPagination = true;
-
             for (let i = 0; i < this.totalPages; i++) {
               this.mypages[i] = { id: "name" };
             }
@@ -439,7 +482,6 @@ export class InfoeachclientComponent implements OnInit {
             this.totalPages = response.json().totalPages;
             if (this.totalPages > 1) {
               this.needPagination = true;
-
               for (let i = 0; i < this.totalPages; i++) {
                 this.mypages[i] = { id: "name" };
               }
@@ -456,6 +498,28 @@ export class InfoeachclientComponent implements OnInit {
 
   getInfoOfParcel(me) {
     this.trackingNum2 = me;
+  }
+
+  // Enhanced Chek button functionality
+  showChekOptions(id: string, name: string, weight: string, quantity: string) {
+    this.selectedConsignmentId = id;
+    this.selectedConsignmentName = name;
+    this.selectedConsignmentWeight = weight;
+    this.selectedConsignmentQuantity = quantity;
+  }
+
+  // Print payment receipt (original functionality)
+  printPaymentReceipt() {
+    $("#chekOptionsModal").modal("hide");
+
+    setTimeout(() => {
+      this.printChekYuborish(
+        this.selectedConsignmentId,
+        this.selectedConsignmentName,
+        this.selectedConsignmentWeight,
+        this.selectedConsignmentQuantity
+      );
+    }, 300);
   }
 
   printChekYuborish(ids, name, weight, counter) {
@@ -488,7 +552,6 @@ export class InfoeachclientComponent implements OnInit {
         '<input  id="input-izoh" type="text" class="form-control m-2 inline-input" />' +
         "</div>",
       showCancelButton: true,
-
       confirmButtonText: "Print",
       customClass: {
         confirmButton: "btn btn-success",
@@ -502,12 +565,6 @@ export class InfoeachclientComponent implements OnInit {
         $("#input-counter").val(counter);
       },
       preConfirm: (result) => {
-        //   this.chekId = $('#input-id').val();
-        //  this.chekIzoh = $('#input-izoh').val();
-
-        // var i:number = $('#types').val(); '<select class="custom-select m-2" id="types" name="types"> </select> ' +
-        // this.chekDelType =this.deliveryTypes[i].nameUz;
-
         this.idsChek = $("#input-id").val();
         this.nameChek = $("#input-party").val();
         this.weightChek = $("#input-weight").val();
@@ -515,7 +572,6 @@ export class InfoeachclientComponent implements OnInit {
         this.izohChek = $("#input-izoh").val();
 
         this.printCondition3 = true;
-
         this.changeDetectorRef.detectChanges();
         this.printContents =
           document.getElementById("print-section3").innerHTML;
@@ -530,25 +586,480 @@ export class InfoeachclientComponent implements OnInit {
               <head>
                 <title>Print tab</title>
                 <style>
-                  body
-                  {
-                    text-align: center;
-                  }
-  
+                  body { text-align: center; }
                 </style>
               </head>
           <body onload="window.print(); window.close();"> ${this.printContents}
-          
           </body>
             </html>`);
-
-        //
         this.popupWin.document.close();
         this.printCondition3 = false;
       },
     });
+  }
 
-    this.printCondition3 = false;
+  // NEW: Show delivery creation modal
+  showDeliveryCreation() {
+    $("#chekOptionsModal").modal("hide");
+
+    setTimeout(() => {
+      this.loadCustomerPackagesForDelivery();
+      $("#deliveryCreationModal").modal("show");
+    }, 300);
+  }
+
+  // NEW: Load customer packages for delivery
+  loadCustomerPackagesForDelivery() {
+    this.loadingCustomerPackages = true;
+    this.customerPackages = [];
+    this.selectedPackageIdentifiers = [];
+
+    this.http
+      .get(
+        GlobalVars.baseUrl + "/deliveries/admin?owner_id=" + this.currentID,
+        this.options
+      )
+      .subscribe(
+        (response) => {
+          const result = response.json();
+          if (result.status === "success") {
+            this.customerPackages = result.data.package_groups || [];
+            this.customerPackages.forEach((group) => (group.selected = false));
+          } else {
+            swal.fire(
+              "Xatolik",
+              result.message || "Qutillarni yuklashda xatolik",
+              "error"
+            );
+          }
+          this.loadingCustomerPackages = false;
+        },
+        (error) => {
+          swal.fire("Xatolik", "Qutillarni yuklashda xatolik", "error");
+          this.loadingCustomerPackages = false;
+          if (error.status == 403) {
+            this.authService.logout();
+          }
+        }
+      );
+  }
+
+  // NEW: Update selected packages
+  updateSelectedPackages() {
+    this.selectedPackageIdentifiers = [];
+    this.customerPackages.forEach((group) => {
+      if (group.selected) {
+        this.selectedPackageIdentifiers.push(group.identifier);
+      }
+    });
+  }
+
+  // NEW: Get total selected packages
+  getTotalSelectedPackages(): number {
+    return this.customerPackages
+      .filter((group) => group.selected)
+      .reduce((total, group) => total + group.total_packages, 0);
+  }
+
+  // NEW: Get styling for package rows
+  getPackageRowClass(group: PackageGroup): string {
+    if (group.consignments.includes(this.selectedConsignmentName)) {
+      return group.selected ? "table-primary" : "table-light";
+    }
+    return group.selected ? "table-warning" : "";
+  }
+
+  // NEW: Check if tied groups have multiple consignments including current one
+  hasMultipleConsignments(group: PackageGroup): boolean {
+    return (
+      group.type === "tied" &&
+      group.consignments.length > 1 &&
+      group.consignments.includes(this.selectedConsignmentName) &&
+      !group.selected
+    );
+  }
+
+  // NEW: Get package count for specific consignment in a group
+  getPackageCountForConsignment(
+    group: PackageGroup,
+    consignmentName: string
+  ): number {
+    if (group.type === "single") {
+      return group.consignments.includes(consignmentName) ? 1 : 0;
+    }
+
+    // For tied groups, count packages belonging to the consignment
+    return group.packages.filter((pkg) => pkg.consignment === consignmentName)
+      .length;
+  }
+
+  // NEW: Select full tied group
+  selectFullTiedGroup(group: PackageGroup) {
+    group.selected = true;
+    group.selectionType = "full";
+    this.updateSelectedPackages();
+  }
+
+  // NEW: Select only packages from current consignment
+  selectOnlyCurrentConsignmentPackages(group: PackageGroup) {
+    group.selected = true;
+    group.selectionType = "partial";
+    group.selectedConsignment = this.selectedConsignmentName;
+    this.updateSelectedPackages();
+
+    // Show confirmation
+    swal.fire({
+      icon: "warning",
+      title: "Bog'lanish buziladi",
+      text: `Faqat ${this.selectedConsignmentName} qutilari tanlanadi. Boshqa qutillar bog'lanishdan chiqariladi va "collected" holatiga o'tkaziladi.`,
+      confirmButtonText: "Tushunarli",
+      customClass: {
+        confirmButton: "btn btn-warning",
+      },
+      buttonsStyling: false,
+    });
+  }
+
+  // NEW: Check if tied packages are selected
+  hasTiedPackagesSelected(): boolean {
+    return this.customerPackages.some(
+      (group) => group.selected && group.type === "tied"
+    );
+  }
+
+  // NEW: Get selected tied groups
+  getSelectedTiedGroups(): PackageGroup[] {
+    return this.customerPackages.filter(
+      (group) => group.selected && group.type === "tied"
+    );
+  }
+
+  // NEW: Get count from current consignment
+  getSelectedFromCurrentConsignment(): number {
+    return this.customerPackages
+      .filter(
+        (group) =>
+          group.selected &&
+          group.consignments.includes(this.selectedConsignmentName)
+      )
+      .reduce((total, group) => {
+        if (group.selectionType === "partial") {
+          return (
+            total +
+            this.getPackageCountForConsignment(
+              group,
+              this.selectedConsignmentName
+            )
+          );
+        }
+        return total + group.total_packages;
+      }, 0);
+  }
+
+  // NEW: Get count from other consignments
+  getSelectedFromOtherConsignments(): number {
+    return (
+      this.customerPackages
+        .filter(
+          (group) =>
+            group.selected &&
+            !group.consignments.includes(this.selectedConsignmentName)
+        )
+        .reduce((total, group) => total + group.total_packages, 0) +
+      this.customerPackages
+        .filter(
+          (group) =>
+            group.selected &&
+            group.selectionType === "partial" &&
+            group.consignments.includes(this.selectedConsignmentName)
+        )
+        .reduce(
+          (total, group) =>
+            total +
+            (group.total_packages -
+              this.getPackageCountForConsignment(
+                group,
+                this.selectedConsignmentName
+              )),
+          0
+        )
+    );
+  }
+
+  // NEW: Load regions for EMU
+  loadRegions() {
+    this.http.get(GlobalVars.baseUrl + "/regions/emu", this.options).subscribe(
+      (response) => {
+        const result = response.json();
+        if (result.status === "success") {
+          this.regions = result.data.regions || [];
+        }
+      },
+      (error) => {
+        if (error.status == 403) {
+          this.authService.logout();
+        }
+      }
+    );
+  }
+
+  // NEW: Load branches when region selected
+  onRegionSelect(event: any) {
+    const regionId = event.target.value;
+    this.selectedRegionId = regionId ? parseInt(regionId) : null;
+    this.selectedBranchId = null;
+    this.selectedBranchName = "";
+    this.branches = [];
+
+    if (regionId) {
+      this.http
+        .get(
+          GlobalVars.baseUrl + "/branches?region_id=" + regionId,
+          this.options
+        )
+        .subscribe(
+          (response) => {
+            const result = response.json();
+            if (result.status === "success") {
+              this.branches = result.data.branches || [];
+            }
+          },
+          (error) => {
+            if (error.status == 403) {
+              this.authService.logout();
+            }
+          }
+        );
+    }
+  }
+
+  // NEW: Delivery type change handler
+  onDeliveryTypeChange() {
+    this.selectedRegionId = null;
+    this.selectedBranchId = null;
+    this.selectedBranchName = "";
+    this.branches = [];
+    this.deliveryAddress = "";
+    this.courierName = "";
+    this.courierPhone = "";
+    this.yandexFee = 0;
+  }
+
+  // NEW: Validation for delivery creation
+  canCreateDelivery(): boolean {
+    if (
+      this.selectedPackageIdentifiers.length === 0 ||
+      !this.deliveryType ||
+      !this.customerPhone
+    ) {
+      return false;
+    }
+
+    if (this.deliveryType === "EMU" && !this.selectedBranchId) {
+      return false;
+    }
+
+    if (
+      (this.deliveryType === "Yandex" || this.deliveryType === "Own-Courier") &&
+      !this.deliveryAddress
+    ) {
+      return false;
+    }
+
+    return true;
+  }
+
+  // NEW: Create delivery with enhanced package selection logic
+  createDelivery() {
+    if (!this.canCreateDelivery()) {
+      swal.fire("Xatolik", "Barcha majburiy maydonlarni to'ldiring", "error");
+      return;
+    }
+
+    this.creatingDelivery = true;
+
+    // Find selected branch name for printing
+    if (this.selectedBranchId) {
+      const selectedBranch = this.branches.find(
+        (b) => b.id == this.selectedBranchId
+      );
+      this.selectedBranchName = selectedBranch ? selectedBranch.name : "";
+    }
+
+    // Prepare package identifiers with selection type info
+    const packageIdentifiers = [];
+
+    this.customerPackages.forEach((group) => {
+      if (group.selected) {
+        if (group.selectionType === "partial") {
+          // For partial tied group selection, send specific package barcodes
+          const currentConsignmentPackages = group.packages
+            .filter((pkg) => pkg.consignment === this.selectedConsignmentName)
+            .map((pkg) => pkg.barcode);
+          packageIdentifiers.push(...currentConsignmentPackages);
+        } else {
+          // For full selection, send the group identifier
+          packageIdentifiers.push(group.identifier);
+        }
+      }
+    });
+
+    const deliveryData = {
+      owner_id: this.currentID,
+      delivery_type: this.deliveryType,
+      package_identifiers: packageIdentifiers,
+      customer_phone: this.customerPhone,
+      delivery_address: this.deliveryAddress || null,
+      emu_branch_id: this.selectedBranchId || null,
+      yandex_fee: this.yandexFee || null,
+      courier_name: this.courierName || null,
+      courier_phone: this.courierPhone || null,
+      delivery_fee: this.deliveryFee || 0,
+      notes: this.deliveryNotes || null,
+      admin_created_by: localStorage.getItem("username") || null,
+      // Add flag to indicate if there are partial tied group selections
+      has_partial_tied_selections: this.customerPackages.some(
+        (g) => g.selected && g.selectionType === "partial"
+      ),
+    };
+
+    this.http
+      .post(
+        GlobalVars.baseUrl + "/deliveries/admin/create",
+        JSON.stringify(deliveryData),
+        this.options
+      )
+      .subscribe(
+        (response) => {
+          const result = response.json();
+          if (result.status === "success") {
+            // Prepare print data
+            this.deliveryBarcode = result.data.delivery_barcode;
+            this.deliveryTypeText = this.getDeliveryTypeText(this.deliveryType);
+            this.totalSelectedPackagesForPrint =
+              this.getTotalSelectedPackages();
+            this.currentDate = new Date().toLocaleDateString("uz-UZ");
+
+            // Collect selected barcodes for printing
+            const selectedBarcodes = [];
+            this.customerPackages.forEach((group) => {
+              if (group.selected) {
+                if (group.selectionType === "partial") {
+                  const currentConsignmentBarcodes = group.packages
+                    .filter(
+                      (pkg) => pkg.consignment === this.selectedConsignmentName
+                    )
+                    .map((pkg) => pkg.barcode);
+                  selectedBarcodes.push(...currentConsignmentBarcodes);
+                } else {
+                  selectedBarcodes.push(...group.package_barcodes);
+                }
+              }
+            });
+            this.selectedBarcodes = selectedBarcodes.join(", ");
+
+            swal
+              .fire({
+                icon: "success",
+                title: "Muvaffaqiyat!",
+                text: "Yetkazish yaratildi va qutillar yuborildi",
+                showCancelButton: true,
+                confirmButtonText: "Chek Chop Etish",
+                cancelButtonText: "Yopish",
+                customClass: {
+                  confirmButton: "btn btn-success",
+                  cancelButton: "btn btn-secondary",
+                },
+                buttonsStyling: false,
+              })
+              .then((result) => {
+                if (result.isConfirmed) {
+                  this.printDeliveryReceipt();
+                }
+                this.closeDeliveryModal();
+                // Refresh the consignment data to reflect updated package status
+                this.getListOfPartyBoxes(this.currentID);
+              });
+          } else {
+            swal.fire(
+              "Xatolik",
+              result.message || "Yetkazish yaratishda xatolik",
+              "error"
+            );
+          }
+          this.creatingDelivery = false;
+        },
+        (error) => {
+          swal.fire("Xatolik", "Yetkazish yaratishda xatolik", "error");
+          this.creatingDelivery = false;
+          if (error.status == 403) {
+            this.authService.logout();
+          }
+        }
+      );
+  }
+
+  // NEW: Print delivery receipt
+  printDeliveryReceipt() {
+    this.printConditionDelivery = true;
+    this.changeDetectorRef.detectChanges();
+
+    this.printContents = document.getElementById(
+      "delivery-print-section"
+    ).innerHTML;
+    this.popupWin = window.open(
+      "",
+      "_blank",
+      "top=0,left=0,height=100%,width=auto"
+    );
+    this.popupWin.document.open();
+    this.popupWin.document.write(`
+      <html>
+        <head>
+          <title>Yetkazish Cheki</title>
+          <style>
+            body { text-align: center; }
+          </style>
+        </head>
+        <body onload="window.print(); window.close();">${this.printContents}</body>
+      </html>`);
+    this.popupWin.document.close();
+    this.printConditionDelivery = false;
+  }
+
+  // NEW: Close delivery modal
+  closeDeliveryModal() {
+    $("#deliveryCreationModal").modal("hide");
+    this.resetDeliveryForm();
+  }
+
+  // NEW: Reset delivery form
+  resetDeliveryForm() {
+    this.customerPackages = [];
+    this.selectedPackageIdentifiers = [];
+    this.deliveryType = "";
+    this.customerPhone = "";
+    this.deliveryAddress = "";
+    this.courierName = "";
+    this.courierPhone = "";
+    this.deliveryFee = 0;
+    this.yandexFee = 0;
+    this.deliveryNotes = "";
+    this.selectedRegionId = null;
+    this.selectedBranchId = null;
+    this.selectedBranchName = "";
+    this.branches = [];
+  }
+
+  // NEW: Helper method for delivery type display
+  getDeliveryTypeText(type: string): string {
+    const types = {
+      EMU: "Filialimiz",
+      Yandex: "Yandex",
+      "Own-Courier": "Kuryer",
+      "Pick-up": "Olib ketish",
+    };
+    return types[type] || type;
   }
 
   ngAfterViewInit() {
@@ -601,7 +1112,5 @@ export class InfoeachclientComponent implements OnInit {
     });
 
     $(".card .material-datatables label").addClass("form-group");
-
-    //return this.getListOfPartyBoxes();
   }
 }

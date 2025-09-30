@@ -18,6 +18,7 @@ import { CustomerRequestsComponent } from "./customer-requests/customer-requests
 import { AdminRequestHandlerComponent } from "./admin-request-handler/admin-request-handler.component";
 import { WarehouseInventoryComponent } from "./warehouse-inventory/warehour-inventory.component";
 import { DeliveriesListComponent } from "./deliveries-list/deliveries-list.component";
+import { EmployerDeliveryComponent } from "./employer-delivery/employer-delivery.component";
 
 export const AdminstratorRoutes: Routes = [
   {
@@ -131,6 +132,13 @@ export const AdminstratorRoutes: Routes = [
         component: DeliveriesListComponent,
         data: {
           title: "Deliveries List",
+        },
+      },
+      {
+        path: "deliveriesEmp",
+        component: EmployerDeliveryComponent,
+        data: {
+          title: "Deliveries List Employer",
         },
       },
     ],

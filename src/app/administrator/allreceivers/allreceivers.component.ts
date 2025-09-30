@@ -395,7 +395,7 @@ export class AllreceiversComponent implements OnInit {
   }
 
   deleteRec(iddd) {
-    console.log("RID ", iddd);
+    // console.log("RID ", iddd);
 
     swal
       .fire({

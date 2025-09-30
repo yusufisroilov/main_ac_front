@@ -19,7 +19,8 @@ import { CustomerRequestsComponent } from "./customer-requests/customer-requests
 import { MdModule } from "src/app/md/md.module";
 import { AdminRequestHandlerComponent } from "./admin-request-handler/admin-request-handler.component";
 import { WarehouseInventoryComponent } from "./warehouse-inventory/warehour-inventory.component";
-import { DeliveriesListComponent } from './deliveries-list/deliveries-list.component';
+import { DeliveriesListComponent } from "./deliveries-list/deliveries-list.component";
+import { EmployerDeliveryComponent } from "./employer-delivery/employer-delivery.component";
 
 // import { FlexLayoutModule } from '@angular/flex-layout';
 
@@ -47,6 +48,7 @@ import { DeliveriesListComponent } from './deliveries-list/deliveries-list.compo
     AdminRequestHandlerComponent,
     WarehouseInventoryComponent,
     DeliveriesListComponent,
+    EmployerDeliveryComponent,
   ],
 })
 export class AdminstratorModule {}

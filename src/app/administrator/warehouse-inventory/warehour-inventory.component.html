@@ -184,7 +184,18 @@
 
                         <!-- Packages to tie table -->
                         <div *ngIf="packagesToTie.length > 0">
-                            <h5 class="mt-4 mb-3">Bog'lash Kerak Bo'lgan Qutillar ({{packagesToTie.length}} mijoz)</h5>
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5 class="mb-0">Bog'lash Kerak Bo'lgan Qutillar ({{packagesToTie.length}} mijoz)</h5>
+
+                                <!-- NEW: Auto-tie all button -->
+                                <button class="btn btn-success btn-lg" (click)="autoTieAllPackages()"
+                                    [disabled]="autoTyingPackages">
+                                    <span *ngIf="autoTyingPackages"
+                                        class="spinner-border spinner-border-sm mr-1"></span>
+                                    <i class="material-icons" *ngIf="!autoTyingPackages">link</i>
+                                    Hammasini Bog'lash
+                                </button>
+                            </div>
 
                             <div class="table-responsive">
                                 <table class="table table-hover">
@@ -203,13 +214,13 @@
                                             <td><strong>{{package.owner_id}}</strong></td>
                                             <td>
                                                 <small class="text-primary">
-                                                    {{package.new_package.consignment}}
+                                                    {{package.new_package.barcode}}
                                                 </small>
                                             </td>
                                             <td>
                                                 <small>{{package.existing_packages.length}} ta quti</small><br>
                                                 <small class="text-muted">
-                                                    Consignments:
+                                                    Partiya:
                                                     {{getUniqueConsignments(package.existing_packages).join(', ')}}
                                                 </small>
                                             </td>
@@ -241,7 +252,7 @@
                             class="text-center p-4">
                             <i class="material-icons" style="font-size: 48px; color: #ccc;">link_off</i>
                             <h5 class="mt-2">Bog'lash kerak bo'lgan quti yo'q</h5>
-                            <p class="text-muted">Bu consignmentda bog'lash kerak bo'lgan mijozlar topilmadi</p>
+                            <p class="text-muted">Bu Partiyada bog'lash kerak bo'lgan mijozlar topilmadi</p>
                         </div>
 
                     </div>
@@ -287,7 +298,7 @@
                                             <th>Mijoz ID</th>
                                             <th>Qutillar Soni</th>
                                             <th>Quti Guruhlari</th>
-                                            <th>Consignmentlar</th>
+                                            <th>Partiyalar</th>
                                             <th>Eng Eski Quti</th>
                                             <th>Amallar</th>
                                         </tr>

@@ -1,19 +1,13 @@
 .inline-label {
-      display: inline-block;
-      width: auto;
-      margin-right: 5px;
-      text-align: right;
-      vertical-align: middle;
-    }
-    
-    .inline-input {
-      display: inline-block;
-      width: auto;
-      vertical-align: middle;
-    }
-   
-    
-    
-    
-    
-    
+  display: inline-block;
+  width: auto;
+  margin-right: 5px;
+  text-align: right;
+  vertical-align: middle;
+}
+
+.inline-input {
+  display: inline-block;
+  width: auto;
+  vertical-align: middle;
+}
