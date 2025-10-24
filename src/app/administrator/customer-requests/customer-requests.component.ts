@@ -102,6 +102,7 @@ export class CustomerRequestsComponent implements OnInit {
   paymentAmount: number = 0;
   selectedPaymentImages: PaymentImage[] = [];
   uploadingImages: boolean = false;
+  showSendingAnimation: boolean = false;
 
   constructor(
     public authService: AuthService,
@@ -172,6 +173,10 @@ export class CustomerRequestsComponent implements OnInit {
     this.loadCustomerPackages();
     this.loadMyDeliveryRequests();
     this.loadRegions();
+    // Show requests list by default
+    this.showMyRequests = true; // ADD THIS LINE
+    this.showPackageSelection = false;
+    this.showCreateForm = false;
   }
 
   // Load customer packages available for delivery
@@ -450,6 +455,8 @@ export class CustomerRequestsComponent implements OnInit {
     this.submittingRequest = true;
     this.uploadingImages = true;
 
+    // Show sending animation
+    this.showSendingAnimation = true;
     // Create FormData for multipart form submission
     const formData = new FormData();
 
@@ -506,34 +513,43 @@ export class CustomerRequestsComponent implements OnInit {
       .subscribe(
         (response) => {
           const result = response.json();
-          if (result.status === "success") {
-            swal
-              .fire({
-                icon: "success",
-                title: "Muvaffaqiyat!",
-                text: `Yetkazish so'rovi yuborildi! ${this.selectedPaymentImages.length} ta to'lov rasmi yuklandi.`,
-                customClass: {
-                  confirmButton: "btn btn-success",
-                },
-                buttonsStyling: false,
-              })
-              .then(() => {
-                this.resetForm();
-                this.loadMyDeliveryRequests();
-                this.showMyRequestsList();
-              });
-          } else {
-            swal.fire(
-              "Xatolik",
-              result.message || "So'rov yuborishda xatolik",
-              "error"
-            );
-          }
-          this.submittingRequest = false;
-          this.uploadingImages = false;
+          // Hide sending animation after a delay for better UX
+          setTimeout(() => {
+            this.showSendingAnimation = false;
+            if (result.status === "success") {
+              swal
+                .fire({
+                  icon: "success",
+                  title: "Muvaffaqiyat!",
+                  text: `So'rov muvaffaqiyatli yuborildi!`,
+                  confirmButtonText: "Yaxshi",
+                  customClass: {
+                    confirmButton: "btn btn-success",
+                  },
+                  buttonsStyling: false,
+                })
+                .then(() => {
+                  this.resetForm();
+                  this.loadMyDeliveryRequests();
+                  this.showMyRequestsList();
+                  this.showSendingAnimation = false;
+                });
+            } else {
+              swal.fire(
+                "Xatolik",
+                result.message || "So'rov yuborishda xatolik",
+                "error"
+              );
+              this.showSendingAnimation = false;
+            }
+
+            this.submittingRequest = false;
+            this.uploadingImages = false;
+          }, 2000); // Show animation for 2 seconds minimum
         },
         (error) => {
-          console.error("Upload error:", error);
+          // console.error("Upload error:", error);
+          this.showSendingAnimation = false;
           swal.fire(
             "Xatolik",
             `So'rov yuborishda xatolik: ${
@@ -595,7 +611,7 @@ export class CustomerRequestsComponent implements OnInit {
   // Get delivery type text
   getDeliveryTypeText(type: string): string {
     const types = {
-      EMU: "Filialimiz",
+      EMU: "EMU",
       Yandex: "Yandex Yetkazish",
       "Own-Courier": "Bizning Kuryer",
       "Pick-up": "O'zim olaman",

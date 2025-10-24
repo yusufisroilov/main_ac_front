@@ -60,6 +60,7 @@ interface PackageToTie {
   total_packages: number;
   needs_tying: boolean;
   already_has_tie_group: boolean;
+  selected?: boolean; // For checkbox selection
 }
 
 @Component({
@@ -86,19 +87,22 @@ export class WarehouseInventoryComponent implements OnInit {
   // View states
   showAddForm: boolean = false;
   showTyingView: boolean = false;
-  showInventory: boolean = true; // Start with inventory view
+  showInventory: boolean = true;
   showCustomerModal: boolean = false;
 
   // Filter and search
   filterCustomerId: string = "";
   selectedConsignment: string = "";
 
+  // Selection state
+  selectAllPackages: boolean = false;
+
   // Loading states
   loadingInventory: boolean = false;
   addingPackage: boolean = false;
   loadingPackagesToTie: boolean = false;
-
   autoTyingPackages: boolean = false;
+
   constructor(
     public authService: AuthService,
     private changeDetectorRef: ChangeDetectorRef,
@@ -121,7 +125,6 @@ export class WarehouseInventoryComponent implements OnInit {
 
     let url = GlobalVars.baseUrl + "/leftPackages/warehouse-inventory";
 
-    // Add filters if present
     let params = new HttpParams();
     if (this.filterCustomerId) {
       params = params.set("owner_id", this.filterCustomerId);
@@ -191,15 +194,14 @@ export class WarehouseInventoryComponent implements OnInit {
                 icon: "success",
                 title: "Muvaffaqiyat!",
                 text: "Yangi quti qo'shildi",
-                customClass: {
-                  confirmButton: "btn btn-success",
-                },
-                buttonsStyling: false,
+                timer: 2000,
+                showConfirmButton: false,
               })
               .then(() => {
                 this.resetNewPackageForm();
                 this.loadWarehouseInventory();
                 this.showAddForm = false;
+                this.showInventoryView();
               });
           } else {
             swal.fire(
@@ -245,8 +247,13 @@ export class WarehouseInventoryComponent implements OnInit {
         (response) => {
           const result = response.json();
           if (result.status === "success") {
-            this.packagesToTie = result.packages_to_tie || [];
-            // console.log("tied packages ", this.packagesToTie);
+            this.packagesToTie = (result.packages_to_tie || []).map(
+              (pkg: PackageToTie) => ({
+                ...pkg,
+                selected: false, // Initialize selection state
+              })
+            );
+            this.selectAllPackages = false;
           } else {
             swal.fire(
               "Xatolik",
@@ -272,12 +279,152 @@ export class WarehouseInventoryComponent implements OnInit {
       );
   }
 
+  // Toggle select all packages
+  toggleSelectAll() {
+    this.packagesToTie.forEach((pkg) => {
+      pkg.selected = this.selectAllPackages;
+    });
+  }
+
+  // Get count of selected packages
+  getSelectedPackagesCount(): number {
+    return this.packagesToTie.filter((pkg) => pkg.selected).length;
+  }
+
+  // Tie selected packages
+  tieSelectedPackages() {
+    const selectedPackages = this.packagesToTie.filter((pkg) => pkg.selected);
+
+    if (selectedPackages.length === 0) {
+      swal.fire("Xatolik", "Hech qanday mijoz tanlanmagan", "error");
+      return;
+    }
+
+    const customerIds = selectedPackages.map((pkg) => pkg.owner_id);
+
+    swal
+      .fire({
+        title: "Tanlangan mijozlarni bog'lash",
+        html: `
+          <div class="text-left">
+            <p><strong>${
+              selectedPackages.length
+            } ta mijoz</strong> tanlandi:</p>
+            <ul style="max-height: 200px; overflow-y: auto;">
+              ${customerIds.map((id) => `<li>Mijoz K${id}</li>`).join("")}
+            </ul>
+            <p class="mt-3">Ushbu mijozlarning barcha qutilari bog'lansinmi?</p>
+          </div>
+        `,
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonText: "Ha, bog'lash",
+        cancelButtonText: "Bekor qilish",
+        customClass: {
+          confirmButton: "btn btn-success",
+          cancelButton: "btn btn-secondary",
+        },
+        buttonsStyling: false,
+      })
+      .then((result) => {
+        if (result.isConfirmed) {
+          this.performBulkTie(customerIds);
+        }
+      });
+  }
+
+  // Perform bulk tie for selected customers
+  performBulkTie(customerIds: string[]) {
+    const requestData = {
+      consignment_name: this.selectedConsignment,
+      customer_ids: customerIds,
+    };
+
+    this.autoTyingPackages = true;
+
+    this.http
+      .post(
+        GlobalVars.baseUrl + "/leftPackages/bulk-tie",
+        JSON.stringify(requestData),
+        this.options
+      )
+      .subscribe(
+        (response) => {
+          const result = response.json();
+
+          if (result.status === "success") {
+            const data = result.data;
+
+            let detailsHtml = `
+              <div class="text-left">
+                <p><strong>Muvaffaqiyatli bog'landi!</strong></p>
+                <p><strong>Jami:</strong> ${data.tied_customers} ta mijoz</p>
+            `;
+
+            if (data.details && data.details.length > 0) {
+              detailsHtml += `<hr><ul class="text-left" style="max-height: 300px; overflow-y: auto;">`;
+              data.details.forEach((detail: any) => {
+                detailsHtml += `
+                  <li>
+                    <strong>K${detail.customer_id}:</strong> 
+                    ${detail.total_tied_count} ta quti bog'landi
+                    ${
+                      detail.is_existing_group
+                        ? " (mavjud guruhga)"
+                        : " (yangi guruh)"
+                    }
+                  </li>
+                `;
+              });
+              detailsHtml += `</ul>`;
+            }
+
+            detailsHtml += `</div>`;
+
+            swal
+              .fire({
+                icon: "success",
+                title: "Muvaffaqiyat!",
+                html: detailsHtml,
+                customClass: {
+                  confirmButton: "btn btn-success",
+                },
+                buttonsStyling: false,
+              })
+              .then(() => {
+                this.findPackagesToTie();
+                this.loadWarehouseInventory();
+              });
+          } else {
+            swal.fire(
+              "Xatolik",
+              result.message || "Qutillarni bog'lashda xatolik",
+              "error"
+            );
+          }
+
+          this.autoTyingPackages = false;
+        },
+        (error) => {
+          swal.fire(
+            "Xatolik",
+            error.json()?.error || "Qutillarni bog'lashda xatolik",
+            "error"
+          );
+          this.autoTyingPackages = false;
+          if (error.status == 403) {
+            this.authService.logout();
+          }
+        }
+      );
+  }
+
   // Tie packages for specific customer
   tiePackagesForCustomer(ownerId: string) {
     swal
       .fire({
         title: "Qutillarni bog'lash",
-        text: `Mijoz K${ownerId} IDli Mijoznning barcha qutilari bog'lansinmi?`,
+        text: `Mijoz K${ownerId} ning barcha qutilari bog'lansinmi?`,
         icon: "question",
         showCancelButton: true,
         confirmButtonText: "Ha, bog'lash",
@@ -304,12 +451,9 @@ export class WarehouseInventoryComponent implements OnInit {
                     icon: "success",
                     title: "Bog'landi!",
                     text: result.message,
-                    customClass: {
-                      confirmButton: "btn btn-success",
-                    },
-                    buttonsStyling: false,
+                    timer: 2000,
+                    showConfirmButton: false,
                   });
-                  // Refresh data
                   this.findPackagesToTie();
                   this.loadWarehouseInventory();
                 } else {
@@ -327,7 +471,7 @@ export class WarehouseInventoryComponent implements OnInit {
       });
   }
 
-  // NEW METHOD: Auto-tie all packages for the consignment
+  // Auto-tie all packages for the consignment
   autoTieAllPackages() {
     if (!this.selectedConsignment) {
       swal.fire("Xatolik", "Consignment nomi kiritilmagan", "error");
@@ -343,8 +487,10 @@ export class WarehouseInventoryComponent implements OnInit {
       .fire({
         title: "Hammasini bog'lash",
         html: `
-          <p><strong>${this.packagesToTie.length} ta mijoz</strong>ning qutilari avtomatik bog'lanadi.</p>
-          <p>Davom ettirilsinmi?</p>
+          <div class="text-left">
+            <p><strong>${this.packagesToTie.length} ta mijoz</strong>ning qutilari avtomatik bog'lanadi.</p>
+            <p>Davom ettirilsinmi?</p>
+          </div>
         `,
         icon: "question",
         showCancelButton: true,
@@ -380,23 +526,21 @@ export class WarehouseInventoryComponent implements OnInit {
       .subscribe(
         (response) => {
           const result = response.json();
-          // console.log("auto tie ", result.data);
 
           if (result.status === "success") {
             const data = result.data;
 
-            // Build detailed success message
             let detailsHtml = `
               <div class="text-left">
                 <p><strong>Consignment:</strong> ${data.consignment_name}</p>
                 <p><strong>Jami mijozlar:</strong> ${data.total_customers} ta</p>
-                <p><strong>Bog'langan mijozlar:</strong> ${data.tied_customers} ta</p>
-                <p><strong>Bog'lanmagan mijozlar:</strong> ${data.untied_customers} ta</p>
+                <p><strong>Bog'langan:</strong> ${data.tied_customers} ta</p>
+                <p><strong>Bog'lanmagan:</strong> ${data.untied_customers} ta</p>
             `;
 
-            // Show details if available
             if (data.details && data.details.length > 0) {
-              detailsHtml += `<hr><p><strong>Tafsilotlar:</strong></p><ul class="text-left">`;
+              detailsHtml += `<hr><p><strong>Tafsilotlar:</strong></p>
+              <ul class="text-left" style="max-height: 300px; overflow-y: auto;">`;
               data.details.forEach((detail: any) => {
                 detailsHtml += `
                   <li>
@@ -406,8 +550,8 @@ export class WarehouseInventoryComponent implements OnInit {
                     ${detail.total_tied_count} ta quti bog'landi
                     ${
                       detail.is_existing_group
-                        ? " (mavjud guruhga qo'shildi)"
-                        : " (yangi guruh yaratildi)"
+                        ? " (mavjud guruhga)"
+                        : " (yangi guruh)"
                     }
                   </li>
                 `;
@@ -429,7 +573,6 @@ export class WarehouseInventoryComponent implements OnInit {
                 width: "600px",
               })
               .then(() => {
-                // Refresh data
                 this.findPackagesToTie();
                 this.loadWarehouseInventory();
               });
@@ -444,8 +587,6 @@ export class WarehouseInventoryComponent implements OnInit {
           this.autoTyingPackages = false;
         },
         (error) => {
-          console.error("Auto-tie error:", error);
-
           const errorMessage =
             error.json()?.error ||
             error.json()?.message ||
@@ -453,7 +594,6 @@ export class WarehouseInventoryComponent implements OnInit {
             "Qutillarni bog'lashda xatolik";
 
           swal.fire("Xatolik", errorMessage, "error");
-
           this.autoTyingPackages = false;
 
           if (error.status == 403) {
@@ -462,6 +602,7 @@ export class WarehouseInventoryComponent implements OnInit {
         }
       );
   }
+
   // Untie specific package
   untiePackage(ownerId: string, consignmentName: string) {
     swal
@@ -494,15 +635,11 @@ export class WarehouseInventoryComponent implements OnInit {
                     icon: "success",
                     title: "Ajratildi!",
                     text: result.message,
-                    customClass: {
-                      confirmButton: "btn btn-success",
-                    },
-                    buttonsStyling: false,
+                    timer: 2000,
+                    showConfirmButton: false,
                   });
-                  // Refresh data
                   this.loadWarehouseInventory();
                   if (this.selectedCustomer) {
-                    // Update selected customer data
                     const updatedCustomer = this.warehouseInventory.find(
                       (c) => c.owner_id === this.selectedCustomer.owner_id
                     );
@@ -550,7 +687,10 @@ export class WarehouseInventoryComponent implements OnInit {
   // Modal management
   viewCustomerDetails(customer: CustomerInventory) {
     this.selectedCustomer = customer;
+    console.log("selected customer ", this.selectedCustomer);
+
     this.showCustomerModal = true;
+    document.body.style.overflow = "hidden"; // Prevent background scroll
   }
 
   showUntieOptions(customer: CustomerInventory) {
@@ -560,6 +700,7 @@ export class WarehouseInventoryComponent implements OnInit {
   closeModal() {
     this.showCustomerModal = false;
     this.selectedCustomer = null;
+    document.body.style.overflow = "auto"; // Restore scroll
   }
 
   // Form management
@@ -612,16 +753,46 @@ export class WarehouseInventoryComponent implements OnInit {
     });
     return Array.from(consignments);
   }
-  countTiedPacForCus(packages: any[]) {
+
+  countTiedPacForCus(packages: any[]): number {
     return packages.filter((g) => g.type === "tied").length;
   }
-  countSinglePacForCus(packages: any[]) {
+
+  countSinglePacForCus(packages: any[]): number {
     return packages.filter((g) => g.type === "single").length;
   }
 
-  logGroupPackages(selectedCustomer: any[]) {
-    for (let item of this.selectedCustomer.package_groups) {
-      console.log("tiem ", item);
-    }
+  // Clear tying section
+  clearTyingSection() {
+    swal
+      .fire({
+        title: "Bo'limni tozalash",
+        text: "Hamma ma'lumotlar o'chiriladi. Davom ettirilsinmi?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Ha, tozalash",
+        cancelButtonText: "Bekor qilish",
+        customClass: {
+          confirmButton: "btn btn-danger",
+          cancelButton: "btn btn-secondary",
+        },
+        buttonsStyling: false,
+      })
+      .then((result) => {
+        if (result.isConfirmed) {
+          // Clear all data
+          this.packagesToTie = [];
+          this.selectedConsignment = "";
+          this.selectAllPackages = false;
+
+          swal.fire({
+            icon: "success",
+            title: "Tozalandi!",
+            text: "Bo'lim tozalandi",
+            timer: 1500,
+            showConfirmButton: false,
+          });
+        }
+      });
   }
 }

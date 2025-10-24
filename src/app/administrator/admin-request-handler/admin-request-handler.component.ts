@@ -74,7 +74,7 @@ export class AdminRequestHandlerComponent {
 
   // Pagination
   currentPage: number = 0;
-  requestsPerPage: number = 10;
+  requestsPerPage: number = 50;
   totalRequests: number = 0;
   totalArchiveRequests: number = 0;
   totalPages: number = 0;
@@ -105,6 +105,7 @@ export class AdminRequestHandlerComponent {
   currentFullImageUrl: string = "";
   currentImageIndex: number = 0;
   paymentNotes: string = "";
+  loadingPaymentImages: boolean = false;
 
   // EMU BRANCH BY ID
   emuBranches: any = [];
@@ -178,7 +179,7 @@ export class AdminRequestHandlerComponent {
           const result = response.json();
           if (result.status === "success") {
             this.pendingRequests = result.data.requests || [];
-            // console.log("pending requests ", this.pendingRequests);
+            console.log("pending requests ", this.pendingRequests);
 
             this.totalRequests = result.data.pagination.total;
             this.totalPages = Math.ceil(
@@ -352,6 +353,7 @@ export class AdminRequestHandlerComponent {
     }
 
     this.selectedRequest = request;
+    this.paymentImageUrls = [];
     this.loadRequestPackages(requestId);
     this.loadPaymentImages(requestId); // Load payment images
     this.showRequestDetails = true;
@@ -366,13 +368,17 @@ export class AdminRequestHandlerComponent {
         (response) => {
           const result = response.json();
           if (result.status === "success") {
-            this.paymentImageUrls = result.data.payment_images || [];
-            // console.log("Loaded payment images:", this.paymentImageUrls);
+            const images = result.data?.payment_images;
+            this.paymentImageUrls = Array.isArray(images) ? images : [];
+          } else {
+            this.paymentImageUrls = [];
           }
+          this.loadingPaymentImages = false;
         },
         (error) => {
           console.error("Error loading payment images:", error);
           this.paymentImageUrls = [];
+          this.loadingPaymentImages = false;
           if (error.status == 403) {
             this.authService.logout();
           }
@@ -388,6 +394,7 @@ export class AdminRequestHandlerComponent {
 
   closeFullImageModal() {
     this.showFullImageModal = false;
+    this.paymentImageUrls = [];
     this.currentFullImageUrl = "";
     this.currentImageIndex = 0;
   }
@@ -808,6 +815,8 @@ export class AdminRequestHandlerComponent {
     this.showRejectionForm = false;
     this.selectedRequest = null;
     this.requestPackages = [];
+    this.paymentImageUrls = [];
+    this.loadingPaymentImages = false;
   }
 
   // Reset forms
@@ -848,7 +857,7 @@ export class AdminRequestHandlerComponent {
 
   getDeliveryTypeText(type: string): string {
     const types = {
-      EMU: "Filiamiz",
+      EMU: "EMU",
       Yandex: "Yandex Yetkazish",
       "Own-Courier": "Bizning Kuryer",
       "Pick-up": "O'zim olaman",

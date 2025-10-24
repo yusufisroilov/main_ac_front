@@ -1,4 +1,4 @@
-<!-- Fixed customer-requests.component.html -->
+<!-- customer-requests.component.html -->
 <div class="main-content">
     <div class="container-fluid">
 
@@ -15,26 +15,24 @@
                     </div>
                     <div class="card-body">
 
-                        <!-- Action Buttons -->
-                        <div class="row mb-3">
-                            <div class="col-md-12">
-                                <button class="btn btn-primary mr-2" (click)="showPackageSelectionStep()"
-                                    [disabled]="loadingPackages">
-                                    <i class="material-icons">add_shopping_cart</i>
-                                    Yangi So'rov Yaratish
-                                </button>
+                        <!-- Simple Action Buttons -->
+                        <div class="action-buttons">
+                            <button class="btn btn-primary" (click)="showPackageSelectionStep()"
+                                [disabled]="loadingPackages">
+                                <i class="material-icons">add</i>
+                                Yangi So'rov
+                            </button>
 
-                                <button class="btn btn-info mr-2" (click)="showMyRequestsList()">
-                                    <i class="material-icons">list</i>
-                                    Mening So'rovlarim
-                                </button>
+                            <button class="btn btn-info" (click)="showMyRequestsList()">
+                                <i class="material-icons">list</i>
+                                Mening So'rovlarim
+                            </button>
 
-                                <button class="btn btn-success" (click)="loadCustomerPackages()"
-                                    [disabled]="loadingPackages">
-                                    <i class="material-icons">refresh</i>
-                                    Yangilash
-                                </button>
-                            </div>
+                            <button class="btn btn-success" (click)="loadCustomerPackages()"
+                                [disabled]="loadingPackages">
+                                <i class="material-icons">refresh</i>
+                                Yangilash
+                            </button>
                         </div>
 
                     </div>
@@ -47,96 +45,65 @@
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-header card-header-warning">
-                        <h4 class="card-title">1-Qadam: Qutillarni Tanlang</h4>
-                        <p class="card-category">Yetkazish uchun qutillarni belgilang</p>
+                        <h4 class="card-title">
+                            <span class="step-badge">1</span>
+                            Qutillarni Tanlang
+                        </h4>
                     </div>
                     <div class="card-body">
 
-                        <!-- Loading indicator -->
-                        <div *ngIf="loadingPackages" class="text-center p-4">
-                            <div class="spinner-border text-primary" role="status">
-                                <span class="sr-only">Yuklanmoqda...</span>
-                            </div>
-                            <p class="mt-2">Qutillar yuklanmoqda...</p>
+                        <!-- Loading -->
+                        <div *ngIf="loadingPackages" class="text-center p-5">
+                            <div class="spinner-border text-warning" style="width: 3rem; height: 3rem;"></div>
+                            <p class="mt-3">Yuklanmoqda...</p>
                         </div>
 
-                        <!-- Packages table -->
+                        <!-- Simple Package Cards -->
                         <div *ngIf="!loadingPackages && customerPackages.length > 0">
-                            <div class="table-responsive">
-                                <table class="table table-striped">
-                                    <thead class="text-primary">
-                                        <tr>
-                                            <th>No</th>
-                                            <th>Quti turi</th>
-                                            <th>Qutillar soni</th>
-                                            <th>Partiyalar</th>
-                                            <th>Barkodlar</th>
-                                            <th>Tanlash</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr *ngFor="let group of customerPackages; let i = index">
-                                            <td>{{i + 1}}</td>
-                                            <td>
-                                                <span *ngIf="group.type === 'tied'" class="badge badge-info">
-                                                    🔗 Bog'langan ({{group.total_packages}} ta)
-                                                </span>
-                                                <span *ngIf="group.type === 'single'" class="badge badge-secondary">
-                                                    📦 Yagona quti
-                                                </span>
-                                            </td>
-                                            <td>{{group.total_packages}}</td>
-                                            <td>{{group.consignments.join(', ')}}</td>
-                                            <td>
-                                                <small class="text-monospace">
-                                                    <span
-                                                        *ngFor="let barcode of group.package_barcodes.slice(0, 2); let last = last">
-                                                        {{barcode}}<span *ngIf="!last">, </span>
-                                                    </span>
-                                                    <span *ngIf="group.package_barcodes.length > 2">
-                                                        ... (+{{group.package_barcodes.length - 2}})
-                                                    </span>
-                                                </small>
-                                            </td>
-                                            <td>
-                                                <button class="btn btn-sm" [class.btn-success]="group.selected"
-                                                    [class.btn-primary]="!group.selected"
-                                                    (click)="selectPackageGroup(i)">
-                                                    <span *ngIf="group.selected">✓ Tanlangan</span>
-                                                    <span *ngIf="!group.selected">Tanlash</span>
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                            <div class="packages-grid">
+                                <div class="package-card" *ngFor="let group of customerPackages; let i = index"
+                                    [class.selected]="group.selected" (click)="selectPackageGroup(i)">
+
+                                    <div class="check-icon" *ngIf="group.selected">
+                                        <i class="material-icons">check_circle</i>
+                                    </div>
+
+                                    <div class="package-icon">
+                                        <i class="material-icons">inventory_2</i>
+                                    </div>
+
+                                    <div class="package-details">
+                                        <strong>{{group.total_packages}} ta quti</strong>
+                                        <small>{{group.total_items}} mahsulot</small>
+                                    </div>
+
+                                    <div class="package-label">
+                                        <span *ngIf="group.type === 'tied'" class="badge badge-info">Bog'langan</span>
+                                        <span *ngIf="group.type === 'single'"
+                                            class="badge badge-secondary">Yagona</span>
+                                    </div>
+
+                                    <small class="package-consignment">{{group.consignments[0]}}</small>
+                                </div>
                             </div>
 
-                            <!-- Selected packages info -->
-                            <div class="alert alert-info mt-3" *ngIf="selectedPackages.length > 0">
-                                <strong>Tanlangan qutillar:</strong> {{selectedPackages.length}} ta
-                                <details class="mt-2">
-                                    <summary>Barkodlar ro'yxati</summary>
-                                    <ul class="mb-0 mt-1">
-                                        <li *ngFor="let barcode of selectedPackages">{{barcode}}</li>
-                                    </ul>
-                                </details>
-                            </div>
-
-                            <!-- Next button -->
-                            <div class="text-right mt-3">
-                                <button class="btn btn-success" (click)="showCreateRequestForm()"
-                                    [disabled]="selectedPackages.length === 0">
-                                    Keyingi Qadam
+                            <!-- Simple Summary -->
+                            <div class="selection-summary" *ngIf="selectedPackages.length > 0">
+                                <div class="summary-text">
+                                    <i class="material-icons">check_circle</i>
+                                    <strong>{{selectedPackages.length}} ta quti tanlandi</strong>
+                                </div>
+                                <button class="btn btn-success btn-lg" (click)="showCreateRequestForm()">
+                                    Davom etish
                                     <i class="material-icons">arrow_forward</i>
                                 </button>
                             </div>
                         </div>
 
-                        <!-- No packages message -->
-                        <div *ngIf="!loadingPackages && customerPackages.length === 0" class="text-center p-4">
-                            <i class="material-icons" style="font-size: 48px; color: #ccc;">inbox</i>
-                            <h5 class="mt-2">Yetkazish uchun quti mavjud emas</h5>
-                            <p class="text-muted">Hozircha ombordan olish uchun qutillaringiz yo'q</p>
+                        <!-- Empty State -->
+                        <div *ngIf="!loadingPackages && customerPackages.length === 0" class="empty-state">
+                            <i class="material-icons">inbox</i>
+                            <p>Yetkazish uchun quti mavjud emas</p>
                         </div>
 
                     </div>
@@ -149,212 +116,142 @@
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-header card-header-success">
-                        <h4 class="card-title">2-Qadam: Yetkazish Ma'lumotlari</h4>
-                        <p class="card-category">Yetkazish turini va ma'lumotlarni kiriting</p>
+                        <h4 class="card-title">
+                            <span class="step-badge">2</span>
+                            Yetkazish Ma'lumotlari
+                        </h4>
                     </div>
                     <div class="card-body">
 
                         <form #deliveryForm="ngForm" (ngSubmit)="submitDeliveryRequest()">
-                            <div class="row">
 
-                                <!-- Delivery Type -->
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label class="bmd-label-floating">Yetkazish Turi *</label>
-                                        <select class="form-control" [(ngModel)]="deliveryType" name="deliveryType"
-                                            (change)="onDeliveryTypeChange()">
-                                            <option value="Pick-up">O'zim olaman (Ombordan)</option>
-                                            <option value="Yandex">Yandex Yetkazish</option>
-                                            <option value="Own-Courier">Bizning Kuryer</option>
-                                            <option value="EMU">EMU Post</option>
-                                        </select>
+                            <!-- Simple Delivery Type Cards -->
+                            <div class="form-section">
+                                <label class="section-label">Yetkazish Turi</label>
+                                <div class="delivery-grid">
+                                    <div class="delivery-option" [class.active]="deliveryType === 'Pick-up'"
+                                        (click)="deliveryType = 'Pick-up'; onDeliveryTypeChange()">
+                                        <i class="material-icons">store</i>
+                                        <span>O'zim olaman</span>
                                     </div>
-                                </div>
 
-                                <!-- Customer Phone -->
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label class="bmd-label-floating">Telefon Raqam *</label>
-                                        <input type="tel" class="form-control" [(ngModel)]="customerPhone"
-                                            name="customerPhone" placeholder="+998901234567">
+                                    <div class="delivery-option" [class.active]="deliveryType === 'Yandex'"
+                                        (click)="deliveryType = 'Yandex'; onDeliveryTypeChange()">
+                                        <i class="material-icons">local_taxi</i>
+                                        <span>Yandex</span>
                                     </div>
-                                </div>
 
-                            </div>
-
-                            <!-- EMU Region and Branch Selection -->
-                            <div class="row" *ngIf="deliveryType === 'EMU'">
-                                <!-- Region Selection -->
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label class="bmd-label-floating">Viloyat *</label>
-                                        <select class="form-control" [(ngModel)]="selectedRegionId"
-                                            name="selectedRegionId" (change)="onRegionSelect(selectedRegionId)"
-                                            [disabled]="loadingRegions">
-                                            <option value="">Viloyatni tanlang</option>
-                                            <option *ngFor="let region of regions" [value]="region.id">
-                                                {{region.name}}
-                                            </option>
-                                        </select>
+                                    <div class="delivery-option" [class.active]="deliveryType === 'Own-Courier'"
+                                        (click)="deliveryType = 'Own-Courier'; onDeliveryTypeChange()">
+                                        <i class="material-icons">delivery_dining</i>
+                                        <span>Kuryer</span>
                                     </div>
-                                </div>
 
-                                <!-- Branch Selection -->
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label class="bmd-label-floating">Bizning Filialimiz </label>
-                                        <select class="form-control" [(ngModel)]="selectedBranchId"
-                                            name="selectedBranchId" [disabled]="loadingBranches || !selectedRegionId">
-                                            <option value="">Filialni tanlang</option>
-                                            <option *ngFor="let branch of branches" [value]="branch.id">
-                                                {{branch.name}}
-                                            </option>
-                                        </select>
+                                    <div class="delivery-option" [class.active]="deliveryType === 'EMU'"
+                                        (click)="deliveryType = 'EMU'; onDeliveryTypeChange()">
+                                        <i class="material-icons">business</i>
+                                        <span>EMU Post</span>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Delivery Address -->
-                            <div class="row" *ngIf="deliveryType === 'Yandex' || deliveryType === 'Own-Courier'">
-                                <div class="col-md-12">
-                                    <div class="form-group">
-                                        <label class="bmd-label-floating">Yetkazish Manzili *</label>
-                                        <textarea class="form-control" [(ngModel)]="deliveryAddress"
-                                            name="deliveryAddress" rows="3"
-                                            placeholder="To'liq manzilni kiriting: shahar, ko'cha, uy raqami"></textarea>
+                            <!-- Phone -->
+                            <div class="form-section">
+                                <label class="section-label">Telefon Raqam *</label>
+                                <input type="tel" class="form-control" [(ngModel)]="customerPhone" name="customerPhone"
+                                    placeholder="+998 90 123 45 67">
+                            </div>
+
+                            <!-- EMU Branch -->
+                            <div class="form-section" *ngIf="deliveryType === 'EMU'">
+                                <label class="section-label">Viloyat *</label>
+                                <select class="form-control" [(ngModel)]="selectedRegionId" name="selectedRegionId"
+                                    (change)="onRegionSelect(selectedRegionId)">
+                                    <option value="">Tanlang</option>
+                                    <option *ngFor="let region of regions" [value]="region.id">
+                                        {{region.name}}
+                                    </option>
+                                </select>
+
+                                <label class="section-label mt-3">Filial *</label>
+                                <select class="form-control" [(ngModel)]="selectedBranchId" name="selectedBranchId"
+                                    [disabled]="!selectedRegionId">
+                                    <option value="">Tanlang</option>
+                                    <option *ngFor="let branch of branches" [value]="branch.id">
+                                        {{branch.name}}
+                                    </option>
+                                </select>
+                            </div>
+
+                            <!-- Address -->
+                            <div class="form-section"
+                                *ngIf="deliveryType === 'Yandex' || deliveryType === 'Own-Courier'">
+                                <label class="section-label">Manzil *</label>
+                                <textarea class="form-control" [(ngModel)]="deliveryAddress" name="deliveryAddress"
+                                    rows="3" placeholder="To'liq manzilni kiriting"></textarea>
+                            </div>
+
+                            <!-- Payment -->
+                            <div class="form-section">
+                                <label class="section-label">To'lov Summa</label>
+                                <input type="number" class="form-control" [(ngModel)]="paymentAmount"
+                                    name="paymentAmount" placeholder="0 so'm">
+
+                                <label class="section-label mt-3">To'lov Rasmlari</label>
+                                <div class="upload-box">
+                                    <input type="file" id="paymentImages" #fileInput
+                                        (change)="onPaymentImagesSelected($event)" multiple accept="image/*" hidden>
+                                    <label for="paymentImages" class="upload-label">
+                                        <i class="material-icons">add_photo_alternate</i>
+                                        <span>Rasm yuklash (max 5 ta)</span>
+                                    </label>
+                                </div>
+
+                                <!-- Image Previews -->
+                                <div class="image-previews" *ngIf="selectedPaymentImages.length > 0">
+                                    <div class="image-item" *ngFor="let image of selectedPaymentImages; let i = index">
+                                        <img [src]="image.preview" [alt]="image.name">
+                                        <button type="button" class="remove-btn" (click)="removePaymentImage(i)">
+                                            <i class="material-icons">close</i>
+                                        </button>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- FIXED PAYMENT SECTION -->
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="card">
-                                        <div class="card-header card-header-warning">
-                                            <h5 class="card-title">To'lov Ma'lumotlari</h5>
-                                            <p class="card-category">To'lov rasmlarini yuklang</p>
-                                        </div>
-                                        <div class="card-body">
+                            <!-- Notes and Urgent -->
+                            <div class="form-section">
+                                <label class="section-label">Izoh</label>
+                                <textarea class="form-control" [(ngModel)]="deliveryNotes" name="deliveryNotes" rows="2"
+                                    placeholder="Qo'shimcha ma'lumot"></textarea>
 
-                                            <div class="row">
-                                                <!-- Payment Amount -->
-                                                <div class="col-md-6">
-                                                    <div class="form-group">
-                                                        <label class="bmd-label-floating">To'lov Miqdori (UZS)</label>
-                                                        <input type="number" class="form-control"
-                                                            [(ngModel)]="paymentAmount" name="paymentAmount" min="0"
-                                                            step="1000" placeholder="To'langan miqdorni kiriting">
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <!-- FIXED Payment Images Upload -->
-                                            <div class="row">
-                                                <div class="col-md-12">
-                                                    <div class="form-group">
-                                                        <label class="bmd-label-static">To'lov Rasmlari</label>
-
-                                                        <!-- File Input -->
-                                                        <div class="custom-file">
-                                                            <input type="file" class="custom-file-input"
-                                                                id="paymentImages" #fileInput
-                                                                (change)="onPaymentImagesSelected($event)" multiple
-                                                                accept="image/*">
-                                                            <label class="custom-file-label" for="paymentImages">
-
-                                                                Rasmlarni tanlang (maksimal 5 ta)
-                                                            </label>
-                                                        </div>
-                                                        <small class="form-text text-muted">
-                                                            JPG, PNG, GIF formatida, har biri 5MB dan oshmasin
-                                                        </small>
-                                                    </div>
-
-                                                    <!-- FIXED Selected Images Preview -->
-                                                    <div class="row mt-3" *ngIf="selectedPaymentImages.length > 0">
-                                                        <div class="col-md-12">
-                                                            <h6>Tanlangan rasmlar ({{selectedPaymentImages.length}}/5):
-                                                            </h6>
-                                                            <div class="row">
-                                                                <div class="col-md-3 mb-3"
-                                                                    *ngFor="let image of selectedPaymentImages; let i = index">
-                                                                    <div class="card">
-                                                                        <img [src]="image.preview" class="card-img-top"
-                                                                            style="height: 120px; object-fit: cover;"
-                                                                            [alt]="image.name">
-                                                                        <div class="card-body p-2">
-                                                                            <small
-                                                                                class="text-muted d-block">{{image.name}}</small>
-                                                                            <small
-                                                                                class="text-info d-block">{{formatFileSize(image.size)}}</small>
-                                                                            <button type="button"
-                                                                                class="btn btn-sm btn-danger float-right mt-1"
-                                                                                (click)="removePaymentImage(i)">
-                                                                                <i class="material-icons">close</i>
-                                                                            </button>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-
-                                                    <!-- Upload Progress -->
-                                                    <div class="progress mt-2" *ngIf="uploadingImages"
-                                                        style="height: 6px;">
-                                                        <div class="progress-bar progress-bar-striped progress-bar-animated"
-                                                            role="progressbar" style="width: 100%">
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Notes -->
-                            <div class="row">
-                                <div class="col-md-8">
-                                    <div class="form-group">
-                                        <label class="bmd-label-floating">Qo'shimcha Izoh</label>
-                                        <textarea class="form-control" [(ngModel)]="deliveryNotes" name="deliveryNotes"
-                                            rows="2" placeholder="Yetkazish bo'yicha qo'shimcha ma'lumot"></textarea>
-                                    </div>
-                                </div>
-
-                                <!-- Urgent checkbox -->
-                                <div class="col-md-4">
-                                    <div class="form-check mt-4">
-                                        <label class="form-check-label">
-                                            <input class="form-check-input" type="checkbox" [(ngModel)]="isUrgent"
-                                                name="isUrgent">
-                                            <span class="form-check-sign">
-                                                <span class="check"></span>
-                                            </span>
+                                <div class="urgent-check mt-3">
+                                    <label>
+                                        <input type="checkbox" [(ngModel)]="isUrgent" name="isUrgent">
+                                        <span>
+                                            <i class="material-icons">priority_high</i>
                                             Shoshilinch yetkazish
-                                        </label>
-                                    </div>
+                                        </span>
+                                    </label>
                                 </div>
                             </div>
 
-                            <!-- Action Buttons -->
-                            <div class="row">
-                                <div class="col-md-12 text-right">
-                                    <button type="button" class="btn btn-secondary mr-2" (click)="goBack()">
-                                        <i class="material-icons">arrow_back</i>
-                                        Orqaga
-                                    </button>
+                            <!-- Buttons -->
+                            <div class="form-buttons">
+                                <button type="button" class="btn btn-secondary" (click)="goBack()">
+                                    <i class="material-icons">arrow_back</i>
+                                    Orqaga
+                                </button>
 
-                                    <button type="submit" class="btn btn-success"
-                                        [disabled]="submittingRequest || uploadingImages">
-                                        <span *ngIf="submittingRequest || uploadingImages"
-                                            class="spinner-border spinner-border-sm mr-1"></span>
-                                        <i class="material-icons"
-                                            *ngIf="!submittingRequest && !uploadingImages">send</i>
+                                <button type="submit" class="btn btn-success btn-lg" [disabled]="submittingRequest">
+                                    <span *ngIf="!submittingRequest">
+                                        <i class="material-icons">send</i>
                                         So'rov Yuborish
-                                    </button>
-                                </div>
+                                    </span>
+                                    <span *ngIf="submittingRequest">
+                                        <span class="spinner-border spinner-border-sm"></span>
+                                        Yuborilmoqda...
+                                    </span>
+                                </button>
                             </div>
 
                         </form>
@@ -364,91 +261,66 @@
             </div>
         </div>
 
-        <!-- My Delivery Requests -->
+        <!-- My Requests - Simplified -->
         <div class="row" *ngIf="showMyRequests">
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-header card-header-info">
                         <h4 class="card-title">Mening So'rovlarim</h4>
-                        <p class="card-category">Yuborgan yetkazish so'rovlari</p>
                     </div>
                     <div class="card-body">
 
-                        <!-- Requests table -->
-                        <div *ngIf="myDeliveryRequests.length > 0">
-                            <div class="table-responsive">
-                                <table class="table table-hover">
-                                    <thead class="text-primary">
-                                        <tr>
-                                            <th>No</th>
-                                            <th>Mijoz IDsi</th>
-                                            <th>So'ralgan Quti(lar)</th>
-                                            <th>Telefon</th>
-                                            <th>Yetkazish turi</th>
-                                            <th>Qutillar</th>
-                                            <th>To'lov</th>
-                                            <th>Holat</th>
-                                            <th>Admin Izohi</th>
-                                            <th>Vaqt</th>
-                                            <th>Amallar</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr *ngFor="let request of myDeliveryRequests; let i = index"
-                                            [class.table-warning]="request.is_urgent">
-                                            <td>{{i + 1}}</td>
-                                            <td>
-                                                {{request.owner_id}}
-                                                <span *ngIf="request.is_urgent"
-                                                    class="badge badge-danger ml-1">Shoshilinch</span>
-                                            </td>
-                                            <td>{{getRequestedPackagesBarcodes(request.requested_packages)}}</td>
-                                            <td>{{request.customer_phone}}</td>
-                                            <td>{{getDeliveryTypeText(request.delivery_type)}}</td>
-                                            <td>{{request.total_packages}} ta</td>
-                                            <td>
-                                                <span *ngIf="request.payment_amount" class="text-success">
-                                                    {{request.payment_amount | number}} so'm
-                                                </span>
-                                                <span *ngIf="!request.payment_amount" class="text-muted">-</span>
-                                                <br>
-                                                <small
-                                                    *ngIf="request.payment_images && request.payment_images.length > 0"
-                                                    class="text-info">
-                                                    {{request.payment_images.length}} ta rasm
-                                                </small>
-                                            </td>
-                                            <td>
-                                                <span class="badge" [class.badge-warning]="request.status === 'pending'"
-                                                    [class.badge-success]="request.status === 'approved'"
-                                                    [class.badge-danger]="request.status === 'rejected'"
-                                                    [class.badge-secondary]="request.status === 'cancelled'">
-                                                    {{getStatusText(request.status)}}
-                                                </span>
-                                            </td>
-                                            <td>{{request.status === 'approved' ? request.admin_notes :
-                                                request.rejection_reason }}</td>
-                                            <td>{{request.created_at | date:'short'}}</td>
-                                            <td>
-                                                <button *ngIf="request.status === 'pending'"
-                                                    class="btn btn-sm btn-danger" (click)="cancelRequest(request.id)">
-                                                    Bekor Qilish
-                                                </button>
-                                                <span *ngIf="request.status !== 'pending'" class="text-muted">-</span>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                        <div *ngIf="myDeliveryRequests.length > 0" class="requests-container">
+                            <div class="request-item" *ngFor="let request of myDeliveryRequests; let i = index">
+
+                                <div class="request-top">
+                                    <span class="request-num">#{{i + 1}}</span>
+                                    <span class="status-pill" [class.status-pending]="request.status === 'pending'"
+                                        [class.status-approved]="request.status === 'approved'"
+                                        [class.status-rejected]="request.status === 'rejected'">
+                                        {{getStatusText(request.status)}}
+                                    </span>
+                                </div>
+
+                                <div class="request-content">
+                                    <div class="request-row">
+                                        <i class="material-icons">local_shipping</i>
+                                        <span>{{getDeliveryTypeText(request.delivery_type)}}</span>
+                                    </div>
+                                    <div class="request-row">
+                                        <i class="material-icons">inventory_2</i>
+                                        <span>{{request.total_packages}} ta quti</span>
+                                    </div>
+                                    <div class="request-row">
+                                        <i class="material-icons">phone</i>
+                                        <span>{{request.customer_phone}}</span>
+                                    </div>
+                                    <div class="request-row">
+                                        <i class="material-icons">schedule</i>
+                                        <span>{{request.created_at | date:'dd.MM.yyyy HH:mm'}}</span>
+                                    </div>
+                                </div>
+
+                                <div class="request-note" *ngIf="request.admin_notes || request.rejection_reason">
+                                    <small>
+                                        {{request.status === 'approved' ? request.admin_notes :
+                                        request.rejection_reason}}
+                                    </small>
+                                </div>
+                                <!-- Better styled cancel button -->
+                                <button *ngIf="request.status === 'pending'" class="cancel-button"
+                                    (click)="cancelRequest(request.id)">
+                                    <i class="material-icons">cancel</i>
+                                    <span>Bekor qilish</span>
+                                </button>
+
                             </div>
                         </div>
 
-                        <!-- No requests message -->
-                        <div *ngIf="myDeliveryRequests.length === 0" class="text-center p-4">
-                            <i class="material-icons" style="font-size: 48px; color: #ccc;">assignment</i>
-                            <h5 class="mt-2">So'rovlar mavjud emas</h5>
-                            <p class="text-muted">Hali yetkazish so'rovi yubormagansiz</p>
-                            <button class="btn btn-primary" (click)="showPackageSelectionStep()">
-                                <i class="material-icons">add</i>
+                        <div *ngIf="myDeliveryRequests.length === 0" class="empty-state">
+                            <i class="material-icons">assignment</i>
+                            <p>So'rovlar mavjud emas</p>
+                            <button class="btn btn-primary mt-3" (click)="showPackageSelectionStep()">
                                 Birinchi So'rov Yaratish
                             </button>
                         </div>
@@ -458,5 +330,20 @@
             </div>
         </div>
 
+    </div>
+</div>
+
+<!-- Sending Animation Overlay -->
+<div class="sending-overlay" *ngIf="showSendingAnimation">
+    <div class="sending-animation">
+        <div class="message-icon">
+            <i class="material-icons">mail_outline</i>
+        </div>
+        <div class="sending-text">So'rov yuborilmoqda...</div>
+        <div class="progress-dots">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
     </div>
 </div>

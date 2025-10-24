@@ -6,86 +6,91 @@
         <div class="row">
             <div class="col-md-12">
                 <div class="card">
-                    <div class="card-header card-header-icon card-header-primary">
-                        <div class="card-icon">
-                            <i class="material-icons">inventory_2</i>
+                    <div class="card-header card-header-gradient">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h3 class="card-title mb-1">
+                                    <i class="material-icons align-middle">inventory_2</i>
+                                    Ombor Qutilari
+                                </h3>
+                                <p class="card-category mb-0">Omborda qolgan qutillarni kuzatish va boshqarish</p>
+                            </div>
+                            <button class="btn btn-white btn-round" (click)="loadWarehouseInventory()"
+                                [disabled]="loadingInventory">
+                                <i class="material-icons">refresh</i>
+                                Yangilash
+                            </button>
                         </div>
-                        <h4 class="card-title">Ombor Qutilari</h4>
-                        <p class="card-category">Omborda qolgan qutillarni kuzatish va boshqarish</p>
                     </div>
                     <div class="card-body">
 
                         <!-- Summary Cards -->
                         <div class="row" *ngIf="inventorySummary">
                             <div class="col-lg-3 col-md-6 col-sm-6">
-                                <div class="card card-stats">
-                                    <div class="card-header card-header-warning card-header-icon">
-                                        <div class="card-icon">
-                                            <i class="material-icons">inventory</i>
-                                        </div>
-                                        <p class="card-category">Jami Qutillar</p>
-                                        <h3 class="card-title">{{inventorySummary.total_packages}}</h3>
+                                <div class="stats-card stats-warning">
+                                    <div class="stats-icon">
+                                        <i class="material-icons">inventory</i>
+                                    </div>
+                                    <div class="stats-content">
+                                        <p class="stats-label">Jami Qutillar</p>
+                                        <h3 class="stats-value">{{inventorySummary.total_packages}}</h3>
                                     </div>
                                 </div>
                             </div>
                             <div class="col-lg-3 col-md-6 col-sm-6">
-                                <div class="card card-stats">
-                                    <div class="card-header card-header-success card-header-icon">
-                                        <div class="card-icon">
-                                            <i class="material-icons">people</i>
-                                        </div>
-                                        <p class="card-category">Mijozlar</p>
-                                        <h3 class="card-title">{{inventorySummary.total_customers}}</h3>
+                                <div class="stats-card stats-success">
+                                    <div class="stats-icon">
+                                        <i class="material-icons">people</i>
+                                    </div>
+                                    <div class="stats-content">
+                                        <p class="stats-label">Mijozlar</p>
+                                        <h3 class="stats-value">{{inventorySummary.total_customers}}</h3>
                                     </div>
                                 </div>
                             </div>
                             <div class="col-lg-3 col-md-6 col-sm-6">
-                                <div class="card card-stats">
-                                    <div class="card-header card-header-info card-header-icon">
-                                        <div class="card-icon">
-                                            <i class="material-icons">link</i>
-                                        </div>
-                                        <p class="card-category">Bog'langan</p>
-                                        <h3 class="card-title">{{inventorySummary.tied_packages}}</h3>
+                                <div class="stats-card stats-info">
+                                    <div class="stats-icon">
+                                        <i class="material-icons">link</i>
+                                    </div>
+                                    <div class="stats-content">
+                                        <p class="stats-label">Bog'langan</p>
+                                        <h3 class="stats-value">{{inventorySummary.tied_packages}}</h3>
                                     </div>
                                 </div>
                             </div>
                             <div class="col-lg-3 col-md-6 col-sm-6">
-                                <div class="card card-stats">
-                                    <div class="card-header card-header-danger card-header-icon">
-                                        <div class="card-icon">
-                                            <i class="material-icons">pending_actions</i>
-                                        </div>
-                                        <p class="card-category">Mahsulotlar</p>
-                                        <h3 class="card-title">{{inventorySummary.total_items}}</h3>
+                                <div class="stats-card stats-danger">
+                                    <div class="stats-icon">
+                                        <i class="material-icons">shopping_bag</i>
+                                    </div>
+                                    <div class="stats-content">
+                                        <p class="stats-label">Mahsulotlar</p>
+                                        <h3 class="stats-value">{{inventorySummary.total_items}}</h3>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Action Buttons -->
-                        <div class="row mb-3">
+                        <div class="row mt-4">
                             <div class="col-md-12">
-                                <button class="btn btn-primary mr-2" (click)="showAddPackageForm()">
-                                    <i class="material-icons">add_box</i>
-                                    Yangi Quti Qo'shish
-                                </button>
+                                <div class="btn-group-modern">
+                                    <button class="btn btn-primary btn-action" (click)="showAddPackageForm()">
+                                        <i class="material-icons">add_box</i>
+                                        <span>Yangi Quti</span>
+                                    </button>
 
-                                <button class="btn btn-info mr-2" (click)="showTyingInterface()">
-                                    <i class="material-icons">link</i>
-                                    Qutillarni Bog'lash
-                                </button>
+                                    <button class="btn btn-info btn-action" (click)="showTyingInterface()">
+                                        <i class="material-icons">link</i>
+                                        <span>Qutillarni Bog'lash</span>
+                                    </button>
 
-                                <button class="btn btn-warning mr-2" (click)="showInventoryView()">
-                                    <i class="material-icons">view_list</i>
-                                    Inventar Ko'rish
-                                </button>
-
-                                <button class="btn btn-success" (click)="loadWarehouseInventory()"
-                                    [disabled]="loadingInventory">
-                                    <i class="material-icons">refresh</i>
-                                    Yangilash
-                                </button>
+                                    <button class="btn btn-warning btn-action" (click)="showInventoryView()">
+                                        <i class="material-icons">view_list</i>
+                                        <span>Inventar Ko'rish</span>
+                                    </button>
+                                </div>
                             </div>
                         </div>
 
@@ -96,28 +101,31 @@
 
         <!-- Add Package Form -->
         <div class="row" *ngIf="showAddForm">
-            <div class="col-md-8">
-                <div class="card">
-                    <div class="card-header card-header-success">
-                        <h4 class="card-title">Yangi Quti Qo'shish</h4>
-                        <p class="card-category">Ombordagi yangi qutini ro'yxatga olish</p>
+            <div class="col-md-8 mx-auto">
+                <div class="card card-modern">
+                    <div class="card-header bg-success">
+                        <h4 class="card-title text-white mb-0">
+                            <i class="material-icons align-middle">add_circle</i>
+                            Yangi Quti Qo'shish
+                        </h4>
                     </div>
                     <div class="card-body">
                         <form>
                             <div class="row">
                                 <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label class="bmd-label-floating">Mijoz ID *</label>
+                                    <div class="form-group-modern">
+                                        <label>Mijoz ID </label>
                                         <input type="text" class="form-control" [(ngModel)]="newPackage.owner_id"
-                                            name="ownerId" required>
+                                            name="ownerId" placeholder="Masalan: 8" required>
                                     </div>
                                 </div>
 
                                 <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label class="bmd-label-floating">Consignment Nomi *</label>
+                                    <div class="form-group-modern">
+                                        <label>Partiya Nomi</label>
                                         <input type="text" class="form-control"
-                                            [(ngModel)]="newPackage.consignment_name" name="consignmentName" required>
+                                            [(ngModel)]="newPackage.consignment_name" name="consignmentName"
+                                            placeholder="Masalan: CU109" required>
                                     </div>
                                 </div>
                             </div>
@@ -125,23 +133,28 @@
                             <!-- Preview barcode -->
                             <div class="row" *ngIf="newPackage.owner_id && newPackage.consignment_name">
                                 <div class="col-md-12">
-                                    <div class="alert alert-info">
-                                        <strong>Barcode Preview:</strong>
-                                        K{{newPackage.owner_id}}-{{newPackage.consignment_name}}
+                                    <div class="barcode-preview">
+                                        <i class="material-icons">qr_code_2</i>
+                                        <div>
+                                            <small class="text-muted">Barcode Preview</small>
+                                            <h5 class="mb-0">K{{newPackage.owner_id}}-{{newPackage.consignment_name}}
+                                            </h5>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="row">
+                            <div class="row mt-4">
                                 <div class="col-md-12 text-right">
                                     <button type="button" class="btn btn-secondary mr-2" (click)="cancelAddPackage()">
+                                        <i class="material-icons">close</i>
                                         Bekor qilish
                                     </button>
                                     <button type="button" class="btn btn-success" (click)="addPackage()"
                                         [disabled]="!newPackage.owner_id || !newPackage.consignment_name || addingPackage">
                                         <span *ngIf="addingPackage"
                                             class="spinner-border spinner-border-sm mr-1"></span>
-                                        <i class="material-icons" *ngIf="!addingPackage">add</i>
+                                        <i class="material-icons" *ngIf="!addingPackage">check</i>
                                         Qo'shish
                                     </button>
                                 </div>
@@ -155,87 +168,131 @@
         <!-- Package Tying Interface -->
         <div class="row" *ngIf="showTyingView">
             <div class="col-md-12">
-                <div class="card">
-                    <div class="card-header card-header-info">
-                        <h4 class="card-title">Qutillarni Bog'lash</h4>
-                        <p class="card-category">Yangi kelgan qutillarni mavjud qutillar bilan bog'lash</p>
+                <div class="card card-modern">
+                    <div class="card-header bg-info">
+                        <h4 class="card-title text-white mb-0">
+                            <i class="material-icons align-middle">link</i>
+                            Qutillarni Bog'lash
+                        </h4>
                     </div>
                     <div class="card-body">
 
                         <!-- Consignment selector -->
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label class="bmd-label-floating">Consignment Nomini Kiriting</label>
-                                    <input type="text" class="form-control" [(ngModel)]="selectedConsignment"
-                                        name="selectedConsignment">
+                        <div class="search-section">
+                            <div class="row align-items-end">
+                                <div class="col-md-8">
+                                    <div class="form-group-modern">
+                                        <label>Partiya Nomini Kiriting</label>
+                                        <input type="text" class="form-control form-control-lg"
+                                            [(ngModel)]="selectedConsignment" name="selectedConsignment"
+                                            (keyup.enter)="findPackagesToTie()" placeholder="Masalan: CU109">
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-md-6">
-                                <button class="btn btn-primary mt-3" (click)="findPackagesToTie()"
-                                    [disabled]="!selectedConsignment || loadingPackagesToTie">
-                                    <span *ngIf="loadingPackagesToTie"
-                                        class="spinner-border spinner-border-sm mr-1"></span>
-                                    <i class="material-icons" *ngIf="!loadingPackagesToTie">search</i>
-                                    Bog'lash Kerak Bo'lganlarni Topish
-                                </button>
+                                <div class="col-md-4">
+                                    <button class="btn btn-primary btn-lg btn-block" (click)="findPackagesToTie()"
+                                        [disabled]="!selectedConsignment || loadingPackagesToTie">
+                                        <span *ngIf="loadingPackagesToTie"
+                                            class="spinner-border spinner-border-sm mr-1"></span>
+                                        <i class="material-icons" *ngIf="!loadingPackagesToTie">search</i>
+                                        Qidirish
+                                    </button>
+                                </div>
                             </div>
                         </div>
 
                         <!-- Packages to tie table -->
-                        <div *ngIf="packagesToTie.length > 0">
-                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                <h5 class="mb-0">Bog'lash Kerak Bo'lgan Qutillar ({{packagesToTie.length}} mijoz)</h5>
+                        <div *ngIf="packagesToTie.length > 0" class="tie-section">
+                            <div class="section-header">
+                                <h5 class="mb-0">
+                                    <i class="material-icons text-warning">warning</i>
+                                    Bog'lash Kerak Bo'lgan Qutillar
+                                    <span class="badge badge-primary badge-pill ml-2">{{packagesToTie.length}}
+                                        mijoz</span>
+                                </h5>
 
-                                <!-- NEW: Auto-tie all button -->
                                 <button class="btn btn-success btn-lg" (click)="autoTieAllPackages()"
                                     [disabled]="autoTyingPackages">
                                     <span *ngIf="autoTyingPackages"
                                         class="spinner-border spinner-border-sm mr-1"></span>
-                                    <i class="material-icons" *ngIf="!autoTyingPackages">link</i>
+                                    <i class="material-icons" *ngIf="!autoTyingPackages">done_all</i>
                                     Hammasini Bog'lash
+                                </button>
+
+                                <button class="btn btn-danger btn-sm mr-2" (click)="clearTyingSection()"
+                                    *ngIf="packagesToTie.length > 0">
+                                    <i class="material-icons">clear</i>
+                                    Tozalash
                                 </button>
                             </div>
 
-                            <div class="table-responsive">
-                                <table class="table table-hover">
-                                    <thead class="text-primary">
+                            <div class="table-responsive mt-3">
+                                <table class="table table-modern">
+                                    <thead>
                                         <tr>
-                                            <th>Mijoz ID</th>
-                                            <th>Yangi Quti</th>
-                                            <th>Mavjud Qutillar</th>
-                                            <th>Jami Qutillar</th>
-                                            <th>Holat</th>
-                                            <th>Amallar</th>
+                                            <th width="5%">
+                                                <div class="custom-control custom-checkbox">
+                                                    <input type="checkbox" class="custom-control-input" id="selectAll"
+                                                        [(ngModel)]="selectAllPackages" (change)="toggleSelectAll()">
+                                                    <label class="custom-control-label" for="selectAll"></label>
+                                                </div>
+                                            </th>
+                                            <th width="10%">Mijoz ID</th>
+                                            <th width="20%">Yangi Quti</th>
+                                            <th width="25%">Mavjud Qutillar</th>
+                                            <th width="10%">Jami</th>
+                                            <th width="15%">Holat</th>
+                                            <th width="15%">Amallar</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr *ngFor="let package of packagesToTie">
-                                            <td><strong>{{package.owner_id}}</strong></td>
+                                        <tr *ngFor="let package of packagesToTie; let i = index"
+                                            [class.selected-row]="package.selected">
                                             <td>
-                                                <small class="text-primary">
-                                                    {{package.new_package.barcode}}
-                                                </small>
+                                                <div class="custom-control custom-checkbox">
+                                                    <input type="checkbox" class="custom-control-input"
+                                                        [id]="'package-' + i" [(ngModel)]="package.selected">
+                                                    <label class="custom-control-label" [for]="'package-' + i"></label>
+                                                </div>
                                             </td>
                                             <td>
-                                                <small>{{package.existing_packages.length}} ta quti</small><br>
-                                                <small class="text-muted">
-                                                    Partiya:
-                                                    {{getUniqueConsignments(package.existing_packages).join(', ')}}
-                                                </small>
+                                                <div class="customer-id">K{{package.owner_id}}</div>
                                             </td>
-                                            <td>{{package.total_packages}} ta</td>
                                             <td>
-                                                <span *ngIf="package.already_has_tie_group" class="badge badge-info">
+                                                <div class="package-badge badge-new">
+                                                    <i class="material-icons">fiber_new</i>
+                                                    <span>{{package.new_package.barcode}}</span>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="existing-packages">
+                                                    <span class="package-count">
+                                                        <i class="material-icons">inventory_2</i>
+                                                        {{package.existing_packages.length}} ta quti
+                                                    </span>
+                                                    <div class="consignment-list">
+                                                        <span
+                                                            *ngFor="let cons of getUniqueConsignments(package.existing_packages)"
+                                                            class="consignment-tag">{{cons}}</span>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <span class="total-badge">{{package.total_packages}} ta</span>
+                                            </td>
+                                            <td>
+                                                <span *ngIf="package.already_has_tie_group"
+                                                    class="status-badge status-partial">
+                                                    <i class="material-icons">link</i>
                                                     Qisman bog'langan
                                                 </span>
                                                 <span *ngIf="!package.already_has_tie_group"
-                                                    class="badge badge-warning">
+                                                    class="status-badge status-unlinked">
+                                                    <i class="material-icons">link_off</i>
                                                     Bog'lanmagan
                                                 </span>
                                             </td>
                                             <td>
-                                                <button class="btn btn-sm btn-success"
+                                                <button class="btn btn-sm btn-success btn-action-small"
                                                     (click)="tiePackagesForCustomer(package.owner_id)">
                                                     <i class="material-icons">link</i>
                                                     Bog'lash
@@ -245,14 +302,22 @@
                                     </tbody>
                                 </table>
                             </div>
+
+                            <!-- Tie selected button -->
+                            <div class="text-right mt-3" *ngIf="getSelectedPackagesCount() > 0">
+                                <button class="btn btn-info btn-lg" (click)="tieSelectedPackages()">
+                                    <i class="material-icons">link</i>
+                                    Tanlangan {{getSelectedPackagesCount()}} ta mijozni bog'lash
+                                </button>
+                            </div>
                         </div>
 
                         <!-- No packages to tie -->
                         <div *ngIf="selectedConsignment && packagesToTie.length === 0 && !loadingPackagesToTie"
-                            class="text-center p-4">
-                            <i class="material-icons" style="font-size: 48px; color: #ccc;">link_off</i>
-                            <h5 class="mt-2">Bog'lash kerak bo'lgan quti yo'q</h5>
-                            <p class="text-muted">Bu Partiyada bog'lash kerak bo'lgan mijozlar topilmadi</p>
+                            class="empty-state">
+                            <i class="material-icons">link_off</i>
+                            <h5>Bog'lash kerak bo'lgan quti yo'q</h5>
+                            <p>Bu Partiyada bog'lash kerak bo'lgan mijozlar topilmadi</p>
                         </div>
 
                     </div>
@@ -263,75 +328,100 @@
         <!-- Warehouse Inventory View -->
         <div class="row" *ngIf="showInventory">
             <div class="col-md-12">
-                <div class="card">
-                    <div class="card-header card-header-warning">
+                <div class="card card-modern">
+                    <div class="card-header bg-info">
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
-                                <h4 class="card-title mb-1">Ombor Inventari</h4>
-                                <p class="card-category mb-0">
+                                <h4 class="card-title text-white mb-1">
+                                    <i class="material-icons align-middle">view_list</i>
+                                    Ombor Inventari
+                                </h4>
+                                <p class="card-category text-black-100 mb-0">
                                     Jami {{warehouseInventory.length}} mijoz, {{getTotalPackages()}} quti
                                 </p>
                             </div>
-                            <div>
-                                <!-- Filter controls -->
-                                <div class="form-group mb-0">
-                                    <input type="text" class="form-control form-control-sm"
-                                        [(ngModel)]="filterCustomerId" placeholder="Mijoz ID bo'yicha filter">
-                                </div>
+                            <div class="search-box">
+                                <i class="material-icons">search</i>
+                                <input type="text" class="form-control" [(ngModel)]="filterCustomerId"
+                                    placeholder="Mijoz ID bo'yicha qidirish...">
                             </div>
                         </div>
                     </div>
                     <div class="card-body">
 
                         <!-- Loading indicator -->
-                        <div *ngIf="loadingInventory" class="text-center p-4">
+                        <div *ngIf="loadingInventory" class="loading-state">
                             <div class="spinner-border text-primary" role="status"></div>
-                            <p class="mt-2">Inventar yuklanmoqda...</p>
+                            <p class="mt-3">Inventar yuklanmoqda...</p>
                         </div>
 
                         <!-- Inventory table -->
                         <div *ngIf="!loadingInventory && getFilteredInventory().length > 0">
                             <div class="table-responsive">
-                                <table class="table table-hover">
-                                    <thead class="text-primary">
+                                <table class="table table-modern table-hover">
+                                    <thead>
                                         <tr>
-                                            <th>Mijoz ID</th>
-                                            <th>Qutillar Soni</th>
-                                            <th>Quti Guruhlari</th>
-                                            <th>Partiyalar</th>
-                                            <th>Eng Eski Quti</th>
-                                            <th>Amallar</th>
+                                            <th width="12%">Mijoz ID</th>
+                                            <th width="12%">Qutillar</th>
+                                            <th width="30%">Quti Turlari</th>
+                                            <th width="20%">Partiyalar</th>
+                                            <th width="15%">Eng Eski</th>
+                                            <th width="11%">Amallar</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <tr *ngFor="let customer of getFilteredInventory()">
-                                            <td><strong>{{customer.owner_id}}</strong></td>
-                                            <td>{{customer.total_packages}} ta</td>
                                             <td>
-                                                <span *ngFor="let group of customer.package_groups" class="mr-2">
-                                                    <span *ngIf="group.type === 'tied'" class="badge badge-info">
-                                                        🔗 {{group.package_count}} bog'langan
+                                                <div class="customer-id-large">K{{customer.owner_id}}</div>
+                                            </td>
+                                            <td>
+                                                <div class="package-total">
+                                                    <i class="material-icons">inventory_2</i>
+                                                    <span>{{customer.total_packages}} ta</span>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="package-types">
+                                                    <span *ngFor="let group of customer.package_groups" class="mr-2">
+                                                        <span *ngIf="group.type === 'tied'"
+                                                            class="package-type-badge badge-tied">
+                                                            <i class="material-icons">link</i>
+                                                            {{group.package_count}} bog'langan
+                                                        </span>
+                                                        <span *ngIf="group.type === 'single'"
+                                                            class="package-type-badge badge-single">
+                                                            <i class="material-icons">inventory</i>
+                                                            Yagona
+                                                        </span>
                                                     </span>
-                                                    <span *ngIf="group.type === 'single'" class="badge badge-secondary">
-                                                        📦 Yagona
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="consignments-cell">
+                                                    <span
+                                                        *ngFor="let cons of getAllConsignments(customer); let isLast = last"
+                                                        class="consignment-chip">
+                                                        {{cons}}<span *ngIf="!isLast">,</span>
                                                     </span>
-                                                </span>
+                                                </div>
                                             </td>
                                             <td>
-                                                <small>{{getAllConsignments(customer).join(', ')}}</small>
+                                                <div class="date-cell">
+                                                    <i class="material-icons">schedule</i>
+                                                    <span>{{customer.oldest_package_date | date:'dd.MM.yyyy'}}</span>
+                                                </div>
                                             </td>
                                             <td>
-                                                <small>{{customer.oldest_package_date | date:'short'}}</small>
-                                            </td>
-                                            <td>
-                                                <button class="btn btn-sm btn-info mr-1"
-                                                    (click)="viewCustomerDetails(customer)">
-                                                    Ko'rish
-                                                </button>
-                                                <button class="btn btn-sm btn-warning"
-                                                    (click)="showUntieOptions(customer)">
-                                                    Ajratish
-                                                </button>
+                                                <div class="action-buttons">
+                                                    <button class="btn btn-sm btn-info"
+                                                        (click)="viewCustomerDetails(customer)" title="Ko'rish">
+                                                        <i class="material-icons">visibility</i>
+                                                    </button>
+                                                    <button class="btn btn-sm btn-warning"
+                                                        (click)="showUntieOptions(customer)" title="Ajratish">
+                                                        <i class="material-icons">link_off</i>
+                                                    </button>
+                                                </div>
                                             </td>
                                         </tr>
                                     </tbody>
@@ -340,10 +430,10 @@
                         </div>
 
                         <!-- No inventory -->
-                        <div *ngIf="!loadingInventory && getFilteredInventory().length === 0" class="text-center p-4">
-                            <i class="material-icons" style="font-size: 48px; color: #ccc;">inventory_2</i>
-                            <h5 class="mt-2">Inventar bo'sh</h5>
-                            <p class="text-muted">Omborda qutillar mavjud emas</p>
+                        <div *ngIf="!loadingInventory && getFilteredInventory().length === 0" class="empty-state">
+                            <i class="material-icons">inventory_2</i>
+                            <h5>Inventar bo'sh</h5>
+                            <p>Omborda qutillar mavjud emas</p>
                         </div>
 
                     </div>
@@ -355,61 +445,125 @@
 </div>
 
 <!-- Customer Details Modal -->
-<div class="modal fade" [class.show]="showCustomerModal" [style.display]="showCustomerModal ? 'block' : 'none'">
-    <div class="modal-dialog modal-lg">
+<div class="modal-modern fade" [class.show]="showCustomerModal" [style.display]="showCustomerModal ? 'block' : 'none'">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable" (click)="$event.stopPropagation()">
         <div class="modal-content" *ngIf="selectedCustomer">
             <div class="modal-header">
-                <h5 class="modal-title">Mijoz Qutilari - K{{selectedCustomer.owner_id}}</h5>
-                <button type="button" class="close" (click)="closeModal()">
-                    <span>&times;</span>
+                <div>
+                    <h4 class="modal-title mb-1">
+                        <i class="material-icons align-middle">person</i>
+                        Mijoz Qutilari
+                    </h4>
+                    <p class="modal-subtitle mb-0">Mijoz ID: <strong>K{{selectedCustomer.owner_id}}</strong></p>
+                </div>
+                <button type="button" class="close-btn" (click)="closeModal()">
+                    <i class="material-icons">close</i>
                 </button>
             </div>
             <div class="modal-body">
 
-                <div class="row mb-3">
-                    <div class="col-md-12">
-                        <h6>Umumiy Ma'lumot</h6>
-                        <p><strong>Jami qutillar:</strong> {{selectedCustomer.total_packages}} ta</p>
-                        <p><strong>Bog'langan guruhlari:</strong>
-                            {{countTiedPacForCus(selectedCustomer.package_groups)}} ta</p>
-                        <p><strong>Alohida qutilari:</strong> {{countSinglePacForCus(selectedCustomer.package_groups)}}
-                            ta</p>
+                <!-- Summary cards -->
+                <div class="row mb-4">
+                    <div class="col-md-4">
+                        <div class="summary-card">
+                            <div class="summary-icon bg-primary">
+                                <i class="material-icons">inventory_2</i>
+                            </div>
+                            <div class="summary-content">
+                                <p class="summary-label">Jami Qutillar</p>
+                                <h4 class="summary-value">{{selectedCustomer.total_packages}}</h4>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="summary-card">
+                            <div class="summary-icon bg-info">
+                                <i class="material-icons">link</i>
+                            </div>
+                            <div class="summary-content">
+                                <p class="summary-label">Bog'langan Guruhlar</p>
+                                <h4 class="summary-value">{{countTiedPacForCus(selectedCustomer.package_groups)}}</h4>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="summary-card">
+                            <div class="summary-icon bg-secondary">
+                                <i class="material-icons">inventory</i>
+                            </div>
+                            <div class="summary-content">
+                                <p class="summary-label">Alohida Qutilari</p>
+                                <h4 class="summary-value">{{countSinglePacForCus(selectedCustomer.package_groups)}}</h4>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Package groups -->
-                <div *ngFor="let group of selectedCustomer.package_groups" class="mb-3">
-                    <div class="card">
-                        <div class="card-header" [class.bg-info]="group.type === 'tied'"
-                            [class.bg-secondary]="group.type === 'single'">
-                            <h6 class="mb-0 text-white">
-                                <span *ngIf="group.type === 'tied'">🔗 Bog'langan Guruh ({{group.package_count}}
-                                    quti)</span>
-                                <span *ngIf="group.type === 'single'">📦 Alohida Quti</span>
+                <div *ngFor="let group of selectedCustomer.package_groups; let i = index" class="mb-3">
+                    <div class="package-group-card" [class.group-tied]="group.type === 'tied'"
+                        [class.group-single]="group.type === 'single'">
+                        <div class="group-header">
+                            <h6 class="mb-0">
+                                <span *ngIf="group.type === 'tied'" class="group-title">
+                                    <i class="material-icons">link</i>
+                                    Bog'langan Guruh
+                                    <span class="badge badge-light ml-2">{{group.package_count}} quti</span>
+                                </span>
+                                <span *ngIf="group.type === 'single'" class="group-title">
+                                    <i class="material-icons">inventory</i>
+                                    Alohida Quti
+                                </span>
                             </h6>
+                            <small class="text-muted">
+                                <i class="material-icons small">schedule</i>
+                                {{group.created_dates?.oldest | date:'dd.MM.yyyy HH:mm'}}
+                            </small>
                         </div>
-                        <div class="card-body">
+                        <div class="group-body">
                             <div class="table-responsive">
-                                <table class="table table-sm">
+                                <table class="table table-sm table-details">
                                     <thead>
                                         <tr>
-                                            <th>Barcode</th>
-                                            <th>Partiya</th>
-                                            <th>Buyumlar</th>
-                                            <th>Sana</th>
-                                            <th *ngIf="group.type === 'tied'">Amallar</th>
+                                            <th width="5%">#</th>
+                                            <th width="30%">Barcode</th>
+                                            <th width="20%">Partiya</th>
+                                            <th width="15%">Buyumlar</th>
+                                            <th width="18%">Vazni</th>
+                                            <th width="20%">Sana</th>
+                                            <th width="10%" *ngIf="group.type === 'tied'">Amal</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr *ngFor="let pkg of group.packages">
-                                            <td><code>{{pkg.barcode}}</code></td>
-                                            <td>{{pkg.consignment}}</td>
-                                            <td>{{pkg.items_count || 0}}</td>
-                                            <td><small>{{pkg.created_at | date:'short'}}</small></td>
+                                        <tr *ngFor="let pkg of group.packages; let j = index">
+                                            <td>{{j + 1}}</td>
+                                            <td>
+                                                <code class="barcode-code">{{pkg.barcode}}</code>
+                                            </td>
+                                            <td>
+                                                <span class="consignment-tag-small">{{pkg.consignment}}</span>
+                                            </td>
+                                            <td>
+                                                <span class="items-badge">
+                                                    <i class="material-icons tiny">numbers</i>
+                                                    {{pkg.items_count || 0}}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span class="items-badge">
+                                                    <i class="material-icons tiny">scale</i>
+                                                    {{pkg.weight || 0}}
+                                                </span>
+                                            </td>
+
+                                            <td>
+                                                <small class="text-muted">{{pkg.created_at | date:'dd.MM
+                                                    HH:mm'}}</small>
+                                            </td>
                                             <td *ngIf="group.type === 'tied'">
-                                                <button class="btn btn-sm btn-warning"
+                                                <button class="btn btn-xs btn-warning"
                                                     (click)="untiePackage(selectedCustomer.owner_id, pkg.consignment)">
-                                                    Ajratish
+                                                    <i class="material-icons tiny">link_off</i>
                                                 </button>
                                             </td>
                                         </tr>
@@ -422,11 +576,11 @@
 
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" (click)="closeModal()">Yopish</button>
+                <button type="button" class="btn btn-secondary" (click)="closeModal()">
+                    <i class="material-icons">close</i>
+                    Yopish
+                </button>
             </div>
         </div>
     </div>
 </div>
-
-<!-- Modal backdrop -->
-<div class="modal-backdrop fade show" *ngIf="showCustomerModal" (click)="closeModal()"></div>

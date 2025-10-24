@@ -407,7 +407,7 @@ export class EmployerDeliveryComponent {
   // Get delivery type display text
   getDeliveryTypeText(type: string): string {
     const types = {
-      EMU: "Filialimiz",
+      EMU: "EMU",
       Yandex: "Yandex",
       "Own-Courier": "Bizning Kuryerimiz",
       "Pick-up": "O'zim olib ketaman",

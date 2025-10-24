@@ -250,8 +250,7 @@
                       </button>
                       <!-- Enhanced Chek Button -->
                       <button mat-raised-button type="button" class="btn btn-success"
-                        (click)="showChekOptions(row.id, row.name, row.weight, row.quantity)" data-toggle="modal"
-                        data-target="#chekOptionsModal">
+                        (click)="openDeliveryCreationDirectly(row.id, row.name, row.weight, row.quantity)">
                         Chek <i class="material-icons">receipt_long</i>
                       </button>
                     </td>
@@ -264,59 +263,28 @@
       </div>
     </div>
 
-    <!-- Chek Options Modal -->
-    <div class="modal fade" id="chekOptionsModal" tabindex="-1" role="dialog">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">Chek Turini Tanlang</h5>
-            <button type="button" class="close" data-dismiss="modal">
-              <span>&times;</span>
-            </button>
-          </div>
-          <div class="modal-body text-center">
-            <p>
-              <strong>{{ selectedConsignmentName }}</strong> uchun amal tanlang:
-            </p>
-            <div class="row">
-              <div class="col-md-6">
-                <button class="btn btn-warning btn-lg btn-block" (click)="printPaymentReceipt()">
-                  <i class="material-icons">receipt</i><br>
-                  To'lov Cheki
-                </button>
-                <small class="text-muted">Mijoz to'lovini tasdiqlash uchun</small>
-              </div>
-              <div class="col-md-6">
-                <button class="btn btn-success btn-lg btn-block" (click)="showDeliveryCreation()">
-                  <i class="material-icons">local_shipping</i><br>
-                  Yetkazish Yaratish
-                </button>
-                <small class="text-muted">Qutillarni yetkazish uchun yuborish</small>
-              </div>
-            </div>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">
-              Bekor qilish
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
+
 
     <!-- Delivery Creation Modal -->
     <div class="modal fade" id="deliveryCreationModal" tabindex="-1" role="dialog">
-      <div class="modal-dialog modal-lg" role="document" style="max-width: 90%; margin: 1rem auto;">
-        <div class="modal-content" style="max-height: 90vh; display: flex; flex-direction: column;">
-          <div class="modal-header" style="flex-shrink: 0;">
-            <h5 class="modal-title">
-              Yetkazish Yaratish - {{ selectedConsignmentName }}
-            </h5>
+      <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+
+          <!-- Modal Header -->
+          <div class="modal-header">
+            <div>
+              <h4 class="modal-title">Yetkazish Yaratish</h4>
+              <p class="card-category mb-0">
+                Mijoz: <strong>K{{ currentID }}</strong> | Partiya: <strong>{{ selectedConsignmentName }}</strong>
+              </p>
+            </div>
             <button type="button" class="close" (click)="closeDeliveryModal()">
-              <span>&times;</span>
+              <i class="material-icons">clear</i>
             </button>
           </div>
-          <div class="modal-body" style="flex: 1; overflow-y: auto; padding: 1rem 1.5rem;">
+
+          <!-- Modal Body -->
+          <div class="modal-body">
 
             <!-- Loading State -->
             <div *ngIf="loadingCustomerPackages" class="text-center p-4">
@@ -324,31 +292,41 @@
               <p class="mt-2">Qutillar yuklanmoqda...</p>
             </div>
 
-            <!-- Package Selection -->
+            <!-- Main Content -->
             <div *ngIf="!loadingCustomerPackages && customerPackages.length > 0">
+
+              <!-- Step 1: Package Selection -->
               <div class="row">
                 <div class="col-md-12">
-                  <h6>Mijoz: K{{ currentID }} - Ombordagi Qutillar</h6>
+                  <h5 class="title">
+                    <i class="material-icons">inventory_2</i>
+                    Qutillarni Tanlang
+                  </h5>
+                  <hr>
+                </div>
+              </div>
 
-                  <!-- Package Groups Table -->
-                  <div class="table-responsive mb-4" style="max-height: 300px; overflow-y: auto;">
-                    <table class="table table-striped table-sm">
-                      <thead class="text-primary"
-                        style="position: sticky; top: 0; background-color: white; z-index: 10;">
+              <!-- Package Selection Table -->
+              <div class="row mb-4">
+                <div class="col-md-12">
+                  <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+                    <table class="table table-striped">
+                      <thead>
                         <tr>
-                          <th width="50">Tanlash</th>
+                          <th width="50" class="text-center">
+                            <i class="material-icons">check_box</i>
+                          </th>
                           <th>Turi</th>
-                          <th>Qutillar</th>
-                          <th>Mahsulotlar</th>
-                          <th>Consignmentlar</th>
-                          <th>Barkodlar</th>
+                          <th class="text-center">Qutillar</th>
+                          <th class="text-center">Mahsulotlar</th>
+                          <th>Partiyalar</th>
                           <th>Holat</th>
                         </tr>
                       </thead>
                       <tbody>
-                        <ng-container *ngFor="let group of customerPackages; let i = index">
-                          <tr [class]="getPackageRowClass(group)">
-                            <td>
+                        <ng-container *ngFor="let group of customerPackages">
+                          <tr [class.table-success]="group.selected">
+                            <td class="text-center">
                               <div class="form-check">
                                 <label class="form-check-label">
                                   <input class="form-check-input" type="checkbox" [(ngModel)]="group.selected"
@@ -367,23 +345,18 @@
                                 Alohida
                               </span>
                             </td>
-                            <td>{{ group.total_packages }} ta</td>
-                            <td>{{ group.total_items }} ta</td>
+                            <td class="text-center">
+                              <strong>{{ group.total_packages }}</strong> ta
+                            </td>
+                            <td class="text-center">
+                              <strong>{{ group.total_items }}</strong> ta
+                            </td>
                             <td>
                               <small>
                                 <span *ngFor="let consignment of group.consignments; let last = last"
-                                  [class]="consignment === selectedConsignmentName ? 'text-primary font-weight-bold' : 'text-muted'">
+                                  [class.text-primary]="consignment === selectedConsignmentName"
+                                  [class.font-weight-bold]="consignment === selectedConsignmentName">
                                   {{ consignment }}<span *ngIf="!last">, </span>
-                                </span>
-                              </small>
-                            </td>
-                            <td>
-                              <small class="text-monospace">
-                                <span *ngFor="let barcode of group.package_barcodes.slice(0, 2); let last = last">
-                                  {{ barcode }}<span *ngIf="!last">, </span>
-                                </span>
-                                <span *ngIf="group.package_barcodes.length > 2">
-                                  ... (+{{ group.package_barcodes.length - 2 }})
                                 </span>
                               </small>
                             </td>
@@ -396,26 +369,24 @@
                                 class="badge badge-secondary">
                                 Boshqa
                               </span>
-                              <span *ngIf="group.selectionType === 'partial'" class="badge badge-warning ml-1">
+                              <span *ngIf="group.selectionType === 'single'" class="badge badge-warning ml-1">
                                 Qisman
                               </span>
                             </td>
                           </tr>
 
-                          <!-- Add partial selection option for tied groups -->
+                          <!-- Partial Selection Options -->
                           <tr *ngIf="hasMultipleConsignments(group)" class="bg-light">
-                            <td colspan="7" class="text-center">
-                              <div class="btn-group btn-group-sm" role="group">
-                                <button class="btn btn-outline-warning" (click)="selectFullTiedGroup(group)"
-                                  [disabled]="group.selected">
-                                  Butun guruhni tanlash ({{ group.total_packages }} ta)
-                                </button>
-                                <button class="btn btn-outline-primary"
-                                  (click)="selectOnlyCurrentConsignmentPackages(group)" [disabled]="group.selected">
-                                  Faqat {{ selectedConsignmentName }} ({{ getPackageCountForConsignment(group,
-                                  selectedConsignmentName) }} ta)
-                                </button>
-                              </div>
+                            <td colspan="6" class="text-center">
+                              <button class="btn btn-sm btn-warning mr-2" (click)="selectFullTiedGroup(group)"
+                                [disabled]="group.selected">
+                                Butun guruhni tanlash ({{ group.total_packages }} ta)
+                              </button>
+                              <button class="btn btn-sm btn-primary"
+                                (click)="selectOnlyCurrentConsignmentPackages(group)" [disabled]="group.selected">
+                                Faqat {{ selectedConsignmentName }} ({{ getPackageCountForConsignment(group,
+                                selectedConsignmentName) }} ta)
+                              </button>
                             </td>
                           </tr>
                         </ng-container>
@@ -423,162 +394,185 @@
                     </table>
                   </div>
 
-                  <!-- Tied Package Warning -->
-                  <div *ngIf="hasTiedPackagesSelected()" class="alert alert-warning">
-                    <h6><i class="material-icons">warning</i> Bog'langan Qutillar Haqida</h6>
-                    <p class="mb-2">Siz bog'langan qutillarni tanladingiz. Bu qutillar:</p>
-                    <ul class="mb-2">
-                      <li *ngFor="let tied of getSelectedTiedGroups()">
-                        <strong>{{ tied.consignments.join(', ') }}</strong> - {{ tied.total_packages }} ta quti
-                        <span *ngIf="tied.selectionType === 'partial'" class="text-warning"> (Qisman tanlangan)</span>
-                      </li>
-                    </ul>
-                    <p class="mb-0">
-                      <small class="text-muted">
-                        Qisman tanlash bog'lanishni buzadi va boshqa qutillar "collected" holatiga o'tkaziladi.
-                      </small>
-                    </p>
-                  </div>
-
-                  <!-- Selected packages summary -->
-                  <div class="alert alert-info" *ngIf="selectedPackageIdentifiers.length > 0">
-                    <strong>Tanlangan:</strong> {{ getTotalSelectedPackages() }} ta quti
-                    <br>
-                    <small class="text-muted">
-                      {{ selectedConsignmentName }}: {{ getSelectedFromCurrentConsignment() }} ta,
-                      Boshqa: {{ getSelectedFromOtherConsignments() }} ta
-                    </small>
-                  </div>
-
-                  <!-- Delivery Form -->
-                  <div *ngIf="selectedPackageIdentifiers.length > 0">
-                    <hr>
-                    <h6>Yetkazish Ma'lumotlari</h6>
-
+                  <!-- Selection Summary -->
+                  <div *ngIf="selectedPackageIdentifiers.length > 0" class="alert alert-success mt-3">
                     <div class="row">
-                      <!-- Delivery Type -->
-                      <div class="col-md-6">
-                        <div class="form-group">
-                          <label class="bmd-label-floating">Yetkazish Turi *</label>
-                          <select class="form-control" [(ngModel)]="deliveryType" (change)="onDeliveryTypeChange()">
-                            <option value="">Tanlang</option>
-                            <option value="Pick-up">O'zim olaman</option>
-                            <option value="Yandex">Yandex</option>
-                            <option value="Own-Courier">Kuryer</option>
-                            <option value="EMU">Bizning Filialimiz</option>
-                          </select>
-                        </div>
+                      <div class="col-md-8">
+                        <strong>Tanlangan:</strong> {{ getTotalSelectedPackages() }} ta quti
+                        <br>
+                        <small>
+                          {{ selectedConsignmentName }}: {{ getSelectedFromCurrentConsignment() }} ta |
+                          Boshqa: {{ getSelectedFromOtherConsignments() }} ta
+                        </small>
                       </div>
-
-                      <!-- Customer Phone -->
-                      <div class="col-md-6">
-                        <div class="form-group">
-                          <label class="bmd-label-floating">Mijoz Telefoni *</label>
-                          <input type="tel" class="form-control" [(ngModel)]="customerPhone"
-                            placeholder="+998901234567">
-                        </div>
-                      </div>
-
-                      <!-- EMU Branch Selection -->
-                      <div class="col-md-12" *ngIf="deliveryType === 'EMU'">
-                        <div class="row">
-                          <div class="col-md-6">
-                            <div class="form-group">
-                              <label class="bmd-label-floating">Viloyat *</label>
-                              <select class="form-control" [(ngModel)]="selectedRegionId"
-                                (change)="onRegionSelect($event)">
-                                <option value="">Viloyat tanlang</option>
-                                <option *ngFor="let region of regions" [value]="region.id">{{ region.name }}</option>
-                              </select>
-                            </div>
-                          </div>
-                          <div class="col-md-6">
-                            <div class="form-group">
-                              <label class="bmd-label-floating">Bizning Filialimiz</label>
-                              <select class="form-control" [(ngModel)]="selectedBranchId"
-                                [disabled]="!selectedRegionId">
-                                <option value="">Filial tanlang</option>
-                                <option *ngFor="let branch of branches" [value]="branch.id">{{ branch.name }}</option>
-                              </select>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      <!-- Address for Yandex/Own-Courier -->
-                      <div class="col-md-12" *ngIf="deliveryType === 'Yandex' || deliveryType === 'Own-Courier'">
-                        <div class="form-group">
-                          <label class="bmd-label-floating">Yetkazish Manzili *</label>
-                          <textarea class="form-control" [(ngModel)]="deliveryAddress" rows="3"></textarea>
-                        </div>
-                      </div>
-
-                      <!-- Courier details for Own-Courier -->
-                      <div class="col-md-12" *ngIf="deliveryType === 'Own-Courier'">
-                        <div class="row">
-                          <div class="col-md-6">
-                            <div class="form-group">
-                              <label class="bmd-label-floating">Kuryer Ismi</label>
-                              <input type="text" class="form-control" [(ngModel)]="courierName">
-                            </div>
-                          </div>
-                          <div class="col-md-6">
-                            <div class="form-group">
-                              <label class="bmd-label-floating">Kuryer Telefoni</label>
-                              <input type="tel" class="form-control" [(ngModel)]="courierPhone">
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      <!-- Fees -->
-                      <div class="col-md-6">
-                        <div class="form-group">
-                          <label class="bmd-label-floating">Yetkazish To'lovi (UZS)</label>
-                          <input type="number" class="form-control" [(ngModel)]="deliveryFee" min="0">
-                        </div>
-                      </div>
-
-                      <div class="col-md-6" *ngIf="deliveryType === 'Yandex'">
-                        <div class="form-group">
-                          <label class="bmd-label-floating">Yandex To'lovi (UZS)</label>
-                          <input type="number" class="form-control" [(ngModel)]="yandexFee" min="0">
-                        </div>
-                      </div>
-
-                      <!-- Notes -->
-                      <div class="col-md-12">
-                        <div class="form-group">
-                          <label class="bmd-label-floating">Izohlar</label>
-                          <textarea class="form-control" [(ngModel)]="deliveryNotes" rows="2"></textarea>
-                        </div>
+                      <div class="col-md-4 text-right">
+                        <button class="btn btn-sm btn-danger" (click)="clearAllSelections()">
+                          <i class="material-icons">clear</i>
+                          Tozalash
+                        </button>
                       </div>
                     </div>
                   </div>
 
+                  <!-- Tied Package Warning -->
+                  <div *ngIf="hasTiedPackagesSelected()" class="alert alert-warning mt-3">
+                    <h6><i class="material-icons">warning</i> Bog'langan Qutillar</h6>
+                    <!-- <p class="mb-0">
+                      <small>
+                        Qisman tanlash bog'lanishni buzadi va qutillar "collected" holatiga o'tkaziladi.
+                      </small>
+                    </p> -->
+                  </div>
                 </div>
               </div>
+
+              <!-- Step 2: Delivery Details -->
+              <div *ngIf="selectedPackageIdentifiers.length > 0">
+                <div class="row">
+                  <div class="col-md-12">
+                    <h5 class="title">
+                      <i class="material-icons">local_shipping</i>
+                      Yetkazish Ma'lumotlari
+                    </h5>
+                    <hr>
+                  </div>
+                </div>
+
+                <div class="row">
+
+                  <!-- Delivery Type -->
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label class="bmd-label-floating">
+                        Yetkazish Turi 📦
+                      </label>
+                      <select class="form-control" [(ngModel)]="deliveryType" (change)="onDeliveryTypeChange()">
+                        <option value="">Tanlang</option>
+                        <option value="Pick-up">👤O'zim olaman</option>
+                        <option value="Yandex">🚕Yandex</option>
+                        <option value="Own-Courier">🚚Kuryer</option>
+                        <option value="EMU">🏣EMU Filial</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <!-- Customer Phone -->
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label class="bmd-label-floating">
+                        📞 Mijoz Telefoni
+                      </label>
+                      <input type="tel" class="form-control" [(ngModel)]="customerPhone" placeholder="+998901234567">
+                    </div>
+                  </div>
+
+                </div>
+
+                <!-- EMU Branch Selection -->
+                <div class="row" *ngIf="deliveryType === 'EMU'">
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label class="bmd-label-floating">Viloyat <span class="text-danger">*</span></label>
+                      <select class="form-control" [(ngModel)]="selectedRegionId" (change)="onRegionSelect($event)">
+                        <option value="">Viloyat tanlang</option>
+                        <option *ngFor="let region of regions" [value]="region.id">
+                          {{ region.name }}
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label class="bmd-label-floating">🏣 EMU Filial</label>
+                      <select class="form-control" [(ngModel)]="selectedBranchId" [disabled]="!selectedRegionId">
+                        <option value="">Filial tanlang</option>
+                        <option *ngFor="let branch of branches" [value]="branch.id">
+                          {{ branch.name }}
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Address for Yandex/Courier -->
+                <div class="row" *ngIf="deliveryType === 'Yandex' || deliveryType === 'Own-Courier'">
+                  <div class="col-md-12">
+                    <div class="form-group">
+                      <label class="bmd-label-floating">
+                        📍 Yetkazish Manzili <span class="text-danger"></span>
+                      </label>
+                      <textarea class="form-control" [(ngModel)]="deliveryAddress"
+                        placeholder="To'liq manzilni kiriting"></textarea>
+                    </div>
+                  </div>
+
+                  <!-- Yandex Fee -->
+                  <!-- <div class="col-md-6" *ngIf="deliveryType === 'Yandex'">
+                    <div class="form-group">
+                      <label class="bmd-label-floating">Yandex Narxi</label>
+                      <input type="number" class="form-control" [(ngModel)]="yandexFee" placeholder="0">
+                    </div>
+                  </div> -->
+
+                  <!-- Courier Name -->
+                  <div class="col-md-6" *ngIf="deliveryType === 'Own-Courier'">
+                    <div class="form-group">
+                      <label class="bmd-label-floating">Kuryer Ismi 🚕</label>
+                      <input type="text" class="form-control" [(ngModel)]="courierName" placeholder="Kuryer ismi">
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Delivery Fee and Notes -->
+                <div class="row">
+                  <!-- <div class="col-md-6">
+                    <div class="form-group">
+                      <label class="bmd-label-floating">Yetkazish Narxi</label>
+                      <input type="number" class="form-control" [(ngModel)]="deliveryFee" placeholder="0">
+                    </div>
+                  </div> -->
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label>Izohlar📝</label>
+                      <input type="text" class="form-control" [(ngModel)]="deliveryNotes"
+                        placeholder="Qo'shimcha ma'lumotlar">
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+
             </div>
 
             <!-- No packages message -->
             <div *ngIf="!loadingCustomerPackages && customerPackages.length === 0" class="text-center p-4">
-              <i class="material-icons" style="font-size: 48px; color: #ccc;">inbox</i>
+              <i class="material-icons" style="font-size: 64px; color: #ccc;">inbox</i>
               <h5 class="mt-2">Omborda quti yo'q</h5>
               <p class="text-muted">Bu mijozning barcha qutilari allaqachon yuborilgan</p>
             </div>
 
           </div>
-          <div class="modal-footer" style="flex-shrink: 0;">
+
+          <!-- Modal Footer -->
+          <div class="modal-footer">
             <button type="button" class="btn btn-secondary" (click)="closeDeliveryModal()">
               Bekor qilish
             </button>
-            <button *ngIf="selectedPackageIdentifiers.length > 0" type="button" class="btn btn-success"
+
+            <button type="button" class="btn btn-warning" (click)="printPaymentReceiptFromModal()"
+              [disabled]="!selectedConsignmentId">
+              <i class="material-icons">receipt</i>
+              To'lov Cheki
+            </button>
+
+            <button type="button" class="btn btn-success" *ngIf="selectedPackageIdentifiers.length > 0"
               (click)="createDelivery()" [disabled]="!canCreateDelivery() || creatingDelivery">
               <span *ngIf="creatingDelivery" class="spinner-border spinner-border-sm mr-1"></span>
               <i class="material-icons" *ngIf="!creatingDelivery">send</i>
               Yetkazish Yaratish
             </button>
           </div>
+
         </div>
       </div>
     </div>

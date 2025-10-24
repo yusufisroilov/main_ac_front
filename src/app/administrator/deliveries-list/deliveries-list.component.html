@@ -11,23 +11,13 @@
                             <i class="material-icons">local_shipping</i>
                         </div>
                         <h4 class="card-title">Yetkazish Boshqaruvi</h4>
-                        <p class="card-category">Ombordagi qutillarni yetkazish uchun yuborish</p>
+                        <p class="card-category">Barcha yetkazishlarni kuzatish va boshqarish</p>
                     </div>
                     <div class="card-body">
 
                         <!-- Action Buttons -->
-                        <div class="row mb-3">
+                        <div class="row">
                             <div class="col-md-12">
-                                <button class="btn btn-primary mr-2" (click)="showCreateDeliveryForm()">
-                                    <i class="material-icons">add_box</i>
-                                    Yangi Yetkazish
-                                </button>
-
-                                <button class="btn btn-info mr-2" (click)="showDeliveriesList()">
-                                    <i class="material-icons">list</i>
-                                    Yetkazishlar Ro'yxati
-                                </button>
-
                                 <button class="btn btn-success" (click)="loadDeliveries()"
                                     [disabled]="loadingDeliveries">
                                     <i class="material-icons">refresh</i>
@@ -41,246 +31,8 @@
             </div>
         </div>
 
-        <!-- Create Delivery Form -->
-        <div class="row" *ngIf="showCreateForm">
-            <div class="col-md-12">
-                <div class="card">
-                    <div class="card-header card-header-success">
-                        <h4 class="card-title">Yangi Yetkazish Yaratish</h4>
-                        <p class="card-category">Mijoz qutillarini yetkazish uchun yuborish</p>
-                    </div>
-                    <div class="card-body">
-
-                        <!-- Step 1: Customer Selection -->
-                        <div class="row" *ngIf="!selectedCustomerId">
-                            <div class="col-md-8">
-                                <div class="form-group">
-                                    <label class="bmd-label-floating">Mijoz ID *</label>
-                                    <input type="text" class="form-control" [(ngModel)]="customerIdInput"
-                                        name="customerIdInput" placeholder="Mijoz ID kiriting">
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <button class="btn btn-primary mt-3" (click)="loadCustomerPackages()"
-                                    [disabled]="!customerIdInput || loadingCustomerPackages">
-                                    <span *ngIf="loadingCustomerPackages"
-                                        class="spinner-border spinner-border-sm mr-1"></span>
-                                    <i class="material-icons" *ngIf="!loadingCustomerPackages">search</i>
-                                    Qutillarni Yuklash
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Step 2: Package Selection -->
-                        <div *ngIf="selectedCustomerId && customerPackages.length > 0">
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <h5>Mijoz: K{{selectedCustomerId}} - Qutillar</h5>
-
-                                    <div class="table-responsive">
-                                        <table class="table table-striped">
-                                            <thead class="text-primary">
-                                                <tr>
-                                                    <th>Tanlash</th>
-                                                    <th>Turi</th>
-                                                    <th>Qutillar Soni</th>
-                                                    <th>Mahsulotlar</th>
-                                                    <th>Consignmentlar</th>
-                                                    <th>Yaratilgan</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr *ngFor="let group of customerPackages; let i = index">
-                                                    <td>
-                                                        <div class="form-check">
-                                                            <label class="form-check-label">
-                                                                <input class="form-check-input" type="checkbox"
-                                                                    [(ngModel)]="group.selected"
-                                                                    (change)="updateSelectedPackages()">
-                                                                <span class="form-check-sign">
-                                                                    <span class="check"></span>
-                                                                </span>
-                                                            </label>
-                                                        </div>
-                                                    </td>
-                                                    <td>
-                                                        <span *ngIf="group.type === 'tied'" class="badge badge-info">
-                                                            🔗 Bog'langan
-                                                        </span>
-                                                        <span *ngIf="group.type === 'single'"
-                                                            class="badge badge-secondary">
-                                                            📦 Alohida
-                                                        </span>
-                                                    </td>
-                                                    <td>{{group.total_packages}}</td>
-                                                    <td>{{group.total_items}}</td>
-                                                    <td><small>{{group.consignments.join(', ')}}</small></td>
-                                                    <td><small>{{group.packages[0]?.created_at | date:'short'}}</small>
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-
-                                    <!-- Selected packages summary -->
-                                    <div class="alert alert-info mt-3" *ngIf="selectedPackageIdentifiers.length > 0">
-                                        <strong>Tanlangan:</strong> {{getTotalSelectedPackages()}} ta quti
-                                    </div>
-
-                                    <!-- Delivery form -->
-                                    <div class="row mt-4" *ngIf="selectedPackageIdentifiers.length > 0">
-
-                                        <!-- Delivery Type -->
-                                        <div class="col-md-6">
-                                            <div class="form-group">
-                                                <label class="bmd-label-floating">Yetkazish Turi *</label>
-                                                <select class="form-control" [(ngModel)]="deliveryType"
-                                                    name="deliveryType" (change)="onDeliveryTypeChange()">
-                                                    <option value="">Tanlang</option>
-                                                    <option value="Pick-up">O'zim olaman</option>
-                                                    <option value="Yandex">Yandex</option>
-                                                    <option value="Own-Courier">Kuryer</option>
-                                                    <option value="EMU">Bizning Filialimiz</option>
-                                                </select>
-                                            </div>
-                                        </div>
-
-                                        <!-- Customer Phone -->
-                                        <div class="col-md-6">
-                                            <div class="form-group">
-                                                <label class="bmd-label-floating">Mijoz Telefoni *</label>
-                                                <input type="tel" class="form-control" [(ngModel)]="customerPhone"
-                                                    name="customerPhone" placeholder="+998901234567">
-                                            </div>
-                                        </div>
-
-                                        <!-- EMU Branch Selection -->
-                                        <div class="col-md-12" *ngIf="deliveryType === 'EMU'">
-                                            <div class="row">
-                                                <div class="col-md-6">
-                                                    <div class="form-group">
-                                                        <label class="bmd-label-floating">Viloyat *</label>
-                                                        <select class="form-control" [(ngModel)]="selectedRegionId"
-                                                            name="selectedRegionId" (change)="onRegionSelect($event)"
-                                                            [disabled]="loadingRegions">
-                                                            <option value="">Viloyat tanlang</option>
-                                                            <option *ngFor="let region of regions" [value]="region.id">
-                                                                {{region.name}}
-                                                            </option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <div class="form-group">
-                                                        <label class="bmd-label-floating">Bizning Filialimiz</label>
-                                                        <select class="form-control" [(ngModel)]="selectedBranchId"
-                                                            name="selectedBranchId"
-                                                            [disabled]="!selectedRegionId || loadingBranches">
-                                                            <option value="">Filial tanlang</option>
-                                                            <option *ngFor="let branch of branches" [value]="branch.id">
-                                                                {{branch.name}}
-                                                            </option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <!-- Address for Yandex/Own-Courier -->
-                                        <div class="col-md-12"
-                                            *ngIf="deliveryType === 'Yandex' || deliveryType === 'Own-Courier'">
-                                            <div class="form-group">
-                                                <label class="bmd-label-floating">Yetkazish Manzili *</label>
-                                                <textarea class="form-control" [(ngModel)]="deliveryAddress"
-                                                    name="deliveryAddress" rows="3"></textarea>
-                                            </div>
-                                        </div>
-
-                                        <!-- Courier details for Own-Courier -->
-                                        <div class="col-md-12" *ngIf="deliveryType === 'Own-Courier'">
-                                            <div class="row">
-                                                <div class="col-md-6">
-                                                    <div class="form-group">
-                                                        <label class="bmd-label-floating">Kuryer Ismi</label>
-                                                        <input type="text" class="form-control"
-                                                            [(ngModel)]="courierName" name="courierName">
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <div class="form-group">
-                                                        <label class="bmd-label-floating">Kuryer Telefoni</label>
-                                                        <input type="tel" class="form-control"
-                                                            [(ngModel)]="courierPhone" name="courierPhone">
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <!-- Fees -->
-                                        <div class="col-md-6">
-                                            <div class="form-group">
-                                                <label class="bmd-label-floating">Yetkazish To'lovi (UZS)</label>
-                                                <input type="number" class="form-control" [(ngModel)]="deliveryFee"
-                                                    name="deliveryFee" min="0">
-                                            </div>
-                                        </div>
-
-                                        <div class="col-md-6" *ngIf="deliveryType === 'Yandex'">
-                                            <div class="form-group">
-                                                <label class="bmd-label-floating">Yandex To'lovi (UZS)</label>
-                                                <input type="number" class="form-control" [(ngModel)]="yandexFee"
-                                                    name="yandexFee" min="0">
-                                            </div>
-                                        </div>
-
-                                        <!-- Notes -->
-                                        <div class="col-md-12">
-                                            <div class="form-group">
-                                                <label class="bmd-label-floating">Izohlar</label>
-                                                <textarea class="form-control" [(ngModel)]="deliveryNotes"
-                                                    name="deliveryNotes" rows="2"></textarea>
-                                            </div>
-                                        </div>
-
-                                        <!-- Action Buttons -->
-                                        <div class="col-md-12 text-right">
-                                            <button type="button" class="btn btn-secondary mr-2"
-                                                (click)="resetDeliveryForm()">
-                                                Bekor qilish
-                                            </button>
-                                            <button type="button" class="btn btn-success" (click)="createDelivery()"
-                                                [disabled]="!canCreateDelivery() || creatingDelivery">
-                                                <span *ngIf="creatingDelivery"
-                                                    class="spinner-border spinner-border-sm mr-1"></span>
-                                                <i class="material-icons" *ngIf="!creatingDelivery">send</i>
-                                                Yetkazish Yaratish
-                                            </button>
-                                        </div>
-
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- No packages message -->
-                        <div *ngIf="selectedCustomerId && customerPackages.length === 0 && !loadingCustomerPackages"
-                            class="text-center p-4">
-                            <i class="material-icons" style="font-size: 48px; color: #ccc;">inbox</i>
-                            <h5 class="mt-2">Bu mijozda omborda quti yo'q</h5>
-                            <p class="text-muted">Barcha qutilari allaqachon yuborilgan</p>
-                            <button class="btn btn-primary" (click)="resetCustomerSelection()">
-                                <i class="material-icons">arrow_back</i>
-                                Boshqa Mijoz Tanlash
-                            </button>
-                        </div>
-
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <!-- Deliveries List -->
-        <div class="row" *ngIf="showDeliveriesView">
+        <div class="row">
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-header card-header-warning">
@@ -288,143 +40,178 @@
                             <div>
                                 <h4 class="card-title mb-1">Yetkazishlar Ro'yxati</h4>
                                 <p class="card-category mb-0">
-                                    Jami {{totalDeliveries}} ta yetkazish
+                                    Jami <strong>{{totalDeliveries}}</strong> ta yetkazish
                                 </p>
                             </div>
                         </div>
                     </div>
                     <div class="card-body">
 
-                        <!-- Filters -->
-                        <div class="row mb-4">
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label class="bmd-label-floating">Yetkazish Turi</label>
-                                    <select class="form-control" [(ngModel)]="filterDeliveryType"
-                                        (change)="applyFilters()">
-                                        <option value="">Barchasi</option>
-                                        <option value="EMU">EMU Post</option>
-                                        <option value="Yandex">Yandex</option>
-                                        <option value="Own-Courier">Kuryer</option>
-                                        <option value="Pick-up">Olib ketish</option>
-                                    </select>
+                        <!-- Compact Filters -->
+                        <div class="filters-section mb-4">
+                            <div class="row align-items-end">
+                                <div class="col-md-2">
+                                    <div class="form-group mb-0">
+                                        <label class="filter-label">Yetkazish Turi</label>
+                                        <select class="form-control form-control-sm" [(ngModel)]="filterDeliveryType"
+                                            (change)="applyFilters()">
+                                            <option value="">Barchasi</option>
+                                            <option value="EMU">EMU</option>
+                                            <option value="Yandex">Yandex</option>
+                                            <option value="Own-Courier">Kuryer</option>
+                                            <option value="Pick-up">Olib ketish</option>
+                                        </select>
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label class="bmd-label-floating">Holat</label>
-                                    <select class="form-control" [(ngModel)]="filterStatus" (change)="applyFilters()">
-                                        <option value="">Barchasi</option>
-                                        <option value="collected">Yig'ilgan</option>
-                                        <option value="created">Yaratilgan</option>
-                                        <option value="sent">Yuborilgan</option>
-                                        <option value="returned">Qaytarilgan</option>
-                                        <option value="cancelled">Bekor qilingan</option>
-                                    </select>
+                                <div class="col-md-2">
+                                    <div class="form-group mb-0">
+                                        <label class="filter-label">Holat</label>
+                                        <select class="form-control form-control-sm" [(ngModel)]="filterStatus"
+                                            (change)="applyFilters()">
+                                            <option value="">Barchasi</option>
+                                            <option value="collected">Yig'ilgan</option>
+                                            <option value="created">Yaratilgan</option>
+                                            <option value="sent">Yuborilgan</option>
+                                            <option value="returned">Qaytarilgan</option>
+                                            <option value="cancelled">Bekor qilingan</option>
+                                        </select>
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label class="bmd-label-floating">Vaqt Filter</label>
-                                    <select class="form-control" [(ngModel)]="filterDateRange"
-                                        (change)="applyFilters()">
-                                        <option value="">Barchasi</option>
-                                        <option value="today">Bugun</option>
-                                        <option value="week">Bu hafta</option>
-                                        <option value="month">Bu oy</option>
-                                        <option value="year">Bu yil</option>
-                                        <option value="custom">Boshqa</option>
-                                    </select>
+                                <div class="col-md-2">
+                                    <div class="form-group mb-0">
+                                        <label class="filter-label">Vaqt</label>
+                                        <select class="form-control form-control-sm" [(ngModel)]="filterDateRange"
+                                            (change)="applyFilters()">
+                                            <option value="">Barchasi</option>
+                                            <option value="today">Bugun</option>
+                                            <option value="week">Bu hafta</option>
+                                            <option value="month">Bu oy</option>
+                                            <option value="custom">Boshqa</option>
+                                        </select>
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label class="bmd-label-floating">Mijoz ID</label>
-                                    <input type="text" class="form-control" [(ngModel)]="filterCustomerId"
-                                        (keyup.enter)="applyFilters()" placeholder="Mijoz ID">
+                                <div class="col-md-2">
+                                    <div class="form-group mb-0">
+                                        <label class="filter-label">Mijoz ID</label>
+                                        <input type="text" class="form-control form-control-sm"
+                                            [(ngModel)]="filterCustomerId" (keyup.enter)="applyFilters()"
+                                            placeholder="ID kiriting">
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4 text-right">
+                                    <button class="btn btn-primary btn-sm mr-2" (click)="applyFilters()"
+                                        [disabled]="loadingDeliveries">
+                                        <i class="material-icons">search</i>
+                                        Qidirish
+                                    </button>
+                                    <button class="btn btn-secondary btn-sm" (click)="clearFilters()">
+                                        <i class="material-icons">clear</i>
+                                        Tozalash
+                                    </button>
                                 </div>
                             </div>
 
                             <!-- Custom date range -->
-                            <div class="col-md-6" *ngIf="filterDateRange === 'custom'">
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label class="bmd-label-floating">Boshlanish Sanasi</label>
-                                            <input type="date" class="form-control" [(ngModel)]="customStartDate"
-                                                (change)="applyFilters()">
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label class="bmd-label-floating">Tugash Sanasi</label>
-                                            <input type="date" class="form-control" [(ngModel)]="customEndDate"
-                                                (change)="applyFilters()">
-                                        </div>
+                            <div class="row mt-3" *ngIf="filterDateRange === 'custom'">
+                                <div class="col-md-3">
+                                    <div class="form-group mb-0">
+                                        <label class="filter-label">Boshlanish</label>
+                                        <input type="date" class="form-control form-control-sm"
+                                            [(ngModel)]="customStartDate" (change)="applyFilters()">
                                     </div>
                                 </div>
-                            </div>
-
-                            <div class="col-md-12">
-                                <button class="btn btn-primary mr-2" (click)="applyFilters()"
-                                    [disabled]="loadingDeliveries">
-                                    <i class="material-icons">search</i>
-                                    Filter Qo'llash
-                                </button>
-                                <button class="btn btn-secondary" (click)="clearFilters()">
-                                    <i class="material-icons">clear</i>
-                                    Tozalash
-                                </button>
+                                <div class="col-md-3">
+                                    <div class="form-group mb-0">
+                                        <label class="filter-label">Tugash</label>
+                                        <input type="date" class="form-control form-control-sm"
+                                            [(ngModel)]="customEndDate" (change)="applyFilters()">
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
                         <!-- Loading indicator -->
-                        <div *ngIf="loadingDeliveries" class="text-center p-4">
-                            <div class="spinner-border text-primary" role="status"></div>
-                            <p class="mt-2">Yetkazishlar yuklanmoqda...</p>
+                        <div *ngIf="loadingDeliveries" class="text-center p-5">
+                            <div class="spinner-border text-warning" role="status" style="width: 3rem; height: 3rem;">
+                            </div>
+                            <p class="mt-3 text-muted">Yetkazishlar yuklanmoqda...</p>
                         </div>
 
                         <!-- Deliveries table -->
                         <div *ngIf="!loadingDeliveries && deliveries.length > 0">
                             <div class="table-responsive">
-                                <table class="table table-hover">
-                                    <thead class="text-primary">
+                                <table class="table table-hover table-striped">
+                                    <thead class="thead-light">
                                         <tr>
-                                            <th>ID</th>
-                                            <th>Mijoz</th>
+                                            <th class="text-center">#</th>
+                                            <th>Barcode</th>
+                                            <th class="text-center">Mijoz</th>
                                             <th>Turi</th>
-                                            <th>Qutillar</th>
-                                            <th>Holat</th>
+                                            <th class="text-center">Qutillar</th>
+                                            <th class="text-center">Og'irligi</th>
                                             <th>Telefon</th>
-                                            <th>Yaratilgan</th>
-                                            <th>Amallar</th>
+                                            <th class="text-center">Holat</th>
+                                            <th>Sana</th>
+                                            <th class="text-center">Amallar</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr *ngFor="let delivery of deliveries">
-                                            <td><code>{{delivery.barcode}}</code></td>
-                                            <td><strong>{{delivery.owner_id}}</strong></td>
-                                            <td>{{getDeliveryTypeText(delivery.delivery_type)}}</td>
-                                            <td>{{delivery.total_packages}} ta</td>
+                                        <tr *ngFor="let delivery of deliveries; let i = index">
+                                            <td class="text-center">
+                                                <strong>{{currentPage * deliveriesPerPage + i + 1}}</strong>
+                                            </td>
                                             <td>
-                                                <span class="badge" [class]="getStatusBadgeClass(delivery.status)">
+                                                <code class="barcode-text">{{delivery.barcode}}</code>
+                                            </td>
+                                            <td class="text-center">
+                                                <strong class="customer-id">K{{delivery.owner_id}}</strong>
+                                            </td>
+                                            <td>
+                                                <span class="delivery-type-badge">
+                                                    {{getDeliveryTypeText(delivery.delivery_type)}}
+                                                </span>
+                                            </td>
+                                            <td class="text-center">
+                                                <strong>{{delivery.total_packages}}</strong>
+                                                <small class="text-muted d-block">ta</small>
+                                            </td>
+                                            <td class="text-center">
+                                                <span *ngIf="delivery.weight">
+                                                    <strong>{{delivery.weight}}</strong>
+                                                    <small class="text-muted d-block">kg</small>
+                                                </span>
+                                                <span *ngIf="!delivery.weight" class="text-muted">-</span>
+                                            </td>
+                                            <td>
+                                                <small>{{delivery.customer_phone}}</small>
+                                            </td>
+                                            <td class="text-center">
+                                                <span class="badge badge-pill"
+                                                    [class]="getStatusBadgeClass(delivery.status)">
                                                     {{getStatusText(delivery.status)}}
                                                 </span>
                                             </td>
-                                            <td>{{delivery.customer_phone}}</td>
-                                            <td><small>{{delivery.created_date | date:'short'}}</small></td>
                                             <td>
-                                                <button class="btn btn-sm btn-info mr-1"
-                                                    (click)="viewDeliveryDetails(delivery.id)">
-                                                    Ko'rish
+                                                <small class="text-muted">{{delivery.created_date |
+                                                    date:'dd.MM.yyyy'}}</small>
+                                                <br>
+                                                <small class="text-muted">{{delivery.created_date |
+                                                    date:'HH:mm'}}</small>
+                                            </td>
+                                            <td class="text-center">
+                                                <button class="btn btn-info btn-sm btn-just-icon mr-1"
+                                                    (click)="viewDeliveryDetails(delivery.id)" matTooltip="Ko'rish">
+                                                    <i class="material-icons">visibility</i>
                                                 </button>
-                                                <button class="btn btn-sm btn-warning"
+                                                <button class="btn btn-warning btn-sm btn-just-icon"
                                                     (click)="updateDeliveryStatus(delivery)"
-                                                    *ngIf="delivery.status !== 'delivered' && delivery.status !== 'cancelled'">
-                                                    Holat
+                                                    *ngIf="delivery.status !== 'delivered' && delivery.status !== 'cancelled'"
+                                                    matTooltip="Holat o'zgartirish">
+                                                    <i class="material-icons">edit</i>
                                                 </button>
                                             </td>
                                         </tr>
@@ -433,19 +220,23 @@
                             </div>
 
                             <!-- Pagination -->
-                            <div class="row mt-3" *ngIf="totalPages > 1">
+                            <div class="row mt-4" *ngIf="totalPages > 1">
                                 <div class="col-md-12">
                                     <nav aria-label="Page navigation">
                                         <ul class="pagination justify-content-center">
                                             <li class="page-item" [class.disabled]="currentPage === 0">
-                                                <a class="page-link" (click)="goToPage(currentPage - 1)">Oldingi</a>
+                                                <a class="page-link" (click)="goToPage(currentPage - 1)">
+                                                    <i class="material-icons">chevron_left</i>
+                                                </a>
                                             </li>
                                             <li class="page-item" *ngFor="let page of getPageNumbers()"
                                                 [class.active]="page === currentPage">
                                                 <a class="page-link" (click)="goToPage(page)">{{page + 1}}</a>
                                             </li>
                                             <li class="page-item" [class.disabled]="currentPage === totalPages - 1">
-                                                <a class="page-link" (click)="goToPage(currentPage + 1)">Keyingi</a>
+                                                <a class="page-link" (click)="goToPage(currentPage + 1)">
+                                                    <i class="material-icons">chevron_right</i>
+                                                </a>
                                             </li>
                                         </ul>
                                     </nav>
@@ -454,9 +245,9 @@
                         </div>
 
                         <!-- No deliveries message -->
-                        <div *ngIf="!loadingDeliveries && deliveries.length === 0" class="text-center p-4">
-                            <i class="material-icons" style="font-size: 48px; color: #ccc;">local_shipping</i>
-                            <h5 class="mt-2">Yetkazish topilmadi</h5>
+                        <div *ngIf="!loadingDeliveries && deliveries.length === 0" class="text-center p-5">
+                            <i class="material-icons empty-icon">local_shipping</i>
+                            <h5 class="mt-3">Yetkazish topilmadi</h5>
                             <p class="text-muted">Berilgan filterlar bo'yicha yetkazish mavjud emas</p>
                         </div>
 
@@ -472,65 +263,227 @@
 <div class="modal fade" [class.show]="showDetailsModal" [style.display]="showDetailsModal ? 'block' : 'none'">
     <div class="modal-dialog modal-lg">
         <div class="modal-content" *ngIf="selectedDelivery">
-            <div class="modal-header">
-                <h5 class="modal-title">Yetkazish Tafsilotlari - {{selectedDelivery.barcode}}</h5>
-                <button type="button" class="close" (click)="closeModal()">
-                    <span>&times;</span>
+            <div class="modal-header bg-info text-white">
+                <div>
+                    <h5 class="modal-title mb-0">
+                        <i class="material-icons" style="vertical-align: middle;">info</i>
+                        Yetkazish Tafsilotlari
+                    </h5>
+                    <small class="d-block mt-1">{{selectedDelivery.barcode}}</small>
+                </div>
+                <button type="button" class="close text-white" (click)="closeModal()">
+                    <i class="material-icons">clear</i>
                 </button>
             </div>
             <div class="modal-body">
-                <div class="row">
-                    <div class="col-md-6">
-                        <h6>Asosiy Ma'lumotlar</h6>
-                        <p><strong>Mijoz ID:</strong> {{selectedDelivery.owner_id}}</p>
-                        <p><strong>Barkod:</strong> {{showBarcodes(selectedDelivery)}}</p>
-                        <p><strong>Yuk Kilosi:</strong> {{selectedDelivery.weight ? selectedDelivery.weight :
-                            'Kiritilmagan'}}</p>
-                        <p><strong>Telefon:</strong> {{selectedDelivery.customer_phone}}</p>
-                        <p><strong>Yetkazish turi:</strong> {{getDeliveryTypeText(selectedDelivery.delivery_type)}}</p>
-                        <p><strong>Qutillar soni:</strong> {{selectedDelivery.total_packages}} ta</p>
-                        <p><strong>Holat:</strong>
-                            <span class="badge" [class]="getStatusBadgeClass(selectedDelivery.status)">
-                                {{getStatusText(selectedDelivery.status)}}
-                            </span>
-                        </p>
-                    </div>
-                    <div class="col-md-6">
-                        <h6>Qo'shimcha Ma'lumotlar</h6>
-                        <p *ngIf="selectedDelivery.delivery_address">
-                            <strong>Manzil:</strong> {{selectedDelivery.delivery_address}}
-                        </p>
-                        <p *ngIf="selectedDelivery.courier_name">
-                            <strong>Kuryer:</strong> {{selectedDelivery.courier_name}}
-                        </p>
-                        <p *ngIf="selectedDelivery.delivery_fee > 0">
-                            <strong>Yetkazish to'lovi:</strong> {{selectedDelivery.delivery_fee | number}} so'm
-                        </p>
-                        <p><strong>Yaratilgan:</strong> {{selectedDelivery.created_date | date:'short'}}</p>
-                        <p *ngIf="selectedDelivery.sent_date">
-                            <strong>Yuborilgan:</strong> {{selectedDelivery.sent_date | date:'short'}}
-                        </p>
-                        <p *ngIf="selectedDelivery.delivered_date">
-                            <strong>Yetkazilgan:</strong> {{selectedDelivery.delivered_date | date:'full'}}
-                        </p>
-                        <p>
-                            <strong>Oxirgi o'zgartirilgan Sana:</strong> {{selectedDelivery.updated_at |
-                            date:'short'}}
-                        </p>
+                <!-- Customer Info Card -->
+                <div class="info-card mb-3">
+                    <h6 class="info-card-title">
+                        <i class="material-icons">person</i>
+                        Mijoz Ma'lumotlari
+                    </h6>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="info-item">
+                                <span class="info-label">Mijoz ID:</span>
+                                <span class="info-value">K{{selectedDelivery.owner_id}}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Telefon:</span>
+                                <span class="info-value">{{selectedDelivery.customer_phone}}</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="info-item">
+                                <span class="info-label">Yetkazish turi:</span>
+                                <span class="info-value">{{getDeliveryTypeText(selectedDelivery.delivery_type)}}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Holat:</span>
+                                <span class="badge" [class]="getStatusBadgeClass(selectedDelivery.status)">
+                                    {{getStatusText(selectedDelivery.status)}}
+                                </span>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="row" *ngIf="selectedDelivery.notes">
-                    <div class="col-md-12">
-                        <h6>Izohlar</h6>
-                        <p class="alert alert-info">{{selectedDelivery.notes}}</p>
+
+                <!-- Package Info Card -->
+                <div class="info-card mb-3">
+                    <h6 class="info-card-title">
+                        <i class="material-icons">inventory_2</i>
+                        Yuk Ma'lumotlari
+                    </h6>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="info-item">
+                                <span class="info-label">Qutillar soni:</span>
+                                <span class="info-value"><strong>{{selectedDelivery.total_packages}}</strong> ta</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Og'irligi:</span>
+                                <span class="info-value">
+                                    {{selectedDelivery.weight ? selectedDelivery.weight + ' kg' : 'Kiritilmagan'}}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="info-item">
+                                <span class="info-label">Barkodlar:</span>
+                                <span class="info-value">
+                                    <small class="text-monospace">{{showBarcodes(selectedDelivery)}}</small>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Delivery Address Card -->
+                <div class="info-card mb-3" *ngIf="selectedDelivery.delivery_address || selectedDelivery.emuBranch">
+                    <h6 class="info-card-title">
+                        <i class="material-icons">location_on</i>
+                        Manzil Ma'lumotlari
+                    </h6>
+
+                    <!-- Regular Delivery Address -->
+                    <div *ngIf="selectedDelivery.delivery_address && !selectedDelivery.emuBranch">
+                        <div class="address-box">
+                            <i class="material-icons address-icon">place</i>
+                            <p class="mb-0">{{selectedDelivery.delivery_address}}</p>
+                        </div>
+                    </div>
+
+                    <!-- EMU Branch Details -->
+                    <div *ngIf="selectedDelivery.emuBranch" class="emu-branch-details">
+                        <!-- Branch Name -->
+                        <div class="branch-header mb-3">
+                            <span class="branch-badge">
+                                <i class="material-icons">store</i>
+                                EMU Filial
+                            </span>
+                            <h6 class="branch-name mb-0">{{selectedDelivery.emuBranch.name}}</h6>
+                        </div>
+
+                        <!-- Address with Icon -->
+                        <div class="info-item mb-2">
+                            <i class="material-icons info-icon">place</i>
+                            <div class="info-content">
+                                <span class="info-label">Manzil:</span>
+                                <span class="info-value">{{selectedDelivery.emuBranch.address}}</span>
+                            </div>
+                        </div>
+
+                        <!-- Landmark if exists -->
+                        <div class="info-item mb-2" *ngIf="selectedDelivery.emuBranch.landmark">
+                            <i class="material-icons info-icon">flag</i>
+                            <div class="info-content">
+                                <span class="info-label">Mo'ljal:</span>
+                                <span class="info-value">{{selectedDelivery.emuBranch.landmark}}</span>
+                            </div>
+                        </div>
+
+                        <!-- Phone -->
+                        <div class="info-item mb-3">
+                            <i class="material-icons info-icon">phone</i>
+                            <div class="info-content">
+                                <span class="info-label">Telefon:</span>
+                                <a href="tel:+998{{selectedDelivery.emuBranch.phone}}" class="info-value phone-link">
+                                    +998 {{formatPhone(selectedDelivery.emuBranch.phone)}}
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Map Links -->
+                        <div class="map-links">
+                            <a *ngIf="selectedDelivery.emuBranch.google_map_url"
+                                [href]="selectedDelivery.emuBranch.google_map_url" target="_blank"
+                                class="map-link google-map">
+                                <i class="material-icons">map</i>
+                                <span>Google Map</span>
+                            </a>
+                            <a *ngIf="selectedDelivery.emuBranch.yandex_map_url"
+                                [href]="selectedDelivery.emuBranch.yandex_map_url" target="_blank"
+                                class="map-link yandex-map">
+                                <i class="material-icons">navigation</i>
+                                <span>Yandex Map</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Courier Info (for Own-Courier type) -->
+                    <div class="info-item mt-3 pt-3 border-top" *ngIf="selectedDelivery.courier_name">
+                        <i class="material-icons info-icon">delivery_dining</i>
+                        <div class="info-content">
+                            <span class="info-label">Kuryer:</span>
+                            <span class="info-value">{{selectedDelivery.courier_name}}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Timeline Card -->
+                <div class="info-card mb-3">
+                    <h6 class="info-card-title">
+                        <i class="material-icons">schedule</i>
+                        Vaqt Tarixi
+                    </h6>
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <i class="material-icons timeline-icon">add_circle</i>
+                            <div>
+                                <strong>Yaratilgan</strong>
+                                <small class="d-block text-muted">{{selectedDelivery.created_date |
+                                    date:'medium'}}</small>
+                            </div>
+                        </div>
+                        <div class="timeline-item" *ngIf="selectedDelivery.sent_date">
+                            <i class="material-icons timeline-icon text-primary">local_shipping</i>
+                            <div>
+                                <strong>Yuborilgan</strong>
+                                <small class="d-block text-muted">{{selectedDelivery.sent_date | date:'medium'}}</small>
+                            </div>
+                        </div>
+                        <div class="timeline-item" *ngIf="selectedDelivery.delivered_date">
+                            <i class="material-icons timeline-icon text-success">done_all</i>
+                            <div>
+                                <strong>Yetkazilgan</strong>
+                                <small class="d-block text-muted">{{selectedDelivery.delivered_date |
+                                    date:'medium'}}</small>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <i class="material-icons timeline-icon text-warning">update</i>
+                            <div>
+                                <strong>Oxirgi o'zgarish</strong>
+                                <small class="d-block text-muted">{{selectedDelivery.updated_at |
+                                    date:'medium'}}</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Notes Card -->
+                <div class="info-card" *ngIf="selectedDelivery.notes || selectedDelivery.returned_reason">
+                    <h6 class="info-card-title">
+                        <i class="material-icons">notes</i>
+                        Izohlar
+                    </h6>
+                    <div class="alert alert-info mb-0" *ngIf="selectedDelivery.notes">
+                        {{selectedDelivery.notes}}
+                    </div>
+                    <div class="alert alert-warning mb-0" *ngIf="selectedDelivery.returned_reason">
+                        <strong>Qaytarilish sababi:</strong><br>
+                        {{selectedDelivery.returned_reason}}
                     </div>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" (click)="closeModal()">Yopish</button>
+                <button type="button" class="btn btn-secondary" (click)="closeModal()">
+                    <i class="material-icons">close</i>
+                    Yopish
+                </button>
                 <button type="button" class="btn btn-warning" (click)="updateDeliveryStatus(selectedDelivery)"
                     *ngIf="selectedDelivery.status !== 'delivered' && selectedDelivery.status !== 'cancelled'">
-                    Holatni O'zgartirish
+                    <i class="material-icons">edit</i>
+                    Holat O'zgartirish
                 </button>
             </div>
         </div>
@@ -541,38 +494,57 @@
 <div class="modal fade" [class.show]="showStatusModal" [style.display]="showStatusModal ? 'block' : 'none'">
     <div class="modal-dialog">
         <div class="modal-content" *ngIf="selectedDelivery">
-            <div class="modal-header">
-                <h5 class="modal-title">Holatni O'zgartirish - {{selectedDelivery.barcode}}</h5>
+            <div class="modal-header bg-warning">
+                <div>
+                    <h5 class="modal-title mb-0">
+                        <i class="material-icons" style="vertical-align: middle;">edit</i>
+                        Holat O'zgartirish
+                    </h5>
+                    <small class="d-block mt-1">{{selectedDelivery.barcode}}</small>
+                </div>
                 <button type="button" class="close" (click)="closeModal()">
-                    <span>&times;</span>
+                    <i class="material-icons">clear</i>
                 </button>
             </div>
             <div class="modal-body">
                 <form>
                     <div class="form-group">
-                        <label class="bmd-label-floating">Yangi Holat *</label>
+                        <label>
+                            <i class="material-icons">check_circle</i>
+                            Yangi Holat <span class="text-danger">*</span>
+                        </label>
                         <select class="form-control" [(ngModel)]="newStatus" name="newStatus">
                             <option value="">Holatni tanlang</option>
-                            <option value="sent">Yetkazilgan</option>
+                            <option value="sent">Yuborilgan</option>
                             <option value="returned">Qaytarilgan</option>
                             <option value="cancelled">Bekor qilingan</option>
                         </select>
                     </div>
 
                     <div class="form-group" *ngIf="newStatus === 'returned'">
-                        <label class="bmd-label-floating">Qaytarilish Sababi *</label>
+                        <label>
+                            <i class="material-icons">report_problem</i>
+                            Qaytarilish Sababi <span class="text-danger">*</span>
+                        </label>
                         <textarea class="form-control" [(ngModel)]="returnReason" name="returnReason" rows="3"
-                            required></textarea>
+                            placeholder="Sabab kiriting..." required></textarea>
                     </div>
 
                     <div class="form-group">
-                        <label class="bmd-label-floating">Qo'shimcha Izoh</label>
-                        <textarea class="form-control" [(ngModel)]="statusNotes" name="statusNotes" rows="2"></textarea>
+                        <label>
+                            <i class="material-icons">notes</i>
+                            Qo'shimcha Izoh
+                        </label>
+                        <textarea class="form-control" [(ngModel)]="statusNotes" name="statusNotes" rows="2"
+                            placeholder="Ixtiyoriy"></textarea>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" (click)="closeModal()">Bekor qilish</button>
+                <button type="button" class="btn btn-secondary" (click)="closeModal()">
+                    <i class="material-icons">close</i>
+                    Bekor qilish
+                </button>
                 <button type="button" class="btn btn-success" (click)="saveStatusUpdate()"
                     [disabled]="!newStatus || updatingStatus">
                     <span *ngIf="updatingStatus" class="spinner-border spinner-border-sm mr-1"></span>

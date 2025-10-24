@@ -94,7 +94,7 @@ export class DeliveriesListComponent {
 
   // Pagination
   currentPage: number = 0;
-  deliveriesPerPage: number = 20;
+  deliveriesPerPage: number = 50;
   totalPages: number = 0;
 
   // Status update
@@ -291,73 +291,6 @@ export class DeliveriesListComponent {
     return true;
   }
 
-  // Create delivery
-  createDelivery() {
-    if (!this.canCreateDelivery()) {
-      swal.fire("Xatolik", "Barcha majburiy maydonlarni to'ldiring", "error");
-      return;
-    }
-
-    this.creatingDelivery = true;
-
-    const deliveryData = {
-      owner_id: this.selectedCustomerId,
-      delivery_type: this.deliveryType,
-      package_identifiers: this.selectedPackageIdentifiers,
-      customer_phone: this.customerPhone,
-      delivery_address: this.deliveryAddress || null,
-      emu_branch_id: this.selectedBranchId || null,
-      yandex_fee: this.yandexFee || null,
-      courier_name: this.courierName || null,
-      courier_phone: this.courierPhone || null,
-      delivery_fee: this.deliveryFee || 0,
-      notes: this.deliveryNotes || null,
-      admin_created_by: localStorage.getItem("username") || null,
-    };
-
-    this.http
-      .post(
-        GlobalVars.baseUrl + "/deliveries/admin/create",
-        JSON.stringify(deliveryData),
-        this.options
-      )
-      .subscribe(
-        (response) => {
-          const result = response.json();
-          if (result.status === "success") {
-            swal
-              .fire({
-                icon: "success",
-                title: "Muvaffaqiyat!",
-                text: "Yetkazish yaratildi va qutillar yuborildi",
-                customClass: {
-                  confirmButton: "btn btn-success",
-                },
-                buttonsStyling: false,
-              })
-              .then(() => {
-                this.resetDeliveryForm();
-                this.showDeliveriesList();
-              });
-          } else {
-            swal.fire(
-              "Xatolik",
-              result.message || "Yetkazish yaratishda xatolik",
-              "error"
-            );
-          }
-          this.creatingDelivery = false;
-        },
-        (error) => {
-          swal.fire("Xatolik", "Yetkazish yaratishda xatolik", "error");
-          this.creatingDelivery = false;
-          if (error.status == 403) {
-            this.authService.logout();
-          }
-        }
-      );
-  }
-
   // Load deliveries with filters
   loadDeliveries() {
     this.loadingDeliveries = true;
@@ -397,7 +330,7 @@ export class DeliveriesListComponent {
           const result = response.json();
           if (result.status === "success") {
             this.deliveries = result.data.deliveries || [];
-            // console.log("deliveries ", this.deliveries);
+            console.log("deliveries ", this.deliveries);
 
             this.totalDeliveries = result.data.pagination.total;
             this.totalPages = Math.ceil(
@@ -480,6 +413,7 @@ export class DeliveriesListComponent {
       );
     this.showDetailsModal = true;
   }
+
   showBarcodes(delivery: any) {
     if (delivery.package_barcodes) {
       return delivery.package_barcodes.join(", ");
@@ -592,7 +526,7 @@ export class DeliveriesListComponent {
   // Helper methods
   getDeliveryTypeText(type: string): string {
     const types = {
-      EMU: "Filialimiz",
+      EMU: "EMU",
       Yandex: "Yandex",
       "Own-Courier": "Kuryer",
       "Pick-up": "Olib ketish",
@@ -614,11 +548,55 @@ export class DeliveriesListComponent {
   getStatusBadgeClass(status: string): string {
     const classes = {
       created: "badge-warning",
-      sent: "badge-info",
-      delivered: "badge-success",
+      sent: "badge-success",
+      collected: "badge-info",
       returned: "badge-secondary",
       cancelled: "badge-danger",
     };
     return classes[status] || "badge-light";
+  }
+
+  ngAfterViewInit() {
+    // Add data labels for mobile responsive table
+    this.addDataLabelsToTable();
+  }
+
+  addDataLabelsToTable() {
+    const tables = document.querySelectorAll(".table");
+    tables.forEach((table) => {
+      const headers = Array.from(table.querySelectorAll("thead th")).map(
+        (th) => th.textContent?.trim() || ""
+      );
+      const rows = table.querySelectorAll("tbody tr");
+
+      rows.forEach((row) => {
+        const cells = row.querySelectorAll("td");
+        cells.forEach((cell, index) => {
+          if (headers[index]) {
+            cell.setAttribute("data-label", headers[index]);
+          }
+        });
+      });
+    });
+  }
+
+  //format Phone number of EMU branch
+  // Add to deliveries-list.component.ts
+
+  formatPhone(phone: string): string {
+    if (!phone) return "";
+
+    // Remove any non-digit characters
+    const cleaned = phone.replace(/\D/g, "");
+
+    // Format as XX XXX XX XX
+    if (cleaned.length === 9) {
+      return `${cleaned.slice(0, 2)} ${cleaned.slice(2, 5)} ${cleaned.slice(
+        5,
+        7
+      )} ${cleaned.slice(7, 9)}`;
+    }
+
+    return phone;
   }
 }
