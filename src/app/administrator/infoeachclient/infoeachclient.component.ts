@@ -643,19 +643,28 @@ export class InfoeachclientComponent implements OnInit {
         cancelButton: "btn btn-danger",
       },
       buttonsStyling: false,
+
+      // ✅ FIX 1: Allow input focus
+      focusConfirm: false,
+
+      // ✅ FIX 2: Don't close on backdrop click
+      allowOutsideClick: false,
+
+      // ✅ FIX 3: Don't close on escape key
+      allowEscapeKey: true,
+
       didOpen: () => {
         $("#input-party").val(name);
         $("#input-id").val(this.currentID);
         $("#input-weight").val(weight);
         $("#input-counter").val(counter);
+
+        // ✅ FIX 4: Auto-focus on izoh field for convenience
+        setTimeout(() => {
+          $("#input-izoh").focus();
+        }, 100);
       },
       preConfirm: (result) => {
-        //   this.chekId = $('#input-id').val();
-        //  this.chekIzoh = $('#input-izoh').val();
-
-        // var i:number = $('#types').val(); '<select class="custom-select m-2" id="types" name="types"> </select> ' +
-        // this.chekDelType =this.deliveryTypes[i].nameUz;
-
         this.idsChek = $("#input-id").val();
         this.nameChek = $("#input-party").val();
         this.weightChek = $("#input-weight").val();
@@ -674,23 +683,22 @@ export class InfoeachclientComponent implements OnInit {
         );
         this.popupWin.document.open();
         this.popupWin.document.write(`
-            <html>
-              <head>
-                <title>Print tab</title>
-                <style>
-                  body
-                  {
-                    text-align: center;
-                  }
-  
-                </style>
-              </head>
-          <body onload="window.print(); window.close();"> ${this.printContents}
-          
-          </body>
-            </html>`);
+          <html>
+            <head>
+              <title>Print tab</title>
+              <style>
+                body
+                {
+                  text-align: center;
+                }
 
-        //
+              </style>
+            </head>
+        <body onload="window.print(); window.close();"> ${this.printContents}
+        
+        </body>
+          </html>`);
+
         this.popupWin.document.close();
         this.printCondition3 = false;
       },
@@ -1128,77 +1136,77 @@ export class InfoeachclientComponent implements OnInit {
       ),
     };
 
-    // this.http
-    //   .post(
-    //     GlobalVars.baseUrl + "/deliveries/admin/create",
-    //     JSON.stringify(deliveryData),
-    //     this.options
-    //   )
-    //   .subscribe(
-    //     (response) => {
-    //       const result = response.json();
-    //       if (result.status === "success") {
-    //         // Prepare print data
-    //         this.deliveryBarcode = result.data.delivery_barcode;
-    //         this.deliveryTypeText = this.getDeliveryTypeText(this.deliveryType);
-    //         this.totalSelectedPackagesForPrint =
-    //           this.getTotalSelectedPackages();
-    //         this.currentDate = new Date().toLocaleDateString("uz-UZ");
+    this.http
+      .post(
+        GlobalVars.baseUrl + "/deliveries/admin/create",
+        JSON.stringify(deliveryData),
+        this.options
+      )
+      .subscribe(
+        (response) => {
+          const result = response.json();
+          if (result.status === "success") {
+            // Prepare print data
+            this.deliveryBarcode = result.data.delivery_barcode;
+            this.deliveryTypeText = this.getDeliveryTypeText(this.deliveryType);
+            this.totalSelectedPackagesForPrint =
+              this.getTotalSelectedPackages();
+            this.currentDate = new Date().toLocaleDateString("uz-UZ");
 
-    //         // Collect selected barcodes for printing
-    //         const selectedBarcodes = [];
-    //         this.customerPackages.forEach((group) => {
-    //           if (group.selected) {
-    //             if (group.selectionType === "partial") {
-    //               const currentConsignmentBarcodes = group.packages
-    //                 .filter(
-    //                   (pkg) => pkg.consignment === this.selectedConsignmentName
-    //                 )
-    //                 .map((pkg) => pkg.barcode);
-    //               selectedBarcodes.push(...currentConsignmentBarcodes);
-    //             } else {
-    //               selectedBarcodes.push(...group.package_barcodes);
-    //             }
-    //           }
-    //         });
-    //         this.selectedBarcodes = selectedBarcodes.join(", ");
+            // Collect selected barcodes for printing
+            const selectedBarcodes = [];
+            this.customerPackages.forEach((group) => {
+              if (group.selected) {
+                if (group.selectionType === "partial") {
+                  const currentConsignmentBarcodes = group.packages
+                    .filter(
+                      (pkg) => pkg.consignment === this.selectedConsignmentName
+                    )
+                    .map((pkg) => pkg.barcode);
+                  selectedBarcodes.push(...currentConsignmentBarcodes);
+                } else {
+                  selectedBarcodes.push(...group.package_barcodes);
+                }
+              }
+            });
+            this.selectedBarcodes = selectedBarcodes.join(", ");
 
-    //         swal
-    //           .fire({
-    //             icon: "success",
-    //             title: "Muvaffaqiyat!",
-    //             text: "Yetkazish yaratildi va qutillar yuborildi",
-    //             showCancelButton: true,
-    //             confirmButtonText: "Chek Chop Etish",
-    //             cancelButtonText: "Yopish",
-    //             customClass: {
-    //               confirmButton: "btn btn-success",
-    //               cancelButton: "btn btn-secondary",
-    //             },
-    //             buttonsStyling: false,
-    //           })
-    //           .then((result) => {
-    //             this.closeDeliveryModal();
-    //             // Refresh the consignment data to reflect updated package status
-    //             this.getListOfPartyBoxes(this.currentID);
-    //           });
-    //       } else {
-    //         swal.fire(
-    //           "Xatolik",
-    //           result.message || "Yetkazish yaratishda xatolik",
-    //           "error"
-    //         );
-    //       }
-    //       this.creatingDelivery = false;
-    //     },
-    //     (error) => {
-    //       swal.fire("Xatolik", "Yetkazish yaratishda xatolik", "error");
-    //       this.creatingDelivery = false;
-    //       if (error.status == 403) {
-    //         this.authService.logout();
-    //       }
-    //     }
-    //   );
+            swal
+              .fire({
+                icon: "success",
+                title: "Muvaffaqiyat!",
+                text: "Yetkazish yaratildi va qutillar yuborildi",
+                showCancelButton: true,
+                confirmButtonText: "Chek Chop Etish",
+                cancelButtonText: "Yopish",
+                customClass: {
+                  confirmButton: "btn btn-success",
+                  cancelButton: "btn btn-secondary",
+                },
+                buttonsStyling: false,
+              })
+              .then((result) => {
+                this.closeDeliveryModal();
+                // Refresh the consignment data to reflect updated package status
+                this.getListOfPartyBoxes(this.currentID);
+              });
+          } else {
+            swal.fire(
+              "Xatolik",
+              result.message || "Yetkazish yaratishda xatolik",
+              "error"
+            );
+          }
+          this.creatingDelivery = false;
+        },
+        (error) => {
+          swal.fire("Xatolik", "Yetkazish yaratishda xatolik", "error");
+          this.creatingDelivery = false;
+          if (error.status == 403) {
+            this.authService.logout();
+          }
+        }
+      );
   }
 
   // NEW: Close delivery modal

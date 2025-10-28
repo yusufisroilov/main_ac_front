@@ -687,7 +687,7 @@ export class WarehouseInventoryComponent implements OnInit {
   // Modal management
   viewCustomerDetails(customer: CustomerInventory) {
     this.selectedCustomer = customer;
-    console.log("selected customer ", this.selectedCustomer);
+    // console.log("selected customer ", this.selectedCustomer);
 
     this.showCustomerModal = true;
     document.body.style.overflow = "hidden"; // Prevent background scroll

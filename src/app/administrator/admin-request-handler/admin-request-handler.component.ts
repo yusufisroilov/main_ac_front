@@ -179,7 +179,7 @@ export class AdminRequestHandlerComponent {
           const result = response.json();
           if (result.status === "success") {
             this.pendingRequests = result.data.requests || [];
-            console.log("pending requests ", this.pendingRequests);
+            // console.log("pending requests ", this.pendingRequests);
 
             this.totalRequests = result.data.pagination.total;
             this.totalPages = Math.ceil(

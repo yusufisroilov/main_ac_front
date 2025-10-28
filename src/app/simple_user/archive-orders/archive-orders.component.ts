@@ -106,7 +106,7 @@ export class ArchiveOrdersComponent implements OnInit {
       .subscribe(
         (response) => {
           this.allData = response.json().orders;
-          console.log("orders list archive ", this.allData);
+          // console.log("orders list archive ", this.allData);
 
           for (let index = 0; index < this.allData.length; index++) {
             const element = this.allData[index];

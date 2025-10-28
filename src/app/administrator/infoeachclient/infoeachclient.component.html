@@ -250,7 +250,9 @@
                       </button>
                       <!-- Enhanced Chek Button -->
                       <button mat-raised-button type="button" class="btn btn-success"
-                        (click)="openDeliveryCreationDirectly(row.id, row.name, row.weight, row.quantity)">
+                        [disabled]="!row.quantity || row.quantity === 0"
+                        (click)="openDeliveryCreationDirectly(row.id, row.name, row.weight, row.quantity)"
+                        [attr.title]="(!row.quantity || row.quantity === 0) ? 'Qutillar mavjud emas' : 'Yetkazish yaratish'">
                         Chek <i class="material-icons">receipt_long</i>
                       </button>
                     </td>
