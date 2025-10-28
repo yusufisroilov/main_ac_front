@@ -330,7 +330,7 @@ export class DeliveriesListComponent {
           const result = response.json();
           if (result.status === "success") {
             this.deliveries = result.data.deliveries || [];
-            console.log("deliveries ", this.deliveries);
+            // console.log("deliveries ", this.deliveries);
 
             this.totalDeliveries = result.data.pagination.total;
             this.totalPages = Math.ceil(
