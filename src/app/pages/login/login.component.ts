@@ -1,6 +1,8 @@
 import { AuthService } from './auth.service';
 import { Router } from '@angular/router';
 import { Component, OnInit, ElementRef, OnDestroy } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+
 
 declare var $: any;
 
@@ -20,7 +22,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     private sidebarVisible: boolean;
     private nativeElement: Node;
 
-    constructor(private element: ElementRef, private router: Router, private authService: AuthService) {
+    constructor(private element: ElementRef, private router: Router, private authService: AuthService, private http: HttpClient) {
         this.nativeElement = element.nativeElement;
         this.sidebarVisible = false;    
         this.invalidLogin = false;
@@ -38,6 +40,25 @@ export class LoginComponent implements OnInit, OnDestroy {
             if (result) {
                 this.router.navigate(['/dashboard']);
                 this.authService.isLoggedIn();
+
+                this.http.post<{ token: string }>(
+                    'http://185.196.213.248:3018/api/auth/login',
+                    { username: '998110266399', password: 'qobul6399' }
+                ).subscribe(result => {
+                    if (result && result.token) {
+                    localStorage.setItem('token_fin', result.token);
+                  //  console.log('Login result 2: ', result);
+                    }
+                }, error => {
+                    console.error('Login failed:', error);
+                });
+
+
+
+
+
+
+
                 return false;
              
                 
