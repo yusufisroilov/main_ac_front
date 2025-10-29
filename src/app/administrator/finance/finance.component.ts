@@ -12,6 +12,7 @@ import { GlobalVars, StatusOfOrder, TypesOfOrder } from "src/app/global-vars";
 import { Router } from "@angular/router";
 import { AuthService } from "src/app/pages/login/auth.service";
 
+import * as XLSX from "xlsx";
 declare interface DataTable {
   headerRow: string[];
   dataRows: string[][];
@@ -943,4 +944,200 @@ export class FinanceComponent implements OnInit {
         }
       );
   }
+
+  /**
+   * Download Excel file from backend
+   * The backend generates the Excel and sends it directly
+   */
+  fetchFinancesOfCons() {
+    // Show loading notification
+    swal.fire({
+      title: "Excel fayl tayyorlanmoqda...",
+      text: "Iltimos kuting",
+      allowOutsideClick: false,
+      didOpen: () => {
+        swal.showLoading();
+      },
+    });
+
+    // Get current party name
+    const consignmentName = this.currentParty;
+
+    if (!consignmentName) {
+      swal.fire({
+        icon: "error",
+        title: "Xatolik!",
+        text: "Partiya tanlanmagan",
+        customClass: {
+          confirmButton: "btn btn-danger",
+        },
+        buttonsStyling: false,
+      });
+      return;
+    }
+
+    // Create download URL
+    const downloadUrl = `${GlobalVars.baseUrl}/finance/download-excel?consignment=${consignmentName}`;
+
+    // Get auth token from localStorage
+    const token = localStorage.getItem("token");
+
+    // Use fetch to download the file
+    fetch(downloadUrl, {
+      method: "GET",
+      headers: {
+        Authorization: token || "",
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) => {
+        // Check if response is ok
+        if (!response.ok) {
+          throw new Error("Server bilan bog'lanishda xatolik");
+        }
+
+        // Get filename from Content-Disposition header if available
+        const contentDisposition = response.headers.get("Content-Disposition");
+        let filename = `Xisob_Kitob_${consignmentName}.xlsx`;
+
+        if (contentDisposition) {
+          const filenameMatch = contentDisposition.match(/filename="(.+)"/);
+          if (filenameMatch && filenameMatch[1]) {
+            filename = filenameMatch[1];
+          }
+        }
+
+        // Convert response to blob
+        return response.blob().then((blob) => ({ blob, filename }));
+      })
+      .then(({ blob, filename }) => {
+        // Create download link
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = filename;
+
+        // Trigger download
+        document.body.appendChild(link);
+        link.click();
+
+        // Cleanup
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+
+        // Close loading and show success
+        swal.fire({
+          icon: "success",
+          title: "Tayyor!",
+          text: `Excel fayl yuklab olindi: ${filename}`,
+          customClass: {
+            confirmButton: "btn btn-success",
+          },
+          buttonsStyling: false,
+        });
+      })
+      .catch((error) => {
+        console.error("Error downloading Excel:", error);
+        swal.fire({
+          icon: "error",
+          title: "Xatolik!",
+          text: "Excel faylni yuklab olishda xatolik yuz berdi",
+          customClass: {
+            confirmButton: "btn btn-danger",
+          },
+          buttonsStyling: false,
+        });
+      });
+  }
+
+  // ============================================
+  // ALTERNATIVE: Using XMLHttpRequest (If fetch doesn't work)
+  // ============================================
+
+  /*
+fetchFinancesOfCons() {
+  swal.fire({
+    title: 'Excel fayl tayyorlanmoqda...',
+    text: 'Iltimos kuting',
+    allowOutsideClick: false,
+    didOpen: () => {
+      swal.showLoading();
+    }
+  });
+
+  const consignmentName = this.currentParty;
+  
+  if (!consignmentName) {
+    swal.fire({
+      icon: 'error',
+      title: 'Xatolik!',
+      text: 'Partiya tanlanmagan',
+      customClass: {
+        confirmButton: 'btn btn-danger'
+      },
+      buttonsStyling: false
+    });
+    return;
+  }
+
+  const xhr = new XMLHttpRequest();
+  const downloadUrl = `${GlobalVars.baseUrl}/finance/download-excel?consignment=${consignmentName}`;
+  const token = localStorage.getItem('token');
+
+  xhr.open('GET', downloadUrl, true);
+  xhr.setRequestHeader('Authorization', token || '');
+  xhr.responseType = 'blob';
+
+  xhr.onload = function() {
+    if (xhr.status === 200) {
+      const blob = xhr.response;
+      const filename = `Xisob_Kitob_${consignmentName}.xlsx`;
+      
+      // Create download link
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      
+      swal.fire({
+        icon: 'success',
+        title: 'Tayyor!',
+        text: `Excel fayl yuklab olindi: ${filename}`,
+        customClass: {
+          confirmButton: 'btn btn-success'
+        },
+        buttonsStyling: false
+      });
+    } else {
+      swal.fire({
+        icon: 'error',
+        title: 'Xatolik!',
+        text: 'Excel faylni yuklab olishda xatolik yuz berdi',
+        customClass: {
+          confirmButton: 'btn btn-danger'
+        },
+        buttonsStyling: false
+      });
+    }
+  };
+
+  xhr.onerror = function() {
+    swal.fire({
+      icon: 'error',
+      title: 'Xatolik!',
+      text: 'Server bilan bog\'lanishda xatolik',
+      customClass: {
+        confirmButton: 'btn btn-danger'
+      },
+      buttonsStyling: false
+    });
+  };
+
+  xhr.send();
+}
+  */
 }

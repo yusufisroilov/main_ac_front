@@ -1,44 +1,127 @@
-/* Add to infoeachclient.component.css */
+/* Improved Modal Styling - Compact & User-Friendly */
+
+/* Prevent body scroll when modal is open */
+body.modal-open {
+  overflow: hidden !important;
+  position: fixed;
+  width: 100%;
+}
 
 #deliveryCreationModal .modal-dialog {
-  max-width: 1200px;
-  max-height: 95vh;
-  margin: 1.75rem auto;
+  max-width: 900px;
+  margin: 1rem auto;
+  height: calc(100vh - 2rem);
+  display: flex;
+  align-items: center;
 }
 
 #deliveryCreationModal .modal-content {
-  max-height: 95vh;
+  max-height: calc(100vh - 2rem);
   display: flex;
   flex-direction: column;
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
 }
 
 #deliveryCreationModal .modal-header {
   flex-shrink: 0;
-  position: sticky;
-  top: 0;
-  z-index: 1020;
-  background-color: #fff;
+  padding: 1rem 1.5rem;
+  background: linear-gradient(60deg, #26c6da, #00acc1);
+  color: white;
+  border-radius: 8px 8px 0 0;
+  border-bottom: none;
+}
+
+#deliveryCreationModal .modal-header h4 {
+  color: white;
+  font-size: 1.3rem;
+  margin: 0;
+  font-weight: 500;
+}
+
+#deliveryCreationModal .modal-header .close {
+  color: white;
+  opacity: 0.9;
 }
 
 #deliveryCreationModal .modal-body {
   flex: 1 1 auto;
   overflow-y: auto;
-  max-height: calc(95vh - 200px);
-  padding: 1.5rem;
+  overflow-x: hidden;
+  padding: 1.25rem 1.5rem;
+  max-height: calc(100vh - 200px);
 }
 
 #deliveryCreationModal .modal-footer {
   flex-shrink: 0;
-  position: sticky;
-  bottom: 0;
-  z-index: 1020;
-  background-color: #fff;
+  padding: 1rem 1.5rem;
+  background-color: #f8f9fa;
   border-top: 1px solid #dee2e6;
+  border-radius: 0 0 8px 8px;
 }
 
-/* Smooth scrolling */
+/* Compact form styling */
+#deliveryCreationModal .form-group {
+  margin-bottom: 0.75rem;
+}
+
+#deliveryCreationModal .form-group label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+  color: #495057;
+}
+
+#deliveryCreationModal .form-control {
+  height: 38px;
+  font-size: 0.875rem;
+  padding: 0.5rem 0.75rem;
+}
+
+#deliveryCreationModal textarea.form-control {
+  height: 70px;
+  resize: none;
+}
+
+#deliveryCreationModal select.form-control {
+  height: 38px;
+}
+
+/* Compact rows */
+#deliveryCreationModal .row {
+  margin-left: -0.5rem;
+  margin-right: -0.5rem;
+}
+
+#deliveryCreationModal .row > [class*="col-"] {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+
+/* Section dividers */
+#deliveryCreationModal .section-divider {
+  border-bottom: 1px solid #e0e0e0;
+  margin: 1rem -1.5rem;
+  padding-bottom: 0.5rem;
+}
+
+#deliveryCreationModal .section-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+}
+
+#deliveryCreationModal .section-title i {
+  margin-right: 0.5rem;
+  font-size: 1.2rem;
+}
+
+/* Custom scrollbar */
 #deliveryCreationModal .modal-body::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
 }
 
 #deliveryCreationModal .modal-body::-webkit-scrollbar-track {
@@ -47,10 +130,76 @@
 }
 
 #deliveryCreationModal .modal-body::-webkit-scrollbar-thumb {
-  background: #888;
+  background: #26c6da;
   border-radius: 10px;
 }
 
 #deliveryCreationModal .modal-body::-webkit-scrollbar-thumb:hover {
-  background: #555;
+  background: #00acc1;
+}
+
+/* Package selection cards - compact */
+.package-card {
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  padding: 0.75rem;
+  margin-bottom: 0.75rem;
+  transition: all 0.2s;
+  background: white;
+}
+
+.package-card:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.package-card.selected {
+  border-color: #26c6da;
+  background-color: #f0f9ff;
+}
+
+/* Button styling */
+#deliveryCreationModal .btn {
+  padding: 0.5rem 1.25rem;
+  font-size: 0.875rem;
+  border-radius: 4px;
+}
+
+#deliveryCreationModal .modal-footer .btn {
+  min-width: 120px;
+}
+
+/* Loading state */
+.spinner-border-sm {
+  width: 1rem;
+  height: 1rem;
+  border-width: 0.15rem;
+}
+
+/* Empty state */
+.empty-state {
+  text-align: center;
+  padding: 2rem 1rem;
+  color: #999;
+}
+
+.empty-state i {
+  font-size: 3rem;
+  color: #ddd;
+  margin-bottom: 0.5rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  #deliveryCreationModal .modal-dialog {
+    max-width: 95%;
+    margin: 0.5rem auto;
+  }
+
+  #deliveryCreationModal .modal-body {
+    padding: 1rem;
+  }
+
+  #deliveryCreationModal .col-md-6 {
+    margin-bottom: 0.5rem;
+  }
 }

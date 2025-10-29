@@ -1,17 +1,17 @@
-import { OrderBoxesComponent } from './order-boxes.component';
-import { Routes } from '@angular/router';
-
+import { OrderBoxesComponent } from "./order-boxes.component";
+import { Routes } from "@angular/router";
 
 export const orderBoxesRoutes: Routes = [
-    {
-
-      path: '',
-      children: [ {
-        path: '',
+  {
+    path: "",
+    children: [
+      {
+        path: "",
         component: OrderBoxesComponent,
         data: {
-          title: 'Jo\'natmalar'
-      }
-    }]
-}
+          title: "Jo'natmalar",
+        },
+      },
+    ],
+  },
 ];

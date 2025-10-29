@@ -3,45 +3,25 @@
     <div class="row" style="margin-top: 36px">
       <div class="card3 col-md-4">
         <div class="" *ngIf="hideForManager">
-          <button
-            mat-raised-button=""
-            (click)="recordParcel()"
-            class="mat-focus-indicator btn btn-success mat-raised-button mat-button-base"
-          >
-            <span class="mat-button-wrapper"
-              ><span class="btn-label">
-                <i class="material-icons">check</i></span
-              >
+          <button mat-raised-button="" (click)="recordParcel()"
+            class="mat-focus-indicator btn btn-success mat-raised-button mat-button-base">
+            <span class="mat-button-wrapper"><span class="btn-label">
+                <i class="material-icons">check</i></span>
               RECORD PARCEL
             </span>
-            <span
-              matripple=""
-              class="mat-ripple mat-button-ripple"
-              ng-reflect-disabled="false"
-              ng-reflect-centered="false"
-              ng-reflect-trigger="[object HTMLButtonElement]"
-            ></span
-            ><span class="mat-button-focus-overlay"></span>
+            <span matripple="" class="mat-ripple mat-button-ripple" ng-reflect-disabled="false"
+              ng-reflect-centered="false" ng-reflect-trigger="[object HTMLButtonElement]"></span><span
+              class="mat-button-focus-overlay"></span>
           </button>
-          <button
-            mat-raised-button=""
-            (click)="recordParcelWithLabel()"
-            class="mat-focus-indicator btn btn-info mat-raised-button mat-button-base"
-          >
-            <span class="mat-button-wrapper"
-              ><span class="btn-label">
-                <i class="material-icons">print</i></span
-              >
+          <button mat-raised-button="" (click)="recordParcelWithLabel()"
+            class="mat-focus-indicator btn btn-info mat-raised-button mat-button-base">
+            <span class="mat-button-wrapper"><span class="btn-label">
+                <i class="material-icons">print</i></span>
               RECORD AND PRINT
             </span>
-            <span
-              matripple=""
-              class="mat-ripple mat-button-ripple"
-              ng-reflect-disabled="false"
-              ng-reflect-centered="false"
-              ng-reflect-trigger="[object HTMLButtonElement]"
-            ></span
-            ><span class="mat-button-focus-overlay"></span>
+            <span matripple="" class="mat-ripple mat-button-ripple" ng-reflect-disabled="false"
+              ng-reflect-centered="false" ng-reflect-trigger="[object HTMLButtonElement]"></span><span
+              class="mat-button-focus-overlay"></span>
           </button>
         </div>
       </div>
@@ -49,10 +29,7 @@
     <div class="row">
       <div class="col-md-12">
         <div class="card">
-          <div
-            class="card-header row card-header-primary card-header-icon"
-            style="display: inline-flex"
-          >
+          <div class="card-header row card-header-primary card-header-icon" style="display: inline-flex">
             <div class="col align-self-start">
               <div class="card-icon">
                 <i class="material-icons">assignment</i>
@@ -63,54 +40,31 @@
 
                 <h4 style="font-weight: bold">
                   READY LABELS: {{ countifreadyLabelDoc }}
-                  <button
-                    (click)="deleteSavedSmallLabels()"
-                    class="material-icons btn-danger btn-xs"
-                  >
+                  <button (click)="deleteSavedSmallLabels()" class="material-icons btn-danger btn-xs">
                     delete
                   </button>
                 </h4>
               </h4>
 
-              <button
-                mat-raised-button=""
-                (click)="takeDataForSeveralPrint()"
-                class="mat-focus-indicator btn-sm btn btn-warning mat-raised-button mat-button-base"
-              >
-                <span class="mat-button-wrapper"
-                  ><span class="btn-label">
-                    <i class="material-icons">receipt</i></span
-                  >
+              <button mat-raised-button="" (click)="takeDataForSeveralPrint()"
+                class="mat-focus-indicator btn-sm btn btn-warning mat-raised-button mat-button-base">
+                <span class="mat-button-wrapper"><span class="btn-label">
+                    <i class="material-icons">receipt</i></span>
                   Print -1 Labels
                 </span>
-                <span
-                  matripple=""
-                  class="mat-ripple mat-button-ripple"
-                  ng-reflect-disabled="false"
-                  ng-reflect-centered="false"
-                  ng-reflect-trigger="[object HTMLButtonElement]"
-                ></span
-                ><span class="mat-button-focus-overlay"></span>
+                <span matripple="" class="mat-ripple mat-button-ripple" ng-reflect-disabled="false"
+                  ng-reflect-centered="false" ng-reflect-trigger="[object HTMLButtonElement]"></span><span
+                  class="mat-button-focus-overlay"></span>
               </button>
-              <button
-                mat-raised-button=""
-                (click)="takeDataForSeveralPrintTemp2()"
-                class="mat-focus-indicator btn btn-label btn-sm mat-raised-button mat-button-base"
-              >
-                <span class="mat-button-wrapper"
-                  ><span class="btn-label">
-                    <i class="material-icons">receipt</i></span
-                  >
+              <button mat-raised-button="" (click)="takeDataForSeveralPrintTemp2()"
+                class="mat-focus-indicator btn btn-label btn-sm mat-raised-button mat-button-base">
+                <span class="mat-button-wrapper"><span class="btn-label">
+                    <i class="material-icons">receipt</i></span>
                   ! Print -2 Labels
                 </span>
-                <span
-                  matripple=""
-                  class="mat-ripple mat-button-ripple"
-                  ng-reflect-disabled="false"
-                  ng-reflect-centered="false"
-                  ng-reflect-trigger="[object HTMLButtonElement]"
-                ></span
-                ><span class="mat-button-focus-overlay"></span>
+                <span matripple="" class="mat-ripple mat-button-ripple" ng-reflect-disabled="false"
+                  ng-reflect-centered="false" ng-reflect-trigger="[object HTMLButtonElement]"></span><span
+                  class="mat-button-focus-overlay"></span>
               </button>
             </div>
           </div>
@@ -123,20 +77,12 @@
                 <div class="col-sm-6 col-lg-3">
                   <mat-form-field>
                     <mat-select placeholder="By order status" name="status">
-                      <mat-option
-                        [value]="null"
-                        (click)="
+                      <mat-option [value]="null" (click)="
                           getListOfParcelsWithFilter('', '', '', 'status')
-                        "
-                        >None</mat-option
-                      >
-                      <mat-option
-                        *ngFor="let orst of orderStatusTypeList"
-                        [value]="orst.id"
-                        (click)="
+                        ">None</mat-option>
+                      <mat-option *ngFor="let orst of orderStatusTypeList" [value]="orst.id" (click)="
                           getListOfParcelsWithFilter(orst.id, '', '', 'status')
-                        "
-                      >
+                        ">
                         {{ orst.description_en }}
                       </mat-option>
                     </mat-select>
@@ -145,18 +91,11 @@
                 <div class="col-sm-6 col-lg-3">
                   <mat-form-field>
                     <mat-select placeholder="By order type" name="city">
-                      <mat-option
-                        [value]="null"
-                        (click)="getListOfParcelsWithFilter('', '', '', 'type')"
-                        >None</mat-option
-                      >
-                      <mat-option
-                        *ngFor="let orty of orderTypesList"
-                        [value]="orty.id"
-                        (click)="
+                      <mat-option [value]="null"
+                        (click)="getListOfParcelsWithFilter('', '', '', 'type')">None</mat-option>
+                      <mat-option *ngFor="let orty of orderTypesList" [value]="orty.id" (click)="
                           getListOfParcelsWithFilter('', orty.id, '', 'type')
-                        "
-                      >
+                        ">
                         {{ orty.description_en }}
                       </mat-option>
                     </mat-select>
@@ -165,31 +104,20 @@
 
                 <div class="col-sm-6 col-lg-3" style="display: inline-flex">
                   <mat-form-field class="example-full-width">
-                    <input
-                      matInput
-                      type="text"
-                      style="font-size: large"
-                      placeholder="Filter by Owner ID"
-                      (input)="
+                    <input matInput type="text" style="font-size: large" placeholder="Filter by Owner ID" (input)="
                         getListOfParcelsWithFilter(
                           '',
                           '',
                           $event.target.value,
                           'ownerid'
                         )
-                      "
-                    />
+                      " />
                   </mat-form-field>
                 </div>
                 <div class="col-sm-6 col-lg-3">
                   <mat-form-field class="example-full-width">
-                    <input
-                      matInput
-                      type="text"
-                      style="font-size: large"
-                      placeholder="Search with Tracking Number"
-                      (input)="getListOfParcelsWithSearch($event.target.value)"
-                    />
+                    <input matInput type="text" style="font-size: large" placeholder="Search with Tracking Number"
+                      (input)="getListOfParcelsWithSearch($event.target.value)" />
                   </mat-form-field>
                 </div>
                 <!--   <div class="col-sm-6 col-lg-3">
@@ -226,14 +154,11 @@
                                 <span aria-hidden="true"><i class="fa fa-angle-double-left" aria-hidden="true"></i></span>
                               </a>
                             </li> -->
-                  <li
-                    class="page-item"
-                    [ngClass]="{ active: currentPage == i }"
-                    *ngFor="let page of mypages; index as i"
-                  >
+                  <li class="page-item" [ngClass]="{ active: currentPage == i }"
+                    *ngFor="let page of mypages; index as i">
                     <a mat-button class="page-link" (click)="pagebyNum(i)">{{
                       i + 1
-                    }}</a>
+                      }}</a>
                   </li>
                   <!-- <li class="page-item">
                               <a mat-button class="page-link" aria-label="Next">
@@ -241,12 +166,8 @@
                               </a>
                             </li> -->
                 </ul>
-                <table
-                  class="table table-striped table-no-bordered table-hover"
-                  cellspacing="0"
-                  width="100%"
-                  style="width: 100%"
-                >
+                <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%"
+                  style="width: 100%">
                   <thead>
                     <tr>
                       <th class="text-center">No</th>
@@ -265,14 +186,10 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <tr
-                      *ngFor="let row of allData; let i = index"
-                      class="text-center table-danger"
-                      [ngClass]="{
+                    <tr *ngFor="let row of allData; let i = index" class="text-center table-danger" [ngClass]="{
                         'table-danger': row.orderType == 7,
                         boldclass: i == 0
-                      }"
-                    >
+                      }">
                       <td>{{ i + 1 }}</td>
                       <td style="background-color: skyblue">
                         {{ row.owner_id }}
@@ -292,23 +209,11 @@
                       </td>
 
                       <td>
-                        <button
-                          mat-raised-button
-                          class="btn btn-link btn-info btn-just-icon visibility"
-                          data-toggle="modal"
-                          data-target="#myModal"
-                        >
-                          <i
-                            class="material-icons"
-                            (click)="getInfoOfParcel(row.tracking_number)"
-                            >visibility</i
-                          >
+                        <button mat-raised-button class="btn btn-link btn-info btn-just-icon visibility"
+                          data-toggle="modal" data-target="#myModal">
+                          <i class="material-icons" (click)="getInfoOfParcel(row.tracking_number)">visibility</i>
                         </button>
-                        <a
-                          href="javascript:void(0"
-                          class="btn btn-link btn-success btn-just-icon edit"
-                          ><i
-                            (click)="
+                        <a href="javascript:void(0" class="btn btn-link btn-success btn-just-icon edit"><i (click)="
                               editParcel(
                                 row.tracking_number,
                                 row.owner_id,
@@ -316,56 +221,26 @@
                                 row.quantity,
                                 row.order_type
                               )
-                            "
-                            class="material-icons"
-                            >edit</i
-                          ></a
-                        >
-                        <button
-                          *ngIf="!row.anotherAddress"
-                          mat-raised-button
-                          class="btn btn-link btn-warning btn-just-icon visibility"
-                          (click)="
+                            " class="material-icons">edit</i></a>
+                        <button *ngIf="!row.anotherAddress" mat-raised-button
+                          class="btn btn-link btn-warning btn-just-icon visibility" (click)="
                             sendtoAnotherAdress(
                               row.tracking_number,
                               row.name_foreign
                             )
-                          "
-                        >
+                          ">
                           <i class="material-icons">forward_to_inbox</i>
                         </button>
-                        <button
-                          *ngIf="row.another_addddress"
-                          mat-raised-button
-                          class="btn btn-link btn-success btn-just-icon visibility"
-                          data-toggle="modal"
-                          data-target="#myModal"
-                        >
-                          <i
-                            class="material-icons"
-                            (click)="getInfoOfParcel(row.tracking_number)"
-                            >mark_email_read</i
-                          >
+                        <button *ngIf="row.another_addddress" mat-raised-button
+                          class="btn btn-link btn-success btn-just-icon visibility" data-toggle="modal"
+                          data-target="#myModal">
+                          <i class="material-icons" (click)="getInfoOfParcel(row.tracking_number)">mark_email_read</i>
                         </button>
                         <!-- <a href="javascript:void(0" class="btn btn-link btn-primary btn-just-icon edit"><i (click)="alonePrintLabel(row.trackingNumber)" class="material-icons">receipt</i></a> -->
-                        <a
-                          href="javascript:void(0"
-                          class="btn btn-link btn-primary btn-just-icon edit"
-                          ><i
-                            (click)="alonePrintLabel(row.tracking_number)"
-                            class="material-icons"
-                            >receipt</i
-                          ></a
-                        >
-                        <a
-                          href="javascript:void(0s"
-                          class="btn btn-link btn-danger btn-just-icon remove"
-                          ><i
-                            (click)="deleteParcel(row.tracking_number)"
-                            class="material-icons"
-                            >close</i
-                          ></a
-                        >
+                        <a href="javascript:void(0" class="btn btn-link btn-primary btn-just-icon edit"><i
+                            (click)="alonePrintLabel(row.tracking_number)" class="material-icons">receipt</i></a>
+                        <a href="javascript:void(0s" class="btn btn-link btn-danger btn-just-icon remove"><i
+                            (click)="deleteParcel(row.tracking_number)" class="material-icons">close</i></a>
                       </td>
                     </tr>
                   </tbody>
@@ -376,14 +251,11 @@
                                   <span aria-hidden="true"><i class="fa fa-angle-double-left" aria-hidden="true"></i></span>
                                 </a>
                               </li> -->
-                  <li
-                    class="page-item"
-                    [ngClass]="{ active: currentPage == i }"
-                    *ngFor="let page of mypages; index as i"
-                  >
+                  <li class="page-item" [ngClass]="{ active: currentPage == i }"
+                    *ngFor="let page of mypages; index as i">
                     <a mat-button class="page-link" (click)="pagebyNum(i)">{{
                       i + 1
-                    }}</a>
+                      }}</a>
                   </li>
                   <!-- <li class="page-item">
                                 <a mat-button class="page-link" aria-label="Next">
@@ -401,31 +273,16 @@
       <!-- end col-md-12 -->
 
       <!-- Classic Modal -->
-      <div
-        class="modal fade"
-        id="myModal"
-        tabindex="-1"
-        role="dialog"
-        aria-labelledby="myModalLabel"
-        aria-hidden="true"
-      >
+      <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+        aria-hidden="true">
         <div class="modal-dialog">
           <div *ngFor="let row of allData; let i = index">
-            <div
-              class="modal-content"
-              *ngIf="row.tracking_number == trackingNum2"
-            >
+            <div class="modal-content" *ngIf="row.tracking_number == trackingNum2">
               <div class="modal-header">
                 <h4 class="modal-title">
                   Tracking number: {{ row.tracking_number }}
                 </h4>
-                <button
-                  mat-button
-                  type="button"
-                  class="close"
-                  data-dismiss="modal"
-                  aria-hidden="true"
-                >
+                <button mat-button type="button" class="close" data-dismiss="modal" aria-hidden="true">
                   <i class="material-icons">clear</i>
                 </button>
               </div>
@@ -442,11 +299,7 @@
                   <b>!!! This parcel sent to: &nbsp; </b>
                   <p>{{ row.another_address }}</p>
                 </div>
-                <div
-                  *ngIf="row.sent_to_another_address_date"
-                  style="color: red"
-                  class="row"
-                >
+                <div *ngIf="row.sent_to_another_address_date" style="color: red" class="row">
                   <b>Date: &nbsp; </b>
                   <p>{{ row.sent_to_another_address_date }}</p>
                 </div>
@@ -504,12 +357,7 @@
               </div>
               <div class="modal-footer">
                 <!-- <button mat-raised-button type="button" class="btn btn-link">Nice Button</button> -->
-                <button
-                  mat-raised-button
-                  type="button"
-                  class="btn btn-danger btn-link"
-                  data-dismiss="modal"
-                >
+                <button mat-raised-button type="button" class="btn btn-danger btn-link" data-dismiss="modal">
                   CLOSE
                 </button>
               </div>
@@ -522,8 +370,7 @@
     <!-- end row -->
 
     <div #printSection id="print-section">
-     
-     
+
       <div class="row">
         <table border="0" cellpadding="0" cellspacing="0" id="sheet0" class="sheet0">
           <col class="col0">
@@ -534,19 +381,23 @@
           <col class="col5">
           <tbody>
             <tr class="row0">
-              <td class="column0 style24 s style23" colspan="2"> <ngx-barcode [bc-value]=" " [bc-height]="50" [bc-display-value]="true"></ngx-barcode></td>
+              <td class="column0 style24 s style23" colspan="2"> <ngx-barcode [bc-value]="barcodeVal" [bc-height]="50"
+                  [bc-display-value]="true"></ngx-barcode></td>
               <td class="column2 style28 s style29" colspan="2">INVOICE DOC</td>
-              <td class="column4 style25 s style26" colspan="2"><b style="font-size: xx-large;">{{party_num  }} </b> <br> K{{owner_idL}}</td>
+              <td class="column4 style25 s style26" colspan="2"><b style="font-size: xx-large;">{{party_num }} </b> <br>
+                K{{owner_idL}}</td>
             </tr>
             <tr class="row1">
-              <td class="column0 style11 s style12" rowspan="2">Из:  Dan:</td>
+              <td class="column0 style11 s style12" rowspan="2">Из: Dan:</td>
               <td class="column1 style5 s">taobao.com и pingduoduo.com</td>
-              <td class="column2 style30 s style27" rowspan="2">В:   Ga:</td>
+              <td class="column2 style30 s style27" rowspan="2">В: Ga:</td>
               <td class="column3 style16 s style17" colspan="3">{{receiver_name}}</td>
             </tr>
             <tr class="row2">
-              <td class="column1 style4 s">Компания: {{company_name}} Адрес: Room 406 Block F,Huangshi Street, BaiYun District, Guangzhou city. Index: 51042. Страна: Китай (CHINA)                                   </td>
-              <td class="column3 style13 s style13" colspan="3">&nbsp;{{receiver_passport}} Tel:{{phone_number}} &nbsp;{{receiver_address}}</td>
+              <td class="column1 style4 s">Компания: {{company_name}} Адрес: Room 406 Block F,Huangshi Street, BaiYun
+                District, Guangzhou city. Index: 51042. Страна: Китай (CHINA) </td>
+              <td class="column3 style13 s style13" colspan="3">&nbsp;{{receiver_passport}} Tel:{{phone_number}}
+                &nbsp;{{receiver_address}}</td>
             </tr>
             <tr class="row3">
               <td class="column0 style3 s">No</td>
@@ -555,7 +406,7 @@
               <td class="column4 style3 s">Soni</td>
               <td class="column5 style4 s">Nx (usd)</td>
             </tr>
-            <tr   class="row4">
+            <tr class="row4">
               <td class="column0 style1 n">1</td>
               <td class="column1 style6 s">{{orderName}} {{total_amount}}ta</td>
               <td class="column2 style19 n style20" colspan="2">{{trackingNum3}}</td>
@@ -564,18 +415,20 @@
             </tr>
             <tr class="row16">
               <td class="column0 style21 s style22" colspan="2">{{box_number}} {{print_time| slice:0:10}}</td>
-              <td class="column2 style9 s style10" colspan="2">Og'irligi: <span style="font-weight:bold; color:#000000; font-family:'Calibri'; font-size:12pt">{{total_weight}} kg</span></td>
+              <td class="column2 style9 s style10" colspan="2">Og'irligi: <span
+                  style="font-weight:bold; color:#000000; font-family:'Calibri'; font-size:12pt">{{total_weight}}
+                  kg</span></td>
               <td class="column4 style8 n">{{total_amount}}</td>
               <td class="column5 style2 n">{{total_price}}</td>
             </tr>
           </tbody>
-      </table>
+        </table>
       </div>
-     
-     
-     
-     
-     
+
+
+
+
+
       <!-- <table
         border="0"
         cellpadding="0"
@@ -673,9 +526,10 @@
 
 
     <div #printSectionSeveral id="print-sectionSeveral">
-    
+
       <div class="row">
-        <table  *ngFor="let row of labelsDataStorage; let i = index" border="0" cellpadding="0" cellspacing="0" id="sheet0" class="sheet0">
+        <table *ngFor="let row of labelsDataStorage; let i = index" border="0" cellpadding="0" cellspacing="0"
+          id="sheet0" class="sheet0">
           <col class="col0">
           <col class="col1">
           <col class="col2">
@@ -684,19 +538,24 @@
           <col class="col5">
           <tbody>
             <tr class="row0">
-              <td class="column0 style24 s style23" colspan="2"> <ngx-barcode [bc-value]="row.box_number" [bc-height]="50" [bc-display-value]="true"></ngx-barcode></td>
+              <td class="column0 style24 s style23" colspan="2"> <ngx-barcode [bc-value]="row.box_number"
+                  [bc-height]="50" [bc-display-value]="true"></ngx-barcode></td>
               <td class="column2 style28 s style29" colspan="2">INVOICE DOC</td>
-              <td class="column4 style25 s style26" colspan="2"><b style="font-size: xx-large;">{{row.party_num }}</b>  <br> K{{row.owner_id}}</td>
+              <td class="column4 style25 s style26" colspan="2"><b style="font-size: xx-large;">{{row.party_num }}</b>
+                <br> K{{row.owner_id}}
+              </td>
             </tr>
             <tr class="row1">
-              <td class="column0 style11 s style12" rowspan="2">Из:  Dan:</td>
+              <td class="column0 style11 s style12" rowspan="2">Из: Dan:</td>
               <td class="column1 style5 s">taobao.com и pingduoduo.com</td>
-              <td class="column2 style30 s style27" rowspan="2">В:   Ga:</td>
+              <td class="column2 style30 s style27" rowspan="2">В: Ga:</td>
               <td class="column3 style16 s style17" colspan="3">{{row.receiver_name }}</td>
             </tr>
             <tr class="row2">
-              <td class="column1 style4 s">Компания: {{row.company_name}} Адрес: Room 406 Block F,Huangshi Street, BaiYun District, Guangzhou city. Index: 51042. Страна: Китай (CHINA)                                   </td>
-              <td class="column3 style13 s style13" colspan="3">&nbsp;{{row.receiver_passport}} Tel:{{row.phone_number}} &nbsp;{{ row.receiver_address}}</td>
+              <td class="column1 style4 s">Компания: {{row.company_name}} Адрес: Room 406 Block F,Huangshi Street,
+                BaiYun District, Guangzhou city. Index: 51042. Страна: Китай (CHINA) </td>
+              <td class="column3 style13 s style13" colspan="3">&nbsp;{{row.receiver_passport}} Tel:{{row.phone_number}}
+                &nbsp;{{ row.receiver_address}}</td>
             </tr>
             <tr class="row3">
               <td class="column0 style3 s">No</td>
@@ -705,7 +564,7 @@
               <td class="column4 style3 s">Soni</td>
               <td class="column5 style4 s">Nx (usd)</td>
             </tr>
-            <tr  class="row4">
+            <tr class="row4">
               <td class="column0 style1 n">1</td>
               <td class="column1 style6 s">{{row.orderName}} {{row.total_amount}}ta</td>
               <td class="column2 style19 n style20" colspan="2">{{ row.trackingNum}}</td>
@@ -713,16 +572,19 @@
               <td class="column5 style31 n">{{row.total_price}}</td>
             </tr>
             <tr class="row16">
-              <td class="column0 style21 s style22" colspan="2">{{ row.box_number}} {{row.print_time | slice : 0 : 10}}</td>
-              <td class="column2 style9 s style10" colspan="2">Og'irligi: <span style="font-weight:bold; color:#000000; font-family:'Calibri'; font-size:12pt">{{ row.total_weight}} kg</span></td>
+              <td class="column0 style21 s style22" colspan="2">{{ row.box_number}} {{row.print_time | slice : 0 : 10}}
+              </td>
+              <td class="column2 style9 s style10" colspan="2">Og'irligi: <span
+                  style="font-weight:bold; color:#000000; font-family:'Calibri'; font-size:12pt">{{ row.total_weight}}
+                  kg</span></td>
               <td class="column4 style8 n">{{row.total_amount}}</td>
               <td class="column5 style2 n">{{row.total_price}}</td>
             </tr>
           </tbody>
-      </table>
+        </table>
       </div>
-    
-    
+
+
       <!-- <table
         *ngFor="let row of labelsDataStorage; let i = index"
         border="0"

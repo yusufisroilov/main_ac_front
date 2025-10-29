@@ -76,6 +76,13 @@ export const AppRoutes: Routes = [
           ),
       },
       {
+        path: "customer-dashboard",
+        loadChildren: () =>
+          import(
+            "./simple_user/customer-dashboard/customer-dashboard.module"
+          ).then((m) => m.customerDashboardModule),
+      },
+      {
         path: "archive",
         loadChildren: () =>
           import("./simple_user/archive-orders/archive-orders.module").then(

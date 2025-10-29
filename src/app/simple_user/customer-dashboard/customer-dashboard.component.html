@@ -1,0 +1,423 @@
+<div class="main-content">
+    <div class="container-fluid">
+
+        <!-- Improved Welcome Section - Compact with user info in top left -->
+        <div class="row mb-3">
+            <div class="col-md-12">
+                <div class="welcome-banner">
+                    <div class="user-info">
+                        <i class="material-icons user-icon">account_circle</i>
+                        <div class="user-details">
+                            <h5 class="mb-0">{{ firstname }} {{ lastname }}</h5>
+                            <p class="text-muted mb-0">ID: <strong>K{{ customerId }}</strong></p>
+                        </div>
+                    </div>
+                    <div class="welcome-text">
+                        <h3>Asosiy Sahifa</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Summary Statistics Cards -->
+        <div class="row">
+            <!-- Card 1: Customer ID -->
+            <div class="col-lg-3 col-md-6 col-sm-6">
+                <div class="card card-stats">
+                    <div class="card-header card-header-warning card-header-icon">
+                        <div class="card-icon">
+                            <i class="material-icons">person</i>
+                        </div>
+                        <p class="card-category">Mijoz ID</p>
+                        <h3 class="card-title">K{{ customerId }}</h3>
+                    </div>
+                    <div class="card-footer">
+                        <div class="stats">
+                            <i class="material-icons">account_circle</i>
+                            Sizning telefon raqamingiz: {{ customerUsername }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 2: Total Orders -->
+            <div class="col-lg-3 col-md-6 col-sm-6">
+                <div class="card card-stats">
+                    <div class="card-header card-header-success card-header-icon">
+                        <div class="card-icon">
+                            <i class="material-icons">shopping_cart</i>
+                        </div>
+                        <p class="card-category">Jami Buyurtmalar</p>
+                        <h3 class="card-title">
+                            <span *ngIf="!loadingStats">{{ totalOrders }}</span>
+                            <span *ngIf="loadingStats" class="spinner-border spinner-border-sm"></span>
+                            <small> ta</small>
+                        </h3>
+                    </div>
+                    <div class="card-footer">
+                        <div class="stats">
+                            <i class="material-icons">assignment</i>
+                            Sizning Active Cargoda qilgan barcha buyurtmalaringiz
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 3: Total Weight -->
+            <div class="col-lg-3 col-md-6 col-sm-6">
+                <div class="card card-stats">
+                    <div class="card-header card-header-info card-header-icon">
+                        <div class="card-icon">
+                            <i class="material-icons">fitness_center</i>
+                        </div>
+                        <p class="card-category">Jami Og'irlik</p>
+                        <h3 class="card-title">
+                            <span *ngIf="!loadingStats">{{ totalWeight }}</span>
+                            <span *ngIf="loadingStats" class="spinner-border spinner-border-sm"></span>
+                            <small> kg</small>
+                        </h3>
+                    </div>
+                    <div class="card-footer">
+                        <div class="stats">
+                            <i class="material-icons">local_shipping</i>
+                            Sizning Active Cargoda qilgan barcha buyurtmalaringiz og'irligi
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 4: Last Consignment Weight -->
+            <div class="col-lg-3 col-md-6 col-sm-6">
+                <div class="card card-stats">
+                    <div class="card-header card-header-danger card-header-icon">
+                        <div class="card-icon">
+                            <i class="material-icons">scale</i>
+                        </div>
+                        <p class="card-category">Oxirgi Partiya</p>
+                        <h3 class="card-title">
+                            <span *ngIf="!loadingStats">{{ lastConsignmentWeight }}</span>
+                            <span *ngIf="loadingStats" class="spinner-border spinner-border-sm"></span>
+                            <small> kg</small>
+                        </h3>
+                    </div>
+                    <div class="card-footer">
+                        <div class="stats">
+                            <i class="material-icons">inventory</i>
+                            Sizning oxirgi {{ lastConsignmentName }} Partiyada urgan yuklaringiz og'irligi
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Last 2 Consignments Section -->
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header card-header-primary card-header-icon">
+                        <div class="card-icon">
+                            <i class="material-icons">inventory_2</i>
+                        </div>
+                        <h4 class="card-title">So'nggi 2 ta Partiyalarim</h4>
+                    </div>
+                    <div class="card-body">
+
+                        <!-- Loading State -->
+                        <div *ngIf="loadingStats" class="text-center p-5">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="sr-only">Yuklanmoqda...</span>
+                            </div>
+                            <p class="mt-3">Ma'lumotlar yuklanmoqda...</p>
+                        </div>
+
+                        <!-- No Consignments -->
+                        <div *ngIf="!loadingStats && lastTwoConsignments.length === 0" class="text-center p-5">
+                            <i class="material-icons" style="font-size: 64px; color: #ccc;">inbox</i>
+                            <h5 class="mt-3">Hozircha partiyalar yo'q</h5>
+                            <p class="text-muted">Siz uchun yuklar kelganda bu yerda ko'rinadi</p>
+                        </div>
+
+                        <!-- Consignments Table -->
+                        <div *ngIf="!loadingStats && lastTwoConsignments.length > 0" class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="text-primary">
+                                    <tr>
+                                        <th class="text-center">No</th>
+                                        <th>Partiya</th>
+                                        <th class="text-center">Avia/Avto</th>
+                                        <th class="text-center">Soni</th>
+                                        <th class="text-center">Og'irligi</th>
+                                        <th class="text-center">Summasi</th>
+                                        <th class="text-center">Kurs</th>
+                                        <th class="text-center">Qarz $</th>
+                                        <th class="text-center">Qarz So'm</th>
+                                        <th class="text-center">Amallar</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let consignment of lastTwoConsignments; let i = index">
+                                        <td class="text-center">{{ i + 1 }}</td>
+                                        <td>
+                                            <strong>{{ consignment.name }}</strong>
+                                            <br>
+                                            <small class="text-muted">
+                                                {{ consignment.registered_date | date: 'dd.MM.yyyy' }}
+                                            </small>
+                                        </td>
+                                        <td class="text-center">
+                                            <span *ngIf="consignment.isHongKong" class="badge badge-primary"
+                                                style="font-size: 14px; padding: 8px 12px;">
+                                                🚚 Avto
+                                            </span>
+                                            <span *ngIf="!consignment.isHongKong" class="badge badge-info"
+                                                style="font-size: 14px; padding: 8px 12px;">
+                                                🛬 Avia
+                                            </span>
+                                        </td>
+                                        <td class="text-center">
+                                            <strong>{{ consignment.quantity }}</strong> ta
+                                        </td>
+                                        <td class="text-center">
+                                            <span *ngIf="consignment.weight && consignment.weight !== '0'">
+                                                {{ consignment.weight }} kg
+                                            </span>
+                                            <span *ngIf="!consignment.weight || consignment.weight === '0'"
+                                                class="text-muted">
+                                                - -
+                                            </span>
+                                        </td>
+                                        <td class="text-center">
+                                            <span *ngIf="consignment.sum_usd && consignment.sum_usd !== '0'">
+                                                ${{ consignment.sum_usd }}
+                                            </span>
+                                            <span *ngIf="!consignment.sum_usd || consignment.sum_usd === '0'"
+                                                class="text-muted">
+                                                - -
+                                            </span>
+                                        </td>
+                                        <td class="text-center">{{ consignment.rate }}</td>
+                                        <td class="text-center">
+                                            <span *ngIf="consignment.debt && consignment.debt !== '0'"
+                                                class="text-danger font-weight-bold">
+                                                ${{ consignment.debt }}
+                                            </span>
+                                            <span *ngIf="!consignment.debt || consignment.debt === '0'"
+                                                class="text-success">
+                                                <i class="material-icons" style="font-size: 20px;">check_circle</i>
+                                            </span>
+                                        </td>
+                                        <td class="text-center">
+                                            <span *ngIf="consignment.debt_uzs && consignment.debt_uzs !== '0'"
+                                                class="text-danger font-weight-bold">
+                                                {{ consignment.debt_uzs | currency: ' ' : 'symbol' : '1.0-0' }} so'm
+                                            </span>
+                                            <span *ngIf="!consignment.debt_uzs || consignment.debt_uzs === '0'"
+                                                class="text-success">
+                                                To'langan
+                                            </span>
+                                        </td>
+                                        <td class="text-center">
+                                            <button mat-raised-button type="button" class="btn btn-info btn-sm"
+                                                (click)="openConsignmentModal(consignment.name)">
+                                                <i class="material-icons">visibility</i>
+                                                Ko'rish
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- "Hamma partiyalar" Button -->
+                        <div class="text-center mt-4 mb-3" *ngIf="!loadingStats">
+                            <button mat-raised-button type="button" class="btn btn-primary btn-lg"
+                                (click)="goToAllConsignments()" style="padding: 12px 40px; font-size: 16px;">
+                                <i class="material-icons">list_alt</i>
+                                Hamma Partiyalar
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chinese Address Section -->
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header card-header-success card-header-icon">
+                        <div class="card-icon">
+                            <i class="material-icons">location_on</i>
+                        </div>
+                        <h4 class="card-title">Xitoy Manzilim</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label>Buyurtma qilishda quyidagi manzilni kiriting:</label>
+                            <textarea #txtConfigFile class="form-control" rows="4" readonly
+                                style="font-size: 14px; font-weight: 500;">国际仓K{{ customerId }}
+18028594657
+广东省广州市白云区太和镇南村三委南街43号1楼档口(原好客源超市)K{{ customerId }}
+510440</textarea>
+                        </div>
+                        <button mat-raised-button class="btn btn-success" (click)="copyToCB()">
+                            <i class="material-icons">content_copy</i>
+                            Nusxa Olish
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Consignment Orders Modal -->
+<div class="modal fade" id="consignmentOrdersModal" tabindex="-1" role="dialog"
+    aria-labelledby="consignmentOrdersModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="consignmentOrdersModalLabel">
+                    <i class="material-icons" style="vertical-align: middle;">inventory</i>
+                    Partiya: <strong>{{ selectedConsignmentName }}</strong>
+                </h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+                <!-- Loading State -->
+                <div *ngIf="loadingOrders" class="text-center p-5">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="sr-only">Yuklanmoqda...</span>
+                    </div>
+                    <p class="mt-3">Buyurtmalar yuklanmoqda...</p>
+                </div>
+
+                <!-- No Orders -->
+                <div *ngIf="!loadingOrders && consignmentOrders.length === 0" class="text-center p-5">
+                    <i class="material-icons" style="font-size: 64px; color: #ccc;">shopping_cart</i>
+                    <h5 class="mt-3">Bu partiyada buyurtmalar yo'q</h5>
+                </div>
+
+                <!-- Orders Table -->
+                <div *ngIf="!loadingOrders && consignmentOrders.length > 0" class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="text-primary">
+                            <tr>
+                                <th class="text-center">No</th>
+                                <th>Tovar nomi</th>
+                                <th class="text-center">Trek nomer</th>
+                                <th class="text-center">Soni</th>
+                                <th class="text-center">Holati</th>
+                                <th class="text-center">Amallar</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let order of consignmentOrders; let i = index"
+                                [ngClass]="{ 'table-success': order.status == 9 }">
+                                <td class="text-center">{{ i + 1 }}</td>
+                                <td>
+                                    <strong>{{ order.name_ru }}</strong>
+                                    <br>
+                                    <small class="text-muted">{{ order.name_foreign }}</small>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge badge-secondary">{{ order.tracking_number }}</span>
+                                </td>
+                                <td class="text-center">{{ order.quantity }} ta</td>
+                                <td class="text-center">
+                                    <span class="badge" [ngClass]="getStatusBadgeClass(order.status)">
+                                        {{ getOrderStatusText(order.status) }}
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    <button mat-raised-button type="button" class="btn btn-info btn-sm"
+                                        (click)="viewOrderDetails(order)">
+                                        <i class="material-icons">info</i>
+                                        Batafsil
+                                    </button>
+                                    <button mat-raised-button type="button" class="btn btn-success btn-sm ml-2"
+                                        *ngIf="order.status !== 9"
+                                        (click)="receiveOrder(order.tracking_number, order.name_ru)">
+                                        <i class="material-icons">done</i>
+                                        Qabul qildim
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                    Yopish
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Order Details Modal -->
+<div class="modal fade" id="orderDetailsModal" tabindex="-1" role="dialog" aria-labelledby="orderDetailsModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" *ngIf="selectedOrder">
+            <div class="modal-header">
+                <h4 class="modal-title" id="orderDetailsModalLabel">
+                    Trek nomeri: {{ selectedOrder.tracking_number }}
+                </h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row mb-2">
+                    <div class="col-md-5"><strong>Xitoy xodim tarifi:</strong></div>
+                    <div class="col-md-7">{{ selectedOrder.name_foreign }}</div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-md-5"><strong>Rus tilida tarifi:</strong></div>
+                    <div class="col-md-7">{{ selectedOrder.name_ru }}</div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-md-5"><strong>Buyurtma soni:</strong></div>
+                    <div class="col-md-7">{{ selectedOrder.quantity }} ta</div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-md-5"><strong>Buyurtma holati:</strong></div>
+                    <div class="col-md-7">
+                        <span class="badge" [ngClass]="getStatusBadgeClass(selectedOrder.status)">
+                            {{ getOrderStatusText(selectedOrder.status) }}
+                        </span>
+                    </div>
+                </div>
+                <div class="row mb-2" *ngIf="selectedOrder.in_foreign_warehouse_date">
+                    <div class="col-md-5"><strong>Xitoy omboriga kelgan:</strong></div>
+                    <div class="col-md-7">{{ selectedOrder.in_foreign_warehouse_date | date: 'dd.MM.yyyy HH:mm' }}</div>
+                </div>
+                <div class="row mb-2" *ngIf="selectedOrder.on_way_to_airport_date">
+                    <div class="col-md-5"><strong>Aeroport tomon jo'natilgan:</strong></div>
+                    <div class="col-md-7">{{ selectedOrder.on_way_to_airport_date | date: 'dd.MM.yyyy HH:mm' }}</div>
+                </div>
+                <div class="row mb-2" *ngIf="selectedOrder.in_uzb_airport_date">
+                    <div class="col-md-5"><strong>O'zbekiston aeroportiga kelgan:</strong></div>
+                    <div class="col-md-7">{{ selectedOrder.in_uzb_airport_date | date: 'dd.MM.yyyy HH:mm' }}</div>
+                </div>
+                <div class="row mb-2" *ngIf="selectedOrder.in_uzb_warehouse_date">
+                    <div class="col-md-5"><strong>Toshkent omboriga kelgan:</strong></div>
+                    <div class="col-md-7">{{ selectedOrder.in_uzb_warehouse_date | date: 'dd.MM.yyyy HH:mm' }}</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">
+                    Yopish
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

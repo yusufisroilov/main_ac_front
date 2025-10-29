@@ -850,7 +850,6 @@ export class InfoeachclientComponent implements OnInit {
           this.loadingCustomerPackages = false;
         },
         (error) => {
-          swal.fire("Xatolik", "Qutillarni yuklashda xatolik", "error");
           this.loadingCustomerPackages = false;
           if (error.status == 403) {
             this.authService.logout();
@@ -1186,6 +1185,10 @@ export class InfoeachclientComponent implements OnInit {
                 buttonsStyling: false,
               })
               .then((result) => {
+                if (result.isConfirmed) {
+                  // Print the delivery receipt when user clicks "Chek Chop Etish"
+                  this.printPaymentReceiptFromModal();
+                }
                 this.closeDeliveryModal();
                 // Refresh the consignment data to reflect updated package status
                 this.getListOfPartyBoxes(this.currentID);

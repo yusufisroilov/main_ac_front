@@ -254,7 +254,7 @@ export class EmployerDeliveryComponent {
       case "Own-Courier":
         return "sent";
       case "Pick-up":
-        return "collected";
+        return "sent";
       default:
         return "sent";
     }
