@@ -140,7 +140,7 @@
                       <th class="text-center">{{ dataTable.headerRow[7] }}</th>
                       <th class="text-center">{{ dataTable.headerRow[8] }}</th>
                       <th>Qarz UZS</th>
-                      <th><i class="material-icons">local_shipping</i></th>
+                      <!-- <th><i class="material-icons">local_shipping</i></th> -->
                       <th class="text-center">Actions</th>
                     </tr>
                   </thead>
@@ -171,7 +171,7 @@
                       <td>
                         {{ row.debt_uzs | currency : " " : "symbol" : "4.0-0" }}
                       </td>
-                      <td *ngIf="row.delivered; else elseBlock" style="font-weight: bold; color: green">
+                      <!-- <td *ngIf="row.delivered; else elseBlock" style="font-weight: bold; color: green">
                         <i class="material-icons">verified</i>
                       </td>
                       <ng-template #elseBlock>
@@ -180,10 +180,10 @@
                             <i (click)="deliveredFunc(row.id, row.owner_id)" class="material-icons">local_shipping</i>
                           </a>
                         </td>
-                      </ng-template>
+                      </ng-template> -->
                       <td>
-                        <a class="btn btn-link btn-info btn-just-icon"><i (click)="addFinance(row.id)"
-                            class="material-icons">loupe</i></a>
+                        <!-- <a class="btn btn-link btn-info btn-just-icon"><i (click)="addFinance(row.id)"
+                            class="material-icons">loupe</i></a> -->
                         <a class="btn btn-link btn-success btn-just-icon"><i (click)="
                               editFinance(
                                 row.id,
@@ -221,7 +221,7 @@
                       <th class="text-center">
                         {{ totalDebtUZS | currency : " " : "symbol" : "4.0-0" }}
                       </th>
-                      <th><i class="material-icons">local_shipping</i></th>
+                      <!-- <th><i class="material-icons">local_shipping</i></th> -->
                       <th class="text-center">Actions</th>
                     </tr>
                   </tfoot>

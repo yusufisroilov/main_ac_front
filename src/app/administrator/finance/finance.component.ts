@@ -12,7 +12,6 @@ import { GlobalVars, StatusOfOrder, TypesOfOrder } from "src/app/global-vars";
 import { Router } from "@angular/router";
 import { AuthService } from "src/app/pages/login/auth.service";
 
-import * as XLSX from "xlsx";
 declare interface DataTable {
   headerRow: string[];
   dataRows: string[][];
