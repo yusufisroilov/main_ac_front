@@ -47,6 +47,8 @@ export class InfoeachclientComponent implements OnInit {
   trackingNum: string;
   headers12: any;
   options: any;
+  headers22: any;
+  options2: any;
   allData: any;
   allDataBoxes: any;
   helloText: string;
@@ -54,6 +56,7 @@ export class InfoeachclientComponent implements OnInit {
   currentID: any;
   showTheList: any;
   trackingNum2: any;
+
   currentPage: number;
   totalPages: number;
   needPagination: boolean;
@@ -127,6 +130,13 @@ export class InfoeachclientComponent implements OnInit {
     this.headers12 = new Headers({ "Content-Type": "application/json" });
     this.headers12.append("Authorization", localStorage.getItem("token"));
     this.options = new RequestOptions({ headers: this.headers12 });
+
+    this.headers22 = new Headers({ 'Content-Type': 'application/json' });
+    this.headers22.append('Authorization','Bearer ' + localStorage.getItem('token_fin'));
+    this.options2 = new RequestOptions({ headers: this.headers22 }, );
+    
+
+
 
     this.currentPage = 0;
     this.helloText = "hello";
@@ -218,6 +228,7 @@ export class InfoeachclientComponent implements OnInit {
           '<input id="input-usd" type="text" class="form-control m-2" placeholder="DOLLORda berdi" />' +
           '<input id="input-cash" type="text" class="form-control m-2" placeholder="NAQD PUL BERDI" />' +
           '<input id="input-card" type="text" class="form-control m-2" placeholder="PLASTIKDA BERDI" />' +
+          '<input id="input-bank-acc" type="text" class="form-control m-2" placeholder="Terminalda (Uzum/PayMe QR) BERDI" />' +
           '<input id="input-izoh" type="text" class="form-control m-2" placeholder="IZOH" />' +
           "</div>",
         showCancelButton: true,
@@ -232,6 +243,7 @@ export class InfoeachclientComponent implements OnInit {
           let usd = $("#input-usd").val();
           let cash = $("#input-cash").val();
           let card = $("#input-card").val();
+          let bankacc = $("#input-bank-acc").val();
           let izohh = $("#input-izoh").val();
 
           this.http
@@ -247,6 +259,8 @@ export class InfoeachclientComponent implements OnInit {
                 usd +
                 "&cash=" +
                 cash +
+                "&bank_account=" +
+                bankacc +
                 "&comment=" +
                 izohh,
               "",
@@ -280,7 +294,57 @@ export class InfoeachclientComponent implements OnInit {
                     });
                 }
               }
-            );
+
+        );
+
+
+
+              //start of xisob post request
+           var NewUserId =  this.currentID.toString();
+           if(usd == "") usd = 0;
+           if(cash == "") cash = 0;
+           if(card == "") card = 0;
+           if(bankacc == "") card = 0;
+        
+
+
+            this.http.post('http://185.196.213.248:3018/api/income', 
+             {part_num: partiya, userId: NewUserId, usd_cash: usd, uzs_cash: cash, card: card, account: bankacc , admin_id: 22, comment: izohh, category_id: '1'  }, this.options2)
+            .subscribe(response => {
+  
+              if (response.json().status == 'error') {
+  
+               
+                // swal.showValidationMessage('Not Added, check: ' + this.registredMessage);
+                swal.fire('Not Added', response.json().message, 'error').then((result) => {
+                  if (result.isConfirmed) {
+                  
+                  }
+                }
+                )
+              } else {
+  
+                return false;
+              }
+  
+            }, error => {
+              if (error.status == 400) {
+                swal.fire('Not Added', "BAD REQUEST: WRONG TYPE OF INPUT", 'error').then((result) => {
+                  if (result.isConfirmed) {
+               
+                  }
+                }
+                )
+              }
+            }
+            )
+
+            //end of xisob post request
+
+
+
+
+
         },
       })
       .then((result) => {
@@ -306,6 +370,7 @@ export class InfoeachclientComponent implements OnInit {
           '<input id="input-usd" type="text" class="form-control m-2" placeholder="DOLLORda berdi" />' +
           '<input id="input-cash" type="text" class="form-control m-2" placeholder="NAQD PUL BERDI" />' +
           '<input id="input-card" type="text" class="form-control m-2" placeholder="PLASTIKDA BERDI" />' +
+          '<input id="input-bank-acc" type="text" class="form-control m-2" placeholder="Terminalda (Uzum/PayMe QR) BERDI" />' +
           '<input id="input-izoh" type="text" class="form-control m-2" placeholder="IZOH" />' +
           "</div>",
         showCancelButton: true,
