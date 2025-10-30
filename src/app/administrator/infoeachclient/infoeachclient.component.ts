@@ -303,13 +303,18 @@ export class InfoeachclientComponent implements OnInit {
            var NewUserId =  this.currentID.toString();
            if(usd == "") usd = 0;
            if(cash == "") cash = 0;
-           if(card == "") card = 0;
+           if(cash == "") card = 0;
            if(bankacc == "") card = 0;
         
+           let usd2: number = +usd;
+           const cash2: number = +cash;
+           const card2: number = +cash;
+           const bankacc2: number = +bankacc;
+
 
 
             this.http.post('http://185.196.213.248:3018/api/income', 
-             {part_num: partiya, userId: NewUserId, usd_cash: usd, uzs_cash: cash, card: card, account: bankacc , admin_id: 22, comment: izohh, category_id: '1'  }, this.options2)
+             {part_num: partiya, userId: NewUserId, usd_cash: usd2, uzs_cash: cash2, card: card2, account: bankacc2 , admin_id: 22, comment: izohh, category_id: '1'  }, this.options2)
             .subscribe(response => {
   
               if (response.json().status == 'error') {
