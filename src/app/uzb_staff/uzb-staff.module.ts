@@ -10,6 +10,7 @@ import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { UzbStaffRoutes } from "./uzb-staff.routing";
 import { DeliveriesComponent } from "./deliveries/deliveries.component";
 import { EmployeeFinanceComponent } from "./employee-finance/employee-finance.component";
+import { DeliveriesListComponent2 } from "./deliveries-list-2/deliveries-list-2.component";
 
 @NgModule({
   imports: [
@@ -25,6 +26,7 @@ import { EmployeeFinanceComponent } from "./employee-finance/employee-finance.co
     ScanParcelUzbComponent,
     DeliveriesComponent,
     EmployeeFinanceComponent,
+    DeliveriesListComponent2,
   ],
 })
 export class UzbStaffModule {}

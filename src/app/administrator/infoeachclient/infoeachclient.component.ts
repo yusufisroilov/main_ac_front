@@ -635,31 +635,80 @@ export class InfoeachclientComponent implements OnInit {
           const currentConsignmentPackages = group.packages.filter(
             (pkg) => pkg.consignment === this.selectedConsignmentName
           );
+
+          // Use actual values from each package
           currentConsignmentPackages.forEach((pkg) => {
             totalPackages++;
-            totalItems += pkg.items_count || 0;
+            totalItems += parseInt(pkg.items_count) || 0;
             totalWeight += parseFloat(pkg.weight) || 0;
             allBarcodes.push(pkg.barcode);
             allConsignments.add(pkg.consignment);
           });
         } else {
-          // Full tied group selection
-          group.packages.forEach((pkg) => {
-            totalPackages++;
-            totalItems += pkg.items_count || 0;
-            totalWeight += parseFloat(pkg.weight) || 0;
-            allBarcodes.push(pkg.barcode);
-            allConsignments.add(pkg.consignment);
-          });
+          // Full tied group selection - use group totals or iterate through all packages
+          if (group.packages && group.packages.length > 0) {
+            group.packages.forEach((pkg) => {
+              totalPackages++;
+              totalItems += parseInt(pkg.items_count) || 0;
+
+              totalWeight += parseFloat(pkg.weight) || 0;
+              allBarcodes.push(pkg.barcode);
+              allConsignments.add(pkg.consignment);
+            });
+          } else {
+            // Fallback to group totals if packages array is empty
+            totalPackages += group.total_packages || 0;
+            totalItems += group.total_items || 0;
+
+            // Calculate weight from weights array if available
+            if (group.weights && Array.isArray(group.weights)) {
+              group.weights.forEach((w) => {
+                totalWeight += parseFloat(w) || 0;
+              });
+            }
+
+            // Add barcodes
+            if (
+              group.package_barcodes &&
+              Array.isArray(group.package_barcodes)
+            ) {
+              allBarcodes.push(...group.package_barcodes);
+            }
+
+            // Add consignments
+            if (group.consignments && Array.isArray(group.consignments)) {
+              group.consignments.forEach((c) => allConsignments.add(c));
+            }
+          }
         }
       } else if (group.type === "single") {
-        // For single/untied packages - each group represents one package
-        const pkg = group.packages[0]; // Single packages have only one package in the group
-        totalPackages++;
-        totalItems += pkg.items_count || 0;
-        totalWeight += parseFloat(pkg.weight) || 0;
-        allBarcodes.push(pkg.barcode);
-        allConsignments.add(pkg.consignment);
+        // For single/untied packages
+        if (group.packages && group.packages.length > 0) {
+          const pkg = group.packages[0];
+
+          totalPackages++;
+
+          totalItems += parseInt(pkg.items_count) || 0;
+          totalWeight += parseFloat(pkg.weight) || 0;
+          allBarcodes.push(pkg.barcode);
+          allConsignments.add(pkg.consignment);
+        } else {
+          // Fallback to group totals
+          totalPackages += group.total_packages || 0;
+          totalItems += group.total_items || 0;
+
+          if (group.weights && group.weights.length > 0) {
+            totalWeight += parseFloat(group.weights[0]) || 0;
+          }
+
+          if (group.package_barcodes && group.package_barcodes.length > 0) {
+            allBarcodes.push(group.package_barcodes[0]);
+          }
+
+          if (group.consignments && group.consignments.length > 0) {
+            allConsignments.add(group.consignments[0]);
+          }
+        }
       }
     });
 
@@ -678,19 +727,11 @@ export class InfoeachclientComponent implements OnInit {
       this.selectedConsignmentId,
       partyNameDisplay,
       totalWeight,
-      totalPackages.toString(),
-      allBarcodes,
-      totalItems
+      totalItems,
+      allBarcodes
     );
   }
-  printChekYuborish(
-    ids,
-    name,
-    weight,
-    counter,
-    barcodes: string[] = [],
-    totalItems: number = 0
-  ) {
+  printChekYuborish(ids, name, weight, counter, barcodes: string[] = []) {
     swal.fire({
       html:
         "<style>" +

@@ -44,10 +44,10 @@ interface Delivery {
 
 @Component({
   selector: "app-deliveries-list",
-  templateUrl: "./deliveries-list.component.html",
-  styleUrls: ["./deliveries-list.component.css"],
+  templateUrl: "./deliveries-list-2.component.html",
+  styleUrls: ["./deliveries-list-2.component.css"],
 })
-export class DeliveriesListComponent {
+export class DeliveriesListComponent2 {
   headers12: any;
   options: any;
 
@@ -123,6 +123,11 @@ export class DeliveriesListComponent {
   }
 
   ngOnInit() {
+    // Set default filter for EMU deliveries only
+    this.filterDeliveryType = "EMU";
+
+    // Set default date filter to today
+    this.filterDateRange = "today";
     this.loadDeliveries();
     this.loadRegions();
   }
@@ -267,30 +272,6 @@ export class DeliveriesListComponent {
     this.yandexFee = 0;
   }
 
-  // Validation for delivery creation
-  canCreateDelivery(): boolean {
-    if (
-      this.selectedPackageIdentifiers.length === 0 ||
-      !this.deliveryType ||
-      !this.customerPhone
-    ) {
-      return false;
-    }
-
-    if (this.deliveryType === "EMU" && !this.selectedBranchId) {
-      return false;
-    }
-
-    if (
-      (this.deliveryType === "Yandex" || this.deliveryType === "Own-Courier") &&
-      !this.deliveryAddress
-    ) {
-      return false;
-    }
-
-    return true;
-  }
-
   // Load deliveries with filters
   loadDeliveries() {
     this.loadingDeliveries = true;
@@ -298,13 +279,12 @@ export class DeliveriesListComponent {
     let params = new HttpParams()
       .set("limit", this.deliveriesPerPage.toString())
       .set("offset", (this.currentPage * this.deliveriesPerPage).toString());
-
+    // Always filter by EMU delivery type
+    params = params.set("delivery_type", "EMU");
     if (this.filterDeliveryType) {
       params = params.set("delivery_type", this.filterDeliveryType);
     }
-    if (this.filterStatus) {
-      params = params.set("status", this.filterStatus);
-    }
+
     if (this.filterCustomerId) {
       params = params.set("owner_id", this.filterCustomerId);
     }
@@ -363,11 +343,11 @@ export class DeliveriesListComponent {
 
   // Clear filters
   clearFilters() {
-    this.filterDeliveryType = "";
+    this.filterDeliveryType = "EMU";
     this.filterStatus = "";
     this.filterDateRange = "";
     this.filterCustomerId = "";
-    this.customStartDate = "";
+    this.customStartDate = "today";
     this.customEndDate = "";
     this.applyFilters();
   }
@@ -490,6 +470,70 @@ export class DeliveriesListComponent {
       );
   }
 
+  // Quick status update to "sent"
+  quickUpdateToSent(delivery: Delivery, event: Event) {
+    event.stopPropagation(); // Prevent opening details modal
+
+    swal
+      .fire({
+        title: "Tasdiqlang",
+        text: `${delivery.barcode} yetkazishni "Yuborilgan" holatiga o'zgartirmoqchimisiz?`,
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonText: "Ha, yuborish",
+        cancelButtonText: "Yo'q",
+        customClass: {
+          confirmButton: "btn btn-success",
+          cancelButton: "btn btn-secondary",
+        },
+        buttonsStyling: false,
+      })
+      .then((result) => {
+        if (result.isConfirmed) {
+          const updateData = {
+            new_status: "sent",
+            notes: "EMU ga yuborildi",
+            returned_reason: null,
+            updated_by: localStorage.getItem("username") || null,
+          };
+
+          this.http
+            .put(
+              GlobalVars.baseUrl +
+                "/deliveries/status?delivery_id=" +
+                delivery.id,
+              JSON.stringify(updateData),
+              this.options
+            )
+            .subscribe(
+              (response) => {
+                const result = response.json();
+                if (result.status === "success") {
+                  swal.fire({
+                    icon: "success",
+                    title: "Yuborildi!",
+                    text: "Yetkazish holati yangilandi",
+                    timer: 2000,
+                    showConfirmButton: false,
+                    toast: true,
+                    position: "top-end",
+                  });
+                  this.loadDeliveries();
+                } else {
+                  swal.fire("Xatolik", result.message, "error");
+                }
+              },
+              (error) => {
+                swal.fire("Xatolik", "Holatni yangilashda xatolik", "error");
+                if (error.status == 403) {
+                  this.authService.logout();
+                }
+              }
+            );
+        }
+      });
+  }
+
   // Modal management
   closeModal() {
     this.showDetailsModal = false;
@@ -598,9 +642,5 @@ export class DeliveriesListComponent {
     }
 
     return phone;
-  }
-  // Navigate to today's EMU deliveries
-  goToTodayEmuDeliveries() {
-    this.router.navigate(["/uzs/deliveries-list2"]);
   }
 }

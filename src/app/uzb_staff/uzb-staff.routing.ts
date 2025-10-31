@@ -8,6 +8,7 @@ import { DeliveriesComponent } from "./deliveries/deliveries.component";
 import { AdminAuthGuard } from "../services/admin-auth-guard.service";
 import { EmployeeAuthGuardService } from "../services/employee-auth-guard.service";
 import { EmployeeFinanceComponent } from "./employee-finance/employee-finance.component";
+import { DeliveriesListComponent2 } from "./deliveries-list-2/deliveries-list-2.component";
 
 export const UzbStaffRoutes: Routes = [
   {
@@ -23,6 +24,11 @@ export const UzbStaffRoutes: Routes = [
         path: "employee-finance",
         canActivate: [EmployeeAuthGuardService],
         component: EmployeeFinanceComponent,
+      },
+      {
+        path: "deliveries-list2",
+        canActivate: [EmployeeAuthGuardService],
+        component: DeliveriesListComponent2,
       },
       {
         path: "deliveries",
