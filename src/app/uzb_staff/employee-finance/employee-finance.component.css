@@ -1,0 +1,275 @@
+/* Fix SweetAlert z-index issue */
+.swal2-container {
+  z-index: 10000 !important;
+}
+
+.swal2-overlay {
+  z-index: 9999 !important;
+}
+/* Simple Stats Cards */
+.stats-card {
+  background: #f8f9fa;
+  border-left: 4px solid #667eea;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+  position: relative;
+  z-index: 1;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.stats-card-last {
+  border-left-color: #28a745;
+}
+
+.stats-card-before-last {
+  border-left-color: #17a2b8;
+}
+
+.stats-label {
+  font-size: 12px;
+  color: #6c757d;
+  text-transform: uppercase;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.stats-value {
+  font-size: 24px;
+  font-weight: 700;
+  color: #2d3748;
+  margin: 0;
+}
+
+/* Action Buttons */
+.action-buttons-container {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  position: relative;
+  z-index: 1;
+}
+
+.action-btn {
+  padding: 10px 20px !important;
+  border-radius: 6px !important;
+  font-weight: 500 !important;
+  margin: 0 8px 8px 0 !important;
+}
+
+.action-btn i {
+  vertical-align: middle;
+  margin-right: 6px;
+  font-size: 18px;
+}
+
+/* Main Card */
+#listcard {
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border: none;
+  position: relative;
+  z-index: 1;
+}
+
+#listcard .card-header {
+  border-radius: 8px 8px 0 0 !important;
+  padding: 20px;
+}
+
+#listcard .card-title {
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+
+/* Search Input */
+.search-container {
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 20px;
+}
+
+.search-container input {
+  border: none !important;
+  background: transparent !important;
+  font-size: 15px !important;
+  padding: 0 !important;
+}
+
+.search-container input:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.search-icon {
+  color: #6c757d;
+  margin-right: 10px;
+}
+
+/* Table */
+.table thead th {
+  background-color: #f8f9fa;
+  color: #495057;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 11px;
+  letter-spacing: 0.5px;
+  border-bottom: 2px solid #dee2e6;
+  padding: 12px;
+}
+
+.table tbody tr {
+  border-bottom: 1px solid #f1f3f5;
+}
+
+.table tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+.table tbody td {
+  padding: 14px 12px;
+  vertical-align: middle;
+  color: #495057;
+}
+
+/* Badges */
+.id-badge {
+  background-color: #667eea;
+  color: white;
+  padding: 5px 12px;
+  border-radius: 15px;
+  font-weight: 600;
+  font-size: 13px;
+  display: inline-block;
+}
+
+.weight-badge {
+  background-color: #28a745;
+  color: white;
+  padding: 5px 12px;
+  border-radius: 15px;
+  font-weight: 600;
+  font-size: 13px;
+  display: inline-block;
+}
+
+/* Action Buttons in Table */
+.table .btn-just-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 4px;
+}
+
+.table .btn-just-icon:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Pagination */
+.pagination {
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.pagination .page-item .page-link {
+  border: 1px solid #dee2e6;
+  color: #667eea;
+  margin: 0 3px;
+  border-radius: 6px;
+  padding: 8px 14px;
+  font-weight: 500;
+}
+
+.pagination .page-item.active .page-link {
+  background-color: #667eea;
+  border-color: #667eea;
+  color: white;
+}
+
+.pagination .page-item .page-link:hover {
+  background-color: #f8f9fa;
+  border-color: #667eea;
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 50px 20px;
+}
+
+.empty-state-icon {
+  font-size: 64px;
+  color: #dee2e6;
+  margin-bottom: 16px;
+}
+
+.empty-state-title {
+  color: #495057;
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.empty-state-text {
+  color: #6c757d;
+  font-size: 14px;
+}
+
+/* Card Body */
+.card-body {
+  padding: 20px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .action-btn {
+    width: 100%;
+    margin-bottom: 10px !important;
+  }
+
+  .stats-card {
+    margin-bottom: 15px;
+    /* Fix z-index and positioning for mobile */
+    position: relative !important;
+    z-index: 1 !important;
+  }
+
+  .table {
+    font-size: 13px;
+  }
+
+  /* Force proper stacking on mobile */
+  .main-content {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Ensure SweetAlert is always on top on mobile */
+  .swal2-container {
+    z-index: 99999 !important;
+    position: fixed !important;
+  }
+
+  .swal2-popup {
+    z-index: 100000 !important;
+  }
+
+  /* Prevent body scroll when modal is open */
+  body.swal2-shown {
+    overflow: hidden !important;
+  }
+
+  /* Make sure overlay covers everything */
+  .swal2-overlay {
+    z-index: 99998 !important;
+  }
+}

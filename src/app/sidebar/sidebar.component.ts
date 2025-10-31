@@ -77,6 +77,12 @@ export const EmployeeROUTE: RouteInfo[] = [
     icontype: "list",
   },
   {
+    path: "/uzs/employee-finance",
+    title: "Xisob Kitob",
+    type: "link",
+    icontype: "account_balance_wallet",
+  },
+  {
     path: "/uzm/deliveriesEmp",
     title: "Employer Delivery List",
     type: "link",

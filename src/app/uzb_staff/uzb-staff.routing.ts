@@ -6,6 +6,8 @@ import { Routes } from "@angular/router";
 import { ManagerAuthGuardService } from "../services/manager-auth-guard.service";
 import { DeliveriesComponent } from "./deliveries/deliveries.component";
 import { AdminAuthGuard } from "../services/admin-auth-guard.service";
+import { EmployeeAuthGuardService } from "../services/employee-auth-guard.service";
+import { EmployeeFinanceComponent } from "./employee-finance/employee-finance.component";
 
 export const UzbStaffRoutes: Routes = [
   {
@@ -16,6 +18,11 @@ export const UzbStaffRoutes: Routes = [
         path: "uzparcelslist",
         canActivate: [AdminAuthGuard],
         component: UzParclesListComponent,
+      },
+      {
+        path: "employee-finance",
+        canActivate: [EmployeeAuthGuardService],
+        component: EmployeeFinanceComponent,
       },
       {
         path: "deliveries",
@@ -31,7 +38,6 @@ export const UzbStaffRoutes: Routes = [
       },
       {
         path: "scanuz",
-
         component: ScanParcelUzbComponent,
       },
     ],

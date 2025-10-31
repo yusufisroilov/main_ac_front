@@ -9,6 +9,7 @@ import { MaterialModule } from "../app.module";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { UzbStaffRoutes } from "./uzb-staff.routing";
 import { DeliveriesComponent } from "./deliveries/deliveries.component";
+import { EmployeeFinanceComponent } from "./employee-finance/employee-finance.component";
 
 @NgModule({
   imports: [
@@ -23,6 +24,7 @@ import { DeliveriesComponent } from "./deliveries/deliveries.component";
     UzParclesListComponent,
     ScanParcelUzbComponent,
     DeliveriesComponent,
+    EmployeeFinanceComponent,
   ],
 })
 export class UzbStaffModule {}
