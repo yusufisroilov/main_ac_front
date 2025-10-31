@@ -2,220 +2,111 @@
   <div class="container-fluid" id="listcard" style="margin-top: 20px">
     <div class="row">
       <div class="card1 col-md-4">
-        <button
-          mat-raised-button=""
-          *ngIf="!conditionParty; else closeParty"
-          (click)="openPartyFunc()"
-          class="mat-focus-indicator btn btn-success mat-raised-button mat-button-base"
-        >
-          <span class="mat-button-wrapper"
-            ><span class="btn-label">
-              <i class="material-icons">flight</i></span
-            >
+        <button mat-raised-button="" *ngIf="!conditionParty; else closeParty" (click)="openPartyFunc()"
+          class="mat-focus-indicator btn btn-success mat-raised-button mat-button-base">
+          <span class="mat-button-wrapper"><span class="btn-label">
+              <i class="material-icons">flight</i></span>
             Open New Party
           </span>
-          <span
-            matripple=""
-            class="mat-ripple mat-button-ripple"
-            ng-reflect-disabled="false"
-            ng-reflect-centered="false"
-            ng-reflect-trigger="[object HTMLButtonElement]"
-          ></span
-          ><span class="mat-button-focus-overlay"></span>
+          <span matripple="" class="mat-ripple mat-button-ripple" ng-reflect-disabled="false"
+            ng-reflect-centered="false" ng-reflect-trigger="[object HTMLButtonElement]"></span><span
+            class="mat-button-focus-overlay"></span>
         </button>
         <ng-template #closeParty>
-          <button
-            mat-raised-button=""
-            (click)="showSwal('open-party')"
-            class="mat-focus-indicator btn btn-danger mat-raised-button mat-button-base"
-          >
+          <button mat-raised-button="" (click)="showSwal('open-party')"
+            class="mat-focus-indicator btn btn-danger mat-raised-button mat-button-base">
             <span class="mat-button-wrapper">
-              <i class="material-icons">close</i> Close THE Party </span
-            ><span
-              matripple=""
-              class="mat-ripple mat-button-ripple"
-              ng-reflect-disabled="false"
-              ng-reflect-centered="false"
-              ng-reflect-trigger="[object HTMLButtonElement]"
-            ></span
-            ><span class="mat-button-focus-overlay"></span>
+              <i class="material-icons">close</i> Close THE Party </span><span matripple=""
+              class="mat-ripple mat-button-ripple" ng-reflect-disabled="false" ng-reflect-centered="false"
+              ng-reflect-trigger="[object HTMLButtonElement]"></span><span class="mat-button-focus-overlay"></span>
           </button>
         </ng-template>
       </div>
       <div class="card2 col-md-4">
         <div class="">
-          <button
-            mat-raised-button=""
-            *ngIf="conditionBox"
-            (click)="openNewBoxFunc()"
-            class="mat-focus-indicator btn btn-success mat-raised-button mat-button-base"
-          >
-            <span class="mat-button-wrapper"
-              ><span class="btn-label">
-                <i class="material-icons">folder_open</i></span
-              >
-              Open New BOX</span
-            >
-            <span
-              matripple=""
-              class="mat-ripple mat-button-ripple"
-              ng-reflect-disabled="false"
-              ng-reflect-centered="false"
-              ng-reflect-trigger="[object HTMLButtonElement]"
-            ></span
-            ><span class="mat-button-focus-overlay"></span>
+          <button mat-raised-button="" *ngIf="conditionBox" (click)="openNewBoxFunc()"
+            class="mat-focus-indicator btn btn-success mat-raised-button mat-button-base">
+            <span class="mat-button-wrapper"><span class="btn-label">
+                <i class="material-icons">folder_open</i></span>
+              Open New BOX</span>
+            <span matripple="" class="mat-ripple mat-button-ripple" ng-reflect-disabled="false"
+              ng-reflect-centered="false" ng-reflect-trigger="[object HTMLButtonElement]"></span><span
+              class="mat-button-focus-overlay"></span>
           </button>
         </div>
         <div class="">
-          <button
-            mat-raised-button=""
-            *ngIf="!conditionBox && conditionParty"
-            (click)="showSwal('input-closebox')"
-            class="mat-focus-indicator btn btn-danger mat-raised-button mat-button-base"
-          >
+          <button mat-raised-button="" *ngIf="!conditionBox && conditionParty" (click)="showSwal('input-closebox')"
+            class="mat-focus-indicator btn btn-danger mat-raised-button mat-button-base">
             <span class="mat-button-wrapper">
-              <i class="material-icons">close</i> Close THE BOX </span
-            ><span
-              matripple=""
-              class="mat-ripple mat-button-ripple"
-              ng-reflect-disabled="false"
-              ng-reflect-centered="false"
-              ng-reflect-trigger="[object HTMLButtonElement]"
-            ></span
-            ><span class="mat-button-focus-overlay"></span>
+              <i class="material-icons">close</i> Close THE BOX </span><span matripple=""
+              class="mat-ripple mat-button-ripple" ng-reflect-disabled="false" ng-reflect-centered="false"
+              ng-reflect-trigger="[object HTMLButtonElement]"></span><span class="mat-button-focus-overlay"></span>
           </button>
         </div>
       </div>
       <div class="card3 col-md-4">
         <div class="">
-          <button
-            mat-raised-button=""
-            *ngIf="!conditionBox && conditionScan"
-            (click)="scanParcel()"
-            class="mat-focus-indicator btn btn-success mat-raised-button mat-button-base"
-          >
-            <span class="mat-button-wrapper"
-              ><span class="btn-label">
-                <i class="material-icons">check</i></span
-              >
+          <button mat-raised-button="" *ngIf="!conditionBox && conditionScan" (click)="scanParcel()"
+            class="mat-focus-indicator btn btn-success mat-raised-button mat-button-base">
+            <span class="mat-button-wrapper"><span class="btn-label">
+                <i class="material-icons">check</i></span>
               Start Scan
             </span>
-            <span
-              matripple=""
-              class="mat-ripple mat-button-ripple"
-              ng-reflect-disabled="false"
-              ng-reflect-centered="false"
-              ng-reflect-trigger="[object HTMLButtonElement]"
-            ></span
-            ><span class="mat-button-focus-overlay"></span>
+            <span matripple="" class="mat-ripple mat-button-ripple" ng-reflect-disabled="false"
+              ng-reflect-centered="false" ng-reflect-trigger="[object HTMLButtonElement]"></span><span
+              class="mat-button-focus-overlay"></span>
           </button>
-          <button
-            mat-raised-button=""
-            *ngIf="!conditionBox && conditionScan"
-            (click)="scanParcelAndPrint()"
-            class="mat-focus-indicator btn btn-info mat-raised-button mat-button-base"
-          >
-            <span class="mat-button-wrapper"
-              ><span class="btn-label">
-                <i class="material-icons">receipt_long</i></span
-              >
+          <button mat-raised-button="" *ngIf="!conditionBox && conditionScan" (click)="scanParcelAndPrint()"
+            class="mat-focus-indicator btn btn-info mat-raised-button mat-button-base">
+            <span class="mat-button-wrapper"><span class="btn-label">
+                <i class="material-icons">receipt_long</i></span>
               Scan&Print
             </span>
-            <span
-              matripple=""
-              class="mat-ripple mat-button-ripple"
-              ng-reflect-disabled="false"
-              ng-reflect-centered="false"
-              ng-reflect-trigger="[object HTMLButtonElement]"
-            ></span
-            ><span class="mat-button-focus-overlay"></span>
+            <span matripple="" class="mat-ripple mat-button-ripple" ng-reflect-disabled="false"
+              ng-reflect-centered="false" ng-reflect-trigger="[object HTMLButtonElement]"></span><span
+              class="mat-button-focus-overlay"></span>
           </button>
         </div>
         <div class="col-md-6 ml-auto mr-auto">
           <!-- Classic Modal -->
-          <div
-            class="modal fade"
-            id="myModal"
-            tabindex="-1"
-            role="dialog"
-            aria-labelledby="myModalLabel"
-            aria-hidden="true"
-          >
+          <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+            aria-hidden="true">
             <div class="modal-dialog">
               <div class="modal-content">
                 <div class="modal-header">
                   <h4 class="modal-title">Scan Parcel</h4>
-                  <button
-                    mat-button
-                    type="button"
-                    class="close"
-                    data-dismiss="modal"
-                    aria-hidden="true"
-                  >
+                  <button mat-button type="button" class="close" data-dismiss="modal" aria-hidden="true">
                     <i class="material-icons">clear</i>
                   </button>
                 </div>
                 <div class="modal-body">
                   <div class="md-form input-group mb-3">
                     <div class="input-group-prepend">
-                      <span
-                        class="input-group-text md-addon"
-                        id="inputGroupMaterial-sizing-default"
-                      ></span>
+                      <span class="input-group-text md-addon" id="inputGroupMaterial-sizing-default"></span>
                     </div>
-                    <input
-                      #myinput
-                      type="text"
-                      class="form-control"
-                      aria-label="Sizing example input"
-                      aria-describedby="inputGroupMaterial-sizing-default"
-                      autofocus
-                    />
+                    <input #myinput type="text" class="form-control" aria-label="Sizing example input"
+                      aria-describedby="inputGroupMaterial-sizing-default" autofocus />
                   </div>
                   <div class="md-form input-group mb-3">
                     <div class="input-group-prepend">
-                      <span
-                        class="input-group-text md-addon"
-                        id="inputGroupMaterial-sizing-default"
-                        >Product:</span
-                      >
+                      <span class="input-group-text md-addon" id="inputGroupMaterial-sizing-default">Product:</span>
                     </div>
-                    <input
-                      type="text"
-                      class="form-control"
-                      aria-label="Sizing example input"
-                      aria-describedby="inputGroupMaterial-sizing-default"
-                    />
+                    <input type="text" class="form-control" aria-label="Sizing example input"
+                      aria-describedby="inputGroupMaterial-sizing-default" />
                   </div>
                   <div class="md-form input-group mb-3">
                     <div class="input-group-prepend">
-                      <span
-                        class="input-group-text md-addon"
-                        id="inputGroupMaterial-sizing-default"
-                        >Owner ID:</span
-                      >
+                      <span class="input-group-text md-addon" id="inputGroupMaterial-sizing-default">Owner ID:</span>
                     </div>
-                    <input
-                      type="text"
-                      class="form-control"
-                      aria-label="Sizing example input"
-                      aria-describedby="inputGroupMaterial-sizing-default"
-                    />
+                    <input type="text" class="form-control" aria-label="Sizing example input"
+                      aria-describedby="inputGroupMaterial-sizing-default" />
                   </div>
                   <div class="md-form input-group mb-3">
                     <div class="input-group-prepend">
-                      <span
-                        class="input-group-text md-addon"
-                        id="inputGroupMaterial-sizing-default"
-                        >Comment:</span
-                      >
+                      <span class="input-group-text md-addon" id="inputGroupMaterial-sizing-default">Comment:</span>
                     </div>
-                    <input
-                      type="text"
-                      class="form-control"
-                      aria-label="Sizing example input"
-                      aria-describedby="inputGroupMaterial-sizing-default"
-                    />
+                    <input type="text" class="form-control" aria-label="Sizing example input"
+                      aria-describedby="inputGroupMaterial-sizing-default" />
                   </div>
                 </div>
 
@@ -223,12 +114,7 @@
                   <button mat-raised-button type="button" class="btn btn-link">
                     Nice Button
                   </button>
-                  <button
-                    mat-raised-button
-                    type="button"
-                    class="btn btn-danger btn-link"
-                    data-dismiss="modal"
-                  >
+                  <button mat-raised-button type="button" class="btn btn-danger btn-link" data-dismiss="modal">
                     Close
                   </button>
                 </div>
@@ -241,7 +127,7 @@
 
       <div *ngIf="!conditionBox && conditionParty" class="col-md-12">
         <div class="card">
-          <div class="card-header card-header-success card-header-icon">
+          <div class="card-header  card-header-icon">
             <div class="card-icon">
               <i class="material-icons">assignment</i>
             </div>
@@ -283,17 +169,12 @@
                       <button mat-raised-button type="button" class="btn btn-success">
                         <i class="material-icons">edit</i>
                       </button> -->
-                      <button
-                        mat-raised-button
-                        type="button"
-                        class="btn btn-danger"
-                        (click)="
+                      <button mat-raised-button type="button" class="btn btn-danger" (click)="
                           removeParcelFromBox(
                             row.tracking_number,
                             row.box_number
                           )
-                        "
-                      >
+                        ">
                         <i class="material-icons">close</i>
                       </button>
                     </td>
@@ -323,13 +204,8 @@
           <div class="card-body">
             <div class="col-sm-6 col-lg-3" style="display: inline-flex">
               <mat-form-field class="example-full-width">
-                <input
-                  matInput
-                  type="text"
-                  style="font-size: large"
-                  placeholder="Search LOT"
-                  (input)="assignSerchBox($event.target.value)"
-                />
+                <input matInput type="text" style="font-size: large" placeholder="Search LOT"
+                  (input)="assignSerchBox($event.target.value)" />
               </mat-form-field>
             </div>
 
@@ -343,13 +219,10 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr
-                    *ngFor="let box of boxes; let i = index"
-                    [ngClass]="{
+                  <tr *ngFor="let box of boxes; let i = index" [ngClass]="{
                       'table-success': box.receiver_id != null,
                       'table-info': box.status
-                    }"
-                  >
+                    }">
                     <td class="text-center">{{ i + 1 }}</td>
                     <!-- <td >{{box.boxNumber}}</td> -->
                     <td *ngIf="box.isLastOrder == 'N'; else elseBlockBox">
@@ -364,10 +237,7 @@
                     <td>{{ box.receiver_id }}</td>
                     <td>{{ box.total_sum }}</td>
                     <td>{{ box.weight }} kg</td>
-                    <td
-                      *ngIf="box.status; else elseBlock"
-                      style="font-weight: bold; color: green"
-                    >
+                    <td *ngIf="box.status; else elseBlock" style="font-weight: bold; color: green">
                       OPEN
                     </td>
                     <ng-template #elseBlock>
@@ -375,44 +245,24 @@
                     </ng-template>
 
                     <td class="td-actions text-right">
-                      <button
-                        (click)="reOpenBox(box.box_number)"
-                        mat-raised-button
-                        type="button"
-                        class="btn btn-info btn-link"
-                      >
+                      <button (click)="reOpenBox(box.box_number)" mat-raised-button type="button"
+                        class="btn btn-info btn-link">
                         REOPEN<i class="material-icons">list</i>
                       </button>
-                      <button
-                        (click)="editBoxFunc(box.box_number)"
-                        mat-raised-button
-                        type="button"
-                        class="btn btn-success btn-link"
-                      >
+                      <button (click)="editBoxFunc(box.box_number)" mat-raised-button type="button"
+                        class="btn btn-success btn-link">
                         <i class="material-icons">edit</i>
                       </button>
-                      <button
-                        (click)="deleteBoxFunc(box.box_number)"
-                        mat-raised-button
-                        type="button"
-                        class="btn btn-danger btn-link"
-                      >
+                      <button (click)="deleteBoxFunc(box.box_number)" mat-raised-button type="button"
+                        class="btn btn-danger btn-link">
                         <i class="material-icons">delete</i>
                       </button>
-                      <button
-                        (click)="takeBoxData2(box.box_number)"
-                        mat-raised-button
-                        type="button"
-                        class="btn btn-danger btn-link"
-                      >
+                      <button (click)="takeBoxData2(box.box_number)" mat-raised-button type="button"
+                        class="btn btn-danger btn-link">
                         PRINT<i class="material-icons">print</i>
                       </button>
-                      <button
-                        (click)="takeBoxDataLabel(box.box_number)"
-                        mat-raised-button
-                        type="button"
-                        class="btn btn-warning btn-link"
-                      >
+                      <button (click)="takeBoxDataLabel(box.box_number)" mat-raised-button type="button"
+                        class="btn btn-warning btn-link">
                         PR LB<i class="material-icons">print</i>
                       </button>
 
@@ -427,16 +277,11 @@
 
             <div #printSection id="print-section" *ngIf="printLabelCond">
               <div>
-                <span style="font-size: 18px"
-                  ><strong>{{ labelNumber }}</strong></span
-                >
+                <span style="font-size: 18px"><strong>{{ labelNumber }}</strong></span>
               </div>
 
               <div>
-                <ngx-barcode
-                  [bc-value]="barcodeVal"
-                  [bc-display-value]="true"
-                ></ngx-barcode>
+                <ngx-barcode [bc-value]="barcodeVal" [bc-display-value]="true"></ngx-barcode>
               </div>
 
               <div style="display: inline-flex">
@@ -460,21 +305,11 @@
             <div class="card-body">
               <form method="#" action="#" style="display: inline-flex">
                 <mat-form-field class="example-full-width">
-                  <input
-                    matInput
-                    placeholder="Box Number:"
-                    type="text"
-                    (input)="takeBoxData($event.target.value)"
-                  />
+                  <input matInput placeholder="Box Number:" type="text" (input)="takeBoxData($event.target.value)" />
                 </mat-form-field>
 
-                <button
-                  *ngIf="printButtonCond"
-                  mat-raised-button
-                  class="btn btnprint btn-success"
-                  style="margin: 12px"
-                  (click)="printBigDoc()"
-                >
+                <button *ngIf="printButtonCond" mat-raised-button class="btn btnprint btn-success" style="margin: 12px"
+                  (click)="printBigDoc()">
                   <span class="btn-label">
                     <i class="material-icons">print</i>
                   </span>
@@ -494,127 +329,106 @@
               <tbody>
                 <tr>
                   <td colspan="3" valign="bottom" height="20" align="center">
-                    <b
-                      ><font face="Times New Roman" color="#000000"
-                        ><b>INVOICE</b></font
-                      ></b
-                    >
+                    <b>
+                      <font face="Times New Roman" color="#000000"><b>INVOICE</b></font>
+                    </b>
                   </td>
-                  <td
-                    style="
+                  <td style="
                       border-top: 1px solid #000000;
                       border-bottom: 1px solid #000000;
                       border-left: 1px solid #000000;
-                    "
-                    valign="bottom"
-                    align="center"
-                  >
-                    <b
-                      ><font face="Times New Roman" color="#000000"
-                        >ТАМОЖЕННАЯ ДЕКЛАРАЦИЯ</font
-                      ></b
-                    >
+                    " valign="bottom" align="center">
+                    <b>
+                      <font face="Times New Roman" color="#000000">ТАМОЖЕННАЯ ДЕКЛАРАЦИЯ</font>
+                    </b>
                   </td>
                   <td valign="bottom" align="center">
-                    <b
-                      ><font face="Times New Roman" color="#000000"
-                        >INVOICE</font
-                      ></b
-                    >
+                    <b>
+                      <font face="Times New Roman" color="#000000">INVOICE</font>
+                    </b>
                   </td>
                 </tr>
                 <tr>
                   <td rowspan="3" valign="middle" height="100" align="center">
-                    <b
-                      ><font face="Times New Roman" color="#000000">Из</font></b
-                    >
+                    <b>
+                      <font face="Times New Roman" color="#000000">Из</font>
+                    </b>
                   </td>
                   <td valign="bottom" align="left">
-                    <b
-                      ><font face="Times New Roman" color="#000000"
-                        >Фамилия: Kent Lee
-                      </font></b
-                    >
+                    <b>
+                      <font face="Times New Roman" color="#000000">Фамилия: Kent Lee
+                      </font>
+                    </b>
                   </td>
                   <td rowspan="2" valign="bottom" align="center">
-                    <b
-                      ><font face="Times New Roman" color="#000000"
-                        >Таможенная ссылка отправителя если имеется
-                      </font></b
-                    >
+                    <b>
+                      <font face="Times New Roman" color="#000000">Таможенная ссылка отправителя если имеется
+                      </font>
+                    </b>
                   </td>
                   <td colspan="2" valign="middle" align="center">
-                    <b
-                      ><font face="Times New Roman" color="#000000"
-                        >№ Отправления
+                    <b>
+                      <font face="Times New Roman" color="#000000">№ Отправления
                       </font>
                     </b>
                   </td>
                 </tr>
                 <tr>
                   <td valign="middle" align="left">
-                    <b
-                      ><font face="Times New Roman" color="#000000"
-                        >Компания: {{ company_name }}
-                      </font></b
-                    >
+                    <b>
+                      <font face="Times New Roman" color="#000000">Компания: {{ company_name }}
+                      </font>
+                    </b>
                   </td>
                   <td colspan="2" rowspan="3" valign="middle" align="center">
-                    <b
-                      ><font size="6" face="Times New Roman" color="#000000"
-                        ><br /><span
-                          style="display: flex; justify-content: center"
-                          >{{ box_number }}</span
-                        ></font
-                      ></b
-                    >
+                    <b>
+                      <font size="6" face="Times New Roman" color="#000000"><br /><span
+                          style="display: flex; justify-content: center">{{ box_number }}</span></font>
+                    </b>
                   </td>
                 </tr>
                 <tr>
                   <td colspan="2" valign="middle" align="left">
-                    <b
-                      ><font face="Times New Roman" color="#000000"
-                        >Улица: {{ company_address }} <br />
+                    <b>
+                      <font face="Times New Roman" color="#000000">Улица: {{ company_address }} <br />
                         Почтовый индекс Город: {{ company_index }} Страна:
-                        {{ country_name }}</font
-                      ></b
-                    >
+                        {{ country_name }}</font>
+                    </b>
                   </td>
                 </tr>
                 <tr>
                   <td rowspan="3" valign="middle" height="75" align="center">
-                    <b><font face="Times New Roman" color="#000000">В</font></b>
+                    <b>
+                      <font face="Times New Roman" color="#000000">В</font>
+                    </b>
                   </td>
                   <td colspan="2" rowspan="3" valign="top" align="left">
-                    <b
-                      ><font face="Times New Roman" color="#000000">
+                    <b>
+                      <font face="Times New Roman" color="#000000">
                         Фамилия и адрес получателя включая страну В:
                         <div class="fieldrecinfo">
                           {{ receiver_id }} {{ receiver_name }}
                           {{ receiver_passport }} {{ phone_number }} <br />
                           {{ receiver_address }}
                         </div>
-                        <br /></font
-                    ></b>
+                        <br />
+                      </font>
+                    </b>
                   </td>
                 </tr>
                 <tr>
                   <td colspan="2" valign="middle" align="center">
-                    <b
-                      ><font face="Times New Roman" color="#000000"
-                        >Реквизты импортера (если имеются) (ИНН/№НДС/индекс
-                        импортера)</font
-                      ></b
-                    >
+                    <b>
+                      <font face="Times New Roman" color="#000000">Реквизты импортера (если имеются) (ИНН/№НДС/индекс
+                        импортера)</font>
+                    </b>
                   </td>
                 </tr>
                 <tr>
                   <td colspan="2" valign="bottom" align="center">
-                    <b
-                      ><font face="Times New Roman" color="#000000"
-                        >№ телефона факса е-маил : 00860579-81560701</font
-                      ></b
-                    >
+                    <b>
+                      <font face="Times New Roman" color="#000000">№ телефона факса е-маил : 00860579-81560701</font>
+                    </b>
                   </td>
                 </tr>
               </tbody>
@@ -651,32 +465,19 @@
                   <td class="view-footer views-field views-field-title">
                     Итого
                   </td>
-                  <td
-                    class="view-footer views-field views-field-field-quantity-1"
-                    style="text-align: center"
-                  >
+                  <td class="view-footer views-field views-field-field-quantity-1" style="text-align: center">
                     {{ total_amount }}
                   </td>
-                  <td
-                    class="view-footer views-field views-field-field-tracking-number2"
-                  ></td>
-                  <td
-                    class="view-footer views-field views-field-field-item-weight"
-                    style="text-align: center"
-                  >
+                  <td class="view-footer views-field views-field-field-tracking-number2"></td>
+                  <td class="view-footer views-field views-field-field-item-weight" style="text-align: center">
                     {{ total_weight }}
                   </td>
-                  <td
-                    class="view-footer views-field views-field-field-item-priceflt"
-                    style="text-align: center"
-                  >
+                  <td class="view-footer views-field views-field-field-item-priceflt" style="text-align: center">
                     {{ total_price }}
                   </td>
                   <!--  <td class="view-footer views-field views-field-nothing-1  ">
                         </td> -->
-                  <td
-                    class="view-footer views-field views-field-nothing-2"
-                  ></td>
+                  <td class="view-footer views-field views-field-nothing-2"></td>
                 </tr>
               </tfoot>
             </table>
@@ -687,30 +488,24 @@
                 <colgroup width="503"></colgroup>
                 <tr>
                   <td colspan="4" valign="bottom" height="20" align="left">
-                    <font face="Times New Roman" color="#000000"
-                      >Катогория отправления (10) Коммерчческий образец
-                      Поменение Подарок-X Документ Прочее</font
-                    >
+                    <font face="Times New Roman" color="#000000">Катогория отправления (10) Коммерчческий образец
+                      Поменение Подарок-X Документ Прочее</font>
                   </td>
                   <td colspan="1" valign="bottom" align="left">
-                    <font face="Times New Roman" color="#000000"
-                      >Учреждение подачи/Дата подачи: {{ print_time }}
+                    <font face="Times New Roman" color="#000000">Учреждение подачи/Дата подачи: {{ print_time }}
                     </font>
                   </td>
                 </tr>
                 <tr>
                   <td colspan="4" valign="bottom" height="20" align="left">
-                    <font face="Times New Roman" color="#000000"
-                      >Подтверждаю точность сведений в настоящей момент
+                    <font face="Times New Roman" color="#000000">Подтверждаю точность сведений в настоящей момент
                       декларации, а так же, что это отправение не содержит
                       никаких опасных предметов, запрещенной почтовой
-                      службой</font
-                    >
+                      службой</font>
                   </td>
                   <td colspan="1" valign="bottom" align="left">
                     <font face="Times New Roman" color="#000000">
-                      Дата и подпись отправителя___________</font
-                    >
+                      Дата и подпись отправителя___________</font>
                   </td>
                 </tr>
               </tbody>
@@ -769,13 +564,7 @@
         </div>
 
         <div #printSection2 id="print-section2" class="col-md-12">
-          <table
-            border="0"
-            cellpadding="0"
-            cellspacing="0"
-            id="sheet0"
-            class="sheet0"
-          >
+          <table border="0" cellpadding="0" cellspacing="0" id="sheet0" class="sheet0">
             <col class="col0" />
             <col class="col1" />
             <col class="col2" />
@@ -794,11 +583,7 @@
               </tr>
               <tr class="row1">
                 <td class="column0 style8 s style9" colspan="2">
-                  <ngx-barcode
-                    [bc-value]="box_number"
-                    [bc-display-value]="false"
-                    [bc-height]="50"
-                  ></ngx-barcode>
+                  <ngx-barcode [bc-value]="box_number" [bc-display-value]="false" [bc-height]="50"></ngx-barcode>
                 </td>
                 <td class="column3 style13 s style15" colspan="3">
                   Компания: {{ company_name }}

@@ -463,8 +463,13 @@
                     <div class="form-group">
                       <label class="bmd-label-floating">
                         📞 Mijoz Telefoni
+                        <i class="material-icons" *ngIf="autoFilledFields.phone"
+                          style="font-size: 16px; color: #2196f3; vertical-align: middle;"
+                          title="Avtomatik to'ldirilgan">auto_awesome</i>
                       </label>
-                      <input type="tel" class="form-control" [(ngModel)]="customerPhone" placeholder="+998901234567">
+                      <input type="tel" class="form-control" [(ngModel)]="customerPhone" placeholder="+998901234567"
+                        (input)="onPhoneManualChange()"
+                        [style.background-color]="autoFilledFields.phone ? '#e3f2fd' : ''">
                     </div>
                   </div>
 
@@ -472,6 +477,27 @@
 
                 <!-- EMU Branch Selection -->
                 <div class="row" *ngIf="deliveryType === 'EMU'">
+                  <!-- Auto-fill notification banner -->
+                  <!-- <div class="col-md-12" *ngIf="isEmuDataAutoFilled">
+                    <div class="alert alert-info"
+                      style="background-color: #e3f2fd; border-left: 4px solid #2196f3; padding: 10px 15px; margin-bottom: 15px;">
+                      <div style="display: flex; align-items: center; justify-content: space-between;">
+                        <div style="display: flex; align-items: center;">
+                          <i class="material-icons" style="color: #2196f3; margin-right: 10px;">info</i>
+                          <span style="font-size: 13px;">
+                            <b>Avtomatik to'ldirildi:</b> Oxirgi EMU yetkazishdan ma'lumotlar yuklandi
+                            <span *ngIf="lastEmuDeliveryId" style="color: #666;">(ID: {{lastEmuDeliveryId}})</span>
+                          </span>
+                        </div>
+                        <button type="button" class="btn btn-sm btn-outline-primary" (click)="clearAutoFilledData()"
+                          style="font-size: 11px; padding: 4px 12px;">
+                          <i class="material-icons" style="font-size: 16px; vertical-align: middle;">clear</i>
+                          Tozalash
+                        </button>
+                      </div>
+                    </div>
+                  </div> -->
+
                   <div class="col-md-6">
                     <div class="form-group">
                       <label class="bmd-label-floating">Viloyat <span class="text-danger">*</span></label>

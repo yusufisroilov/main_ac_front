@@ -99,6 +99,19 @@ export class InfoeachclientComponent implements OnInit {
   yandexFee: number = 0;
   deliveryNotes: string = "";
 
+  // NEW: Auto-fill tracking properties
+  isEmuDataAutoFilled: boolean = false;
+  lastEmuDeliveryId: string = "";
+  autoFilledFields: {
+    regionId: boolean;
+    branchId: boolean;
+    phone: boolean;
+  } = {
+    regionId: false,
+    branchId: false,
+    phone: false,
+  };
+
   // EMU data
   regions: any[] = [];
   branches: any[] = [];
@@ -131,12 +144,12 @@ export class InfoeachclientComponent implements OnInit {
     this.headers12.append("Authorization", localStorage.getItem("token"));
     this.options = new RequestOptions({ headers: this.headers12 });
 
-    this.headers22 = new Headers({ 'Content-Type': 'application/json' });
-    this.headers22.append('Authorization','Bearer ' + localStorage.getItem('token_fin'));
-    this.options2 = new RequestOptions({ headers: this.headers22 }, );
-    
-
-
+    this.headers22 = new Headers({ "Content-Type": "application/json" });
+    this.headers22.append(
+      "Authorization",
+      "Bearer " + localStorage.getItem("token_fin")
+    );
+    this.options2 = new RequestOptions({ headers: this.headers22 });
 
     this.currentPage = 0;
     this.helloText = "hello";
@@ -283,6 +296,60 @@ export class InfoeachclientComponent implements OnInit {
               (error) => {
                 if (error.status == 400) {
                   swal
+                    .fire("Not Added", `Xato: ${error.json().message}`, "error")
+                    .then((result) => {
+                      if (result.isConfirmed) {
+                      }
+                    });
+                }
+              }
+            );
+
+          //start of xisob post request
+          var NewUserId = this.currentID.toString();
+          if (usd == "") usd = 0;
+          if (cash == "") cash = 0;
+          if (cash == "") card = 0;
+          if (bankacc == "") card = 0;
+
+          let usd2: number = +usd;
+          const cash2: number = +cash;
+          const card2: number = +cash;
+          const bankacc2: number = +bankacc;
+
+          this.http
+            .post(
+              "http://185.196.213.248:3018/api/income",
+              {
+                part_num: partiya,
+                userId: NewUserId,
+                usd_cash: usd2,
+                uzs_cash: cash2,
+                card: card2,
+                account: bankacc2,
+                admin_id: 22,
+                comment: izohh,
+                category_id: "1",
+              },
+              this.options2
+            )
+            .subscribe(
+              (response) => {
+                if (response.json().status == "error") {
+                  // swal.showValidationMessage('Not Added, check: ' + this.registredMessage);
+                  swal
+                    .fire("Not Added", response.json().message, "error")
+                    .then((result) => {
+                      if (result.isConfirmed) {
+                      }
+                    });
+                } else {
+                  return false;
+                }
+              },
+              (error) => {
+                if (error.status == 400) {
+                  swal
                     .fire(
                       "Not Added",
                       "BAD REQUEST: WRONG TYPE OF INPUT",
@@ -294,62 +361,9 @@ export class InfoeachclientComponent implements OnInit {
                     });
                 }
               }
+            );
 
-        );
-
-
-
-              //start of xisob post request
-           var NewUserId =  this.currentID.toString();
-           if(usd == "") usd = 0;
-           if(cash == "") cash = 0;
-           if(cash == "") card = 0;
-           if(bankacc == "") card = 0;
-        
-           let usd2: number = +usd;
-           const cash2: number = +cash;
-           const card2: number = +cash;
-           const bankacc2: number = +bankacc;
-
-
-
-            this.http.post('http://185.196.213.248:3018/api/income', 
-             {part_num: partiya, userId: NewUserId, usd_cash: usd2, uzs_cash: cash2, card: card2, account: bankacc2 , admin_id: 22, comment: izohh, category_id: '1'  }, this.options2)
-            .subscribe(response => {
-  
-              if (response.json().status == 'error') {
-  
-               
-                // swal.showValidationMessage('Not Added, check: ' + this.registredMessage);
-                swal.fire('Not Added', response.json().message, 'error').then((result) => {
-                  if (result.isConfirmed) {
-                  
-                  }
-                }
-                )
-              } else {
-  
-                return false;
-              }
-  
-            }, error => {
-              if (error.status == 400) {
-                swal.fire('Not Added', "BAD REQUEST: WRONG TYPE OF INPUT", 'error').then((result) => {
-                  if (result.isConfirmed) {
-               
-                  }
-                }
-                )
-              }
-            }
-            )
-
-            //end of xisob post request
-
-
-
-
-
+          //end of xisob post request
         },
       })
       .then((result) => {
@@ -1099,6 +1113,12 @@ export class InfoeachclientComponent implements OnInit {
   // NEW: Load branches when region selected
   onRegionSelect(event: any) {
     const regionId = event.target.value;
+
+    // ADD THESE 3 LINES:
+    if (this.autoFilledFields.regionId) {
+      this.autoFilledFields.regionId = false;
+      this.autoFilledFields.branchId = false;
+    }
     this.selectedRegionId = regionId ? parseInt(regionId) : null;
     this.selectedBranchId = null;
     this.selectedBranchName = "";
@@ -1136,6 +1156,18 @@ export class InfoeachclientComponent implements OnInit {
     this.courierName = "";
     this.courierPhone = "";
     this.yandexFee = 0;
+    this.isEmuDataAutoFilled = false;
+    this.lastEmuDeliveryId = "";
+    this.autoFilledFields = {
+      regionId: false,
+      branchId: false,
+      phone: false,
+    };
+
+    // ADD THIS: Trigger auto-fill for EMU
+    if (this.deliveryType === "EMU" && this.currentID) {
+      this.getLastEmuDeliveryData(this.currentID);
+    }
   }
 
   // NEW: Validation for delivery creation
@@ -1304,6 +1336,15 @@ export class InfoeachclientComponent implements OnInit {
     this.selectedBranchId = null;
     this.selectedBranchName = "";
     this.branches = [];
+
+    // ADD THESE LINES:
+    this.isEmuDataAutoFilled = false;
+    this.lastEmuDeliveryId = "";
+    this.autoFilledFields = {
+      regionId: false,
+      branchId: false,
+      phone: false,
+    };
   }
 
   // NEW: Helper method for delivery type display
@@ -1315,6 +1356,149 @@ export class InfoeachclientComponent implements OnInit {
       "Pick-up": "Olib ketish",
     };
     return types[type] || type;
+  }
+
+  // NEW: Fetch last EMU delivery data for customer
+  getLastEmuDeliveryData(ownerId: string) {
+    this.http
+      .get(
+        GlobalVars.baseUrl + "/deliveries/last_emu?owner_id=" + ownerId,
+        this.options
+      )
+      .subscribe(
+        (response) => {
+          const result = response.json();
+          if (result.status === "success" && result.data) {
+            const lastDelivery = result.data;
+
+            this.lastEmuDeliveryId = lastDelivery.delivery_id || "";
+
+            if (lastDelivery.region_id) {
+              this.selectedRegionId = lastDelivery.region_id;
+              this.autoFilledFields.regionId = true;
+
+              this.http
+                .get(
+                  GlobalVars.baseUrl +
+                    "/branches?region_id=" +
+                    lastDelivery.region_id,
+                  this.options
+                )
+                .subscribe(
+                  (branchResponse) => {
+                    const branchResult = branchResponse.json();
+                    if (branchResult.status === "success") {
+                      this.branches = branchResult.data.branches || [];
+
+                      if (lastDelivery.emu_branch_id) {
+                        this.selectedBranchId = lastDelivery.emu_branch_id;
+                        this.autoFilledFields.branchId = true;
+
+                        const selectedBranch = this.branches.find(
+                          (b) => b.id == lastDelivery.emu_branch_id
+                        );
+                        this.selectedBranchName = selectedBranch
+                          ? selectedBranch.name
+                          : "";
+                      }
+                    }
+                  },
+                  (error) => {
+                    if (error.status == 403) {
+                      this.authService.logout();
+                    }
+                  }
+                );
+            }
+
+            if (lastDelivery.customer_phone) {
+              this.customerPhone = lastDelivery.customer_phone;
+              this.autoFilledFields.phone = true;
+            }
+
+            this.isEmuDataAutoFilled = true;
+
+            const branchName = lastDelivery.branch_name || "noma'lum filial";
+            swal.fire({
+              icon: "info",
+              title: "Ma'lumot",
+              html: `
+              <p>Oxirgi EMU yetkazishdan ma'lumotlar avtomatik to'ldirildi:</p>
+              <ul style="text-align: left;">
+                ${
+                  lastDelivery.region_name
+                    ? `<li><b>Viloyat:</b> ${lastDelivery.region_name}</li>`
+                    : ""
+                }
+                ${
+                  lastDelivery.branch_name
+                    ? `<li><b>Filial:</b> ${lastDelivery.branch_name}</li>`
+                    : ""
+                }
+                ${
+                  lastDelivery.customer_phone
+                    ? `<li><b>Telefon:</b> ${lastDelivery.customer_phone}</li>`
+                    : ""
+                }
+              </ul>
+              <p style="font-size: 12px; color: #666; margin-top: 10px;">
+                <i class="material-icons" style="font-size: 14px; vertical-align: middle;">info</i>
+                Barcha maydonlarni o'zgartirishingiz mumkin
+              </p>
+            `,
+              timer: 5000,
+              timerProgressBar: true,
+              showConfirmButton: false,
+              toast: true,
+              position: "top-end",
+            });
+          }
+        },
+        (error) => {
+          if (error.status == 403) {
+            this.authService.logout();
+          }
+        }
+      );
+  }
+
+  // NEW: Clear auto-filled data
+  clearAutoFilledData() {
+    this.selectedRegionId = null;
+    this.selectedBranchId = null;
+    this.selectedBranchName = "";
+    this.customerPhone = "";
+    this.branches = [];
+    this.isEmuDataAutoFilled = false;
+    this.lastEmuDeliveryId = "";
+    this.autoFilledFields = {
+      regionId: false,
+      branchId: false,
+      phone: false,
+    };
+
+    swal.fire({
+      icon: "success",
+      title: "Tozalandi",
+      text: "Avtomatik to'ldirilgan ma'lumotlar tozalandi",
+      timer: 2000,
+      showConfirmButton: false,
+      toast: true,
+      position: "top-end",
+    });
+  }
+
+  // NEW: Track manual changes
+  onBranchManualChange() {
+    if (this.autoFilledFields.branchId) {
+      this.autoFilledFields.branchId = false;
+    }
+  }
+
+  onPhoneManualChange() {
+    if (this.autoFilledFields.phone) {
+      this.autoFilledFields.phone = false;
+    }
   }
 
   ngAfterViewInit() {
