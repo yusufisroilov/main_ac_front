@@ -154,7 +154,7 @@ export class AddReceiversComponent implements OnInit, OnChanges, AfterViewInit {
             localStorage.removeItem("recid");
             this.editOr = "N";
             this.showAddNotification("top", "center");
-            this.router.navigate(["/uzm/receivers"]); //line 157
+            this.router.navigate(["/uzm/allreceivers"]); //line 157
             return false;
           },
           (error) => {

@@ -18,9 +18,9 @@ import { TransactionsComponent } from "./transactions/transactions.component";
 import { CustomerRequestsComponent } from "./customer-requests/customer-requests.component";
 import { MdModule } from "src/app/md/md.module";
 import { AdminRequestHandlerComponent } from "./admin-request-handler/admin-request-handler.component";
-import { WarehouseInventoryComponent } from "./warehouse-inventory/warehour-inventory.component";
+import { WarehouseInventoryComponent } from "../uzb_staff/warehouse-inventory/warehour-inventory.component";
 import { DeliveriesListComponent } from "./deliveries-list/deliveries-list.component";
-import { EmployerDeliveryComponent } from "./employer-delivery/employer-delivery.component";
+import { EmployerDeliveryComponent } from "../uzb_staff/employer-delivery/employer-delivery.component";
 
 // import { FlexLayoutModule } from '@angular/flex-layout';
 

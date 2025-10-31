@@ -5,6 +5,7 @@ import { UzParclesListComponent } from "./parcles-list/parcles-list.component";
 import { Routes } from "@angular/router";
 import { ManagerAuthGuardService } from "../services/manager-auth-guard.service";
 import { DeliveriesComponent } from "./deliveries/deliveries.component";
+import { AdminAuthGuard } from "../services/admin-auth-guard.service";
 
 export const UzbStaffRoutes: Routes = [
   {
@@ -13,7 +14,7 @@ export const UzbStaffRoutes: Routes = [
     children: [
       {
         path: "uzparcelslist",
-        canActivate: [ManagerAuthGuardService],
+        canActivate: [AdminAuthGuard],
         component: UzParclesListComponent,
       },
       {

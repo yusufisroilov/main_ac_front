@@ -16,9 +16,10 @@ import { ExpensesComponent } from "./expenses/expenses.component";
 import { TransactionsComponent } from "./transactions/transactions.component";
 import { CustomerRequestsComponent } from "./customer-requests/customer-requests.component";
 import { AdminRequestHandlerComponent } from "./admin-request-handler/admin-request-handler.component";
-import { WarehouseInventoryComponent } from "./warehouse-inventory/warehour-inventory.component";
+import { WarehouseInventoryComponent } from "../uzb_staff/warehouse-inventory/warehour-inventory.component";
 import { DeliveriesListComponent } from "./deliveries-list/deliveries-list.component";
-import { EmployerDeliveryComponent } from "./employer-delivery/employer-delivery.component";
+import { EmployerDeliveryComponent } from "../uzb_staff/employer-delivery/employer-delivery.component";
+import { EmployeeAuthGuardService } from "../services/employee-auth-guard.service";
 
 export const AdminstratorRoutes: Routes = [
   {
@@ -27,7 +28,7 @@ export const AdminstratorRoutes: Routes = [
     children: [
       {
         path: "allusers",
-        canActivate: [ManagerAuthGuardService],
+        canActivate: [AdminAuthGuard],
         component: UsersListComponent,
         data: {
           title: "Mijozlar",
@@ -35,7 +36,7 @@ export const AdminstratorRoutes: Routes = [
       },
       {
         path: "allreceivers",
-        canActivate: [ManagerAuthGuardService],
+        canActivate: [AdminAuthGuard],
         component: AllreceiversComponent,
         data: {
           title: "Qabul qiluvchilar",
@@ -43,7 +44,7 @@ export const AdminstratorRoutes: Routes = [
       },
       {
         path: "allorders",
-        canActivate: [ManagerAuthGuardService],
+        canActivate: [EmployeeAuthGuardService],
         component: AllordersComponent,
         data: {
           title: "Buyurtmalar",
@@ -51,7 +52,7 @@ export const AdminstratorRoutes: Routes = [
       },
       {
         path: "allconsignments",
-        canActivate: [ManagerAuthGuardService],
+        canActivate: [AdminAuthGuard],
         component: AllconsignmentsComponent,
         data: {
           title: "Partiyalar",
@@ -59,7 +60,7 @@ export const AdminstratorRoutes: Routes = [
       },
       {
         path: "allboxes",
-        canActivate: [ManagerAuthGuardService],
+        canActivate: [AdminAuthGuard],
         component: AllboxesComponent,
         data: {
           title: "Partiya Jo'natmalar",
@@ -83,7 +84,7 @@ export const AdminstratorRoutes: Routes = [
       },
       {
         path: "eachboxuz",
-        canActivate: [ManagerAuthGuardService],
+        canActivate: [AdminAuthGuard],
         component: EachboxdocComponent,
         data: {
           title: "Partiya Hujjati",

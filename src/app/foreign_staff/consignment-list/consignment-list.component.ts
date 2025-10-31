@@ -48,9 +48,10 @@ export class ConsignmentListComponent implements OnInit {
     private changeDetectorRef: ChangeDetectorRef,
     public authService: AuthService
   ) {
-
-
-    if (localStorage.getItem("role") == "MANAGER") {
+    if (
+      localStorage.getItem("role") == "MANAGER" ||
+      localStorage.getItem("role") == "ADMIN"
+    ) {
       this.showOnlyForManagers = true;
     } else if (localStorage.getItem("role") == "UZBSTAFF") {
       this.showOnlyManagers631 = true;
@@ -329,19 +330,15 @@ export class ConsignmentListComponent implements OnInit {
       .subscribe(
         (response) => {
           if (response.json().status == "ok") {
-            
             //localStorage.setItem("current_party", consignmentName);
             GlobalVars.currentParty = consignmentName;
-            this.activeConsignment =  GlobalVars.currentParty;
-            
+            this.activeConsignment = GlobalVars.currentParty;
+
             this.http
               .get(GlobalVars.baseUrl + "/consignments/list", this.options)
               .subscribe((response) => {
                 this.consignments = response.json().consignments;
               });
-
-
-
           } else {
             swal
               .fire("Error happaned!", response.json().message, "error")
