@@ -31,6 +31,7 @@ export class TransactionsComponent implements OnInit {
 
   currentPage: number;
   totalPages: number;
+  pageSize: number = 5;
   needPagination: boolean;
   mypages = [];
   isPageNumActive: boolean;
@@ -81,6 +82,15 @@ export class TransactionsComponent implements OnInit {
     this.getListOfTransactions();
   }
 
+  /**
+   * Handle page change from pagination component
+   */
+  onPageChanged(pageIndex: number) {
+    this.currentPage = pageIndex;
+    document.getElementById("listcard")?.scrollIntoView({ behavior: "smooth" });
+    this.getListOfTransactions();
+  }
+
   danFunction(date) {
     this.danValue = this.datePipe.transform(date.value, "dd/MM/yyyy");
   }
@@ -107,7 +117,6 @@ export class TransactionsComponent implements OnInit {
           this.totalPages = response.json().totalPages;
           if (this.totalPages > 1) {
             this.needPagination = true;
-
             for (let i = 0; i < this.totalPages; i++) {
               this.mypages[i] = { id: "name" };
             }
@@ -209,9 +218,10 @@ export class TransactionsComponent implements OnInit {
     return this.http
       .get(
         GlobalVars.baseUrl +
-          "/transactions/list?" +
+          "/transactions/list?page=" +
           this.currentPage +
-          "&size=200",
+          "&size=" +
+          this.pageSize,
         this.options
       )
       .subscribe(
@@ -246,9 +256,10 @@ export class TransactionsComponent implements OnInit {
     return this.http
       .get(
         GlobalVars.baseUrl +
-          "/transactions/list?page" +
+          "/transactions/list?page=" +
           this.currentPage +
-          "&size=100" +
+          "&size=" +
+          this.pageSize +
           filterLink,
         this.options
       )

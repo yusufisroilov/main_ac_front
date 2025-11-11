@@ -12,6 +12,11 @@ import { DeliveriesComponent } from "./deliveries/deliveries.component";
 import { EmployeeFinanceComponent } from "./employee-finance/employee-finance.component";
 import { DeliveriesListComponent2 } from "./deliveries-list-2/deliveries-list-2.component";
 
+import { FixedpluginModule } from "src/app/shared/fixedplugin/fixedplugin.module";
+import { ComponentsModule } from "src/app/components/components.module";
+import { PaginationComponent } from "../shared/pagination/pagination.component";
+import { PaginationModule } from "../shared/pagination/pagination.module";
+
 @NgModule({
   imports: [
     CommonModule,
@@ -19,6 +24,9 @@ import { DeliveriesListComponent2 } from "./deliveries-list-2/deliveries-list-2.
     FormsModule,
     MaterialModule,
     ReactiveFormsModule,
+    FixedpluginModule,
+    ComponentsModule,
+    PaginationModule,
   ],
   declarations: [
     BoxesListComponent,

@@ -80,6 +80,8 @@ import { ArchiveOrdersComponent } from "./simple_user/archive-orders/archive-ord
 
 import { DeliveryService } from "./simple_user/delivery/delivery.service";
 import { MdTableComponent } from "./md/md-table/md-table.component";
+import { PaginationComponent } from "./shared/pagination/pagination.component";
+import { PaginationModule } from "./shared/pagination/pagination.module";
 
 @NgModule({
   exports: [
@@ -132,6 +134,7 @@ export class MaterialModule {}
     SidebarModule,
     NavbarModule,
     FooterModule,
+    PaginationModule,
     //FixedpluginModule
   ],
   declarations: [AppComponent, AdminLayoutComponent, AuthLayoutComponent],

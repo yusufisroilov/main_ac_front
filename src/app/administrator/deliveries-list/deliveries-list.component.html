@@ -225,29 +225,9 @@
                                 </table>
                             </div>
 
-                            <!-- Pagination -->
-                            <div class="row mt-4" *ngIf="totalPages > 1">
-                                <div class="col-md-12">
-                                    <nav aria-label="Page navigation">
-                                        <ul class="pagination justify-content-center">
-                                            <li class="page-item" [class.disabled]="currentPage === 0">
-                                                <a class="page-link" (click)="goToPage(currentPage - 1)">
-                                                    <i class="material-icons">chevron_left</i>
-                                                </a>
-                                            </li>
-                                            <li class="page-item" *ngFor="let page of getPageNumbers()"
-                                                [class.active]="page === currentPage">
-                                                <a class="page-link" (click)="goToPage(page)">{{page + 1}}</a>
-                                            </li>
-                                            <li class="page-item" [class.disabled]="currentPage === totalPages - 1">
-                                                <a class="page-link" (click)="goToPage(currentPage + 1)">
-                                                    <i class="material-icons">chevron_right</i>
-                                                </a>
-                                            </li>
-                                        </ul>
-                                    </nav>
-                                </div>
-                            </div>
+                            <!-- Reusable Pagination Component -->
+                            <app-pagination *ngIf="needPagination" [currentPage]="currentPage" [totalPages]="totalPages"
+                                (pageChanged)="onPageChanged($event)"></app-pagination>
                         </div>
 
                         <!-- No deliveries message -->

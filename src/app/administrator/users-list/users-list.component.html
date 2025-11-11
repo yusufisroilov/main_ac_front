@@ -158,25 +158,25 @@ N-Mijozlar uchun Manzil kiritish qo'llanmasi: https://youtu.be/IXCqBZVBePg
                 </div>
 
 
-
+                <!-- 
                 <div class="col-sm-12 col-lg-6 right-align">
                   <ul class="pagination" *ngIf="needPagination" style="justify-content: center;">
-                    <!--  <li class="page-item">
+                     <li class="page-item">
                                 <a mat-button class="page-link" aria-label="Previous">
                                   <span aria-hidden="true"><i class="fa fa-angle-double-left" aria-hidden="true"></i></span>
                                 </a>
-                              </li> -->
+                              </li>
                     <li class="page-item" [ngClass]="{'active': currentPage == i}"
                       *ngFor="let page of mypages; index as i">
                       <a mat-button class="page-link" (click)="pagebyNum(i)">{{i+1}}</a>
                     </li>
-                    <!-- <li class="page-item">
+                    <li class="page-item">
                                 <a mat-button class="page-link" aria-label="Next">
                                   <span aria-hidden="true"><i class="fa fa-angle-double-right" aria-hidden="true"></i></span>
                                 </a>
-                              </li> -->
+                              </li>
                   </ul>
-                </div>
+                </div> -->
                 <!--   <div class="col-sm-6 col-lg-3">
                               <div class="dropdown">
                                   <button mat-raised-button href="#pablo" class="dropdown-toggle btn btn-primary btn-round btn-block" data-toggle="dropdown">Dropdown
@@ -222,7 +222,7 @@ N-Mijozlar uchun Manzil kiritish qo'llanmasi: https://youtu.be/IXCqBZVBePg
                   </thead>
                   <tbody>
                     <tr *ngFor="let row of allUsersData; let i = index" class="text-center ">
-                      <td>{{i+1}}</td>
+                      <td>{{ (currentPage * pageSize) + i + 1 }}</td>
                       <td>{{row.id}}</td>
                       <td>{{row.username}}</td>
                       <td>{{row.first_name}} {{row.last_name}}</td>
@@ -241,23 +241,11 @@ N-Mijozlar uchun Manzil kiritish qo'llanmasi: https://youtu.be/IXCqBZVBePg
                     </tr>
                   </tbody>
                 </table>
-                <ul class="pagination" *ngIf="needPagination" style="justify-content: center;">
-                  <!--  <li class="page-item">
-                              <a mat-button class="page-link" aria-label="Previous">
-                                <span aria-hidden="true"><i class="fa fa-angle-double-left" aria-hidden="true"></i></span>
-                              </a>
-                            </li> -->
-                  <li class="page-item" [ngClass]="{'active': currentPage == i}"
-                    *ngFor="let page of mypages; index as i">
-                    <a mat-button class="page-link" (click)="pagebyNum(i)">{{i+1}}</a>
-                  </li>
-                  <!-- <li class="page-item">
-                              <a mat-button class="page-link" aria-label="Next">
-                                <span aria-hidden="true"><i class="fa fa-angle-double-right" aria-hidden="true"></i></span>
-                              </a>
-                            </li> -->
-                </ul>
+
               </div>
+              <!-- Reusable Pagination Component -->
+              <app-pagination *ngIf="needPagination" [currentPage]="currentPage" [totalPages]="totalPages"
+                (pageChanged)="onPageChanged($event)"></app-pagination>
             </div>
           </div>
           <!-- end content-->

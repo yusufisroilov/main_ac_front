@@ -22,6 +22,9 @@ import { WarehouseInventoryComponent } from "../uzb_staff/warehouse-inventory/wa
 import { DeliveriesListComponent } from "./deliveries-list/deliveries-list.component";
 import { EmployerDeliveryComponent } from "../uzb_staff/employer-delivery/employer-delivery.component";
 
+import { PaginationComponent } from "../shared/pagination/pagination.component";
+import { PaginationModule } from "../shared/pagination/pagination.module";
+
 // import { FlexLayoutModule } from '@angular/flex-layout';
 
 @NgModule({
@@ -32,6 +35,7 @@ import { EmployerDeliveryComponent } from "../uzb_staff/employer-delivery/employ
     MaterialModule,
     ReactiveFormsModule,
     MdModule,
+    PaginationModule,
   ],
   declarations: [
     UsersListComponent,

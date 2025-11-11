@@ -37,8 +37,7 @@ export class UzParclesListComponent implements OnInit {
   currentPage: number;
   totalPages: number;
   needPagination: boolean;
-  mypages = [];
-  isPageNumActive: boolean;
+  pageSize: number = 100; // Items per page
 
   orderFilterStatus: string;
   orderFilterType: string;
@@ -84,7 +83,6 @@ export class UzParclesListComponent implements OnInit {
     this.currentPage = 0;
     this.helloText = "hello";
     this.needPagination = false;
-    this.isPageNumActive = false;
 
     this.orderFilterStatus = "";
     this.orderFilterType = "";
@@ -109,57 +107,7 @@ export class UzParclesListComponent implements OnInit {
   }
 
   ngAfterViewInit() {
-    $("#datatables").DataTable({
-      pagingType: "full_numbers",
-      lengthMenu: [
-        [10, 25, 50, -1],
-        [10, 25, 50, "All"],
-      ],
-      responsive: true,
-      language: {
-        search: "_INPUT_",
-        searchPlaceholder: "Search records",
-      },
-    });
-
-    const table = $("#datatables").DataTable();
-
-    // Edit record
-    table.on("click", ".edit", function (e) {
-      let $tr = $(this).closest("tr");
-      if ($($tr).hasClass("child")) {
-        $tr = $tr.prev(".parent");
-      }
-
-      var data = table.row($tr).data();
-      alert(
-        "You press on Row: " +
-          data[0] +
-          " " +
-          data[1] +
-          " " +
-          data[2] +
-          "'s row."
-      );
-      e.preventDefault();
-    });
-
-    // Delete a record
-    table.on("click", ".remove", function (e) {
-      const $tr = $(this).closest("tr");
-      table.row($tr).remove().draw();
-      e.preventDefault();
-    });
-
-    //Like record
-    table.on("click", ".like", function (e) {
-      alert("You clicked on Like button");
-      e.preventDefault();
-    });
-
-    $(".card .material-datatables label").addClass("form-group");
-
-    return this.getListOfParcels();
+    this.getListOfParcels();
   }
 
   getListOfParcels() {
@@ -177,7 +125,8 @@ export class UzParclesListComponent implements OnInit {
         GlobalVars.baseUrl +
           "/orders/list?page=" +
           this.currentPage +
-          "&size=100" +
+          "&size=" +
+          this.pageSize +
           filterLink,
         this.options
       )
@@ -202,13 +151,7 @@ export class UzParclesListComponent implements OnInit {
 
         this.currentPage = response.json().currentPage;
         this.totalPages = response.json().totalPages;
-        if (this.totalPages >= 1) {
-          this.needPagination = true;
-          this.mypages = [""];
-          for (let i = 0; i < this.totalPages; i++) {
-            this.mypages[i] = { id: "name" };
-          }
-        }
+        this.needPagination = this.totalPages > 1;
       });
   }
 
@@ -237,7 +180,8 @@ export class UzParclesListComponent implements OnInit {
         GlobalVars.baseUrl +
           "/orders/list?page=" +
           this.currentPage +
-          "&size=100" +
+          "&size=" +
+          this.pageSize +
           filterLink,
         this.options
       )
@@ -263,12 +207,54 @@ export class UzParclesListComponent implements OnInit {
 
           this.currentPage = response.json().currentPage;
           this.totalPages = response.json().totalPages;
-          if (this.totalPages >= 1) {
+          this.needPagination = this.totalPages > 1;
+        },
+        (error) => {
+          if (error.status == 403) {
+            this.authService.logout();
+          }
+        }
+      );
+  }
+
+  getListOfParcelsWithSearch(trackingNumber) {
+    return this.http
+      .get(
+        GlobalVars.baseUrl +
+          "/orders/list?page=" +
+          this.currentPage +
+          "&size=" +
+          this.pageSize +
+          "&tracking_number=" +
+          trackingNumber,
+        this.options
+      )
+      .subscribe(
+        (response) => {
+          this.allData = response.json().orders;
+
+          for (let index = 0; index < this.allData.length; index++) {
+            const element = this.allData[index];
+            this.orderTypeText[index] = GlobalVars.getDescriptionWithID(
+              element.order_type,
+              "uz"
+            );
+          }
+
+          for (let index = 0; index < this.allData.length; index++) {
+            const element1 = this.allData[index];
+            this.orderStatusText[index] = GlobalVars.getDesOrderStatusWithID(
+              element1.status,
+              "uz"
+            );
+          }
+
+          this.currentPage = response.json().currentPage;
+          this.totalPages = response.json().totalPages;
+          if (this.totalPages > 1) {
             this.needPagination = true;
-            this.mypages = [""];
-            for (let i = 0; i < this.totalPages; i++) {
-              this.mypages[i] = { id: "name" };
-            }
+          } else {
+            this.needPagination = false;
           }
         },
         (error) => {
@@ -279,325 +265,119 @@ export class UzParclesListComponent implements OnInit {
       );
   }
 
-  getListOfParcelsWithSearch(searchkey) {
-    if (searchkey == "") {
-      this.currentPage = 0;
+  // Pagination Methods
 
-      this.getListOfParcels();
-    } else {
-      if (searchkey.length > 3) {
-        this.http
-          .get(
-            GlobalVars.baseUrl + "/orders/search?tracking_number=" + searchkey,
-            this.options
-          )
-          .subscribe(
-            (response) => {
-              this.allData = response.json().orders;
-
-              for (let index = 0; index < this.allData.length; index++) {
-                const element = this.allData[index];
-                this.orderTypeText[index] = GlobalVars.getDescriptionWithID(
-                  element.order_type,
-                  "uz"
-                );
-              }
-
-              for (let index = 0; index < this.allData.length; index++) {
-                const element1 = this.allData[index];
-                this.orderStatusText[index] =
-                  GlobalVars.getDesOrderStatusWithID(element1.status, "uz");
-              }
-
-              this.currentPage = response.json().currentPage;
-              this.totalPages = response.json().totalPages;
-              if (this.totalPages > 1) {
-                this.needPagination = true;
-
-                for (let i = 0; i < this.totalPages; i++) {
-                  this.mypages[i] = { id: "name" };
-                }
-              }
-            },
-            (error) => {
-              if (error.status == 403) {
-                this.authService.logout();
-              }
-            }
-          );
-      }
-    }
-  }
-
-  playAudio() {
-    let audio = new Audio();
-    audio.src = "../../../assets/audio/incorrect2.mp3";
-    audio.load();
-    audio.play();
-  }
-
-  playAudio2() {
-    let audio = new Audio();
-    audio.src = "../../../assets/audio/uraa.wav";
-    audio.load();
-    audio.play();
-  }
-
-  giveId() {
-    this.totalLeftCountItems = 0;
-
-    swal
-      .fire({
-        title: "ID BERISH",
-        allowEnterKey: true,
-        input: "text",
-        confirmButtonText: "ID BERISH",
-        customClass: {
-          confirmButton: "btn btn-info",
-        },
-        buttonsStyling: false,
-
-        preConfirm: (valueB) => {
-          this.currentOwnerID = valueB;
-          this.getListOfParcelsMoreParties("", "", valueB, "", "ownerid");
-        },
-      })
-      .then((result) => {
-        if (result.isConfirmed) {
-          this.recordParcel();
-        }
-      });
-  }
-
-  givePartyNum() {
-    swal
-      .fire({
-        title: "Hozirgi Partiya",
-        text: "CU bilan birga yozing!",
-        allowEnterKey: true,
-        input: "text",
-        confirmButtonText: "OK",
-        customClass: {
-          confirmButton: "btn btn-success",
-        },
-        buttonsStyling: false,
-
-        preConfirm: (valueB) => {
-          if (valueB.includes(",")) {
-            var array = valueB.split(",");
-
-            this.getListOfParcelsMoreParties("", "", "", array, "partnum");
-          } else {
-            this.currentParty = valueB;
-
-            this.getListOfParcelsMoreParties(
-              "",
-              "",
-              "",
-              this.currentParty,
-              "partnum"
-            );
-          }
-        },
-      })
-      .then((result) => {});
-  }
-
-  getListOfParcelsMoreParties(status, type, ownerid, partNums, check) {
-    this.allData = [];
-
-    if (check == "status") {
-      this.orderFilterStatus = status;
-      this.totalLeftCountItems = 0;
-    } else if (check == "type") {
-      this.orderFilterType = type;
-      this.totalLeftCountItems = 0;
-    } else if (check == "ownerid") {
-      this.orderFilterOwnId = ownerid;
-      this.totalLeftCountItems = 0;
-    } else if (check == "partnum") {
-      this.orderFilterPartys = partNums;
-    }
-
-    for (let i = 0; i < this.orderFilterPartys.length; i++) {
-      // let filterLink = "&consignment=CU"+partNums[i];
-      let filterLink =
-        "&status=" +
-        this.orderFilterStatus +
-        "&orderType=" +
-        this.orderFilterType +
-        "&ownerID=" +
-        this.orderFilterOwnId +
-        "&consignment=" +
-        this.orderFilterPartys[i];
-      this.http
-        .get(
-          GlobalVars.baseUrl +
-            "/orders/list?page=" +
-            this.currentPage +
-            "&size=100" +
-            filterLink,
-          this.options
-        )
-        .subscribe(
-          (response) => {
-            if (this.allData.length == 0) {
-              this.allData = response.json().orders;
-            } else {
-              let arrayss = response.json().orders;
-
-              this.allData.push(...arrayss);
-            }
-
-            var tmz = response.json().totalItems;
-            this.totalLeftCountItems = this.totalLeftCountItems + tmz;
-
-            for (let index = 0; index < this.allData.length; index++) {
-              const element = this.allData[index];
-              this.orderTypeText[index] = GlobalVars.getDescriptionWithID(
-                element.order_type,
-                "uz"
-              );
-            }
-
-            for (let index = 0; index < this.allData.length; index++) {
-              const element1 = this.allData[index];
-              this.orderStatusText[index] = GlobalVars.getDesOrderStatusWithID(
-                element1.status,
-                "uz"
-              );
-            }
-
-            this.currentPage = response.json().currentPage;
-            this.totalPages = response.json().totalPages;
-            if (this.totalPages >= 1) {
-              this.needPagination = true;
-              this.mypages = [""];
-              for (let i = 0; i < this.totalPages; i++) {
-                this.mypages[i] = { id: "name" };
-              }
-            }
-          },
-          (error) => {
-            if (error.status == 403) {
-              this.authService.logout();
-            }
-          }
-        );
-    }
+  /**
+   * Handle page change from pagination component
+   */
+  onPageChanged(pageIndex: number) {
+    this.currentPage = pageIndex;
+    document.getElementById("listcard")?.scrollIntoView({ behavior: "smooth" });
+    this.getListOfParcels();
   }
 
   recordParcel() {
     swal
       .fire({
-        title: "Ofesga kelgan yukni skanerlash!",
-        text: "TOSHKENTGA KELDI",
-        allowEnterKey: true,
+        title: "Buyurtma ID raqam: ???",
         input: "text",
-        confirmButtonText: "KELDI",
-
+        inputAttributes: {
+          autocapitalize: "off",
+        },
+        showCancelButton: true,
+        confirmButtonText: "OK",
+        showLoaderOnConfirm: true,
         customClass: {
           confirmButton: "btn btn-success",
-          cancelButton: "btn btn-info",
+          cancelButton: "btn btn-danger",
         },
         buttonsStyling: false,
-
-        preConfirm: (valueB) => {
+        preConfirm: (trackingNumber) => {
           this.http
             .post(
               GlobalVars.baseUrl +
-                "/orders/arrived?tracking_number=" +
-                valueB +
-                "&status=" +
-                7,
+                "/orders/scan-warehouse?tracking_number=" +
+                trackingNumber,
               "",
               this.options
             )
             .subscribe(
               (response) => {
-                if (response.json().status == "error") {
-                  this.playAudio();
+                if (response.json().status == "ok") {
                   swal
                     .fire({
-                      title: "XATO",
-                      text: response.json().message,
+                      title: "ADDED :)",
+                      text: trackingNumber,
+                      icon: "success",
                       backdrop: `
-                    rgba(255,0,0,0.4)
-                    url("../../../assets/audio/error.gif")
+                    rgba(50,123,0,0.4)
+                    url("../../../assets/audio/scan.gif")
                     left top
                     no-repeat`,
+                      customClass: {
+                        confirmButton: "btn btn-success",
+                      },
+                      buttonsStyling: false,
                     })
                     .then((result) => {
                       if (result.isConfirmed) {
+                        this.http
+                          .get(
+                            GlobalVars.baseUrl +
+                              "/orders/list?page=" +
+                              this.currentPage +
+                              "&size=" +
+                              this.pageSize,
+                            this.options
+                          )
+                          .subscribe(
+                            (response) => {
+                              this.allData = response.json().orders;
+
+                              for (
+                                let index = 0;
+                                index < this.allData.length;
+                                index++
+                              ) {
+                                const element = this.allData[index];
+                                this.orderTypeText[index] =
+                                  GlobalVars.getDescriptionWithID(
+                                    element.order_type,
+                                    "uz"
+                                  );
+                              }
+
+                              for (
+                                let index = 0;
+                                index < this.allData.length;
+                                index++
+                              ) {
+                                const element1 = this.allData[index];
+                                this.orderStatusText[index] =
+                                  GlobalVars.getDesOrderStatusWithID(
+                                    element1.status,
+                                    "uz"
+                                  );
+                              }
+
+                              this.currentPage = response.json().currentPage;
+                              this.totalPages = response.json().totalPages;
+                              this.needPagination = this.totalPages > 1;
+                            },
+                            (error) => {
+                              if (error.status == 403) {
+                                this.authService.logout();
+                              }
+                            }
+                          );
+
                         this.recordParcel();
                       }
-
-                      this.recordParcel();
                     });
-                } else {
-                  // let filterLink = "&consignment=CU"+partNums[i];
-
-                  this.http
-                    .get(
-                      GlobalVars.baseUrl +
-                        "/orders/list?page=" +
-                        this.currentPage +
-                        "&size=100",
-                      this.options
-                    )
-                    .subscribe(
-                      (response) => {
-                        this.allData = response.json().orders;
-                        this.totalLeftCountItems = response.json().totalItems;
-                        for (
-                          let index = 0;
-                          index < this.allData.length;
-                          index++
-                        ) {
-                          const element = this.allData[index];
-                          this.orderTypeText[index] =
-                            GlobalVars.getDescriptionWithID(
-                              element.order_type,
-                              "uz"
-                            );
-                        }
-
-                        for (
-                          let index = 0;
-                          index < this.allData.length;
-                          index++
-                        ) {
-                          const element1 = this.allData[index];
-                          this.orderStatusText[index] =
-                            GlobalVars.getDesOrderStatusWithID(
-                              element1.status,
-                              "uz"
-                            );
-                        }
-
-                        this.currentPage = response.json().currentPage;
-                        this.totalPages = response.json().totalPages;
-                        if (this.totalPages >= 1) {
-                          this.needPagination = true;
-                          this.mypages = [""];
-                          for (let i = 0; i < this.totalPages; i++) {
-                            this.mypages[i] = { id: "name" };
-                          }
-                        }
-                      },
-                      (error) => {
-                        if (error.status == 403) {
-                          this.authService.logout();
-                        }
-                      }
-                    );
-
-                  this.recordParcel();
                 }
               },
               (error) => {
                 if (error.status == 400) {
-                  this.playAudio();
                   swal
                     .fire({
                       title: "Not Added",
@@ -614,7 +394,6 @@ export class UzParclesListComponent implements OnInit {
                       }
                     });
                 } else if (error.status == 403) {
-                  this.playAudio();
                   swal
                     .fire({
                       title: "Not Added",
@@ -638,13 +417,6 @@ export class UzParclesListComponent implements OnInit {
       .then((result) => {
         //  this.recordParcel();
       });
-  }
-
-  pagebyNum(ipage) {
-    this.currentPage = ipage;
-    this.isPageNumActive = true;
-    document.getElementById("listcard").scrollIntoView();
-    this.getListOfParcels();
   }
 
   editParcel(trackingNumber, ownerID, ruName, quantity, orderType, cn_name) {
@@ -713,7 +485,6 @@ export class UzParclesListComponent implements OnInit {
               (response) => {
                 if (response.json().status == "error") {
                   this.registredMessage = response.json().message;
-                  // swal.showValidationMessage('Not Added, check: ' + this.registredMessage);
                   swal
                     .fire("Not Added", this.registredMessage, "error")
                     .then((result) => {
@@ -805,7 +576,6 @@ export class UzParclesListComponent implements OnInit {
   }
 
   getInfoOfParcel(me) {
-    // console.log("ne is"+ me);
     this.trackingNum2 = me;
   }
 }

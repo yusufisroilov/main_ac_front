@@ -1,0 +1,26 @@
+<div class="pagination-wrapper" *ngIf="totalPages > 1">
+    <div class="pagination-container">
+        <div class="pagination-controls">
+            <button class="pagination-btn nav-btn" (click)="onPreviousPage()" [disabled]="currentPage == 0">
+                <i class="fa fa-angle-left"></i> Previous
+            </button>
+
+            <button *ngFor="let page of visiblePages" class="pagination-btn page-number"
+                [class.active]="currentPage == page" (click)="onPageChange(page)">
+                {{ page + 1 }}
+            </button>
+
+            <button class="pagination-btn nav-btn" (click)="onNextPage()" [disabled]="currentPage == totalPages - 1">
+                Next <i class="fa fa-angle-right"></i>
+            </button>
+        </div>
+
+        <div class="go-to-page">
+            <label for="pageInput">Go to Page</label>
+            <input type="number" id="pageInput" [(ngModel)]="inputPageNumber" [min]="1" [max]="totalPages"
+                placeholder="Page #" (keypress)="onKeyPress($event)" />
+            <button class="go-btn" (click)="onGoToPage()">Go</button>
+        </div>
+    </div>
+
+</div>

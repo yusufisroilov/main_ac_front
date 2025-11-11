@@ -36,6 +36,7 @@ export class FinanceComponent implements OnInit {
   currentPage: number;
   totalPages: number;
   needPagination: boolean;
+  pageSize: number = 600;
   mypages = [];
   isPageNumActive: boolean;
 
@@ -173,11 +174,26 @@ export class FinanceComponent implements OnInit {
     this.currentParty = localStorage.getItem("current_party");
     return this.getListOfFinance();
   }
+  /**
+   * Handle page change from pagination component
+   */
+  onPageChanged(pageIndex: number) {
+    this.currentPage = pageIndex;
+    document.getElementById("listcard")?.scrollIntoView({ behavior: "smooth" });
+    this.getListOfFinance();
+  }
 
   getListOfFinance() {
     //let filterLink = '&status='+this.orderFilterStatus+"&orderType="+this.orderFilterType+"&ownerID="+this.orderFilterOwnId+"&consignment="+this.orderFilterParty;
     return this.http
-      .get(GlobalVars.baseUrl + "/finance/list?size=800", this.options)
+      .get(
+        GlobalVars.baseUrl +
+          "/finance/list?page=" +
+          this.currentPage +
+          "&size=" +
+          this.pageSize,
+        this.options
+      )
       .subscribe(
         (response) => {
           this.allData = response.json().finances;
@@ -192,16 +208,15 @@ export class FinanceComponent implements OnInit {
           this.totalDebtUZS = response.json().totalDebtUZS;
           this.activeConsignment = response.json().activeConsignment;
 
-          // this.currentPage = response.json().currentPage;
-          //  this.totalPages = response.json().totalPages;
-          // if (this.totalPages >= 1) {
-          //   this.needPagination = true;
-          //   this.mypages=[''];
-          //   for(let i=0; i<this.totalPages;i++){
-          //     this.mypages[i] = {id: "name"};
-
-          //   }
-          // }
+          this.currentPage = response.json().currentPage;
+          this.totalPages = response.json().totalPages;
+          if (this.totalPages >= 1) {
+            this.needPagination = true;
+            this.mypages = [""];
+            for (let i = 0; i < this.totalPages; i++) {
+              this.mypages[i] = { id: "name" };
+            }
+          }
         },
         (error) => {
           if (error.status == 403) {
@@ -290,7 +305,7 @@ export class FinanceComponent implements OnInit {
     return this.http
       .get(
         GlobalVars.baseUrl +
-          "/finance/list?size=500&ownerId=" +
+          `/finance/list?size=${this.pageSize}&ownerId=` +
           this.currentFinID,
         this.options
       )
@@ -341,7 +356,8 @@ export class FinanceComponent implements OnInit {
         GlobalVars.baseUrl +
           "/orders/list?page=" +
           this.currentPage +
-          "&size=300" +
+          "&size=" +
+          this.pageSize +
           filterLink,
         this.options
       )
@@ -921,7 +937,14 @@ export class FinanceComponent implements OnInit {
 
   getListwithFiltr(cond) {
     return this.http
-      .get(GlobalVars.baseUrl + "/finance/list?size=300", this.options)
+      .get(
+        GlobalVars.baseUrl +
+          "/finance/list?page=" +
+          this.currentPage +
+          "&size=" +
+          this.pageSize,
+        this.options
+      )
       .subscribe(
         (response) => {
           if (cond == "true") {

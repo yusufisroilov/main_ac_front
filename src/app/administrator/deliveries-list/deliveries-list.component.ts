@@ -94,9 +94,9 @@ export class DeliveriesListComponent {
 
   // Pagination
   currentPage: number = 0;
-  deliveriesPerPage: number = 50;
+  deliveriesPerPage: number = 100;
   totalPages: number = 0;
-
+  needPagination: boolean;
   // Status update
   newStatus: string = "";
   returnReason: string = "";
@@ -291,6 +291,14 @@ export class DeliveriesListComponent {
     return true;
   }
 
+  /**
+   * Handle page change from pagination component
+   */
+  onPageChanged(pageIndex: number) {
+    this.currentPage = pageIndex;
+    document.getElementById("listcard")?.scrollIntoView({ behavior: "smooth" });
+    this.loadDeliveries();
+  }
   // Load deliveries with filters
   loadDeliveries() {
     this.loadingDeliveries = true;
@@ -333,9 +341,11 @@ export class DeliveriesListComponent {
             // console.log("deliveries ", this.deliveries);
 
             this.totalDeliveries = result.data.pagination.total;
-            this.totalPages = Math.ceil(
-              this.totalDeliveries / this.deliveriesPerPage
-            );
+            this.totalPages = result.totalPages;
+
+            if (this.totalPages > 1) {
+              this.needPagination = true;
+            }
           } else {
             swal.fire(
               "Xatolik",

@@ -1,4 +1,4 @@
-/* Enhanced Pagination Styles */
+/* Pagination Wrapper */
 .pagination-wrapper {
   margin-top: 20px;
   padding-top: 20px;
@@ -47,12 +47,13 @@
   background-color: #f9f9f9;
 }
 
+/* ACTIVE PAGE STYLING - WITH !important TO OVERRIDE ANY CONFLICTS */
 .pagination-btn.active {
-  background-color: #e74c3c;
-  color: white;
-  border-color: #e74c3c;
-  font-weight: 700;
-  box-shadow: 0 2px 4px rgba(231, 76, 60, 0.3);
+  background-color: #e74c3c !important;
+  color: white !important;
+  border-color: #e74c3c !important;
+  font-weight: 700 !important;
+  box-shadow: 0 2px 4px rgba(231, 76, 60, 0.3) !important;
 }
 
 .pagination-btn.nav-btn {
@@ -174,7 +175,7 @@
   }
 }
 
-/* Animation for page changes */
+/* Animation for smooth transitions */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -184,13 +185,4 @@
     opacity: 1;
     transform: translateY(0);
   }
-}
-
-.table-responsive {
-  animation: fadeIn 0.3s ease-in-out;
-}
-
-/* Old pagination styles - keep if needed elsewhere */
-ul.pagination {
-  display: none; /* Hide old pagination */
 }

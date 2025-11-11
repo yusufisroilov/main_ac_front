@@ -30,6 +30,7 @@ export class AllreceiversComponent implements OnInit {
 
   currentPage: number;
   totalPages: number;
+  pageSize: number = 20;
   needPagination: boolean;
   mypages = [];
   isPageNumActive: boolean;
@@ -102,7 +103,8 @@ export class AllreceiversComponent implements OnInit {
         GlobalVars.baseUrl +
           "/receivers/listForStaff?page=" +
           this.currentPage +
-          "&size=50",
+          "&size=" +
+          this.pageSize,
         this.options
       )
       .subscribe(
@@ -161,6 +163,15 @@ export class AllreceiversComponent implements OnInit {
     this.router.navigate(["/addreceivers"]);
   }
 
+  /**
+   * Handle page change from pagination component
+   */
+  onPageChanged(pageIndex: number) {
+    this.currentPage = pageIndex;
+    document.getElementById("listcard")?.scrollIntoView({ behavior: "smooth" });
+    this.getListOfRecs();
+  }
+
   getListOfRecsWithFilter(parentId, passportCont, ownid, status) {
     let filterLink =
       "&parentID=" +
@@ -176,7 +187,8 @@ export class AllreceiversComponent implements OnInit {
         GlobalVars.baseUrl +
           "/receivers/listForStaff?page=" +
           this.currentPage +
-          "&size=50" +
+          "&size=" +
+          this.pageSize +
           filterLink,
         this.options
       )

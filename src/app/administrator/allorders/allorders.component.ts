@@ -36,6 +36,7 @@ export class AllordersComponent implements OnInit {
 
   currentPage: number;
   totalPages: number;
+  pageSize: number = 100;
   needPagination: boolean;
   mypages = [];
   isPageNumActive: boolean;
@@ -134,12 +135,12 @@ export class AllordersComponent implements OnInit {
       var data = table.row($tr).data();
       alert(
         "You press on Row: " +
-        data[0] +
-        " " +
-        data[1] +
-        " " +
-        data[2] +
-        "'s row."
+          data[0] +
+          " " +
+          data[1] +
+          " " +
+          data[2] +
+          "'s row."
       );
       e.preventDefault();
     });
@@ -175,10 +176,11 @@ export class AllordersComponent implements OnInit {
     return this.http
       .get(
         GlobalVars.baseUrl +
-        "/orders/list?page=" +
-        this.currentPage +
-        "&size=100" +
-        filterLink,
+          "/orders/list?page=" +
+          this.currentPage +
+          "&size=" +
+          this.pageSize +
+          filterLink,
         this.options
       )
       .subscribe((response) => {
@@ -202,13 +204,7 @@ export class AllordersComponent implements OnInit {
 
         this.currentPage = response.json().currentPage;
         this.totalPages = response.json().totalPages;
-        if (this.totalPages >= 1) {
-          this.needPagination = true;
-          this.mypages = [""];
-          for (let i = 0; i < this.totalPages; i++) {
-            this.mypages[i] = { id: "name" };
-          }
-        }
+        this.needPagination = this.totalPages > 1;
       });
   }
 
@@ -235,10 +231,11 @@ export class AllordersComponent implements OnInit {
     return this.http
       .get(
         GlobalVars.baseUrl +
-        "/orders/list?page=" +
-        this.currentPage +
-        "&size=100" +
-        filterLink,
+          "/orders/list?page=" +
+          this.currentPage +
+          "&size=" +
+          this.pageSize +
+          filterLink,
         this.options
       )
       .subscribe(
@@ -263,13 +260,7 @@ export class AllordersComponent implements OnInit {
 
           this.currentPage = response.json().currentPage;
           this.totalPages = response.json().totalPages;
-          if (this.totalPages >= 1) {
-            this.needPagination = true;
-            this.mypages = [""];
-            for (let i = 0; i < this.totalPages; i++) {
-              this.mypages[i] = { id: "name" };
-            }
-          }
+          this.needPagination = this.totalPages > 1;
         },
         (error) => {
           if (error.status == 403) {
@@ -277,6 +268,17 @@ export class AllordersComponent implements OnInit {
           }
         }
       );
+  }
+
+  // Pagination Methods
+
+  /**
+   * Handle page change from pagination component
+   */
+  onPageChanged(pageIndex: number) {
+    this.currentPage = pageIndex;
+    document.getElementById("listcard")?.scrollIntoView({ behavior: "smooth" });
+    this.getListOfParcels();
   }
 
   getListOfParcelsWithSearch(searchkey) {
@@ -400,7 +402,7 @@ export class AllordersComponent implements OnInit {
           }
         },
       })
-      .then((result) => { });
+      .then((result) => {});
   }
 
   getListOfParcelsMoreParties(status, type, ownerid, partNums, check) {
@@ -431,14 +433,14 @@ export class AllordersComponent implements OnInit {
         "&consignment=" +
         this.orderFilterPartys[i];
 
-
       this.http
         .get(
           GlobalVars.baseUrl +
-          "/orders/list?page=" +
-          this.currentPage +
-          "&size=100" +
-          filterLink,
+            "/orders/list?page=" +
+            this.currentPage +
+            "&size=" +
+            this.pageSize +
+            filterLink,
           this.options
         )
         .subscribe(
@@ -472,13 +474,7 @@ export class AllordersComponent implements OnInit {
 
             this.currentPage = response.json().currentPage;
             this.totalPages = response.json().totalPages;
-            if (this.totalPages >= 1) {
-              this.needPagination = true;
-              this.mypages = [""];
-              for (let i = 0; i < this.totalPages; i++) {
-                this.mypages[i] = { id: "name" };
-              }
-            }
+            this.needPagination = this.totalPages > 1;
           },
           (error) => {
             if (error.status == 403) {
@@ -488,8 +484,6 @@ export class AllordersComponent implements OnInit {
         );
     }
   }
-
-
 
   recordParcel() {
     swal
@@ -508,16 +502,17 @@ export class AllordersComponent implements OnInit {
         buttonsStyling: false,
 
         preConfirm: (valueB) => {
-          this.http.post(
-            GlobalVars.baseUrl +
-              "/orders/arrivedCheck?tracking_number=" +
-              valueB +
-              "&ownerID=" +
-              this.currentOwnerID +
-              "&status=7",
-            "",
-            this.options
-          )
+          this.http
+            .post(
+              GlobalVars.baseUrl +
+                "/orders/arrivedCheck?tracking_number=" +
+                valueB +
+                "&ownerID=" +
+                this.currentOwnerID +
+                "&status=7",
+              "",
+              this.options
+            )
             .subscribe(
               (response) => {
                 if (response.json().status == "error") {
@@ -562,10 +557,11 @@ export class AllordersComponent implements OnInit {
                     this.http
                       .get(
                         GlobalVars.baseUrl +
-                        "/orders/list?page=" +
-                        this.currentPage +
-                        "&size=100" +
-                        filterLink,
+                          "/orders/list?page=" +
+                          this.currentPage +
+                          "&size=" +
+                          this.pageSize +
+                          filterLink,
                         this.options
                       )
                       .subscribe(
@@ -644,6 +640,8 @@ export class AllordersComponent implements OnInit {
 
   pagebyNum(ipage) {
     this.currentPage = ipage;
+    console.log("current pagess ", this.currentPage);
+
     this.isPageNumActive = true;
     document.getElementById("listcard").scrollIntoView();
     this.getListOfParcels();
@@ -696,18 +694,18 @@ export class AllordersComponent implements OnInit {
           this.http
             .post(
               GlobalVars.baseUrl +
-              "/orders/edit?tracking_number=" +
-              trackingNumber +
-              "&name_ru=" +
-              rusName +
-              "&owner_id=" +
-              ownerId +
-              "&quantity=" +
-              quantityOfPar +
-              "&type=" +
-              typeOfParcel +
-              "&name_cn=" +
-              cn_name,
+                "/orders/edit?tracking_number=" +
+                trackingNumber +
+                "&name_ru=" +
+                rusName +
+                "&owner_id=" +
+                ownerId +
+                "&quantity=" +
+                quantityOfPar +
+                "&type=" +
+                typeOfParcel +
+                "&name_cn=" +
+                cn_name,
               "",
               this.options
             )
