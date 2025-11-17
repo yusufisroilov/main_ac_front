@@ -1,0 +1,224 @@
+<div class="main-content">
+    <div class="container-fluid">
+
+        <!-- Loading Spinner -->
+        <div *ngIf="isLoading" class="text-center py-5">
+            <mat-spinner class="mx-auto"></mat-spinner>
+            <p class="mt-3">Loading ticket details...</p>
+        </div>
+
+        <!-- Ticket Detail Content -->
+        <div *ngIf="!isLoading && ticket" class="ticket-detail-container">
+
+            <!-- Header -->
+            <div class="row mb-3">
+                <div class="col-md-12">
+                    <button mat-raised-button (click)="goBack()" class="mb-3">
+                        <mat-icon>arrow_back</mat-icon> Back to My Tickets
+                    </button>
+                </div>
+            </div>
+
+            <!-- Ticket Info Card -->
+            <div class="row mb-4">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header card-header-primary">
+                            <h4 class="card-title mb-0">
+                                <mat-icon class="align-middle">confirmation_number</mat-icon>
+                                {{ ticket.ticket_number }}
+                            </h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-9">
+                                    <h5 class="ticket-subject">{{ ticket.subject }}</h5>
+                                    <p class="ticket-category">
+                                        <mat-icon class="icon-sm">label</mat-icon>
+                                        {{ getCategoryLabel(ticket.category) }}
+                                    </p>
+                                </div>
+                                <div class="col-md-3 text-right">
+                                    <div class="mb-2">
+                                        <span class="badge" [ngClass]="getStatusClass(ticket.status)">
+                                            {{ getStatusLabel(ticket.status) }}
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <span class="badge" [ngClass]="getPriorityClass(ticket.priority)">
+                                            {{ getPriorityLabel(ticket.priority) }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mt-3 pt-3 border-top">
+                                <div class="col-md-6">
+                                    <p class="mb-1 small">
+                                        <strong>Created:</strong> {{ formatDate(ticket.created_at) }}
+                                    </p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p class="mb-1 small">
+                                        <strong>Last Updated:</strong> {{ formatDate(ticket.updated_at) }}
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Status Explanation -->
+                            <div class="alert alert-info mt-3" *ngIf="getStatusExplanation(ticket.status)">
+                                <mat-icon class="align-middle">info</mat-icon>
+                                {{ getStatusExplanation(ticket.status) }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Messages Card -->
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header card-header-info">
+                            <h5 class="card-title mb-0">
+                                <mat-icon class="align-middle">chat</mat-icon>
+                                Conversation ({{ getMessageCount() }} message{{ getMessageCount() !== 1 ? 's' : '' }})
+                            </h5>
+                        </div>
+                        <div class="card-body p-0">
+
+                            <!-- Messages Container -->
+                            <div class="messages-container">
+
+                                <!-- Empty State -->
+                                <div *ngIf="getMessageCount() === 0" class="empty-messages">
+                                    <mat-icon>chat_bubble_outline</mat-icon>
+                                    <p>No messages yet</p>
+                                </div>
+
+                                <!-- Messages List -->
+                                <div *ngFor="let message of ticket.messages" class="message-wrapper" [ngClass]="{
+                     'message-customer': isCustomerMessage(message),
+                     'message-staff': isStaffMessage(message)
+                   }">
+
+                                    <div class="message-bubble">
+                                        <!-- Message Header -->
+                                        <div class="message-header">
+                                            <div class="sender-info">
+                                                <div class="sender-avatar"
+                                                    [ngClass]="isCustomerMessage(message) ? 'avatar-customer' : 'avatar-staff'">
+                                                    {{ getInitials(message.sender_name) }}
+                                                </div>
+                                                <div class="sender-details">
+                                                    <strong class="sender-name">{{ message.sender_name }}</strong>
+                                                    <span class="message-time">{{ formatDate(message.created_at)
+                                                        }}</span>
+                                                </div>
+                                            </div>
+                                            <div class="sender-badge">
+                                                <span class="badge"
+                                                    [ngClass]="isCustomerMessage(message) ? 'badge-info' : 'badge-success'">
+                                                    {{ isCustomerMessage(message) ? 'You' : 'Support' }}
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <!-- Message Content -->
+                                        <div class="message-content">{{ message.message_text }}</div>
+
+                                        <!-- Attachments -->
+                                        <div class="message-attachments" *ngIf="hasAttachments(message)">
+                                            <div class="attachment-list">
+                                                <div *ngFor="let attachment of message.attachments"
+                                                    class="attachment-item">
+                                                    <mat-icon class="attachment-icon">{{
+                                                        getAttachmentIcon(attachment.file_name) }}</mat-icon>
+                                                    <a [href]="attachment.file_path" target="_blank"
+                                                        class="attachment-link">
+                                                        {{ attachment.file_name }}
+                                                    </a>
+                                                    <span class="attachment-size" *ngIf="attachment.file_size">
+                                                        ({{ (attachment.file_size / 1024).toFixed(1) }} KB)
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- Reply Form -->
+                    <div class="card mt-4" *ngIf="!isTicketClosed()">
+                        <div class="card-header card-header-success">
+                            <h5 class="card-title mb-0">
+                                <mat-icon class="align-middle">reply</mat-icon>
+                                Reply to Support
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="reply-form">
+                                <textarea [(ngModel)]="replyMessage" class="form-control reply-textarea" rows="5"
+                                    placeholder="Type your message here...
+
+Please provide as much detail as possible to help us resolve your issue quickly." [disabled]="isSubmittingReply">
+              </textarea>
+
+                                <div class="reply-footer mt-3">
+                                    <div class="reply-info">
+                                        <small class="text-muted">
+                                            <mat-icon class="icon-xs">info</mat-icon>
+                                            Support will be notified of your reply
+                                        </small>
+                                    </div>
+                                    <div class="reply-actions">
+                                        <button mat-raised-button color="primary" (click)="onSubmitReply()"
+                                            [disabled]="!isReplyValid() || isSubmittingReply">
+                                            <mat-icon>send</mat-icon>
+                                            {{ isSubmittingReply ? 'Sending...' : 'Send Reply' }}
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Closed Ticket Notice -->
+                    <div class="alert alert-secondary mt-4" *ngIf="isTicketClosed()">
+                        <mat-icon class="align-middle">lock</mat-icon>
+                        This ticket has been closed. If you need further assistance, please create a new ticket.
+                        <button mat-raised-button color="primary" (click)="router.navigate(['/customer/create-ticket'])"
+                            class="ml-3">
+                            <mat-icon>add</mat-icon> New Ticket
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Help Section -->
+            <div class="row mt-4">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <h6>
+                                <mat-icon class="align-middle">help</mat-icon>
+                                Need More Help?
+                            </h6>
+                            <p class="mb-0">
+                                If you're not getting the help you need, please provide more details in your reply.
+                                Our support team typically responds within 2-4 hours during business hours.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>

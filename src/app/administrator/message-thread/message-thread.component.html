@@ -1,0 +1,58 @@
+<div class="message-thread-container">
+
+    <!-- Empty State -->
+    <div *ngIf="messages.length === 0" class="empty-state">
+        <mat-icon>chat_bubble_outline</mat-icon>
+        <p>No messages yet</p>
+    </div>
+
+    <!-- Message List -->
+    <div class="messages-list" *ngIf="messages.length > 0">
+        <div *ngFor="let message of messages; let i = index" class="message-wrapper" [ngClass]="{
+           'message-customer': isCustomerMessage(message),
+           'message-staff': isStaffMessage(message)
+         }">
+
+            <div class="message-bubble">
+                <!-- Message Header -->
+                <div class="message-header">
+                    <div class="sender-info">
+                        <div class="sender-avatar"
+                            [ngClass]="isCustomerMessage(message) ? 'avatar-customer' : 'avatar-staff'">
+                            {{ getInitials(message.sender_name) }}
+                        </div>
+                        <div class="sender-details">
+                            <strong class="sender-name">{{ message.sender_name }}</strong>
+                            <span class="message-time">{{ formatDate(message.created_at) }}</span>
+                        </div>
+                    </div>
+                    <div class="sender-badge">
+                        <span class="badge" [ngClass]="isCustomerMessage(message) ? 'badge-info' : 'badge-purple'">
+                            {{ isCustomerMessage(message) ? 'Customer' : 'Staff' }}
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Message Content -->
+                <div class="message-content" [innerHTML]="renderMessageHTML(message.message_text)"></div>
+
+                <!-- Attachments -->
+                <div class="message-attachments" *ngIf="hasAttachments(message)">
+                    <div class="attachment-list">
+                        <div *ngFor="let attachment of message.attachments" class="attachment-item">
+                            <mat-icon class="attachment-icon">{{ getAttachmentIcon(attachment.filename) }}</mat-icon>
+                            <a [href]="attachment.file_url" target="_blank" class="attachment-link">
+                                {{ attachment.filename }}
+                            </a>
+                            <span class="attachment-size" *ngIf="attachment.file_size">
+                                ({{ (attachment.file_size / 1024).toFixed(1) }} KB)
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>

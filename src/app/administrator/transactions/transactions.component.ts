@@ -31,7 +31,7 @@ export class TransactionsComponent implements OnInit {
 
   currentPage: number;
   totalPages: number;
-  pageSize: number = 5;
+  pageSize: number = 200;
   needPagination: boolean;
   mypages = [];
   isPageNumActive: boolean;

@@ -45,6 +45,7 @@ export class OrdersComponent implements OnInit, AfterViewInit {
   currentPage: number;
   totalPages: number;
   needPagination: boolean;
+  pageSize: number = 100;
   mypages = [];
   isPageNumActive: boolean;
 
@@ -79,6 +80,15 @@ export class OrdersComponent implements OnInit, AfterViewInit {
     this.isPageNumActive = false;
   }
 
+  /**
+   * Handle page change from pagination component
+   */
+  onPageChanged(pageIndex: number) {
+    this.currentPage = pageIndex;
+    document.getElementById("listcard")?.scrollIntoView({ behavior: "smooth" });
+    this.getListOfParcels();
+  }
+
   pagebyNum(ipage) {
     this.currentPage = ipage;
     this.isPageNumActive = true;
@@ -93,7 +103,8 @@ export class OrdersComponent implements OnInit, AfterViewInit {
         GlobalVars.baseUrl +
           "/orders/list?page=" +
           this.currentPage +
-          "&size=50" +
+          "&size=" +
+          this.pageSize +
           "&ownerID=" +
           ownerid,
         this.options
@@ -146,7 +157,8 @@ export class OrdersComponent implements OnInit, AfterViewInit {
         GlobalVars.baseUrl +
           "/orders/list?page=" +
           this.currentPage +
-          "&size=50" +
+          "&size=" +
+          this.pageSize +
           filterLink,
         this.options
       )

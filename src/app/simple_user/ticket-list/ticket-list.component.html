@@ -1,0 +1,271 @@
+<div class="main-content">
+    <div class="container-fluid">
+
+        <!-- Page Header -->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card" id="listcard">
+                    <div class="card-header card-header-primary">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h4 class="card-title mb-0">
+                                    <mat-icon class="align-middle">confirmation_number</mat-icon>
+                                    My Support Tickets
+                                </h4>
+                                <p class="card-category mb-0">View and manage your support requests</p>
+                            </div>
+                            <button mat-raised-button color="accent" (click)="createNewTicket()">
+                                <mat-icon>add</mat-icon>
+                                New Ticket
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+
+                        <!-- Stats Row -->
+                        <div class="row mb-4">
+                            <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
+                                <div class="info-card">
+                                    <div class="info-icon bg-info">
+                                        <mat-icon>confirmation_number</mat-icon>
+                                    </div>
+                                    <div class="info-content">
+                                        <h3>{{ totalTickets }}</h3>
+                                        <p>Total Tickets</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
+                                <div class="info-card">
+                                    <div class="info-icon bg-warning">
+                                        <mat-icon>schedule</mat-icon>
+                                    </div>
+                                    <div class="info-content">
+                                        <!-- <h3>{{ tickets.filter(t => isWaitingForSupport(t)).length }}</h3> -->
+                                        <p>Waiting for Support</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
+                                <div class="info-card">
+                                    <div class="info-icon bg-success">
+                                        <mat-icon>check_circle</mat-icon>
+                                    </div>
+                                    <div class="info-content">
+                                        <!-- <h3>{{ tickets.filter(t => isWaitingForCustomer(t)).length }}</h3> -->
+                                        <p>Awaiting Your Reply</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Filter Bar -->
+                        <div class="row mb-3">
+                            <div class="col-lg-3 col-md-6 mb-3">
+                                <mat-form-field class="w-100" appearance="outline">
+                                    <mat-label>Search</mat-label>
+                                    <input matInput placeholder="Search by ticket # or subject"
+                                        [(ngModel)]="searchQuery" (keyup.enter)="onSearch()">
+                                    <mat-icon matSuffix>search</mat-icon>
+                                </mat-form-field>
+                            </div>
+
+                            <div class="col-lg-3 col-md-6 mb-3">
+                                <mat-form-field class="w-100" appearance="outline">
+                                    <mat-label>Filter by Status</mat-label>
+                                    <mat-select [(ngModel)]="selectedStatus" (selectionChange)="onFilterChange()">
+                                        <mat-option *ngFor="let option of statusOptions" [value]="option.value">
+                                            {{ option.label }}
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </div>
+
+                            <div class="col-lg-3 col-md-6 mb-3">
+                                <mat-form-field class="w-100" appearance="outline">
+                                    <mat-label>Filter by Category</mat-label>
+                                    <mat-select [(ngModel)]="selectedCategory" (selectionChange)="onFilterChange()">
+                                        <mat-option *ngFor="let option of categoryOptions" [value]="option.value">
+                                            {{ option.label }}
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </div>
+
+                            <div class="col-lg-3 col-md-6 mb-3">
+                                <mat-form-field class="w-100" appearance="outline">
+                                    <mat-label>Filter by Priority</mat-label>
+                                    <mat-select [(ngModel)]="selectedPriority" (selectionChange)="onFilterChange()">
+                                        <mat-option *ngFor="let option of priorityOptions" [value]="option.value">
+                                            {{ option.label }}
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="row mb-3" *ngIf="hasActiveFilters()">
+                            <div class="col-md-12">
+                                <button mat-raised-button (click)="clearFilters()">
+                                    <mat-icon>clear</mat-icon>
+                                    Clear Filters
+                                </button>
+                                <button mat-raised-button (click)="getListOfTickets()" class="ml-2">
+                                    <mat-icon>refresh</mat-icon>
+                                    Refresh
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Loading Spinner -->
+                        <div *ngIf="isLoading" class="text-center py-5">
+                            <mat-spinner class="mx-auto"></mat-spinner>
+                            <p class="mt-3">Loading your tickets...</p>
+                        </div>
+
+                        <!-- Empty State -->
+                        <div *ngIf="!isLoading && tickets.length === 0" class="empty-state">
+                            <mat-icon>inbox</mat-icon>
+                            <h3>No tickets found</h3>
+                            <p class="text-muted" *ngIf="!hasActiveFilters()">
+                                You haven't created any support tickets yet.
+                            </p>
+                            <p class="text-muted" *ngIf="hasActiveFilters()">
+                                No tickets match your current filters.
+                            </p>
+                            <button mat-raised-button color="primary" (click)="createNewTicket()" class="mt-3"
+                                *ngIf="!hasActiveFilters()">
+                                <mat-icon>add</mat-icon>
+                                Create Your First Ticket
+                            </button>
+                            <button mat-raised-button color="primary" (click)="clearFilters()" class="mt-3"
+                                *ngIf="hasActiveFilters()">
+                                <mat-icon>clear</mat-icon>
+                                Clear Filters
+                            </button>
+                        </div>
+
+                        <!-- Tickets List -->
+                        <div *ngIf="!isLoading && tickets.length > 0" class="tickets-container">
+                            <div *ngFor="let ticket of tickets" class="ticket-card"
+                                [class.has-unread]="hasUnreadMessages(ticket)" (click)="viewTicket(ticket)">
+
+                                <div class="ticket-header">
+                                    <div class="ticket-number">
+                                        <mat-icon class="ticket-icon">{{ getCategoryIcon(ticket.category) }}</mat-icon>
+                                        <div class="ticket-info">
+                                            <strong>{{ ticket.ticket_number }}</strong>
+                                            <span class="badge badge-unread ml-2" *ngIf="hasUnreadMessages(ticket)">
+                                                {{ ticket.unread_messages_count }} new
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="ticket-badges">
+                                        <span class="badge" [ngClass]="getStatusClass(ticket.status)">
+                                            {{ getStatusLabel(ticket.status) }}
+                                        </span>
+                                        <span class="badge" [ngClass]="getPriorityClass(ticket.priority)">
+                                            {{ getPriorityLabel(ticket.priority) }}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div class="ticket-body">
+                                    <h5 class="ticket-subject">{{ ticket.subject }}</h5>
+                                    <p class="ticket-category">
+                                        <mat-icon class="icon-sm">label</mat-icon>
+                                        {{ getCategoryLabel(ticket.category) }}
+                                    </p>
+                                    <p class="ticket-meta">
+                                        <mat-icon class="icon-sm">chat</mat-icon>
+                                        {{ ticket.messages_count || 0 }} message{{ (ticket.messages_count || 0) !== 1 ?
+                                        's' : '' }}
+                                        <span class="ml-3">
+                                            <mat-icon class="icon-sm">schedule</mat-icon>
+                                            {{ getTimeAgo(ticket.updated_at) }}
+                                        </span>
+                                    </p>
+                                </div>
+
+                                <div class="ticket-footer" *ngIf="getStatusExplanation(ticket.status)">
+                                    <mat-icon class="icon-sm">info</mat-icon>
+                                    <small>{{ getStatusExplanation(ticket.status) }}</small>
+                                </div>
+
+                                <div class="ticket-arrow">
+                                    <mat-icon>chevron_right</mat-icon>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <!-- Pagination -->
+                        <div *ngIf="!isLoading && needPagination" class="row mt-4">
+                            <div class="col-md-12">
+                                <nav aria-label="Ticket pagination">
+                                    <ul class="pagination justify-content-center">
+                                        <!-- Previous Page -->
+                                        <li class="page-item" [class.disabled]="currentPage === 1">
+                                            <a class="page-link" href="javascript:void(0)"
+                                                (click)="onPageChange(currentPage - 1)">
+                                                <mat-icon>chevron_left</mat-icon>
+                                            </a>
+                                        </li>
+
+                                        <!-- Page Numbers -->
+                                        <li class="page-item" *ngFor="let page of getPageNumbers()"
+                                            [class.active]="page === currentPage">
+                                            <a class="page-link" href="javascript:void(0)" (click)="onPageChange(page)">
+                                                {{ page }}
+                                            </a>
+                                        </li>
+
+                                        <!-- Next Page -->
+                                        <li class="page-item" [class.disabled]="currentPage === totalPages">
+                                            <a class="page-link" href="javascript:void(0)"
+                                                (click)="onPageChange(currentPage + 1)">
+                                                <mat-icon>chevron_right</mat-icon>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </nav>
+
+                                <p class="text-center text-muted">
+                                    Showing {{ (currentPage - 1) * pageSize + 1 }}
+                                    to {{ Math.min(currentPage * pageSize, totalTickets) }}
+                                    of {{ totalTickets }} tickets
+                                </p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Help Section -->
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h5>
+                            <mat-icon class="align-middle">help</mat-icon>
+                            Need Help?
+                        </h5>
+                        <p class="mb-2">
+                            <strong>Response Time:</strong> We typically respond within 2-4 hours during business hours.
+                        </p>
+                        <p class="mb-0">
+                            <strong>Urgent Issues:</strong> For urgent delivery issues, please create a ticket with
+                            "Urgent" priority.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

@@ -1,0 +1,248 @@
+<div class="main-content">
+    <div class="container-fluid">
+
+        <!-- Loading Spinner -->
+        <div *ngIf="isLoading" class="text-center py-5">
+            <mat-spinner class="mx-auto"></mat-spinner>
+            <p class="mt-3">Loading ticket details...</p>
+        </div>
+
+        <!-- Ticket Detail Content -->
+        <div *ngIf="!isLoading && ticket" class="ticket-detail-container">
+
+            <!-- Header with Back Button and Actions -->
+            <div class="row mb-3">
+                <div class="col-md-12">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <button mat-raised-button (click)="goBack()" class="mr-2">
+                                <mat-icon>arrow_back</mat-icon> Back to Tickets
+                            </button>
+                        </div>
+                        <div>
+                            <button mat-raised-button color="primary" (click)="loadTicketDetail()" class="mr-2">
+                                <mat-icon>refresh</mat-icon> Refresh
+                            </button>
+                            <button mat-icon-button [matMenuTriggerFor]="actionMenu">
+                                <mat-icon>more_vert</mat-icon>
+                            </button>
+                            <mat-menu #actionMenu="matMenu">
+                                <button mat-menu-item [matMenuTriggerFor]="statusMenu">
+                                    <mat-icon>edit</mat-icon>
+                                    <span>Change Status</span>
+                                </button>
+                                <button mat-menu-item [matMenuTriggerFor]="priorityMenu">
+                                    <mat-icon>flag</mat-icon>
+                                    <span>Change Priority</span>
+                                </button>
+                                <button mat-menu-item (click)="reassignTicket()" *ngIf="canReassign()">
+                                    <mat-icon>person</mat-icon>
+                                    <span>Reassign</span>
+                                </button>
+                            </mat-menu>
+
+                            <!-- Status submenu -->
+                            <mat-menu #statusMenu="matMenu">
+                                <button mat-menu-item *ngFor="let option of statusOptions"
+                                    (click)="updateStatus(option.value)" [disabled]="ticket.status === option.value">
+                                    {{ option.label }}
+                                </button>
+                            </mat-menu>
+
+                            <!-- Priority submenu -->
+                            <mat-menu #priorityMenu="matMenu">
+                                <button mat-menu-item *ngFor="let option of priorityOptions"
+                                    (click)="updatePriority(option.value)"
+                                    [disabled]="ticket.priority === option.value">
+                                    {{ option.label }}
+                                </button>
+                            </mat-menu>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ticket Header Card -->
+            <div class="row mb-4">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header card-header-primary">
+                            <h4 class="card-title mb-0">
+                                <mat-icon class="align-middle">confirmation_number</mat-icon>
+                                {{ ticket.ticket_number }} - {{ ticket.subject }}
+                            </h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <!-- Customer Info -->
+                                <div class="col-md-3">
+                                    <h6 class="text-muted mb-2">
+                                        <mat-icon class="icon-sm">person</mat-icon> Customer
+                                    </h6>
+                                    <p class="mb-1"><strong>{{ getCustomerName() }}</strong></p>
+                                    <p class="mb-0 text-muted small">{{ ticket.customer.username }}</p>
+                                    <p class="mb-0 text-muted small" *ngIf="ticket.customer.telegramId">
+                                        <mat-icon class="icon-xs">phone</mat-icon> Telegram ID
+                                    </p>
+                                </div>
+
+                                <!-- Status & Priority -->
+                                <div class="col-md-3">
+                                    <h6 class="text-muted mb-2">
+                                        <mat-icon class="icon-sm">info</mat-icon> Status & Priority
+                                    </h6>
+                                    <p class="mb-2">
+                                        <span class="badge" [ngClass]="getStatusClass(ticket.status)">
+                                            {{ getStatusLabel(ticket.status) }}
+                                        </span>
+                                    </p>
+                                    <p class="mb-0">
+                                        <span class="badge" [ngClass]="getPriorityClass(ticket.priority)">
+                                            {{ getPriorityLabel(ticket.priority) }}
+                                        </span>
+                                    </p>
+                                </div>
+
+                                <!-- Assignment -->
+                                <div class="col-md-3">
+                                    <h6 class="text-muted mb-2">
+                                        <mat-icon class="icon-sm">assignment_ind</mat-icon> Assigned To
+                                    </h6>
+                                    <p class="mb-1"><strong>{{ ticket.assigned_to }}</strong></p>
+                                    <button mat-button color="primary" (click)="reassignTicket()" *ngIf="canReassign()"
+                                        class="p-0">
+                                        <mat-icon class="icon-sm">edit</mat-icon> Reassign
+                                    </button>
+                                </div>
+
+                                <!-- Timestamps -->
+                                <div class="col-md-3">
+                                    <h6 class="text-muted mb-2">
+                                        <mat-icon class="icon-sm">schedule</mat-icon> Timeline
+                                    </h6>
+                                    <p class="mb-1 small">
+                                        <strong>Created:</strong> {{ formatDate(ticket.created_at) }}
+                                    </p>
+                                    <p class="mb-1 small">
+                                        <strong>Updated:</strong> {{ formatDate(ticket.updated_at) }}
+                                    </p>
+                                    <p class="mb-0 small" [ngClass]="isSLABreached() ? 'text-danger' : 'text-success'">
+                                        <strong>SLA:</strong> {{ getSLAStatus() }}
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Additional Info Row -->
+                            <div class="row mt-3 pt-3 border-top">
+                                <div class="col-md-3">
+                                    <p class="mb-0 small">
+                                        <strong>Category:</strong>
+                                        <span class="badge badge-secondary ml-2">{{ getCategoryLabel(ticket.category)
+                                            }}</span>
+                                    </p>
+                                </div>
+                                <div class="col-md-3" *ngIf="ticket.shipment_code">
+                                    <p class="mb-0 small">
+                                        <strong>Shipment:</strong>
+                                        <a href="javascript:void(0)" class="ml-2">{{ ticket.shipment_code }}</a>
+                                    </p>
+                                </div>
+                                <div class="col-md-3">
+                                    <p class="mb-0 small">
+                                        <strong>Age:</strong> {{ getTimeSinceCreation() }}
+                                    </p>
+                                </div>
+                                <div class="col-md-3" *ngIf="ticket.resolution_code">
+                                    <p class="mb-0 small">
+                                        <strong>Resolution:</strong> {{ ticket.resolution_code }}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content Row -->
+            <div class="row">
+                <!-- Left Column: Messages and Reply -->
+                <div class="col-md-8">
+
+                    <!-- Message Thread Component -->
+                    <div class="card mb-4">
+                        <div class="card-header card-header-info">
+                            <h5 class="card-title mb-0">
+                                <mat-icon class="align-middle">chat</mat-icon>
+                                Conversation ({{ customerMessages.length }} messages)
+                            </h5>
+                        </div>
+                        <div class="card-body p-0">
+                            <app-message-thread [messages]="customerMessages" [ticketStatus]="ticket.status">
+                            </app-message-thread>
+                        </div>
+                    </div>
+
+                    <!-- Reply Box Component (only if ticket not closed) -->
+                    <div class="card" *ngIf="!isTicketClosed()">
+                        <div class="card-header card-header-success">
+                            <h5 class="card-title mb-0">
+                                <mat-icon class="align-middle">reply</mat-icon>
+                                Reply to Customer
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <app-reply-box (replySubmit)="onStaffReply($event)">
+                            </app-reply-box>
+                        </div>
+                    </div>
+
+                    <!-- Closed Ticket Notice -->
+                    <div class="alert alert-secondary" *ngIf="isTicketClosed()">
+                        <mat-icon class="align-middle">lock</mat-icon>
+                        This ticket is closed. Reopen it to reply.
+                        <button mat-raised-button color="primary" (click)="updateStatus('open')" class="ml-3">
+                            <mat-icon>lock_open</mat-icon> Reopen Ticket
+                        </button>
+                    </div>
+
+                </div>
+
+                <!-- Right Column: Internal Notes and Activity -->
+                <div class="col-md-4">
+
+                    <!-- Internal Notes Component -->
+                    <div class="card mb-4">
+                        <div class="card-header card-header-warning">
+                            <h5 class="card-title mb-0">
+                                <mat-icon class="align-middle">speaker_notes</mat-icon>
+                                Internal Notes ({{ internalNotes.length }})
+                            </h5>
+                            <p class="card-category mb-0 small">Visible only to staff</p>
+                        </div>
+                        <div class="card-body">
+                            <app-internal-notes [notes]="internalNotes" (noteSubmit)="onInternalNote($event)">
+                            </app-internal-notes>
+                        </div>
+                    </div>
+
+                    <!-- Activity Log Component -->
+                    <div class="card">
+                        <div class="card-header card-header-rose">
+                            <h5 class="card-title mb-0">
+                                <mat-icon class="align-middle">history</mat-icon>
+                                Activity Log
+                            </h5>
+                        </div>
+                        <div class="card-body p-0">
+                            <app-activity-log [activities]="ticket.activity_log">
+                            </app-activity-log>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>

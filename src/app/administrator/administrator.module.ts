@@ -24,6 +24,13 @@ import { EmployerDeliveryComponent } from "../uzb_staff/employer-delivery/employ
 
 import { PaginationComponent } from "../shared/pagination/pagination.component";
 import { PaginationModule } from "../shared/pagination/pagination.module";
+import { AdminTicketDashboardComponent } from "./ticket-dashboard/admin-ticket-dashboard";
+import { AdminTicketListComponent } from "./admin-ticket-list/admin-ticket-list.component";
+import { AdminTicketDetailComponent } from "./admin-ticket-detail/admin-ticket-detail.component";
+import { MessageThreadComponent } from "./message-thread/message-thread.component";
+import { ReplyBoxComponent } from "./reply-box/reply-box.component";
+import { InternalNotesComponent } from "./internal-notes/internal-notes.component";
+import { ActivityLogComponent } from "./activity-log/activity-log.component";
 
 // import { FlexLayoutModule } from '@angular/flex-layout';
 
@@ -53,6 +60,13 @@ import { PaginationModule } from "../shared/pagination/pagination.module";
     WarehouseInventoryComponent,
     DeliveriesListComponent,
     EmployerDeliveryComponent,
+    AdminTicketDashboardComponent,
+    AdminTicketListComponent,
+    AdminTicketDetailComponent,
+    MessageThreadComponent,
+    ReplyBoxComponent,
+    InternalNotesComponent,
+    ActivityLogComponent,
   ],
 })
 export class AdminstratorModule {}

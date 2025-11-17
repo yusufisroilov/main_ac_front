@@ -47,11 +47,30 @@ export const ROUTES: RouteInfo[] = [
     type: "link",
     icontype: "cases",
   },
+
   {
     path: "/uzm/delivery-requests",
     title: "Yetkazib berish so'rovi",
     type: "link",
     icontype: "local_shipping",
+  },
+  {
+    path: "/customer-tickets",
+    title: "Customer Tickets",
+    type: "link",
+    icontype: "cases",
+  },
+  {
+    path: "/customer-ticket-detail",
+    title: "Customer Detail",
+    type: "link",
+    icontype: "cases",
+  },
+  {
+    path: "/create-ticket",
+    title: "Create Ticket",
+    type: "link",
+    icontype: "cases",
   },
 
   {
@@ -265,6 +284,44 @@ export const managerROUTES: RouteInfo[] = [
   {
     path: "/uzm/transactions",
     title: "Tranzaksiyalar ",
+    type: "link",
+    icontype: "credit_card",
+  },
+
+  {
+    path: "/uzm/tickets-list",
+    title: "Tickets List ",
+    type: "link",
+    icontype: "credit_card",
+  },
+  {
+    path: "/uzm/ticket-detail",
+    title: "Tickets Details ",
+    type: "link",
+    icontype: "credit_card",
+  },
+  {
+    path: "/uzm/ticket-notes",
+    title: "Tickets Notes ",
+    type: "link",
+    icontype: "credit_card",
+  },
+
+  {
+    path: "/uzm/message-thread",
+    title: "Message Thread ",
+    type: "link",
+    icontype: "credit_card",
+  },
+  {
+    path: "/uzm/reply-box",
+    title: "Reply Box ",
+    type: "link",
+    icontype: "credit_card",
+  },
+  {
+    path: "/uzm/ticket-dashboard",
+    title: "Ticket Dashboard ",
     type: "link",
     icontype: "credit_card",
   },

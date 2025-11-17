@@ -266,20 +266,16 @@
     </div>
 
 
-
-    <!-- Delivery Creation Modal -->
+    <!-- Delivery Creation Modal - UPDATED -->
     <div class="modal fade" id="deliveryCreationModal" tabindex="-1" role="dialog">
       <div class="modal-dialog modal-xl" role="document">
         <div class="modal-content">
 
           <!-- Modal Header -->
           <div class="modal-header">
-            <div>
-              <h4 class="modal-title">Yetkazish Yaratish</h4>
-              <p class="card-category mb-0">
-                Mijoz: <strong>K{{ currentID }}</strong> | Partiya: <strong>{{ selectedConsignmentName }}</strong>
-              </p>
-            </div>
+            <p class="card-category mb-0">
+              Mijoz: <strong>K{{ currentID }}</strong> | Partiya: <strong>{{ selectedConsignmentName }}</strong>
+            </p>
             <button type="button" class="close" (click)="closeDeliveryModal()">
               <i class="material-icons">clear</i>
             </button>
@@ -297,17 +293,6 @@
             <!-- Main Content -->
             <div *ngIf="!loadingCustomerPackages && customerPackages.length > 0">
 
-              <!-- Step 1: Package Selection -->
-              <div class="row">
-                <div class="col-md-12">
-                  <h5 class="title">
-                    <i class="material-icons">inventory_2</i>
-                    Qutillarni Tanlang
-                  </h5>
-                  <hr>
-                </div>
-              </div>
-
               <!-- Package Selection Table -->
               <div class="row mb-4">
                 <div class="col-md-12">
@@ -316,7 +301,16 @@
                       <thead>
                         <tr>
                           <th width="50" class="text-center">
-                            <i class="material-icons">check_box</i>
+                            <!-- UPDATED: Added Select All checkbox -->
+                            <div class="form-check">
+                              <label class="form-check-label">
+                                <input class="form-check-input" type="checkbox" [checked]="areAllPackagesSelected()"
+                                  (change)="toggleAllPackages($event.target.checked)">
+                                <span class="form-check-sign">
+                                  <span class="check"></span>
+                                </span>
+                              </label>
+                            </div>
                           </th>
                           <th>Turi</th>
                           <th class="text-center">Qutillar</th>
@@ -331,8 +325,10 @@
                             <td class="text-center">
                               <div class="form-check">
                                 <label class="form-check-label">
+                                  <!-- UPDATED: Added onPackageSelectionChange handler -->
                                   <input class="form-check-input" type="checkbox" [(ngModel)]="group.selected"
-                                    (change)="updateSelectedPackages()" [disabled]="group.selectionType === 'partial'">
+                                    (change)="onPackageSelectionChange(group)"
+                                    [disabled]="group.selectionType === 'partial'">
                                   <span class="form-check-sign">
                                     <span class="check"></span>
                                   </span>
@@ -396,73 +392,56 @@
                     </table>
                   </div>
 
-                  <!-- Selection Summary -->
-                  <div *ngIf="selectedPackageIdentifiers.length > 0" class="alert alert-success mt-3">
-                    <div class="row">
-                      <div class="col-md-8">
-                        <strong>Tanlangan:</strong> {{ getTotalSelectedPackages() }} ta quti
-                        <br>
-                        <small>
-                          {{ selectedConsignmentName }}: {{ getSelectedFromCurrentConsignment() }} ta |
-                          Boshqa: {{ getSelectedFromOtherConsignments() }} ta
-                        </small>
-                      </div>
-                      <div class="col-md-4 text-right">
-                        <button class="btn btn-sm btn-danger" (click)="clearAllSelections()">
-                          <i class="material-icons">clear</i>
-                          Tozalash
-                        </button>
-                      </div>
-                    </div>
-                  </div>
 
                   <!-- Tied Package Warning -->
                   <div *ngIf="hasTiedPackagesSelected()" class="alert alert-warning mt-3">
                     <h6><i class="material-icons">warning</i> Bog'langan Qutillar</h6>
-                    <!-- <p class="mb-0">
-                      <small>
-                        Qisman tanlash bog'lanishni buzadi va qutillar "collected" holatiga o'tkaziladi.
-                      </small>
-                    </p> -->
                   </div>
                 </div>
               </div>
 
               <!-- Step 2: Delivery Details -->
               <div *ngIf="selectedPackageIdentifiers.length > 0">
+
+
+                <!-- UPDATED: Button-style Delivery Type Selection (replaces dropdown) -->
                 <div class="row">
                   <div class="col-md-12">
-                    <h5 class="title">
-                      <i class="material-icons">local_shipping</i>
-                      Yetkazish Ma'lumotlari
-                    </h5>
-                    <hr>
+                    <label class="bmd-label-floating"
+                      style="font-size: 0.9rem; font-weight: 500; margin-bottom: 0.5rem;">
+                      Yetkazish Turi 📦
+                    </label>
+                    <div class="delivery-type-buttons">
+                      <button type="button" class="delivery-type-btn" [class.active]="deliveryType === 'Pick-up'"
+                        (click)="selectDeliveryType('Pick-up')">
+                        <i class="material-icons">person</i>
+                        <span>O'zim olaman</span>
+                      </button>
+                      <button type="button" class="delivery-type-btn" [class.active]="deliveryType === 'Yandex'"
+                        (click)="selectDeliveryType('Yandex')">
+                        <i class="material-icons">local_taxi</i>
+                        <span>Yandex</span>
+                      </button>
+                      <button type="button" class="delivery-type-btn" [class.active]="deliveryType === 'Own-Courier'"
+                        (click)="selectDeliveryType('Own-Courier')">
+                        <i class="material-icons">delivery_dining</i>
+                        <span>Kuryer</span>
+                      </button>
+                      <button type="button" class="delivery-type-btn" [class.active]="deliveryType === 'EMU'"
+                        (click)="selectDeliveryType('EMU')">
+                        <i class="material-icons">store</i>
+                        <span>EMU Filial</span>
+                      </button>
+                    </div>
                   </div>
                 </div>
 
-                <div class="row">
-
-                  <!-- Delivery Type -->
+                <!-- UPDATED: Customer Phone and Notes in one row, both optional -->
+                <div class="row mt-3">
                   <div class="col-md-6">
                     <div class="form-group">
                       <label class="bmd-label-floating">
-                        Yetkazish Turi 📦
-                      </label>
-                      <select class="form-control" [(ngModel)]="deliveryType" (change)="onDeliveryTypeChange()">
-                        <option value="">Tanlang</option>
-                        <option value="Pick-up">👤O'zim olaman</option>
-                        <option value="Yandex">🚕Yandex</option>
-                        <option value="Own-Courier">🚚Kuryer</option>
-                        <option value="EMU">🏣EMU Filial</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  <!-- Customer Phone -->
-                  <div class="col-md-6">
-                    <div class="form-group">
-                      <label class="bmd-label-floating">
-                        📞 Mijoz Telefoni
+                        📞 Mijoz Telefoni (ixtiyoriy)
                         <i class="material-icons" *ngIf="autoFilledFields.phone"
                           style="font-size: 16px; color: #2196f3; vertical-align: middle;"
                           title="Avtomatik to'ldirilgan">auto_awesome</i>
@@ -473,35 +452,27 @@
                     </div>
                   </div>
 
-                </div>
-
-                <!-- EMU Branch Selection -->
-                <div class="row" *ngIf="deliveryType === 'EMU'">
-                  <!-- Auto-fill notification banner -->
-                  <!-- <div class="col-md-12" *ngIf="isEmuDataAutoFilled">
-                    <div class="alert alert-info"
-                      style="background-color: #e3f2fd; border-left: 4px solid #2196f3; padding: 10px 15px; margin-bottom: 15px;">
-                      <div style="display: flex; align-items: center; justify-content: space-between;">
-                        <div style="display: flex; align-items: center;">
-                          <i class="material-icons" style="color: #2196f3; margin-right: 10px;">info</i>
-                          <span style="font-size: 13px;">
-                            <b>Avtomatik to'ldirildi:</b> Oxirgi EMU yetkazishdan ma'lumotlar yuklandi
-                            <span *ngIf="lastEmuDeliveryId" style="color: #666;">(ID: {{lastEmuDeliveryId}})</span>
-                          </span>
-                        </div>
-                        <button type="button" class="btn btn-sm btn-outline-primary" (click)="clearAutoFilledData()"
-                          style="font-size: 11px; padding: 4px 12px;">
-                          <i class="material-icons" style="font-size: 16px; vertical-align: middle;">clear</i>
-                          Tozalash
-                        </button>
-                      </div>
-                    </div>
-                  </div> -->
-
                   <div class="col-md-6">
                     <div class="form-group">
-                      <label class="bmd-label-floating">Viloyat <span class="text-danger">*</span></label>
-                      <select class="form-control" [(ngModel)]="selectedRegionId" (change)="onRegionSelect($event)">
+                      <label class="bmd-label-floating">📝 Izohlar (ixtiyoriy)</label>
+                      <input type="text" class="form-control" [(ngModel)]="deliveryNotes"
+                        placeholder="Qo'shimcha ma'lumotlar">
+                    </div>
+                  </div>
+                </div>
+
+                <!-- UPDATED: EMU Branch Selection - Both fields in one row, both optional -->
+                <div class="row" *ngIf="deliveryType === 'EMU'">
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label class="bmd-label-floating">
+                        🏛️ Viloyat (ixtiyoriy)
+                        <i class="material-icons" *ngIf="autoFilledFields.regionId"
+                          style="font-size: 16px; color: #2196f3; vertical-align: middle;"
+                          title="Avtomatik to'ldirilgan">auto_awesome</i>
+                      </label>
+                      <select class="form-control" [(ngModel)]="selectedRegionId" (change)="onRegionSelect($event)"
+                        [style.background-color]="autoFilledFields.regionId ? '#e3f2fd' : ''">
                         <option value="">Viloyat tanlang</option>
                         <option *ngFor="let region of regions" [value]="region.id">
                           {{ region.name }}
@@ -511,8 +482,15 @@
                   </div>
                   <div class="col-md-6">
                     <div class="form-group">
-                      <label class="bmd-label-floating">🏣 EMU Filial</label>
-                      <select class="form-control" [(ngModel)]="selectedBranchId" [disabled]="!selectedRegionId">
+                      <label class="bmd-label-floating">
+                        🏣 EMU Filial (ixtiyoriy)
+                        <i class="material-icons" *ngIf="autoFilledFields.branchId"
+                          style="font-size: 16px; color: #2196f3; vertical-align: middle;"
+                          title="Avtomatik to'ldirilgan">auto_awesome</i>
+                      </label>
+                      <select class="form-control" [(ngModel)]="selectedBranchId" [disabled]="!selectedRegionId"
+                        (change)="onBranchManualChange()"
+                        [style.background-color]="autoFilledFields.branchId ? '#e3f2fd' : ''">
                         <option value="">Filial tanlang</option>
                         <option *ngFor="let branch of branches" [value]="branch.id">
                           {{ branch.name }}
@@ -522,51 +500,28 @@
                   </div>
                 </div>
 
-                <!-- Address for Yandex/Courier -->
-                <div class="row" *ngIf="deliveryType === 'Yandex' || deliveryType === 'Own-Courier'">
+                <!-- UPDATED: Address for Yandex/Courier - Single row, optional -->
+                <!-- <div class="row" *ngIf="deliveryType === 'Yandex' || deliveryType === 'Own-Courier'">
                   <div class="col-md-12">
                     <div class="form-group">
                       <label class="bmd-label-floating">
-                        📍 Yetkazish Manzili <span class="text-danger"></span>
+                        📍 Yetkazish Manzili (ixtiyoriy)
                       </label>
                       <textarea class="form-control" [(ngModel)]="deliveryAddress"
-                        placeholder="To'liq manzilni kiriting"></textarea>
+                        placeholder="To'liq manzilni kiriting" rows="2"></textarea>
                     </div>
                   </div>
+                </div> -->
 
-                  <!-- Yandex Fee -->
-                  <!-- <div class="col-md-6" *ngIf="deliveryType === 'Yandex'">
+                <!-- Courier Name (if Own-Courier selected) - Optional -->
+                <!-- <div class="row" *ngIf="deliveryType === 'Own-Courier'">
+                  <div class="col-md-6">
                     <div class="form-group">
-                      <label class="bmd-label-floating">Yandex Narxi</label>
-                      <input type="number" class="form-control" [(ngModel)]="yandexFee" placeholder="0">
-                    </div>
-                  </div> -->
-
-                  <!-- Courier Name -->
-                  <div class="col-md-6" *ngIf="deliveryType === 'Own-Courier'">
-                    <div class="form-group">
-                      <label class="bmd-label-floating">Kuryer Ismi 🚕</label>
+                      <label class="bmd-label-floating">Kuryer Ismi 🚕 (ixtiyoriy)</label>
                       <input type="text" class="form-control" [(ngModel)]="courierName" placeholder="Kuryer ismi">
                     </div>
                   </div>
-                </div>
-
-                <!-- Delivery Fee and Notes -->
-                <div class="row">
-                  <!-- <div class="col-md-6">
-                    <div class="form-group">
-                      <label class="bmd-label-floating">Yetkazish Narxi</label>
-                      <input type="number" class="form-control" [(ngModel)]="deliveryFee" placeholder="0">
-                    </div>
-                  </div> -->
-                  <div class="col-md-6">
-                    <div class="form-group">
-                      <label>Izohlar📝</label>
-                      <input type="text" class="form-control" [(ngModel)]="deliveryNotes"
-                        placeholder="Qo'shimcha ma'lumotlar">
-                    </div>
-                  </div>
-                </div>
+                </div> -->
 
               </div>
 

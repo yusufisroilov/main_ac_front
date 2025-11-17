@@ -964,7 +964,8 @@ export class InfoeachclientComponent implements OnInit {
             // console.log("customer packages ", this.customerPackages);
 
             this.customerPhone = result.data.phone_number;
-            this.customerPackages.forEach((group) => (group.selected = false));
+            this.customerPackages.forEach((group) => (group.selected = true));
+            this.updateSelectedPackages();
           } else {
             swal.fire(
               "Xatolik",
@@ -991,6 +992,55 @@ export class InfoeachclientComponent implements OnInit {
         this.selectedPackageIdentifiers.push(group.identifier);
       }
     });
+  }
+
+  // NEW METHOD 1: Button-style delivery type selector (replaces onDeliveryTypeChange)
+  selectDeliveryType(type: string) {
+    this.deliveryType = type;
+
+    // Auto-fill EMU data when EMU is selected
+    if (type === "EMU" && this.currentID) {
+      this.getLastEmuDeliveryData(this.currentID);
+    }
+
+    // Clear conditional fields when switching types
+    if (type !== "EMU") {
+      this.selectedRegionId = null;
+      this.selectedBranchId = null;
+      this.selectedBranchName = "";
+      this.branches = [];
+    }
+    if (type !== "Yandex" && type !== "Own-Courier") {
+      this.deliveryAddress = "";
+      this.courierName = "";
+    }
+  }
+
+  // NEW METHOD 2: Check if all packages are selected
+  areAllPackagesSelected(): boolean {
+    if (this.customerPackages.length === 0) return false;
+    return this.customerPackages.every((group) => group.selected);
+  }
+
+  // NEW METHOD 3: Toggle all packages selection
+  toggleAllPackages(checked: boolean) {
+    this.customerPackages.forEach((group) => {
+      group.selected = checked;
+      if (!checked) {
+        group.selectionType = undefined;
+        group.selectedConsignment = undefined;
+      }
+    });
+    this.updateSelectedPackages();
+  }
+
+  // NEW METHOD 4: Handle individual package selection change
+  onPackageSelectionChange(group: PackageGroup) {
+    if (!group.selected) {
+      group.selectionType = undefined;
+      group.selectedConsignment = undefined;
+    }
+    this.updateSelectedPackages();
   }
 
   // NEW: Get total selected packages
@@ -1155,10 +1205,8 @@ export class InfoeachclientComponent implements OnInit {
   onRegionSelect(event: any) {
     const regionId = event.target.value;
 
-    // ADD THESE 3 LINES:
     if (this.autoFilledFields.regionId) {
       this.autoFilledFields.regionId = false;
-      this.autoFilledFields.branchId = false;
     }
     this.selectedRegionId = regionId ? parseInt(regionId) : null;
     this.selectedBranchId = null;
@@ -1217,7 +1265,7 @@ export class InfoeachclientComponent implements OnInit {
       return false;
     }
 
-    if (this.deliveryType === "EMU" && !this.selectedBranchId) {
+    if (!this.deliveryType) {
       return false;
     }
 

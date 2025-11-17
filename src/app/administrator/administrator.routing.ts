@@ -20,6 +20,12 @@ import { WarehouseInventoryComponent } from "../uzb_staff/warehouse-inventory/wa
 import { DeliveriesListComponent } from "./deliveries-list/deliveries-list.component";
 import { EmployerDeliveryComponent } from "../uzb_staff/employer-delivery/employer-delivery.component";
 import { EmployeeAuthGuardService } from "../services/employee-auth-guard.service";
+import { AdminTicketListComponent } from "./admin-ticket-list/admin-ticket-list.component";
+import { AdminTicketDetailComponent } from "./admin-ticket-detail/admin-ticket-detail.component";
+import { InternalNotesComponent } from "./internal-notes/internal-notes.component";
+import { MessageThreadComponent } from "./message-thread/message-thread.component";
+import { ReplyBoxComponent } from "./reply-box/reply-box.component";
+import { AdminTicketDashboardComponent } from "./ticket-dashboard/admin-ticket-dashboard";
 
 export const AdminstratorRoutes: Routes = [
   {
@@ -133,6 +139,51 @@ export const AdminstratorRoutes: Routes = [
         component: DeliveriesListComponent,
         data: {
           title: "Deliveries List",
+        },
+      },
+      // TICKETS COMPONENTS
+      {
+        path: "tickets-list",
+        component: AdminTicketListComponent,
+        data: {
+          title: "Tickets list",
+        },
+      },
+      {
+        path: "ticket-detail",
+        component: AdminTicketDetailComponent,
+        data: {
+          title: "Tickets Detail",
+        },
+      },
+      {
+        path: "ticket-notes",
+        component: InternalNotesComponent,
+        data: {
+          title: "Tickets Internal Notes",
+        },
+      },
+      {
+        path: "message-thread",
+        component: MessageThreadComponent,
+        data: {
+          title: "Message Thread",
+        },
+      },
+
+      {
+        path: "reply-box",
+        component: ReplyBoxComponent,
+        data: {
+          title: "Reply Box",
+        },
+      },
+
+      {
+        path: "ticket-dashboard",
+        component: AdminTicketDashboardComponent,
+        data: {
+          title: "Tickets Dashboard",
         },
       },
       {

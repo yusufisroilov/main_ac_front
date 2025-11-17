@@ -4,9 +4,10 @@ import { NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { RouterModule } from "@angular/router";
 
-import { FormsModule, ReactiveFormsModule } from "@angular/forms";
+import { FormsModule, NgModel, ReactiveFormsModule } from "@angular/forms";
 import { MaterialModule } from "src/app/app.module";
 import { MdModule } from "src/app/md/md.module";
+import { PaginationModule } from "src/app/shared/pagination/pagination.module";
 
 @NgModule({
   imports: [
@@ -15,6 +16,7 @@ import { MdModule } from "src/app/md/md.module";
     FormsModule,
     MaterialModule,
     ReactiveFormsModule,
+    PaginationModule,
   ],
   declarations: [OrdersComponent],
 })

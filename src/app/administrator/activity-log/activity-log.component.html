@@ -1,0 +1,48 @@
+<div class="activity-log-container">
+
+    <!-- Empty State -->
+    <div *ngIf="activities.length === 0" class="empty-state">
+        <mat-icon>event_note</mat-icon>
+        <p>No activity yet</p>
+    </div>
+
+    <!-- Activity Timeline -->
+    <div class="activity-timeline" *ngIf="activities.length > 0">
+        <div *ngFor="let activity of activities; let i = index; let first = first; let last = last"
+            class="activity-item" [class.first-item]="first" [class.last-item]="last">
+
+            <!-- Timeline Connector -->
+            <div class="timeline-connector" *ngIf="!last"></div>
+
+            <!-- Activity Icon -->
+            <div class="activity-icon" [ngClass]="getActivityColor(activity.action_type)">
+                <mat-icon>{{ getActivityIcon(activity.action_type) }}</mat-icon>
+            </div>
+
+            <!-- Activity Content -->
+            <div class="activity-content">
+                <div class="activity-header">
+                    <span class="activity-label">{{ getActionLabel(activity.action_type) }}</span>
+                    <span class="activity-time">{{ formatDate(activity.created_at) }}</span>
+                </div>
+                <div class="activity-description">
+                    {{ activity.action_description }}
+                </div>
+                <div class="activity-actor" *ngIf="activity.performed_by">
+                    <mat-icon class="icon-xs">person</mat-icon>
+                    <span>{{ activity.performed_by }}</span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- View All Link (if more than 10 items) -->
+    <div class="view-all-link" *ngIf="activities.length > 10">
+        <a href="javascript:void(0)" class="text-primary">
+            <mat-icon class="icon-sm">expand_more</mat-icon>
+            View all {{ activities.length }} activities
+        </a>
+    </div>
+
+</div>

@@ -1,0 +1,269 @@
+<div class="main-content">
+    <div class="container-fluid">
+        <!-- Header -->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header card-header-info card-header-icon">
+                        <div class="card-icon">
+                            <i class="material-icons">dashboard</i>
+                        </div>
+                        <h4 class="card-title">Панель управления тикетами</h4>
+                        <p class="card-category">Обзор системы поддержки</p>
+                        <button mat-raised-button class="btn btn-primary btn-sm" style="float: right; margin-top: -60px"
+                            (click)="refreshDashboard()">
+                            <i class="material-icons">refresh</i> Обновить
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stat cards -->
+        <div class="row">
+            <!-- Total -->
+            <div class="col-lg-3 col-md-6 col-sm-6">
+                <div class="card card-stats">
+                    <div class="card-header card-header-info card-header-icon">
+                        <div class="card-icon">
+                            <i class="material-icons">confirmation_number</i>
+                        </div>
+                        <p class="card-category">Всего тикетов</p>
+                        <h3 class="card-title">{{ totalTickets }}</h3>
+                    </div>
+                    <div class="card-footer">
+                        <div class="stats">
+                            <a (click)="viewAllTickets()" style="cursor: pointer">
+                                <i class="material-icons">visibility</i> Просмотреть все
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Unread -->
+            <div class="col-lg-3 col-md-6 col-sm-6">
+                <div class="card card-stats">
+                    <div class="card-header card-header-danger card-header-icon">
+                        <div class="card-icon">
+                            <i class="material-icons">notifications_active</i>
+                        </div>
+                        <p class="card-category">Непрочитано</p>
+                        <h3 class="card-title">{{ unreadTickets }}</h3>
+                    </div>
+                    <div class="card-footer">
+                        <div class="stats">
+                            <a (click)="viewTicketsByStatus('unread')" style="cursor: pointer">
+                                <i class="material-icons">visibility</i> Просмотреть
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Open -->
+            <div class="col-lg-3 col-md-6 col-sm-6">
+                <div class="card card-stats">
+                    <div class="card-header card-header-success card-header-icon">
+                        <div class="card-icon">
+                            <i class="material-icons">folder_open</i>
+                        </div>
+                        <p class="card-category">Открыто</p>
+                        <h3 class="card-title">{{ openTickets }}</h3>
+                    </div>
+                    <div class="card-footer">
+                        <div class="stats">
+                            <a (click)="viewTicketsByStatus('open')" style="cursor: pointer">
+                                <i class="material-icons">visibility</i> Просмотреть
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Needs response -->
+            <div class="col-lg-3 col-md-6 col-sm-6">
+                <div class="card card-stats">
+                    <div class="card-header card-header-warning card-header-icon">
+                        <div class="card-icon">
+                            <i class="material-icons">hourglass_empty</i>
+                        </div>
+                        <p class="card-category">Требует ответа</p>
+                        <h3 class="card-title">{{ needsResponseTickets }}</h3>
+                    </div>
+                    <div class="card-footer">
+                        <div class="stats">
+                            <a (click)="viewTicketsByStatus('customer-reply')" style="cursor: pointer">
+                                <i class="material-icons">visibility</i> Просмотреть
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts (progress rows) -->
+        <div class="row">
+            <!-- By Status -->
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header card-header-primary card-header-icon">
+                        <div class="card-icon">
+                            <i class="material-icons">pie_chart</i>
+                        </div>
+                        <h4 class="card-title">Статистика по статусам</h4>
+                    </div>
+                    <div class="card-body">
+                        <div *ngIf="loadingStats" class="text-center">
+                            <mat-spinner style="margin: 0 auto"></mat-spinner>
+                        </div>
+
+                        <div *ngIf="!loadingStats && getStatusChartData().length > 0">
+                            <div *ngFor="let item of getStatusChartData()" class="mb-3">
+                                <div class="d-flex justify-content-between">
+                                    <span><span class="badge {{ item.class }}">{{ item.label }}</span></span>
+                                    <span><strong>{{ item.value }}</strong> ({{ calculatePercentage(item.value)
+                                        }}%)</span>
+                                </div>
+                                <div class="progress" style="height: 10px">
+                                    <div class="progress-bar" [ngClass]="item.class" role="progressbar"
+                                        [style.width.%]="calculatePercentage(item.value)"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div *ngIf="!loadingStats && getStatusChartData().length === 0" class="text-center text-muted">
+                            Нет данных
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- By Priority -->
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header card-header-warning card-header-icon">
+                        <div class="card-icon">
+                            <i class="material-icons">priority_high</i>
+                        </div>
+                        <h4 class="card-title">Статистика по приоритетам</h4>
+                    </div>
+                    <div class="card-body">
+                        <div *ngIf="loadingStats" class="text-center">
+                            <mat-spinner style="margin: 0 auto"></mat-spinner>
+                        </div>
+
+                        <div *ngIf="!loadingStats && getPriorityChartData().length > 0">
+                            <div *ngFor="let item of getPriorityChartData()" class="mb-3">
+                                <div class="d-flex justify-content-between">
+                                    <span><span class="badge {{ item.class }}">{{ item.label }}</span></span>
+                                    <span><strong>{{ item.value }}</strong> ({{ calculatePercentage(item.value)
+                                        }}%)</span>
+                                </div>
+                                <div class="progress" style="height: 10px">
+                                    <div class="progress-bar" [ngClass]="item.class" role="progressbar"
+                                        [style.width.%]="calculatePercentage(item.value)"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div *ngIf="!loadingStats && getPriorityChartData().length === 0"
+                            class="text-center text-muted">
+                            Нет данных
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Avg resolve time -->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header card-header-success card-header-icon">
+                        <div class="card-icon"><i class="material-icons">timer</i></div>
+                        <h4 class="card-title">Среднее время решения</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="text-center">
+                            <h2 class="text-success">
+                                <i class="material-icons" style="font-size: 48px">access_time</i><br />
+                                {{ avgResolutionTime | number: "1.1-1" }} часов
+                            </h2>
+                            <p class="text-muted">В среднем для закрытых тикетов</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent activity -->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header card-header-info card-header-icon">
+                        <div class="card-icon">
+                            <i class="material-icons">history</i>
+                        </div>
+                        <h4 class="card-title">Последняя активность</h4>
+                        <p class="card-category">Последние 10 тикетов</p>
+                    </div>
+
+                    <div class="card-body">
+                        <div *ngIf="loadingRecent" class="text-center">
+                            <mat-spinner style="margin: 0 auto"></mat-spinner>
+                        </div>
+
+                        <div *ngIf="!loadingRecent && recentTickets.length > 0" class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center">Номер</th>
+                                        <th>Клиент</th>
+                                        <th>Тема</th>
+                                        <th class="text-center">Приоритет</th>
+                                        <th class="text-center">Статус</th>
+                                        <th class="text-center">Обновлено</th>
+                                        <th class="text-center">Действия</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let ticket of recentTickets">
+                                        <td class="text-center"><strong>{{ ticket.ticket_number }}</strong></td>
+                                        <td>{{ ticket.customer_name }}</td>
+                                        <td>
+                                            {{ ticket.subject.length > 50 ? (ticket.subject | slice: 0:50) + '...' :
+                                            ticket.subject }}
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="badge {{ getPriorityClass(ticket.priority) }}">{{
+                                                getPriorityLabel(ticket.priority) }}</span>
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="badge {{ getStatusClass(ticket.status) }}">{{
+                                                getStatusLabel(ticket.status) }}</span>
+                                        </td>
+                                        <td class="text-center text-muted">
+                                            <small>{{ formatDate(ticket.updated_at) }}</small>
+                                        </td>
+                                        <td class="text-center">
+                                            <button mat-raised-button class="btn btn-primary btn-sm"
+                                                (click)="viewTicket(ticket)">
+                                                <i class="material-icons">visibility</i> Открыть
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div *ngIf="!loadingRecent && recentTickets.length === 0" class="text-center text-muted py-5">
+                            <i class="material-icons" style="font-size: 64px">inbox</i>
+                            <p>Нет недавних тикетов</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

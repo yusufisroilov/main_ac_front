@@ -1,0 +1,125 @@
+<div class="main-content">
+    <div class="container-fluid">
+
+
+
+        <!-- Main Form Card -->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card submit-ticket-card">
+                    <div class="card-body">
+
+                        <form class="ticket-form">
+
+                            <!-- Related Service -->
+                            <div class="form-group">
+                                <label class="form-label">Related Service</label>
+                                <select class="form-control" [(ngModel)]="relatedService" name="relatedService"
+                                    [disabled]="isSubmitting">
+                                    <option *ngFor="let service of serviceOptions" [value]="service.value">
+                                        {{ service.label }}
+                                    </option>
+                                </select>
+                            </div>
+
+                            <!-- Message (Rich Text Editor Style) -->
+                            <div class="form-group">
+                                <label class="form-label required">Message*</label>
+
+                                <!-- Editor Toolbar -->
+                                <div class="rich-text-toolbar">
+                                    <button type="button" class="toolbar-btn" title="Bold">
+                                        <strong>B</strong>
+                                    </button>
+                                    <button type="button" class="toolbar-btn" title="Italic">
+                                        <em>I</em>
+                                    </button>
+                                    <button type="button" class="toolbar-btn" title="Heading">
+                                        <strong>H</strong>
+                                    </button>
+                                    <button type="button" class="toolbar-btn" title="Link">
+                                        <mat-icon>link</mat-icon>
+                                    </button>
+                                    <button type="button" class="toolbar-btn" title="Bullet List">
+                                        <mat-icon>format_list_bulleted</mat-icon>
+                                    </button>
+                                    <button type="button" class="toolbar-btn" title="Numbered List">
+                                        <mat-icon>format_list_numbered</mat-icon>
+                                    </button>
+                                    <button type="button" class="toolbar-btn" title="Indent">
+                                        <mat-icon>format_indent_increase</mat-icon>
+                                    </button>
+                                    <button type="button" class="toolbar-btn" title="Quote">
+                                        <mat-icon>format_quote</mat-icon>
+                                    </button>
+                                    <button type="button" class="toolbar-btn btn-preview" title="Preview">
+                                        <mat-icon>visibility</mat-icon> Preview
+                                    </button>
+                                    <button type="button" class="toolbar-btn" title="Help">
+                                        <mat-icon>help</mat-icon>
+                                    </button>
+                                    <button type="button" class="toolbar-btn" title="Fullscreen">
+                                        <mat-icon>fullscreen</mat-icon>
+                                    </button>
+                                </div>
+
+                                <!-- Textarea -->
+                                <textarea class="form-control message-textarea" [(ngModel)]="message" name="message"
+                                    (ngModelChange)="onMessageChange()" rows="12" [disabled]="isSubmitting"
+                                    placeholder="Describe your issue in detail..."></textarea>
+
+                                <!-- Editor Footer Stats -->
+                                <div class="editor-footer">
+                                    <span class="editor-stats">
+                                        lines: <strong>{{ getLineCount() }}</strong>
+                                        words: <strong>{{ getWordCount() }}</strong>
+                                        <span class="save-status">saved</span>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- Attachments -->
+                            <div class="form-group">
+                                <label class="form-label">Attachments</label>
+
+                                <div class="file-upload-area">
+                                    <div class="file-upload-placeholder">
+                                        <!-- File preview will appear here -->
+                                    </div>
+
+                                    <div class="file-upload-buttons">
+                                        <button type="button" class="btn-choose-file">
+                                            <mat-icon>folder</mat-icon> Choose File
+                                        </button>
+                                        <button type="button" class="btn-add-more">
+                                            <mat-icon>add</mat-icon> Add More
+                                        </button>
+                                    </div>
+
+                                    <small class="file-extensions-note">
+                                        Allowed File Extensions: .jpg, .gif, .jpeg, .png, .zip, .rar, .pdf
+                                    </small>
+                                </div>
+                            </div>
+
+                            <!-- Form Actions -->
+                            <div class="form-actions">
+                                <button mat-raised-button color="primary" type="button" (click)="onSubmit()"
+                                    [disabled]="!isFormValid() || isSubmitting" class="btn-submit">
+                                    {{ isSubmitting ? 'Submitting...' : 'Submit' }}
+                                </button>
+                                <button mat-raised-button type="button" (click)="onCancel()" [disabled]="isSubmitting"
+                                    class="btn-cancel">
+                                    Cancel
+                                </button>
+                            </div>
+
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

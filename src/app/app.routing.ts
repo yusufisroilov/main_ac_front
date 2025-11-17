@@ -104,6 +104,27 @@ export const AppRoutes: Routes = [
           ),
       },
       {
+        path: "customer-tickets",
+        loadChildren: () =>
+          import("./simple_user/ticket-list/ticket-list.module").then(
+            (m) => m.CustometTicketsListModule
+          ),
+      },
+      {
+        path: "customer-ticket-detail",
+        loadChildren: () =>
+          import("./simple_user/ticket-detail/ticket-detail.module").then(
+            (m) => m.CustomerTicketDetailModule
+          ),
+      },
+      {
+        path: "create-ticket",
+        loadChildren: () =>
+          import("./simple_user/create-ticket/create-ticket.module").then(
+            (m) => m.CustomerCreateTicketModule
+          ),
+      },
+      {
         path: "tables",
         loadChildren: () =>
           import("./tables/tables.module").then((m) => m.TablesModule),

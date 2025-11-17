@@ -58,6 +58,12 @@ export class OrderBoxesComponent implements OnInit {
     this.orderTypeText = [];
     this.orderStatusText = [];
 
+    this.orderTypesList = GlobalVars.orderTypes;
+    this.orderStatusTypeList = GlobalVars.orderStatus;
+    if (this.orderStatusTypeList == null) {
+      this.router.navigate(["/dashboard"]);
+    }
+
     this.headers12 = new Headers({ "Content-Type": "application/json" });
     this.headers12.append("Authorization", localStorage.getItem("token"));
     this.options = new RequestOptions({ headers: this.headers12 });
@@ -156,11 +162,12 @@ export class OrderBoxesComponent implements OnInit {
       .subscribe(
         (response) => {
           this.allData = response.json().orders;
+
           this.showTheList = true;
           for (let index = 0; index < this.allData.length; index++) {
             const element = this.allData[index];
             this.orderTypeText[index] = GlobalVars.getDescriptionWithID(
-              element.orderType,
+              element.order_type,
               "uz"
             );
           }

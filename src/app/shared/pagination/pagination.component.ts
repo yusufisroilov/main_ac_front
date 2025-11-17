@@ -29,13 +29,6 @@ export class PaginationComponent implements OnChanges, OnInit {
     this.updateVisiblePages(); // ✅ Call on initial load
   }
   ngOnChanges(changes: SimpleChanges): void {
-    console.log(
-      "current page ",
-      this.currentPage,
-      this.totalPages,
-      this.maxVisiblePages
-    );
-
     if (changes.currentPage || changes.totalPages) {
       this.updateVisiblePages();
     }
@@ -126,8 +119,6 @@ export class PaginationComponent implements OnChanges, OnInit {
    * Handle Enter key press
    */
   onKeyPress(event: KeyboardEvent): void {
-    console.log("event ", event);
-
     if (event.key === "Enter") {
       this.onGoToPage();
     }

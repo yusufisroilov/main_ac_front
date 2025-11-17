@@ -1,0 +1,65 @@
+<div class="internal-notes-container">
+
+    <!-- Add Note Button -->
+    <div class="add-note-section" *ngIf="!showAddForm">
+        <button mat-raised-button color="accent" (click)="toggleAddForm()" class="w-100">
+            <mat-icon>add</mat-icon>
+            Add Internal Note
+        </button>
+    </div>
+
+    <!-- Add Note Form -->
+    <div class="add-note-form" *ngIf="showAddForm">
+        <textarea [(ngModel)]="newNoteText" class="form-control note-textarea" rows="4" placeholder="Add a note visible only to staff...
+      
+Use this for:
+- Context about the issue
+- Things to follow up on
+- Coordination with other staff" [disabled]="isSubmitting" autofocus>
+    </textarea>
+
+        <div class="form-actions mt-2">
+            <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="!isValid() || isSubmitting"
+                class="mr-2">
+                <mat-icon>save</mat-icon>
+                {{ isSubmitting ? 'Saving...' : 'Save Note' }}
+            </button>
+
+            <button mat-button (click)="onCancel()" [disabled]="isSubmitting">
+                Cancel
+            </button>
+        </div>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="notes.length === 0 && !showAddForm" class="empty-state">
+        <mat-icon>speaker_notes_off</mat-icon>
+        <p>No internal notes yet</p>
+        <small class="text-muted">Add notes to keep track of important details</small>
+    </div>
+
+    <!-- Notes List -->
+    <div class="notes-list" *ngIf="notes.length > 0">
+        <div *ngFor="let note of notes" class="note-item">
+            <div class="note-header">
+                <div class="note-avatar">
+                    {{ getInitials(note.sender_name) }}
+                </div>
+                <div class="note-info">
+                    <strong class="note-author">{{ note.sender_name }}</strong>
+                    <span class="note-time">{{ formatDate(note.created_at) }}</span>
+                </div>
+            </div>
+            <div class="note-content">
+                {{ note.message_text }}
+            </div>
+        </div>
+    </div>
+
+    <!-- Privacy Notice -->
+    <div class="privacy-notice mt-3" *ngIf="notes.length > 0 || showAddForm">
+        <mat-icon class="icon-xs">lock</mat-icon>
+        <small>These notes are visible only to staff members</small>
+    </div>
+
+</div>
