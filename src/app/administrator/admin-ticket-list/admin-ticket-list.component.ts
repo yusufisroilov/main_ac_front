@@ -41,7 +41,7 @@ export class AdminTicketListComponent implements OnInit {
 
   // Filters
   searchQuery: string = "";
-  selectedStatus: string = "all";
+  selectedStatus: string = "all"; // Changed from "all" to exclude closed tickets by default
   selectedPriority: string = "all";
   selectedCategory: string = "all";
   selectedAssignedTo: string = "all";
@@ -55,6 +55,10 @@ export class AdminTicketListComponent implements OnInit {
 
   // Notification count
   notificationCount: number = 0;
+
+  // Stats counters
+  resolvedTicketsCount: number = 0;
+  urgentTicketsCount: number = 0;
 
   // Options arrays
   statusOptions: any = [];
@@ -80,46 +84,46 @@ export class AdminTicketListComponent implements OnInit {
   ngOnInit(): void {
     // Status options
     this.statusOptions = [
-      { value: "all", label: "All Status" },
-      { value: "unread", label: "Unread" },
-      { value: "open", label: "Open" },
-      { value: "answered", label: "Answered" },
-      { value: "customer-reply", label: "Customer Reply" },
-      { value: "closed", label: "Closed" },
+      { value: "all", label: "Barcha Statuslar" },
+      { value: "unread", label: "O'qilmagan" },
+      { value: "open", label: "Ochiq" },
+      { value: "answered", label: "Javob Berilgan" },
+      { value: "customer-reply", label: "Mijoz Javobi" },
+      { value: "closed", label: "Yopilgan" },
     ];
 
     // Priority options
     this.priorityOptions = [
-      { value: "all", label: "All Priority" },
-      { value: "Urgent", label: "Urgent" },
-      { value: "High", label: "High" },
-      { value: "Medium", label: "Medium" },
-      { value: "Low", label: "Low" },
+      { value: "all", label: "Barcha muhimlik darajasi" },
+      { value: "Urgent", label: "Shoshilinch" },
+      { value: "High", label: "Baland" },
+      { value: "Medium", label: "O'rtacha" },
+      { value: "Low", label: "Past" },
     ];
 
     // Category options
     this.categoryOptions = [
-      { value: "all", label: "All Categories" },
-      { value: "delivery", label: "Delivery Issue" },
-      { value: "payment", label: "Payment Issue" },
-      { value: "product", label: "Product Question" },
-      { value: "customs", label: "Customs Issue" },
-      { value: "damaged", label: "Damaged Cargo" },
-      { value: "lost", label: "Lost Package" },
-      { value: "pricing", label: "Pricing Question" },
-      { value: "tracking", label: "Tracking Issue" },
-      { value: "support", label: "General Support" },
-      { value: "complaint", label: "Complaint" },
-      { value: "other", label: "Other" },
+      { value: "all", label: "Barcha Kategoriyalar" },
+      { value: "delivery", label: "Yetkazish Muammosi" },
+      { value: "payment", label: "To'lov Muammosi" },
+      { value: "product", label: "Zakaz Bo'yicha Savollar" },
+      { value: "customs", label: "Bojxona muammosi" },
+      { value: "damaged", label: "Shikastlangan Narsalar" },
+      { value: "lost", label: "Yo'qolgan Narsalar" },
+      { value: "pricing", label: "Narx Bo'yicha Savollar" },
+      { value: "tracking", label: "Kuzatish Bo'yicha Savollar" },
+      { value: "support", label: "Umumiya Konsultatsiya" },
+      { value: "complaint", label: "Shikoyatlar" },
+      { value: "other", label: "Boshqa" },
     ];
 
     // Assigned to options (roles)
     this.assignedToOptions = [
-      { value: "all", label: "All Staff" },
-      { value: "DELIVERER", label: "Deliverer" },
-      { value: "ACCOUNTANT", label: "Accountant" },
+      { value: "all", label: "Barcha Ishchilar" },
+      { value: "DELIVERER", label: "Kuryer" },
+      { value: "ACCOUNTANT", label: "Bugalter" },
       { value: "YUKCHI", label: "Yukchi" },
-      { value: "CHINASTAFF", label: "China Staff" },
+      { value: "CHINASTAFF", label: "Xitoylik" },
       { value: "MANAGER", label: "Manager" },
     ];
 
@@ -164,10 +168,12 @@ export class AdminTicketListComponent implements OnInit {
         (response) => {
           const data = response.json();
           this.tickets = data.tickets;
+          this.getResolvedCounts(this.tickets);
+          this.getUrgentCounts(this.tickets);
           this.filteredTickets = data.tickets;
-          this.currentPage = data.pagination.page;
           this.totalPages = data.pagination.total_pages;
           this.totalTickets = data.pagination.total;
+
           this.isLoading = false;
 
           if (this.totalPages > 1) {
@@ -202,6 +208,20 @@ export class AdminTicketListComponent implements OnInit {
   onSearch(): void {
     this.currentPage = 1;
     this.getListOfTickets();
+  }
+
+  getResolvedCounts(tickets: any) {
+    // Calculate resolved tickets (closed status)
+    this.resolvedTicketsCount = tickets.filter(
+      (ticket) => ticket.status === "closed"
+    ).length;
+  }
+
+  getUrgentCounts(tickets: any) {
+    // Calculate resolved tickets (closed status)
+    this.urgentTicketsCount = tickets.filter(
+      (ticket) => ticket.priority === "Urgent"
+    ).length;
   }
 
   /**
@@ -336,18 +356,18 @@ export class AdminTicketListComponent implements OnInit {
   reassignTicket(ticket: Ticket): void {
     swal
       .fire({
-        title: "Reassign Ticket",
+        title: "Qayta Biriktirish So'rovni",
         input: "select",
         inputOptions: {
-          DELIVERER: "Deliverer",
-          ACCOUNTANT: "Accountant",
+          DELIVERER: "Kuryer",
+          ACCOUNTANT: "Bugalter",
           YUKCHI: "Yukchi",
-          CHINASTAFF: "China Staff",
+          CHINASTAFF: "Xitoylik",
           MANAGER: "Manager",
         },
-        inputPlaceholder: "Select new assignee",
+        inputPlaceholder: "Yangi Biriktiriluvchini Tanlash",
         showCancelButton: true,
-        confirmButtonText: "Reassign",
+        confirmButtonText: "Qayta Biriktirish",
         inputValidator: (value) => {
           if (!value) {
             return "You need to select someone!";
@@ -425,11 +445,11 @@ export class AdminTicketListComponent implements OnInit {
    */
   getStatusLabel(status: string): string {
     const labels = {
-      unread: "Unread",
-      open: "Open",
-      answered: "Answered",
-      "customer-reply": "Customer Reply",
-      closed: "Closed",
+      unread: "O'qilmagan",
+      open: "Ochiq",
+      answered: "Javob berilgan",
+      "customer-reply": "Mijoz Javob Bergan",
+      closed: "Yopilgan",
     };
     return labels[status] || status;
   }

@@ -2,7 +2,7 @@ import { Component, Input } from "@angular/core";
 
 interface Message {
   id: number;
-  sender_type: "customer" | "staff";
+  sender_role: "customer" | "staff";
   sender_name: string;
   message_text: string;
   is_internal: boolean;
@@ -25,14 +25,14 @@ export class MessageThreadComponent {
    * Check if message is from customer
    */
   isCustomerMessage(message: Message): boolean {
-    return message.sender_type === "customer";
+    return message.sender_role === "customer";
   }
 
   /**
    * Check if message is from staff
    */
   isStaffMessage(message: Message): boolean {
-    return message.sender_type === "staff";
+    return message.sender_role === "staff";
   }
 
   /**

@@ -6,7 +6,8 @@
                 <div class="card" id="listcard">
                     <div class="card-header card-header-primary">
                         <h4 class="card-title">Ticket Management</h4>
-                        <p class="card-category">Manage and respond to customer support tickets</p>
+                        <p class="card-category">Mijozlarni so'rovlarini
+                            boshqarish va ularga javob berish</p>
                     </div>
                     <div class="card-body">
 
@@ -18,7 +19,7 @@
                                         <div class="card-icon">
                                             <i class="material-icons">notifications_active</i>
                                         </div>
-                                        <p class="card-category">Needs Attention</p>
+                                        <p class="card-category">Etibor berish shart!</p>
                                         <h3 class="card-title">{{ notificationCount }}</h3>
                                     </div>
                                 </div>
@@ -29,7 +30,7 @@
                                         <div class="card-icon">
                                             <i class="material-icons">assignment</i>
                                         </div>
-                                        <p class="card-category">Total Tickets</p>
+                                        <p class="card-category">Umumiy So'rovlar</p>
                                         <h3 class="card-title">{{ totalTickets }}</h3>
                                     </div>
                                 </div>
@@ -40,8 +41,8 @@
                                         <div class="card-icon">
                                             <i class="material-icons">check_circle</i>
                                         </div>
-                                        <p class="card-category">Resolved Today</p>
-                                        <h3 class="card-title">-</h3>
+                                        <p class="card-category">Hal bo'lgan So'rovlar</p>
+                                        <h3 class="card-title">{{ resolvedTicketsCount }}</h3>
                                     </div>
                                 </div>
                             </div>
@@ -51,8 +52,8 @@
                                         <div class="card-icon">
                                             <i class="material-icons">warning</i>
                                         </div>
-                                        <p class="card-category">Urgent</p>
-                                        <h3 class="card-title">-</h3>
+                                        <p class="card-category">Shoshilinch So'rovlar</p>
+                                        <h3 class="card-title">{{ urgentTicketsCount }}</h3>
                                     </div>
                                 </div>
                             </div>
@@ -64,7 +65,7 @@
                                 <!-- Search Input -->
                                 <div class="col-sm-6 col-lg-3">
                                     <mat-form-field class="example-full-width">
-                                        <input matInput type="text" placeholder="Search by ticket # or subject"
+                                        <input matInput type="text" placeholder="So'rov Raqami & Mavzusi bo'yicha"
                                             [(ngModel)]="searchQuery" (keyup.enter)="onSearch()" />
                                     </mat-form-field>
                                 </div>
@@ -75,7 +76,8 @@
                                         <button mat-raised-button
                                             class="dropdown-toggle btn btn-primary btn-round btn-block"
                                             data-toggle="dropdown">
-                                            {{ selectedStatus === 'all' ? 'All Status' : getStatusLabel(selectedStatus)
+                                            {{ selectedStatus === 'all' ? 'Barcha Statuslar' :
+                                            getStatusLabel(selectedStatus)
                                             }}
                                             <b class="caret"></b>
                                         </button>
@@ -89,12 +91,12 @@
                                 </div>
 
                                 <!-- Priority Dropdown -->
-                                <div class="col-sm-6 col-lg-2">
+                                <!-- <div class="col-sm-6 col-lg-2">
                                     <div class="dropdown">
                                         <button mat-raised-button
                                             class="dropdown-toggle btn btn-primary btn-round btn-block"
                                             data-toggle="dropdown">
-                                            {{ selectedPriority === 'all' ? 'All Priority' : selectedPriority }}
+                                            {{ selectedPriority === 'all' ? 'Barcha Muhimlilik' : selectedPriority }}
                                             <b class="caret"></b>
                                         </button>
                                         <ul class="dropdown-menu dropdown-menu-left">
@@ -104,7 +106,7 @@
                                             </li>
                                         </ul>
                                     </div>
-                                </div>
+                                </div> -->
 
                                 <!-- Category Dropdown -->
                                 <div class="col-sm-6 col-lg-2">
@@ -112,7 +114,7 @@
                                         <button mat-raised-button
                                             class="dropdown-toggle btn btn-primary btn-round btn-block"
                                             data-toggle="dropdown">
-                                            {{ selectedCategory === 'all' ? 'All Categories' : selectedCategory }}
+                                            {{ selectedCategory === 'all' ? 'Barcha Kategoriyalar' : selectedCategory }}
                                             <b class="caret"></b>
                                         </button>
                                         <ul class="dropdown-menu dropdown-menu-left">
@@ -130,7 +132,7 @@
                                         <button mat-raised-button
                                             class="dropdown-toggle btn btn-primary btn-round btn-block"
                                             data-toggle="dropdown">
-                                            {{ selectedAssignedTo === 'all' ? 'All Staff' : selectedAssignedTo }}
+                                            {{ selectedAssignedTo === 'all' ? 'Barcha Staf' : selectedAssignedTo }}
                                             <b class="caret"></b>
                                         </button>
                                         <ul class="dropdown-menu dropdown-menu-left">
@@ -155,10 +157,10 @@
                         <div class="row mb-3 mt-3">
                             <div class="col-md-12 text-right">
                                 <button mat-raised-button class="btn btn-info" (click)="getListOfTickets()">
-                                    <i class="material-icons">refresh</i> Refresh
+                                    <i class="material-icons">refresh</i> Yangilash
                                 </button>
                                 <button mat-raised-button class="btn btn-success ml-2" (click)="exportToExcel()">
-                                    <i class="material-icons">file_download</i> Export
+                                    <i class="material-icons">file_download</i> Yuklash
                                 </button>
                             </div>
                         </div>
@@ -175,16 +177,16 @@
                                     width="100%" style="width: 100%">
                                     <thead>
                                         <tr>
-                                            <th class="text-center">Ticket #</th>
-                                            <th class="text-center">Subject</th>
-                                            <th class="text-center">Customer</th>
-                                            <th class="text-center">Category</th>
+                                            <th class="text-center">So'rov #</th>
+                                            <th class="text-center">Mavzusi</th>
+                                            <th class="text-center">Mijoz</th>
+                                            <th class="text-center">Kategoriyasi</th>
                                             <th class="text-center">Status</th>
-                                            <th class="text-center">Priority</th>
-                                            <th class="text-center">Assigned To</th>
-                                            <th class="text-center">Messages</th>
-                                            <th class="text-center">Last Update</th>
-                                            <th class="text-center">Actions</th>
+                                            <!-- <th class="text-center">Muhimlilik</th> -->
+                                            <th class="text-center">Ga Biriktirilgan</th>
+                                            <th class="text-center">Habarlar</th>
+                                            <th class="text-center">Oxirgi O'zgarish</th>
+                                            <th class="text-center">Harakatlar</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -210,11 +212,11 @@
                                                     {{ ticket.unread_messages_count }}
                                                 </span>
                                             </td>
-                                            <td>
+                                            <!-- <td>
                                                 <span class="badge" [ngClass]="getPriorityClass(ticket.priority)">
                                                     {{ ticket.priority }}
                                                 </span>
-                                            </td>
+                                            </td> -->
                                             <td>
                                                 <small>{{ ticket.assigned_to }}</small>
                                             </td>
@@ -234,43 +236,44 @@
                                                 <mat-menu #ticketMenu="matMenu">
                                                     <button mat-menu-item (click)="viewTicket(ticket)">
                                                         <mat-icon>visibility</mat-icon>
-                                                        <span>View Details</span>
+                                                        <span>Detallarni Ko'rish</span>
                                                     </button>
                                                     <button mat-menu-item [matMenuTriggerFor]="statusMenu">
                                                         <mat-icon>edit</mat-icon>
-                                                        <span>Change Status</span>
+                                                        <span>Statusni O'zgartirish</span>
                                                     </button>
-                                                    <button mat-menu-item [matMenuTriggerFor]="priorityMenu">
+                                                    <!-- <button mat-menu-item [matMenuTriggerFor]="priorityMenu">
                                                         <mat-icon>flag</mat-icon>
-                                                        <span>Change Priority</span>
-                                                    </button>
+                                                        <span>Muhimlilikni O'zgartirish</span>
+                                                    </button> -->
                                                     <button mat-menu-item (click)="reassignTicket(ticket)">
                                                         <mat-icon>person</mat-icon>
-                                                        <span>Reassign</span>
+                                                        <span>Qayta Biriktirish</span>
                                                     </button>
                                                 </mat-menu>
 
                                                 <!-- Status submenu -->
                                                 <mat-menu #statusMenu="matMenu">
                                                     <button mat-menu-item
-                                                        (click)="quickUpdateStatus(ticket, 'open')">Open</button>
+                                                        (click)="quickUpdateStatus(ticket, 'open')">Ochiq</button>
                                                     <button mat-menu-item
-                                                        (click)="quickUpdateStatus(ticket, 'answered')">Answered</button>
+                                                        (click)="quickUpdateStatus(ticket, 'answered')">Javober
+                                                        Berilgan</button>
                                                     <button mat-menu-item
-                                                        (click)="quickUpdateStatus(ticket, 'closed')">Closed</button>
+                                                        (click)="quickUpdateStatus(ticket, 'closed')">Yopilgan</button>
                                                 </mat-menu>
 
                                                 <!-- Priority submenu -->
-                                                <mat-menu #priorityMenu="matMenu">
+                                                <!-- <mat-menu #priorityMenu="matMenu">
                                                     <button mat-menu-item
-                                                        (click)="quickUpdatePriority(ticket, 'Urgent')">Urgent</button>
+                                                        (click)="quickUpdatePriority(ticket, 'Urgent')">Shoshilinch</button>
                                                     <button mat-menu-item
-                                                        (click)="quickUpdatePriority(ticket, 'High')">High</button>
+                                                        (click)="quickUpdatePriority(ticket, 'High')">Baland</button>
                                                     <button mat-menu-item
-                                                        (click)="quickUpdatePriority(ticket, 'Medium')">Medium</button>
+                                                        (click)="quickUpdatePriority(ticket, 'Medium')">O'rtacha</button>
                                                     <button mat-menu-item
-                                                        (click)="quickUpdatePriority(ticket, 'Low')">Low</button>
-                                                </mat-menu>
+                                                        (click)="quickUpdatePriority(ticket, 'Low')">Past</button>
+                                                </mat-menu> -->
                                             </td>
                                         </tr>
                                     </tbody>
@@ -281,7 +284,7 @@
                             <div *ngIf="!isLoading && filteredTickets.length === 0" class="text-center py-5">
                                 <mat-icon
                                     style="font-size: 64px; width: 64px; height: 64px; color: #999;">inbox</mat-icon>
-                                <h3 class="mt-3">No tickets found</h3>
+                                <h3 class="mt-3">Hech qanday so'rovlar topilmadi!!!</h3>
                                 <p class="text-muted">Try adjusting your filters or search query</p>
                             </div>
 
@@ -291,9 +294,9 @@
 
                             <!-- Pagination Info -->
                             <p *ngIf="!isLoading && totalTickets > 0" class="text-center text-muted mt-3">
-                                Showing {{ (currentPage - 1) * pageSize + 1 }}
-                                to {{ Math.min(currentPage * pageSize, totalTickets) }}
-                                of {{ totalTickets }} tickets
+                                Ko'rsatilyapti {{ (currentPage - 1) * pageSize + 1 }}
+                                ga {{ Math.min(currentPage * pageSize, totalTickets) }}
+                                {{ totalTickets }} ta So'rovlarning
                             </p>
                         </div>
 

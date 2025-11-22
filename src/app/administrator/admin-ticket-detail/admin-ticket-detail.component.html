@@ -16,12 +16,12 @@
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <button mat-raised-button (click)="goBack()" class="mr-2">
-                                <mat-icon>arrow_back</mat-icon> Back to Tickets
+                                <mat-icon>arrow_back</mat-icon> So'rovlarga Qaytish
                             </button>
                         </div>
                         <div>
                             <button mat-raised-button color="primary" (click)="loadTicketDetail()" class="mr-2">
-                                <mat-icon>refresh</mat-icon> Refresh
+                                <mat-icon>refresh</mat-icon> Yangilash
                             </button>
                             <button mat-icon-button [matMenuTriggerFor]="actionMenu">
                                 <mat-icon>more_vert</mat-icon>
@@ -29,15 +29,15 @@
                             <mat-menu #actionMenu="matMenu">
                                 <button mat-menu-item [matMenuTriggerFor]="statusMenu">
                                     <mat-icon>edit</mat-icon>
-                                    <span>Change Status</span>
+                                    <span>Statusni O'zgartirish</span>
                                 </button>
                                 <button mat-menu-item [matMenuTriggerFor]="priorityMenu">
                                     <mat-icon>flag</mat-icon>
-                                    <span>Change Priority</span>
+                                    <span>Muhimlilikni O'zgartirish</span>
                                 </button>
                                 <button mat-menu-item (click)="reassignTicket()" *ngIf="canReassign()">
                                     <mat-icon>person</mat-icon>
-                                    <span>Reassign</span>
+                                    <span>Qayta Biriktirish</span>
                                 </button>
                             </mat-menu>
 
@@ -77,7 +77,7 @@
                                 <!-- Customer Info -->
                                 <div class="col-md-3">
                                     <h6 class="text-muted mb-2">
-                                        <mat-icon class="icon-sm">person</mat-icon> Customer
+                                        <mat-icon class="icon-sm">person</mat-icon> Mijoz
                                     </h6>
                                     <p class="mb-1"><strong>{{ getCustomerName() }}</strong></p>
                                     <p class="mb-0 text-muted small">{{ ticket.customer.username }}</p>
@@ -89,7 +89,7 @@
                                 <!-- Status & Priority -->
                                 <div class="col-md-3">
                                     <h6 class="text-muted mb-2">
-                                        <mat-icon class="icon-sm">info</mat-icon> Status & Priority
+                                        <mat-icon class="icon-sm">info</mat-icon> Status & Muhimlilik
                                     </h6>
                                     <p class="mb-2">
                                         <span class="badge" [ngClass]="getStatusClass(ticket.status)">
@@ -106,25 +106,25 @@
                                 <!-- Assignment -->
                                 <div class="col-md-3">
                                     <h6 class="text-muted mb-2">
-                                        <mat-icon class="icon-sm">assignment_ind</mat-icon> Assigned To
+                                        <mat-icon class="icon-sm">assignment_ind</mat-icon> -Ga Biriktirilgan
                                     </h6>
                                     <p class="mb-1"><strong>{{ ticket.assigned_to }}</strong></p>
                                     <button mat-button color="primary" (click)="reassignTicket()" *ngIf="canReassign()"
                                         class="p-0">
-                                        <mat-icon class="icon-sm">edit</mat-icon> Reassign
+                                        <mat-icon class="icon-sm">edit</mat-icon> Qayta Biriktirish
                                     </button>
                                 </div>
 
                                 <!-- Timestamps -->
                                 <div class="col-md-3">
                                     <h6 class="text-muted mb-2">
-                                        <mat-icon class="icon-sm">schedule</mat-icon> Timeline
+                                        <mat-icon class="icon-sm">schedule</mat-icon> Vaqt Oralig'i
                                     </h6>
                                     <p class="mb-1 small">
-                                        <strong>Created:</strong> {{ formatDate(ticket.created_at) }}
+                                        <strong>Yaratilgan:</strong> {{ formatDate(ticket.created_at) }}
                                     </p>
                                     <p class="mb-1 small">
-                                        <strong>Updated:</strong> {{ formatDate(ticket.updated_at) }}
+                                        <strong>Yangilangan:</strong> {{ formatDate(ticket.updated_at) }}
                                     </p>
                                     <p class="mb-0 small" [ngClass]="isSLABreached() ? 'text-danger' : 'text-success'">
                                         <strong>SLA:</strong> {{ getSLAStatus() }}
@@ -136,25 +136,25 @@
                             <div class="row mt-3 pt-3 border-top">
                                 <div class="col-md-3">
                                     <p class="mb-0 small">
-                                        <strong>Category:</strong>
+                                        <strong>Kategoriyasi:</strong>
                                         <span class="badge badge-secondary ml-2">{{ getCategoryLabel(ticket.category)
                                             }}</span>
                                     </p>
                                 </div>
                                 <div class="col-md-3" *ngIf="ticket.shipment_code">
                                     <p class="mb-0 small">
-                                        <strong>Shipment:</strong>
+                                        <strong>Yetkazish Kodi:</strong>
                                         <a href="javascript:void(0)" class="ml-2">{{ ticket.shipment_code }}</a>
                                     </p>
                                 </div>
                                 <div class="col-md-3">
                                     <p class="mb-0 small">
-                                        <strong>Age:</strong> {{ getTimeSinceCreation() }}
+                                        <strong>Yoshi:</strong> {{ getTimeSinceCreation() }}
                                     </p>
                                 </div>
                                 <div class="col-md-3" *ngIf="ticket.resolution_code">
                                     <p class="mb-0 small">
-                                        <strong>Resolution:</strong> {{ ticket.resolution_code }}
+                                        <strong>Qaror:</strong> {{ ticket.resolution_code }}
                                     </p>
                                 </div>
                             </div>
@@ -173,7 +173,7 @@
                         <div class="card-header card-header-info">
                             <h5 class="card-title mb-0">
                                 <mat-icon class="align-middle">chat</mat-icon>
-                                Conversation ({{ customerMessages.length }} messages)
+                                Suhbat ({{ customerMessages.length }} Habarlari)
                             </h5>
                         </div>
                         <div class="card-body p-0">
@@ -187,7 +187,7 @@
                         <div class="card-header card-header-success">
                             <h5 class="card-title mb-0">
                                 <mat-icon class="align-middle">reply</mat-icon>
-                                Reply to Customer
+                                Mijozga Javob Qaytarish
                             </h5>
                         </div>
                         <div class="card-body">
@@ -199,9 +199,9 @@
                     <!-- Closed Ticket Notice -->
                     <div class="alert alert-secondary" *ngIf="isTicketClosed()">
                         <mat-icon class="align-middle">lock</mat-icon>
-                        This ticket is closed. Reopen it to reply.
+                        Bu So'rov yopilgan. Javob berish uchun qayta ochish
                         <button mat-raised-button color="primary" (click)="updateStatus('open')" class="ml-3">
-                            <mat-icon>lock_open</mat-icon> Reopen Ticket
+                            <mat-icon>lock_open</mat-icon> Qayta Ochish So'rovni
                         </button>
                     </div>
 
@@ -215,9 +215,9 @@
                         <div class="card-header card-header-warning">
                             <h5 class="card-title mb-0">
                                 <mat-icon class="align-middle">speaker_notes</mat-icon>
-                                Internal Notes ({{ internalNotes.length }})
+                                Ichki Qaydlar ({{ internalNotes.length }})
                             </h5>
-                            <p class="card-category mb-0 small">Visible only to staff</p>
+                            <p class="card-category mb-0 small">Faqatgina Kompaniya Azolari Ko'roladi</p>
                         </div>
                         <div class="card-body">
                             <app-internal-notes [notes]="internalNotes" (noteSubmit)="onInternalNote($event)">
@@ -230,7 +230,7 @@
                         <div class="card-header card-header-rose">
                             <h5 class="card-title mb-0">
                                 <mat-icon class="align-middle">history</mat-icon>
-                                Activity Log
+                                Harakatlar Tarixi
                             </h5>
                         </div>
                         <div class="card-body p-0">

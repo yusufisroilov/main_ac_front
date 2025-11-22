@@ -60,12 +60,12 @@ export const ROUTES: RouteInfo[] = [
     type: "link",
     icontype: "cases",
   },
-  {
-    path: "/customer-ticket-detail",
-    title: "Customer Detail",
-    type: "link",
-    icontype: "cases",
-  },
+  // {
+  //   path: "/customer-ticket-detail",
+  //   title: "Customer Detail",
+  //   type: "link",
+  //   icontype: "cases",
+  // },
   {
     path: "/create-ticket",
     title: "Create Ticket",
@@ -106,6 +106,13 @@ export const EmployeeROUTE: RouteInfo[] = [
     title: "Employer Delivery List",
     type: "link",
     icontype: "local_shipping",
+  },
+
+  {
+    path: "/uzm/tickets-list",
+    title: "Tickets List ",
+    type: "link",
+    icontype: "credit_card",
   },
   {
     path: "/uzm/warehouse-inventory",
@@ -294,31 +301,31 @@ export const managerROUTES: RouteInfo[] = [
     type: "link",
     icontype: "credit_card",
   },
-  {
-    path: "/uzm/ticket-detail",
-    title: "Tickets Details ",
-    type: "link",
-    icontype: "credit_card",
-  },
-  {
-    path: "/uzm/ticket-notes",
-    title: "Tickets Notes ",
-    type: "link",
-    icontype: "credit_card",
-  },
+  // {
+  //   path: "/uzm/ticket-detail",
+  //   title: "Tickets Details ",
+  //   type: "link",
+  //   icontype: "credit_card",
+  // },
+  // {
+  //   path: "/uzm/ticket-notes",
+  //   title: "Tickets Notes ",
+  //   type: "link",
+  //   icontype: "credit_card",
+  // },
 
-  {
-    path: "/uzm/message-thread",
-    title: "Message Thread ",
-    type: "link",
-    icontype: "credit_card",
-  },
-  {
-    path: "/uzm/reply-box",
-    title: "Reply Box ",
-    type: "link",
-    icontype: "credit_card",
-  },
+  // {
+  //   path: "/uzm/message-thread",
+  //   title: "Message Thread ",
+  //   type: "link",
+  //   icontype: "credit_card",
+  // },
+  // {
+  //   path: "/uzm/reply-box",
+  //   title: "Reply Box ",
+  //   type: "link",
+  //   icontype: "credit_card",
+  // },
   {
     path: "/uzm/ticket-dashboard",
     title: "Ticket Dashboard ",
