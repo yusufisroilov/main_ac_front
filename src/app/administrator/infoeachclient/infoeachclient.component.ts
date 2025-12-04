@@ -726,7 +726,7 @@ export class InfoeachclientComponent implements OnInit {
     this.printChekYuborish(
       this.selectedConsignmentId,
       partyNameDisplay,
-      totalWeight,
+      totalWeight.toFixed(2),
       totalItems,
       allBarcodes
     );

@@ -1,4 +1,15 @@
-import { Component, Input } from "@angular/core";
+import {
+  Component,
+  Input,
+  Output,
+  EventEmitter,
+  OnChanges,
+  SimpleChanges,
+  ViewChild,
+  ElementRef,
+  AfterViewInit,
+  AfterViewChecked,
+} from "@angular/core";
 
 interface Message {
   id: number;
@@ -7,6 +18,8 @@ interface Message {
   message_text: string;
   is_internal: boolean;
   created_at: string;
+  updated_at?: string;
+  is_edited?: boolean;
   attachments?: any[];
 }
 
@@ -15,11 +28,74 @@ interface Message {
   templateUrl: "./message-thread.component.html",
   styleUrls: ["./message-thread.component.css"],
 })
-export class MessageThreadComponent {
+export class MessageThreadComponent
+  implements OnChanges, AfterViewInit, AfterViewChecked
+{
   @Input() messages: Message[] = [];
   @Input() ticketStatus: string = "";
+  @Input() currentUserRole: string = localStorage.getItem("role") || "STAFF";
+
+  @Output() messageEdit = new EventEmitter<{
+    messageId: number;
+    newText: string;
+  }>();
+
+  @ViewChild("messagesContainer", { static: false })
+  messagesContainer: ElementRef;
+
+  // Display messages in reverse order (newest at bottom)
+  displayMessages: Message[] = [];
+
+  // Edit state
+  editingMessageId: number | null = null;
+  editingMessageText: string = "";
+  hoveredMessageId: number | null = null;
+
+  // Image preview
+  selectedImage: string | null = null;
+
+  // Auto-scroll control
+  private shouldScrollToBottom = true;
 
   constructor() {}
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes["messages"]) {
+      // Sort messages by created_at to ensure oldest is first, newest is last (Telegram style)
+      this.displayMessages = [...this.messages].sort((a, b) => {
+        return (
+          new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+        );
+      });
+
+      // ✅ REMOVED: Spammy console logs
+
+      this.shouldScrollToBottom = true;
+    }
+  }
+
+  ngAfterViewInit(): void {
+    this.scrollToBottom();
+  }
+
+  ngAfterViewChecked(): void {
+    if (this.shouldScrollToBottom) {
+      this.scrollToBottom();
+      this.shouldScrollToBottom = false;
+    }
+  }
+
+  /**
+   * Scroll to bottom of messages container
+   */
+  scrollToBottom(): void {
+    if (this.messagesContainer && this.messagesContainer.nativeElement) {
+      setTimeout(() => {
+        const element = this.messagesContainer.nativeElement;
+        element.scrollTop = element.scrollHeight;
+      }, 100);
+    }
+  }
 
   /**
    * Check if message is from customer
@@ -33,6 +109,88 @@ export class MessageThreadComponent {
    */
   isStaffMessage(message: Message): boolean {
     return message.sender_role === "staff";
+  }
+
+  /**
+   * Check if current user can edit this message
+   * Only staff can edit their own messages
+   */
+  canEditMessage(message: Message): boolean {
+    return (
+      message.sender_role === "staff" &&
+      this.ticketStatus !== "closed" &&
+      this.currentUserRole !== "CUSTOMER"
+    );
+  }
+
+  /**
+   * Start editing a message
+   */
+  startEditing(message: Message): void {
+    if (!this.canEditMessage(message)) return;
+
+    this.editingMessageId = message.id;
+    this.editingMessageText = message.message_text;
+  }
+
+  /**
+   * Cancel editing
+   */
+  cancelEditing(): void {
+    this.editingMessageId = null;
+    this.editingMessageText = "";
+  }
+
+  /**
+   * Save edited message
+   */
+  saveEdit(messageId: number): void {
+    if (!this.editingMessageText.trim()) {
+      return;
+    }
+
+    this.messageEdit.emit({
+      messageId: messageId,
+      newText: this.editingMessageText.trim(),
+    });
+
+    this.cancelEditing();
+  }
+
+  /**
+   * Handle keyboard shortcuts in edit mode
+   */
+  onEditKeyDown(event: KeyboardEvent, messageId: number): void {
+    if (event.key === "Enter" && !event.shiftKey) {
+      event.preventDefault();
+      this.saveEdit(messageId);
+    } else if (event.key === "Escape") {
+      event.preventDefault();
+      this.cancelEditing();
+    }
+  }
+
+  /**
+   * Check if message is being edited
+   */
+  isEditing(messageId: number): boolean {
+    return this.editingMessageId === messageId;
+  }
+
+  /**
+   * Set hovered message
+   */
+  setHoveredMessage(messageId: number | null): void {
+    if (this.editingMessageId === null) {
+      this.hoveredMessageId = messageId;
+    }
+  }
+
+  /**
+   * Check if message is hovered
+   */
+  isHovered(messageId: number): boolean {
+    return this.hoveredMessageId === messageId;
   }
 
   /**
@@ -76,7 +234,14 @@ export class MessageThreadComponent {
    * Check if message has attachments
    */
   hasAttachments(message: Message): boolean {
-    return message.attachments && message.attachments.length > 0;
+    const hasAtts = message.attachments && message.attachments.length > 0;
+
+    // ✅ OPTIONAL: Uncomment for debugging attachments
+    // if (hasAtts) {
+    //   console.log('Message has attachments:', message.attachments);
+    // }
+
+    return hasAtts;
   }
 
   /**
@@ -101,6 +266,48 @@ export class MessageThreadComponent {
     };
 
     return iconMap[ext || ""] || "attachment";
+  }
+
+  /**
+   * Check if file is an image
+   */
+  isImageFile(filename: string): boolean {
+    if (!filename) return false;
+    const ext = filename.split(".").pop()?.toLowerCase();
+    return ["jpg", "jpeg", "png", "gif", "webp"].includes(ext || "");
+  }
+
+  /**
+   * Check if file is a PDF
+   */
+  isPdfFile(filename: string): boolean {
+    if (!filename) return false;
+    return filename.toLowerCase().endsWith(".pdf");
+  }
+
+  /**
+   * Open image in modal
+   */
+  openImagePreview(imageUrl: string): void {
+    this.selectedImage = imageUrl;
+  }
+
+  /**
+   * Close image preview
+   */
+  closeImagePreview(): void {
+    this.selectedImage = null;
+  }
+
+  /**
+   * Get file size in readable format
+   */
+  getFileSize(bytes: number): string {
+    if (!bytes) return "0 KB";
+    const k = 1024;
+    const sizes = ["Bytes", "KB", "MB"];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + " " + sizes[i];
   }
 
   /**

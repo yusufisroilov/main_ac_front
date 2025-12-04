@@ -292,3 +292,40 @@ a:hover {
     border: 1px solid #ddd;
   }
 }
+
+/* Accordion/Collapsible Styles */
+.card-header[style*="cursor: pointer"] {
+  user-select: none;
+  transition: background 0.2s ease;
+}
+
+.card-header[style*="cursor: pointer"]:hover {
+  opacity: 0.9;
+}
+
+.card-body {
+  transition: all 0.3s ease-in-out;
+}
+
+/* Smooth expand/collapse animation */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    max-height: 0;
+  }
+  to {
+    opacity: 1;
+    max-height: 2000px;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 1;
+    max-height: 2000px;
+  }
+  to {
+    opacity: 0;
+    max-height: 0;
+  }
+}

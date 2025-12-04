@@ -142,9 +142,11 @@ export class CustomerTicketListComponent implements OnInit {
           const data = response.json();
           if (data.status === "success") {
             this.tickets = data.tickets || [];
+            console.log("tickets ", this.tickets);
+
             this.currentPage = data.pagination.page;
             this.totalPages = data.pagination.total_pages;
-            this.totalTickets = data.pagination.total;
+            this.totalTickets = this.tickets.length;
             this.isLoading = false;
 
             if (this.totalPages > 1) {
@@ -249,7 +251,7 @@ export class CustomerTicketListComponent implements OnInit {
    * Navigate to create ticket
    */
   createNewTicket(): void {
-    this.router.navigate(["/customer/create-ticket"]);
+    this.router.navigate(["/create-ticket"]);
   }
 
   /**

@@ -119,7 +119,7 @@ export class AdminTicketDashboardComponent implements OnInit {
   private loadRecentTickets(): void {
     this.loadingRecent = true;
 
-    const queryParams = "?limit=10&sort_by=updated_at&sort_order=desc";
+    const queryParams = "?limit=10&sort_by=updated_at&sort_order=DESC";
 
     this.http
       .get(
@@ -130,6 +130,7 @@ export class AdminTicketDashboardComponent implements OnInit {
         (response) => {
           const data = response.json();
           this.recentTickets = data.tickets || [];
+          console.log("recent tickets ", this.recentTickets);
 
           this.loadingRecent = false;
         },

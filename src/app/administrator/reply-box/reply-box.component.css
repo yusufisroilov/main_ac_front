@@ -1,182 +1,346 @@
 .reply-box-container {
-  padding: 0;
+  background: white;
+  border-radius: 8px;
+  padding: 15px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.editor-wrapper {
-  position: relative;
+/* File Preview Section */
+.file-preview-section {
+  margin-bottom: 15px;
+  padding: 12px;
+  background: #f9f9f9;
+  border-radius: 8px;
+  border: 2px dashed #ddd;
 }
 
-.reply-textarea {
+.file-preview-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.file-count {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #666;
+}
+
+.file-preview-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.file-preview-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px;
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  transition: all 0.2s ease;
+}
+
+.file-preview-item:hover {
+  border-color: #9c27b0;
+  box-shadow: 0 2px 6px rgba(156, 39, 176, 0.1);
+}
+
+.preview-image {
+  width: 60px;
+  height: 60px;
+  border-radius: 6px;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: #f5f5f5;
+}
+
+.preview-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.preview-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 6px;
+  background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.preview-icon mat-icon {
+  font-size: 32px;
+  width: 32px;
+  height: 32px;
+  color: #1976d2;
+}
+
+.preview-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.preview-name {
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: #333;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.preview-size {
+  font-size: 0.8125rem;
+  color: #999;
+}
+
+.preview-remove {
+  width: 32px !important;
+  height: 32px !important;
+  flex-shrink: 0;
+}
+
+.preview-remove mat-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+  color: #666;
+}
+
+.preview-remove:hover mat-icon {
+  color: #f44336;
+}
+
+/* Message Input Section */
+.message-input-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.message-textarea {
   width: 100%;
   padding: 12px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
   font-size: 0.9375rem;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
     "Helvetica Neue", Arial, sans-serif;
   line-height: 1.6;
   resize: vertical;
-  min-height: 120px;
-  transition: border-color 0.2s;
-
-  &:focus {
-    outline: none;
-    border-color: #9c27b0;
-    box-shadow: 0 0 0 2px rgba(156, 39, 176, 0.1);
-  }
-
-  &:disabled {
-    background-color: #f5f5f5;
-    cursor: not-allowed;
-  }
-
-  &::placeholder {
-    color: #999;
-    font-size: 0.875rem;
-  }
+  min-height: 80px;
+  transition: all 0.2s ease;
 }
 
-.editor-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 8px;
-  padding: 0 4px;
-
-  small {
-    font-size: 0.75rem;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-  }
+.message-textarea:focus {
+  outline: none;
+  border-color: #9c27b0;
+  box-shadow: 0 0 0 3px rgba(156, 39, 176, 0.1);
 }
 
-.reply-options {
-  ::ng-deep .mat-checkbox-layout {
-    margin-bottom: 0;
-  }
-
-  ::ng-deep .mat-checkbox-label {
-    font-size: 0.9375rem;
-    color: #666;
-  }
+.message-textarea:disabled {
+  background-color: #f5f5f5;
+  cursor: not-allowed;
+  opacity: 0.6;
 }
 
-.reply-actions {
-  display: flex;
-  gap: 10px;
-
-  button {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-
-    .mat-icon {
-      font-size: 18px;
-      width: 18px;
-      height: 18px;
-    }
-  }
-}
-
-.helper-text {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-  padding: 12px;
-  background-color: #f9f9f9;
-  border-radius: 4px;
-  border-left: 3px solid #9c27b0;
-
-  .mat-icon {
-    flex-shrink: 0;
-    margin-top: 2px;
-  }
-
-  small {
-    flex: 1;
-    line-height: 1.5;
-
-    strong {
-      color: #333;
-    }
-  }
-}
-
-.text-muted {
+.message-textarea::placeholder {
   color: #999;
 }
 
-.icon-xs {
-  font-size: 14px !important;
-  width: 14px !important;
-  height: 14px !important;
-  vertical-align: middle;
+/* Actions Row */
+.actions-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  justify-content: space-between;
 }
 
-.icon-sm {
-  font-size: 18px !important;
-  width: 18px !important;
-  height: 18px !important;
+.file-upload-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
-.mt-3 {
-  margin-top: 1rem;
+.file-limit-text {
+  font-size: 0.75rem;
+  color: #999;
+  font-weight: 500;
 }
 
-.mr-2 {
-  margin-right: 0.5rem;
+.char-count {
+  font-size: 0.8125rem;
+  color: #999;
+  margin-left: auto;
 }
 
-/* // Material overrides for this component */
-::ng-deep {
-  .mat-checkbox-checked .mat-checkbox-background {
-    background-color: #9c27b0;
-  }
-
-  .mat-checkbox-indeterminate .mat-checkbox-background {
-    background-color: #9c27b0;
-  }
+.char-count.text-warning {
+  color: #ff9800;
+  font-weight: 600;
 }
-/* 
-// Responsive adjustments */
+
+.submit-button {
+  min-width: 120px !important;
+  height: 40px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+
+.submit-button mat-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+.spinner-inline {
+  display: inline-block;
+  margin-right: 8px;
+}
+
+/* Hint Text */
+.hint-text {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8125rem;
+  color: #999;
+  padding: 8px 12px;
+  background: #f9f9f9;
+  border-radius: 6px;
+}
+
+.hint-icon {
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+  color: #00bcd4;
+}
+
 @media (max-width: 768px) {
-  .reply-textarea {
+  .reply-box-container {
+    padding: 10px;
+  }
+
+  .message-textarea {
+    min-height: 70px;
     font-size: 0.875rem;
-    min-height: 100px;
   }
 
-  .reply-actions {
-    flex-direction: column;
-
-    button {
-      width: 100%;
-      justify-content: center;
-    }
+  /* Compact Actions Row */
+  .actions-row {
+    gap: 6px;
+    flex-wrap: nowrap;
   }
 
-  .editor-footer {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
+  .file-upload-wrapper {
+    gap: 4px;
+  }
+
+  .file-upload-wrapper button {
+    width: 36px !important;
+    height: 36px !important;
+  }
+
+  .file-limit-text {
+    font-size: 0.688rem;
+  }
+
+  .char-count {
+    font-size: 0.75rem;
+    margin-left: 0;
+    white-space: nowrap;
+  }
+
+  .submit-button {
+    min-width: 80px !important;
+    height: 36px !important;
+    padding: 0 12px !important;
+    font-size: 0.813rem;
+  }
+
+  .submit-button mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+
+  /* Hide hint text on mobile */
+  .hint-text {
+    display: none;
   }
 }
 
-/* // Animation for submit button */
-.reply-actions button {
-  transition: all 0.2s ease;
-
-  &:not(:disabled):hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+@media (max-width: 400px) {
+  /* Hide character count on very small screens */
+  .char-count {
+    display: none;
   }
 
-  &:not(:disabled):active {
+  .file-limit-text {
+    display: none;
+  }
+
+  .submit-button {
+    min-width: 60px !important;
+  }
+
+  .submit-button span {
+    display: none; /* Icon only */
+  }
+
+  .submit-button mat-icon {
+    margin: 0;
+  }
+}
+
+/* Animation */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
     transform: translateY(0);
   }
+}
 
-  &:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
+.file-preview-section {
+  animation: slideIn 0.3s ease;
+}
+
+.file-preview-item {
+  animation: slideIn 0.2s ease;
+}
+
+/* Button Hover Effects */
+button[mat-icon-button]:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+button[mat-raised-button]:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Focus States */
+.message-textarea:focus,
+button:focus {
+  outline: none;
+}
+
+/* Loading State */
+.submit-button[disabled] {
+  pointer-events: none;
 }

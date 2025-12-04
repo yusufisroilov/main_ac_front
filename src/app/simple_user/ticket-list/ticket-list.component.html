@@ -6,17 +6,17 @@
             <div class="col-md-12">
                 <div class="card" id="listcard">
                     <div class="card-header card-header-primary">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
+                        <div class="d-flex justify-content-between align-items-center header-responsive">
+                            <div class="header-text">
                                 <h4 class="card-title mb-0">
                                     <mat-icon class="align-middle">confirmation_number</mat-icon>
                                     My Support Tickets
                                 </h4>
                                 <p class="card-category mb-0">View and manage your support requests</p>
                             </div>
-                            <button mat-raised-button color="accent" (click)="createNewTicket()">
+                            <button mat-raised-button color="accent" (click)="createNewTicket()" class="new-ticket-btn">
                                 <mat-icon>add</mat-icon>
-                                New Ticket
+                                <span class="btn-text">New Ticket</span>
                             </button>
                         </div>
                     </div>

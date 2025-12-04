@@ -8,11 +8,11 @@
                         <div class="card-icon">
                             <i class="material-icons">dashboard</i>
                         </div>
-                        <h4 class="card-title">Панель управления тикетами</h4>
-                        <p class="card-category">Обзор системы поддержки</p>
+                        <h4 class="card-title">So'rovlar Nazorati Panelu</h4>
+                        <p class="card-category">Konsultatsiya Sistemasi Ko'rinishi</p>
                         <button mat-raised-button class="btn btn-primary btn-sm" style="float: right; margin-top: -60px"
                             (click)="refreshDashboard()">
-                            <i class="material-icons">refresh</i> Обновить
+                            <i class="material-icons">refresh</i> Yangilash
                         </button>
                     </div>
                 </div>
@@ -28,13 +28,13 @@
                         <div class="card-icon">
                             <i class="material-icons">confirmation_number</i>
                         </div>
-                        <p class="card-category">Всего тикетов</p>
+                        <p class="card-category">Barcha So'rovlar</p>
                         <h3 class="card-title">{{ totalTickets }}</h3>
                     </div>
                     <div class="card-footer">
                         <div class="stats">
                             <a (click)="viewAllTickets()" style="cursor: pointer">
-                                <i class="material-icons">visibility</i> Просмотреть все
+                                <i class="material-icons">visibility</i> Hammasini Ko'rish
                             </a>
                         </div>
                     </div>
@@ -48,13 +48,13 @@
                         <div class="card-icon">
                             <i class="material-icons">notifications_active</i>
                         </div>
-                        <p class="card-category">Непрочитано</p>
+                        <p class="card-category">O'qilmagan</p>
                         <h3 class="card-title">{{ unreadTickets }}</h3>
                     </div>
                     <div class="card-footer">
                         <div class="stats">
                             <a (click)="viewTicketsByStatus('unread')" style="cursor: pointer">
-                                <i class="material-icons">visibility</i> Просмотреть
+                                <i class="material-icons">visibility</i> Ko'rish
                             </a>
                         </div>
                     </div>
@@ -68,13 +68,13 @@
                         <div class="card-icon">
                             <i class="material-icons">folder_open</i>
                         </div>
-                        <p class="card-category">Открыто</p>
+                        <p class="card-category">Ochiq</p>
                         <h3 class="card-title">{{ openTickets }}</h3>
                     </div>
                     <div class="card-footer">
                         <div class="stats">
                             <a (click)="viewTicketsByStatus('open')" style="cursor: pointer">
-                                <i class="material-icons">visibility</i> Просмотреть
+                                <i class="material-icons">visibility</i> Ko'rish
                             </a>
                         </div>
                     </div>
@@ -88,13 +88,13 @@
                         <div class="card-icon">
                             <i class="material-icons">hourglass_empty</i>
                         </div>
-                        <p class="card-category">Требует ответа</p>
+                        <p class="card-category">Javob Kutayotganlar</p>
                         <h3 class="card-title">{{ needsResponseTickets }}</h3>
                     </div>
                     <div class="card-footer">
                         <div class="stats">
                             <a (click)="viewTicketsByStatus('customer-reply')" style="cursor: pointer">
-                                <i class="material-icons">visibility</i> Просмотреть
+                                <i class="material-icons">visibility</i> Ko'rish
                             </a>
                         </div>
                     </div>
@@ -111,7 +111,7 @@
                         <div class="card-icon">
                             <i class="material-icons">pie_chart</i>
                         </div>
-                        <h4 class="card-title">Статистика по статусам</h4>
+                        <h4 class="card-title">Status Bo'yicha Statistika</h4>
                     </div>
                     <div class="card-body">
                         <div *ngIf="loadingStats" class="text-center">
@@ -133,7 +133,7 @@
                         </div>
 
                         <div *ngIf="!loadingStats && getStatusChartData().length === 0" class="text-center text-muted">
-                            Нет данных
+                            Malumotlar Topilmadi
                         </div>
                     </div>
                 </div>
@@ -146,7 +146,7 @@
                         <div class="card-icon">
                             <i class="material-icons">priority_high</i>
                         </div>
-                        <h4 class="card-title">Статистика по приоритетам</h4>
+                        <h4 class="card-title">Muhimlilik Bo'yicha Statistika</h4>
                     </div>
                     <div class="card-body">
                         <div *ngIf="loadingStats" class="text-center">
@@ -169,7 +169,7 @@
 
                         <div *ngIf="!loadingStats && getPriorityChartData().length === 0"
                             class="text-center text-muted">
-                            Нет данных
+                            Malumotlar Topilmadi
                         </div>
                     </div>
                 </div>
@@ -182,15 +182,15 @@
                 <div class="card">
                     <div class="card-header card-header-success card-header-icon">
                         <div class="card-icon"><i class="material-icons">timer</i></div>
-                        <h4 class="card-title">Среднее время решения</h4>
+                        <h4 class="card-title">O'rtacha Javoblar Vaqti</h4>
                     </div>
                     <div class="card-body">
                         <div class="text-center">
                             <h2 class="text-success">
                                 <i class="material-icons" style="font-size: 48px">access_time</i><br />
-                                {{ avgResolutionTime | number: "1.1-1" }} часов
+                                {{ avgResolutionTime | number: "1.1-1" }} Soat
                             </h2>
-                            <p class="text-muted">В среднем для закрытых тикетов</p>
+                            <p class="text-muted">Yopilgan So'rovlar uchun o'rtacha miqdorda</p>
                         </div>
                     </div>
                 </div>
@@ -205,8 +205,8 @@
                         <div class="card-icon">
                             <i class="material-icons">history</i>
                         </div>
-                        <h4 class="card-title">Последняя активность</h4>
-                        <p class="card-category">Последние 10 тикетов</p>
+                        <h4 class="card-title">Oxirgi Activlik</h4>
+                        <p class="card-category">Oxrigi 10 So'rov</p>
                     </div>
 
                     <div class="card-body">
@@ -218,13 +218,13 @@
                             <table class="table table-hover">
                                 <thead>
                                     <tr>
-                                        <th class="text-center">Номер</th>
-                                        <th>Клиент</th>
-                                        <th>Тема</th>
-                                        <th class="text-center">Приоритет</th>
-                                        <th class="text-center">Статус</th>
-                                        <th class="text-center">Обновлено</th>
-                                        <th class="text-center">Действия</th>
+                                        <th class="text-center">Nomer</th>
+                                        <th>Mijoz</th>
+                                        <th>Mavzusi</th>
+                                        <th class="text-center">Muhimlilik</th>
+                                        <th class="text-center">Status</th>
+                                        <th class="text-center">Yangilangan</th>
+                                        <th class="text-center">Harakatlar</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -249,7 +249,7 @@
                                         <td class="text-center">
                                             <button mat-raised-button class="btn btn-primary btn-sm"
                                                 (click)="viewTicket(ticket)">
-                                                <i class="material-icons">visibility</i> Открыть
+                                                <i class="material-icons">visibility</i> Ochish
                                             </button>
                                         </td>
                                     </tr>
@@ -259,7 +259,7 @@
 
                         <div *ngIf="!loadingRecent && recentTickets.length === 0" class="text-center text-muted py-5">
                             <i class="material-icons" style="font-size: 64px">inbox</i>
-                            <p>Нет недавних тикетов</p>
+                            <p>So'rovlar Malumotlar topilmadi </p>
                         </div>
                     </div>
                 </div>

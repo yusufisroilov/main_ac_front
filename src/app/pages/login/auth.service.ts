@@ -39,11 +39,11 @@ export class AuthService {
     localStorage.removeItem("last_name");
     localStorage.removeItem("editpr");
     localStorage.removeItem("recid");
-   // localStorage.removeItem("current_party");
-    localStorage.removeItem('current_box')
-    localStorage.removeItem('labelsTemp1');
-    localStorage.removeItem('labelsTemp2');
-    localStorage.removeItem('token_fin');
+    // localStorage.removeItem("current_party");
+    localStorage.removeItem("current_box");
+    localStorage.removeItem("labelsTemp1");
+    localStorage.removeItem("labelsTemp2");
+    localStorage.removeItem("token_fin");
   }
 
   isLoggedIn() {
@@ -63,5 +63,9 @@ export class AuthService {
     if (!token) return null;
 
     // return new JwtHelper().decodeToken(token);
+  }
+
+  getRole() {
+    return localStorage.getItem("role");
   }
 }

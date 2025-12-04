@@ -179,7 +179,7 @@
                                         <tr>
                                             <th class="text-center">So'rov #</th>
                                             <th class="text-center">Mavzusi</th>
-                                            <th class="text-center">Mijoz</th>
+                                            <th class="text-center">Mijoz (ID)</th>
                                             <th class="text-center">Kategoriyasi</th>
                                             <th class="text-center">Status</th>
                                             <!-- <th class="text-center">Muhimlilik</th> -->
@@ -199,7 +199,12 @@
                                                 <strong class="text-primary">{{ ticket.ticket_number }}</strong>
                                             </td>
                                             <td class="text-left">{{ ticket.subject }}</td>
-                                            <td>{{ ticket.customer_name }}</td>
+                                            <td>
+                                                <div class="customer-info">
+                                                    <span class="customer-name">{{ ticket.customer_name }}</span>
+                                                    <span class="customer-id-badge">ID: {{ ticket.customer_id }}</span>
+                                                </div>
+                                            </td>
                                             <td>
                                                 <span class="badge badge-secondary">{{ ticket.category }}</span>
                                             </td>

@@ -157,6 +157,70 @@
   margin-bottom: 20px;
 }
 
+/* Responsive Header Fix */
+.header-responsive {
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.header-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.new-ticket-btn {
+  flex-shrink: 0;
+}
+
+/* Mobile - Stack vertically */
+@media (max-width: 768px) {
+  .header-responsive {
+    flex-direction: column;
+    align-items: flex-start !important;
+    gap: 15px;
+  }
+
+  .header-text {
+    width: 100%;
+  }
+
+  .header-text .card-title {
+    font-size: 1.25rem;
+  }
+
+  .header-text .card-category {
+    font-size: 0.813rem;
+  }
+
+  .new-ticket-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* Very small screens - Icon only button */
+@media (max-width: 400px) {
+  .header-text .card-title {
+    font-size: 1.125rem;
+  }
+
+  .header-text .card-title .mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
+
+  .new-ticket-btn .btn-text {
+    display: none; /* Hide text, show only icon */
+  }
+
+  .new-ticket-btn {
+    min-width: 48px;
+    width: auto;
+    padding: 0 12px;
+  }
+}
+
 /* Tickets Container */
 .tickets-container {
   display: flex;

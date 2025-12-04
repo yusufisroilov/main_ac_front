@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, ViewChild } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { GlobalVars } from "src/app/global-vars";
 import swal from "sweetalert2";
@@ -7,7 +7,7 @@ import { AuthService } from "src/app/pages/login/auth.service";
 
 interface TicketMessage {
   id: number;
-  sender_type: "customer" | "staff";
+  sender_role: "customer" | "staff"; // ✅ FIXED: Changed from sender_type to sender_role
   sender_name: string;
   message_text: string;
   is_internal: boolean;
@@ -70,6 +70,15 @@ export class AdminTicketDetailComponent implements OnInit {
 
   // Current user role
   currentUserRole: string = localStorage.getItem("role") || "STAFF";
+
+  // Accordion states
+  isTicketHeaderExpanded: boolean = false;
+  isInternalNotesExpanded: boolean = false;
+  isActivityLogExpanded: boolean = false;
+
+  // ✅ NEW: ViewChild for reply box component
+  @ViewChild("replyBoxComponent") replyBoxComponent: any;
+  @ViewChild("internalNoteBox") internalNoteBox: any;
 
   // HTTP setup
   headers12: any;
@@ -161,9 +170,33 @@ export class AdminTicketDetailComponent implements OnInit {
       .subscribe(
         (response) => {
           const data = response.json();
-
           this.ticket = data.ticket;
-          console.log("ticket ", this.ticket);
+
+          // 🔍 DEBUG: Check message attachments structure
+          console.log("=== TICKET DATA ===");
+          console.log("Full ticket:", this.ticket);
+
+          if (this.ticket && this.ticket.messages) {
+            this.ticket.messages.forEach((msg, index) => {
+              console.log(`Message ${index}:`, msg);
+              if (msg.attachments && msg.attachments.length > 0) {
+                console.log(
+                  `  Attachments for message ${index}:`,
+                  msg.attachments
+                );
+                msg.attachments.forEach((att, attIndex) => {
+                  console.log(`    Attachment ${attIndex}:`, {
+                    id: att.id,
+                    file_name: att.file_name,
+                    file_path: att.file_path,
+                    file_url: att.file_url, // ← Check if this exists!
+                    file_size: att.file_size,
+                    file_type: att.file_type,
+                  });
+                });
+              }
+            });
+          }
 
           // Separate customer messages and internal notes
           if (this.ticket && this.ticket.messages) {
@@ -200,21 +233,35 @@ export class AdminTicketDetailComponent implements OnInit {
   }
 
   /**
-   * Handle staff reply submission
+   * ✅ FIXED: Handle staff reply submission with file uploads
    */
-  onStaffReply(data: { message: string; closeAfterReply: boolean }): void {
+  onStaffReply(data: { messageText: string; files: File[] }): void {
     if (!this.ticket) return;
 
-    const body = {
-      message_text: data.message,
-      close_after_reply: data.closeAfterReply,
-    };
+    // Set submitting state
+    if (this.replyBoxComponent) {
+      this.replyBoxComponent.setSubmitting(true);
+    }
+
+    // Create FormData for file uploads
+    const formData = new FormData();
+    formData.append("message_text", data.messageText);
+
+    // Append files
+    data.files.forEach((file) => {
+      formData.append("attachments", file);
+    });
+
+    // ✅ IMPORTANT: Remove Content-Type header for FormData
+    const headers = new Headers();
+    headers.append("Authorization", localStorage.getItem("token"));
+    const options = new RequestOptions({ headers: headers });
 
     this.http
       .post(
         GlobalVars.baseUrl + "/tickets/admin/" + this.ticket.id + "/reply",
-        body,
-        this.options
+        formData,
+        options
       )
       .subscribe(
         (response) => {
@@ -227,12 +274,21 @@ export class AdminTicketDetailComponent implements OnInit {
               showConfirmButton: false,
             });
 
-            // Reload ticket to show new message
+            // Reset form and reload ticket
+            if (this.replyBoxComponent) {
+              this.replyBoxComponent.resetForm();
+            }
             this.loadTicketDetail();
           }
         },
         (error) => {
           console.error("Error sending reply:", error);
+
+          // Reset submitting state on error
+          if (this.replyBoxComponent) {
+            this.replyBoxComponent.setSubmitting(false);
+          }
+
           if (error.status == 403) {
             this.authService.logout();
           } else {
@@ -247,14 +303,29 @@ export class AdminTicketDetailComponent implements OnInit {
   }
 
   /**
-   * Handle internal note submission
+   * ✅ FIXED: Handle internal note submission with file uploads
    */
-  onInternalNote(noteText: string): void {
+  onInternalNote(data: { messageText: string; files: File[] }): void {
     if (!this.ticket) return;
 
-    const body = {
-      note_text: noteText,
-    };
+    // Set submitting state
+    if (this.internalNoteBox) {
+      this.internalNoteBox.setSubmitting(true);
+    }
+
+    // Create FormData for file uploads
+    const formData = new FormData();
+    formData.append("note_text", data.messageText);
+
+    // Append files
+    data.files.forEach((file) => {
+      formData.append("attachments", file);
+    });
+
+    // Remove Content-Type header for FormData
+    const headers = new Headers();
+    headers.append("Authorization", localStorage.getItem("token"));
+    const options = new RequestOptions({ headers: headers });
 
     this.http
       .post(
@@ -262,8 +333,8 @@ export class AdminTicketDetailComponent implements OnInit {
           "/tickets/admin/" +
           this.ticket.id +
           "/internal-note",
-        body,
-        this.options
+        formData,
+        options
       )
       .subscribe(
         (response) => {
@@ -276,12 +347,21 @@ export class AdminTicketDetailComponent implements OnInit {
               showConfirmButton: false,
             });
 
-            // Reload ticket to show new note
+            // Reset form and reload ticket
+            if (this.internalNoteBox) {
+              this.internalNoteBox.resetForm();
+            }
             this.loadTicketDetail();
           }
         },
         (error) => {
           console.error("Error adding note:", error);
+
+          // Reset submitting state on error
+          if (this.internalNoteBox) {
+            this.internalNoteBox.setSubmitting(false);
+          }
+
           if (error.status == 403) {
             this.authService.logout();
           } else {
@@ -305,43 +385,38 @@ export class AdminTicketDetailComponent implements OnInit {
     if (newStatus === "closed") {
       swal
         .fire({
-          title: "Close Ticket",
-          input: "select",
-          inputOptions: {
-            resolved: "Resolved",
-            duplicate: "Duplicate",
-            "cannot-resolve": "Cannot Resolve",
-            "customer-no-response": "Customer No Response",
-          },
-          inputPlaceholder: "Select resolution reason",
+          title: "Yechimni kiriting",
+          input: "text",
+          inputPlaceholder: "Resolution code or description",
           showCancelButton: true,
-          confirmButtonText: "Close Ticket",
+          confirmButtonText: "Yopish So'rovni",
           inputValidator: (value) => {
             if (!value) {
-              return "You need to select a reason!";
+              return "Yechim Kerak!";
             }
           },
         })
         .then((result) => {
-          if (result.isConfirmed) {
-            this.performStatusUpdate(newStatus, result.value);
+          if (result.isConfirmed && this.ticket) {
+            const body = {
+              status: newStatus,
+              resolution_code: result.value,
+            };
+
+            this.performStatusUpdate(body);
           }
         });
     } else {
-      this.performStatusUpdate(newStatus);
+      const body = { status: newStatus };
+      this.performStatusUpdate(body);
     }
   }
 
   /**
-   * Perform the actual status update
+   * Perform status update API call
    */
-  private performStatusUpdate(status: string, resolutionCode?: string): void {
+  private performStatusUpdate(body: any): void {
     if (!this.ticket) return;
-
-    const body: any = { status: status };
-    if (resolutionCode) {
-      body.resolution_code = resolutionCode;
-    }
 
     this.http
       .put(
@@ -353,10 +428,7 @@ export class AdminTicketDetailComponent implements OnInit {
         (response) => {
           if (response.json().status === "success") {
             if (this.ticket) {
-              this.ticket.status = status;
-              if (resolutionCode) {
-                this.ticket.resolution_code = resolutionCode;
-              }
+              this.ticket.status = body.status;
             }
 
             swal.fire({
@@ -428,6 +500,40 @@ export class AdminTicketDetailComponent implements OnInit {
               icon: "error",
               title: "Error",
               text: "Failed to update priority. Please try again.",
+            });
+          }
+        }
+      );
+  }
+
+  /**
+   * Handle message edit
+   */
+  onMessageEdit(event: { messageId: number; newText: string }): void {
+    console.log("message edit ", event.messageId, event.newText);
+
+    this.http
+      .put(
+        GlobalVars.baseUrl + "/tickets/message/" + event.messageId,
+        { messageText: event.newText },
+        this.options
+      )
+      .subscribe(
+        (response) => {
+          if (response.json().status === "success") {
+            // Reload to get updated activity log
+            this.loadTicketDetail();
+          }
+        },
+        (error) => {
+          console.error("Error updating message:", error);
+          if (error.status == 403) {
+            this.authService.logout();
+          } else {
+            swal.fire({
+              icon: "error",
+              title: "Error",
+              text: "Habarni tahrirlashda xatolik!!!",
             });
           }
         }
@@ -659,5 +765,26 @@ export class AdminTicketDetailComponent implements OnInit {
     }
 
     return "Within SLA";
+  }
+
+  /**
+   * Toggle ticket header accordion
+   */
+  toggleTicketHeader(): void {
+    this.isTicketHeaderExpanded = !this.isTicketHeaderExpanded;
+  }
+
+  /**
+   * Toggle internal notes accordion
+   */
+  toggleInternalNotes(): void {
+    this.isInternalNotesExpanded = !this.isInternalNotesExpanded;
+  }
+
+  /**
+   * Toggle activity log accordion
+   */
+  toggleActivityLog(): void {
+    this.isActivityLogExpanded = !this.isActivityLogExpanded;
   }
 }

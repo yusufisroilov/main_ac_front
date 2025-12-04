@@ -28,45 +28,49 @@
 
                                 <!-- Editor Toolbar -->
                                 <div class="rich-text-toolbar">
-                                    <button type="button" class="toolbar-btn" title="Bold">
+                                    <button type="button" class="toolbar-btn" title="Bold (Ctrl+B)"
+                                        (click)="formatBold()">
                                         <strong>B</strong>
                                     </button>
-                                    <button type="button" class="toolbar-btn" title="Italic">
+                                    <button type="button" class="toolbar-btn" title="Italic (Ctrl+I)"
+                                        (click)="formatItalic()">
                                         <em>I</em>
                                     </button>
-                                    <button type="button" class="toolbar-btn" title="Heading">
+                                    <button type="button" class="toolbar-btn" title="Heading" (click)="formatHeading()">
                                         <strong>H</strong>
                                     </button>
-                                    <button type="button" class="toolbar-btn" title="Link">
+                                    <button type="button" class="toolbar-btn" title="Link" (click)="insertLink()">
                                         <mat-icon>link</mat-icon>
                                     </button>
-                                    <button type="button" class="toolbar-btn" title="Bullet List">
+                                    <button type="button" class="toolbar-btn" title="Bullet List"
+                                        (click)="insertBulletList()">
                                         <mat-icon>format_list_bulleted</mat-icon>
                                     </button>
-                                    <button type="button" class="toolbar-btn" title="Numbered List">
+                                    <button type="button" class="toolbar-btn" title="Numbered List"
+                                        (click)="insertNumberedList()">
                                         <mat-icon>format_list_numbered</mat-icon>
                                     </button>
-                                    <button type="button" class="toolbar-btn" title="Indent">
-                                        <mat-icon>format_indent_increase</mat-icon>
-                                    </button>
-                                    <button type="button" class="toolbar-btn" title="Quote">
+                                    <button type="button" class="toolbar-btn" title="Quote" (click)="insertQuote()">
                                         <mat-icon>format_quote</mat-icon>
                                     </button>
-                                    <button type="button" class="toolbar-btn btn-preview" title="Preview">
+                                    <button type="button" class="toolbar-btn btn-preview" title="Preview"
+                                        (click)="showPreview()">
                                         <mat-icon>visibility</mat-icon> Preview
                                     </button>
-                                    <button type="button" class="toolbar-btn" title="Help">
+                                    <button type="button" class="toolbar-btn" title="Help" (click)="showHelp()">
                                         <mat-icon>help</mat-icon>
                                     </button>
-                                    <button type="button" class="toolbar-btn" title="Fullscreen">
+                                    <button type="button" class="toolbar-btn" title="Fullscreen"
+                                        (click)="toggleFullscreen()">
                                         <mat-icon>fullscreen</mat-icon>
                                     </button>
                                 </div>
 
                                 <!-- Textarea -->
-                                <textarea class="form-control message-textarea" [(ngModel)]="message" name="message"
-                                    (ngModelChange)="onMessageChange()" rows="12" [disabled]="isSubmitting"
-                                    placeholder="Describe your issue in detail..."></textarea>
+                                <textarea #messageTextarea class="form-control message-textarea" [(ngModel)]="message"
+                                    name="message" (ngModelChange)="onMessageChange()" rows="12"
+                                    [disabled]="isSubmitting" placeholder="Describe your issue in detail..."
+                                    autofocus></textarea>
 
                                 <!-- Editor Footer Stats -->
                                 <div class="editor-footer">
@@ -82,22 +86,55 @@
                             <div class="form-group">
                                 <label class="form-label">Attachments</label>
 
+                                <!-- Hidden file input -->
+                                <input type="file" id="fileInput" multiple [accept]="allowedExtensions.join(',')"
+                                    (change)="onFileSelected($event)" style="display: none;">
+
                                 <div class="file-upload-area">
-                                    <div class="file-upload-placeholder">
-                                        <!-- File preview will appear here -->
+                                    <!-- File Preview Area -->
+                                    <div class="file-upload-placeholder" *ngIf="selectedFiles.length > 0">
+                                        <div class="file-preview-list">
+                                            <div *ngFor="let file of selectedFiles; let i = index"
+                                                class="file-preview-item">
+                                                <!-- Image Preview -->
+                                                <div *ngIf="isImage(file)" class="file-image-preview">
+                                                    <img [src]="getImagePreview(file)" alt="Preview">
+                                                    <button type="button" class="btn-remove-file"
+                                                        (click)="removeFile(i)" title="Remove file">
+                                                        <mat-icon>close</mat-icon>
+                                                    </button>
+                                                </div>
+
+                                                <!-- Non-Image File Preview -->
+                                                <div *ngIf="!isImage(file)" class="file-doc-preview">
+                                                    <mat-icon class="file-icon">{{ getFileIcon(file.name) }}</mat-icon>
+                                                    <div class="file-details">
+                                                        <span class="file-name">{{ file.name }}</span>
+                                                        <span class="file-size">{{ getFileSize(file.size) }}</span>
+                                                    </div>
+                                                    <button type="button" class="btn-remove-file"
+                                                        (click)="removeFile(i)" title="Remove file">
+                                                        <mat-icon>close</mat-icon>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
 
                                     <div class="file-upload-buttons">
-                                        <button type="button" class="btn-choose-file">
-                                            <mat-icon>folder</mat-icon> Choose File
+                                        <button type="button" class="btn-choose-file" (click)="onChooseFile()"
+                                            [disabled]="isSubmitting || selectedFiles.length >= maxFiles">
+                                            <mat-icon>folder</mat-icon>
+                                            {{ selectedFiles.length === 0 ? 'Choose File' : 'Add More Files' }}
                                         </button>
-                                        <button type="button" class="btn-add-more">
-                                            <mat-icon>add</mat-icon> Add More
-                                        </button>
+                                        <span class="file-count" *ngIf="selectedFiles.length > 0">
+                                            {{ selectedFiles.length }} / {{ maxFiles }} files selected
+                                        </span>
                                     </div>
 
                                     <small class="file-extensions-note">
-                                        Allowed File Extensions: .jpg, .gif, .jpeg, .png, .zip, .rar, .pdf
+                                        Allowed File Extensions: .jpg, .gif, .jpeg, .png, .zip, .rar, .pdf (Max 5MB per
+                                        file)
                                     </small>
                                 </div>
                             </div>

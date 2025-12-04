@@ -1,17 +1,18 @@
-<div class="message-thread-container">
+<div class="message-thread-container" #messagesContainer>
 
     <!-- Empty State -->
-    <div *ngIf="messages.length === 0" class="empty-state">
+    <div *ngIf="displayMessages.length === 0" class="empty-state">
         <mat-icon>chat_bubble_outline</mat-icon>
         <p>No messages yet</p>
     </div>
 
     <!-- Message List -->
-    <div class="messages-list" *ngIf="messages.length > 0">
-        <div *ngFor="let message of messages; let i = index" class="message-wrapper" [ngClass]="{
+    <div class="messages-list" *ngIf="displayMessages.length > 0">
+        <div *ngFor="let message of displayMessages; let i = index" class="message-wrapper" [ngClass]="{
            'message-customer': isCustomerMessage(message),
-           'message-staff': isStaffMessage(message)
-         }">
+           'message-staff': isStaffMessage(message),
+           'message-editing': isEditing(message.id)
+         }" (mouseenter)="setHoveredMessage(message.id)" (mouseleave)="setHoveredMessage(null)">
 
             <div class="message-bubble">
                 <!-- Message Header -->
@@ -23,36 +24,114 @@
                         </div>
                         <div class="sender-details">
                             <strong class="sender-name">{{ message.sender_name }}</strong>
-                            <span class="message-time">{{ formatDate(message.created_at) }}</span>
-                        </div>
-                    </div>
-                    <div class="sender-badge">
-                        <span class="badge" [ngClass]="isCustomerMessage(message) ? 'badge-info' : 'badge-purple'">
-                            {{ isCustomerMessage(message) ? 'Customer' : 'Staff' }}
-                        </span>
-                    </div>
-                </div>
-
-                <!-- Message Content -->
-                <div class="message-content" [innerHTML]="renderMessageHTML(message.message_text)"></div>
-
-                <!-- Attachments -->
-                <div class="message-attachments" *ngIf="hasAttachments(message)">
-                    <div class="attachment-list">
-                        <div *ngFor="let attachment of message.attachments" class="attachment-item">
-                            <mat-icon class="attachment-icon">{{ getAttachmentIcon(attachment.filename) }}</mat-icon>
-                            <a [href]="attachment.file_url" target="_blank" class="attachment-link">
-                                {{ attachment.filename }}
-                            </a>
-                            <span class="attachment-size" *ngIf="attachment.file_size">
-                                ({{ (attachment.file_size / 1024).toFixed(1) }} KB)
+                            <span class="message-time">
+                                {{ formatDate(message.created_at) }}
+                                <span *ngIf="message.is_edited" class="edited-label">(edited)</span>
                             </span>
                         </div>
                     </div>
+                    <div class="message-actions">
+                        <span class="badge" [ngClass]="isCustomerMessage(message) ? 'badge-info' : 'badge-purple'">
+                            {{ isCustomerMessage(message) ? 'Customer' : 'Staff' }}
+                        </span>
+                        <!-- Edit Button (shown on hover, only for staff messages) -->
+                        <button *ngIf="canEditMessage(message) && isHovered(message.id) && !isEditing(message.id)"
+                            mat-icon-button class="edit-button" (click)="startEditing(message)"
+                            matTooltip="Edit message">
+                            <mat-icon>edit</mat-icon>
+                        </button>
+                    </div>
                 </div>
+
+                <!-- Normal Message View -->
+                <div *ngIf="!isEditing(message.id)">
+                    <!-- Message Content -->
+                    <div class="message-content" [innerHTML]="renderMessageHTML(message.message_text)"></div>
+
+                    <!-- Attachments - Telegram Style -->
+                    <div class="message-attachments" *ngIf="hasAttachments(message)">
+                        <div class="attachment-grid">
+                            <div *ngFor="let attachment of message.attachments" class="attachment-item">
+
+                                <!-- Image Preview (Telegram Style) -->
+                                <div *ngIf="isImageFile(attachment.file_name)" class="attachment-image"
+                                    (click)="openImagePreview(attachment.file_url)">
+                                    <img [src]="attachment.file_url" [alt]="attachment.file_name" class="message-image">
+                                    <div class="image-overlay">
+                                        <mat-icon>zoom_in</mat-icon>
+                                    </div>
+                                    <div class="image-info">
+                                        <span class="image-filename">{{ attachment.file_name }}</span>
+                                        <span class="image-size">{{ getFileSize(attachment.file_size) }}</span>
+                                    </div>
+                                </div>
+
+                                <!-- PDF File Card -->
+                                <div *ngIf="isPdfFile(attachment.file_name)" class="attachment-doc pdf-doc">
+                                    <div class="doc-icon">
+                                        <mat-icon>picture_as_pdf</mat-icon>
+                                    </div>
+                                    <div class="doc-details">
+                                        <span class="doc-name">{{ attachment.file_name }}</span>
+                                        <span class="doc-size">{{ getFileSize(attachment.file_size) }}</span>
+                                    </div>
+                                    <a [href]="attachment.file_url" target="_blank" class="doc-action">
+                                        <mat-icon>open_in_new</mat-icon>
+                                    </a>
+                                </div>
+
+                                <!-- Other Files Card -->
+                                <div *ngIf="!isImageFile(attachment.file_name) && !isPdfFile(attachment.file_name)"
+                                    class="attachment-doc">
+                                    <div class="doc-icon">
+                                        <mat-icon>{{ getAttachmentIcon(attachment.file_name) }}</mat-icon>
+                                    </div>
+                                    <div class="doc-details">
+                                        <span class="doc-name">{{ attachment.file_name }}</span>
+                                        <span class="doc-size">{{ getFileSize(attachment.file_size) }}</span>
+                                    </div>
+                                    <a [href]="attachment.file_url" download class="doc-action">
+                                        <mat-icon>download</mat-icon>
+                                    </a>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Edit Mode -->
+                <div *ngIf="isEditing(message.id)" class="edit-mode">
+                    <textarea [(ngModel)]="editingMessageText" class="edit-textarea" rows="3" autofocus
+                        (keydown)="onEditKeyDown($event, message.id)" placeholder="Edit your message..."></textarea>
+
+                    <div class="edit-actions">
+                        <button mat-raised-button color="primary" (click)="saveEdit(message.id)"
+                            [disabled]="!editingMessageText.trim()">
+                            <mat-icon>check</mat-icon>
+                            Save
+                        </button>
+                        <button mat-button (click)="cancelEditing()">
+                            <mat-icon>close</mat-icon>
+                            Cancel
+                        </button>
+                        <small class="edit-hint">Enter to save, Esc to cancel</small>
+                    </div>
+                </div>
+
             </div>
 
         </div>
     </div>
 
+</div>
+
+<!-- Image Preview Modal -->
+<div class="image-modal" *ngIf="selectedImage" (click)="closeImagePreview()">
+    <div class="image-modal-content" (click)="$event.stopPropagation()">
+        <button class="image-modal-close" (click)="closeImagePreview()">
+            <mat-icon>close</mat-icon>
+        </button>
+        <img [src]="selectedImage" alt="Preview">
+    </div>
 </div>

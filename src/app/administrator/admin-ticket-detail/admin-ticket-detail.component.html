@@ -13,19 +13,24 @@
             <!-- Header with Back Button and Actions -->
             <div class="row mb-3">
                 <div class="col-md-12">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <button mat-raised-button (click)="goBack()" class="mr-2">
-                                <mat-icon>arrow_back</mat-icon> So'rovlarga Qaytish
+                    <div class="d-flex justify-content-between align-items-center ticket-header-responsive">
+                        <div class="header-left">
+                            <button mat-raised-button (click)="goBack()" class="mr-2 back-btn">
+                                <mat-icon>arrow_back</mat-icon>
+                                <span class="btn-text">So'rovlarga Qaytish</span>
                             </button>
                         </div>
-                        <div>
-                            <button mat-raised-button color="primary" (click)="loadTicketDetail()" class="mr-2">
-                                <mat-icon>refresh</mat-icon> Yangilash
+                        <div class="header-right">
+                            <button mat-raised-button color="primary" (click)="loadTicketDetail()"
+                                class="mr-2 refresh-btn">
+                                <mat-icon>refresh</mat-icon>
+                                <span class="btn-text">Yangilash</span>
                             </button>
-                            <button mat-icon-button [matMenuTriggerFor]="actionMenu">
+                            <button mat-icon-button [matMenuTriggerFor]="actionMenu" class="action-menu-btn">
                                 <mat-icon>more_vert</mat-icon>
                             </button>
+
+                            <!-- Menus stay the same -->
                             <mat-menu #actionMenu="matMenu">
                                 <button mat-menu-item [matMenuTriggerFor]="statusMenu">
                                     <mat-icon>edit</mat-icon>
@@ -61,18 +66,141 @@
                     </div>
                 </div>
             </div>
+            <!-- Main Content Row - MOVED TO TOP -->
+            <div class="row">
+                <!-- Left Column: Messages and Reply -->
+                <div class="col-md-8">
 
-            <!-- Ticket Header Card -->
-            <div class="row mb-4">
-                <div class="col-md-12">
-                    <div class="card">
-                        <div class="card-header card-header-primary">
-                            <h4 class="card-title mb-0">
-                                <mat-icon class="align-middle">confirmation_number</mat-icon>
-                                {{ ticket.ticket_number }} - {{ ticket.subject }}
-                            </h4>
+                    <!-- Message Thread Component -->
+                    <div class="card mb-4">
+                        <div class="card-header card-header-info">
+                            <h5 class="card-title mb-0">
+                                <mat-icon class="align-middle">chat</mat-icon>
+                                Suhbat ({{ customerMessages.length }} Habarlari)
+                            </h5>
+                        </div>
+                        <div class="card-body p-0">
+                            <app-message-thread [messages]="customerMessages" [ticketStatus]="ticket.status"
+                                (messageEdit)="onMessageEdit($event)">
+                            </app-message-thread>
+                        </div>
+                    </div>
+
+                    <!-- ✅ FIXED: Reply Box Component with template reference -->
+                    <div class="card" *ngIf="!isTicketClosed()">
+                        <div class="card-header card-header-success">
+                            <h5 class="card-title mb-0">
+                                <mat-icon class="align-middle">reply</mat-icon>
+                                Mijozga Javob Qaytarish
+                            </h5>
                         </div>
                         <div class="card-body">
+                            <app-reply-box #replyBoxComponent [placeholder]="'Type your reply to the customer...'"
+                                [submitButtonText]="'Send Reply'"
+                                [hintText]="'This message will be visible to the customer'"
+                                (replySubmit)="onStaffReply($event)">
+                            </app-reply-box>
+                        </div>
+                    </div>
+
+                    <!-- Closed Ticket Notice -->
+                    <div class="alert alert-secondary" *ngIf="isTicketClosed()">
+                        <mat-icon class="align-middle">lock</mat-icon>
+                        Bu So'rov yopilgan. Javob berish uchun qayta ochish
+                        <button mat-raised-button color="primary" (click)="updateStatus('open')" class="ml-3">
+                            <mat-icon>lock_open</mat-icon> Qayta Ochish So'rovni
+                        </button>
+                    </div>
+
+                </div>
+
+                <!-- Right Column: Internal Notes and Activity (Now Collapsible) -->
+                <div class="col-md-4">
+
+                    <!-- ✅ FIXED: Internal Notes Component with reply-box -->
+                    <div class="card mb-4">
+                        <div class="card-header card-header-warning" style="cursor: pointer;"
+                            (click)="toggleInternalNotes()">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h5 class="card-title mb-0">
+                                        <mat-icon class="align-middle">speaker_notes</mat-icon>
+                                        Ichki Qaydlar ({{ internalNotes.length }})
+                                    </h5>
+                                    <p class="card-category mb-0 small">Faqatgina Kompaniya Azolari Ko'roladi</p>
+                                </div>
+                                <mat-icon>{{ isInternalNotesExpanded ? 'expand_less' : 'expand_more' }}</mat-icon>
+                            </div>
+                        </div>
+                        <div class="card-body" *ngIf="isInternalNotesExpanded">
+                            <!-- Display existing internal notes -->
+                            <div *ngIf="internalNotes.length > 0" class="internal-notes-list mb-3">
+                                <div *ngFor="let note of internalNotes" class="internal-note-item">
+                                    <div class="note-header">
+                                        <strong>{{ note.sender_name }}</strong>
+                                        <span class="note-time">{{ formatDate(note.created_at) }}</span>
+                                    </div>
+                                    <div class="note-content">{{ note.message_text }}</div>
+
+                                    <!-- Show attachments if any -->
+                                    <div *ngIf="note.attachments && note.attachments.length > 0"
+                                        class="note-attachments">
+                                        <div *ngFor="let att of note.attachments" class="note-attachment">
+                                            <mat-icon>attachment</mat-icon>
+                                            <a [href]="att.file_url" target="_blank">{{ att.file_name }}</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Add new internal note with reply-box -->
+                            <div class="add-internal-note">
+                                <h6 class="mb-2">Yangi Ichki Qayd Qo'shish:</h6>
+                                <app-reply-box #internalNoteBox [placeholder]="'Add internal note (staff only)...'"
+                                    [submitButtonText]="'Add Note'"
+                                    [hintText]="'This note will NOT be visible to the customer'"
+                                    (replySubmit)="onInternalNote($event)">
+                                </app-reply-box>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Activity Log Component - COLLAPSIBLE -->
+                    <div class="card">
+                        <div class="card-header card-header-rose" style="cursor: pointer;"
+                            (click)="toggleActivityLog()">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h5 class="card-title mb-0">
+                                    <mat-icon class="align-middle">history</mat-icon>
+                                    Harakatlar Tarixi
+                                </h5>
+                                <mat-icon>{{ isActivityLogExpanded ? 'expand_less' : 'expand_more' }}</mat-icon>
+                            </div>
+                        </div>
+                        <div class="card-body p-0" *ngIf="isActivityLogExpanded">
+                            <app-activity-log [activities]="ticket.activityLog">
+                            </app-activity-log>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Ticket Header Card - MOVED TO BOTTOM as COLLAPSIBLE -->
+            <div class="row mb-4 mt-4">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header card-header-primary" style="cursor: pointer;"
+                            (click)="toggleTicketHeader()">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h4 class="card-title mb-0">
+                                    <mat-icon class="align-middle">confirmation_number</mat-icon>
+                                    {{ ticket.ticket_number }} - {{ ticket.subject }}
+                                </h4>
+                                <mat-icon>{{ isTicketHeaderExpanded ? 'expand_less' : 'expand_more' }}</mat-icon>
+                            </div>
+                        </div>
+                        <div class="card-body" *ngIf="isTicketHeaderExpanded">
                             <div class="row">
                                 <!-- Customer Info -->
                                 <div class="col-md-3">
@@ -160,85 +288,6 @@
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
-
-            <!-- Main Content Row -->
-            <div class="row">
-                <!-- Left Column: Messages and Reply -->
-                <div class="col-md-8">
-
-                    <!-- Message Thread Component -->
-                    <div class="card mb-4">
-                        <div class="card-header card-header-info">
-                            <h5 class="card-title mb-0">
-                                <mat-icon class="align-middle">chat</mat-icon>
-                                Suhbat ({{ customerMessages.length }} Habarlari)
-                            </h5>
-                        </div>
-                        <div class="card-body p-0">
-                            <app-message-thread [messages]="customerMessages" [ticketStatus]="ticket.status">
-                            </app-message-thread>
-                        </div>
-                    </div>
-
-                    <!-- Reply Box Component (only if ticket not closed) -->
-                    <div class="card" *ngIf="!isTicketClosed()">
-                        <div class="card-header card-header-success">
-                            <h5 class="card-title mb-0">
-                                <mat-icon class="align-middle">reply</mat-icon>
-                                Mijozga Javob Qaytarish
-                            </h5>
-                        </div>
-                        <div class="card-body">
-                            <app-reply-box (replySubmit)="onStaffReply($event)">
-                            </app-reply-box>
-                        </div>
-                    </div>
-
-                    <!-- Closed Ticket Notice -->
-                    <div class="alert alert-secondary" *ngIf="isTicketClosed()">
-                        <mat-icon class="align-middle">lock</mat-icon>
-                        Bu So'rov yopilgan. Javob berish uchun qayta ochish
-                        <button mat-raised-button color="primary" (click)="updateStatus('open')" class="ml-3">
-                            <mat-icon>lock_open</mat-icon> Qayta Ochish So'rovni
-                        </button>
-                    </div>
-
-                </div>
-
-                <!-- Right Column: Internal Notes and Activity -->
-                <div class="col-md-4">
-
-                    <!-- Internal Notes Component -->
-                    <div class="card mb-4">
-                        <div class="card-header card-header-warning">
-                            <h5 class="card-title mb-0">
-                                <mat-icon class="align-middle">speaker_notes</mat-icon>
-                                Ichki Qaydlar ({{ internalNotes.length }})
-                            </h5>
-                            <p class="card-category mb-0 small">Faqatgina Kompaniya Azolari Ko'roladi</p>
-                        </div>
-                        <div class="card-body">
-                            <app-internal-notes [notes]="internalNotes" (noteSubmit)="onInternalNote($event)">
-                            </app-internal-notes>
-                        </div>
-                    </div>
-
-                    <!-- Activity Log Component -->
-                    <div class="card">
-                        <div class="card-header card-header-rose">
-                            <h5 class="card-title mb-0">
-                                <mat-icon class="align-middle">history</mat-icon>
-                                Harakatlar Tarixi
-                            </h5>
-                        </div>
-                        <div class="card-body p-0">
-                            <app-activity-log [activities]="ticket.activity_log">
-                            </app-activity-log>
-                        </div>
-                    </div>
-
                 </div>
             </div>
 

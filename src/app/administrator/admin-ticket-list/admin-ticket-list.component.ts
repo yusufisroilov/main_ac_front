@@ -168,6 +168,8 @@ export class AdminTicketListComponent implements OnInit {
         (response) => {
           const data = response.json();
           this.tickets = data.tickets;
+          console.log("all tickets ", this.tickets);
+
           this.getResolvedCounts(this.tickets);
           this.getUrgentCounts(this.tickets);
           this.filteredTickets = data.tickets;

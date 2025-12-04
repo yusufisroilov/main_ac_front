@@ -1,252 +1,192 @@
-/* // Similar styles to admin but simpler */
+/* ========================================
+   MAIN CONTAINER
+   ======================================== */
 .ticket-detail-container {
-  animation: fadeIn 0.3s ease;
+  padding: 20px 0;
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+/* ========================================
+   CARD STYLES
+   ======================================== */
+.card {
+  margin-bottom: 20px;
+  box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.14);
+  border-radius: 6px;
 }
 
-.align-middle {
+.card .card-header {
+  padding: 15px 20px;
+  margin: -20px 15px 0;
+  border-radius: 3px;
+}
+
+.card .card-header.card-header-primary {
+  background: linear-gradient(60deg, #ab47bc, #8e24aa);
+  box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.14),
+    0 7px 10px -5px rgba(156, 39, 176, 0.4);
+}
+
+.card .card-header.card-header-info {
+  background: linear-gradient(60deg, #26c6da, #00acc1);
+  box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.14),
+    0 7px 10px -5px rgba(0, 188, 212, 0.4);
+}
+
+.card .card-header.card-header-success {
+  background: linear-gradient(60deg, #66bb6a, #43a047);
+  box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.14),
+    0 7px 10px -5px rgba(76, 175, 80, 0.4);
+}
+
+.card .card-header.card-header-warning {
+  background: linear-gradient(60deg, #ffa726, #fb8c00);
+  box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.14),
+    0 7px 10px -5px rgba(255, 152, 0, 0.4);
+}
+
+.card .card-header .card-title {
+  color: #fff;
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 400;
+}
+
+.card .card-header .card-title .mat-icon {
   vertical-align: middle;
+  margin-right: 8px;
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
 }
 
-.text-center {
-  text-align: center;
+.card .card-body {
+  padding: 20px;
 }
 
-.text-right {
-  text-align: right;
-}
-
-.text-muted {
-  color: #999 !important;
-}
-
-.border-top {
-  border-top: 1px solid #e0e0e0 !important;
-}
-
-.mb-0,
-.mb-1,
-.mb-2,
-.mb-3,
-.mb-4 {
-  margin-bottom: 0 !important;
-}
-.mb-1 {
-  margin-bottom: 0.25rem !important;
-}
-.mb-2 {
-  margin-bottom: 0.5rem !important;
-}
-.mb-3 {
-  margin-bottom: 1rem !important;
-}
-.mb-4 {
-  margin-bottom: 1.5rem !important;
-}
-
-.mt-3,
-.mt-4 {
-  margin-top: 1rem !important;
-}
-.mt-4 {
-  margin-top: 1.5rem !important;
-}
-
-.ml-3 {
-  margin-left: 1rem !important;
-}
-
-.pt-3 {
-  padding-top: 1rem !important;
-}
-
-.p-0 {
+.card .card-body.p-0 {
   padding: 0 !important;
 }
 
-.py-5 {
-  padding-top: 3rem !important;
-  padding-bottom: 3rem !important;
-}
-
-.mx-auto {
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.small {
-  font-size: 0.875rem;
-}
-
-.ticket-subject {
-  font-size: 1.25rem;
-  font-weight: 500;
-  color: #333;
-  margin: 0 0 8px 0;
-}
-
-.ticket-category {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.875rem;
-  color: #666;
-  margin: 0;
-}
-
-.icon-sm {
-  font-size: 18px !important;
-  width: 18px !important;
-  height: 18px !important;
-  vertical-align: middle;
-  margin-right: 4px;
-}
-
-.icon-xs {
-  font-size: 14px !important;
-  width: 14px !important;
-  height: 14px !important;
-  vertical-align: middle;
-}
-
+/* ========================================
+   BADGES
+   ======================================== */
 .badge {
-  display: inline-block;
-  padding: 0.35em 0.65em;
   font-size: 0.75rem;
+  padding: 0.35em 0.65em;
   font-weight: 600;
   border-radius: 4px;
+  display: inline-block;
+}
+
+.badge-primary {
+  background-color: #9c27b0;
+  color: white;
+}
+
+.badge-danger {
+  background-color: #f44336;
+  color: white;
+}
+
+.badge-warning {
+  background-color: #ff9800;
+  color: white;
 }
 
 .badge-info {
   background-color: #00bcd4;
   color: white;
 }
+
 .badge-success {
   background-color: #4caf50;
   color: white;
 }
-.badge-danger {
-  background-color: #f44336;
-  color: white;
-}
-.badge-warning {
-  background-color: #ff9800;
-  color: white;
-}
+
 .badge-secondary {
   background-color: #999;
   color: white;
 }
+
 .badge-purple {
-  background-color: #9c27b0;
+  background-color: #ab47bc;
   color: white;
 }
 
-.alert {
-  padding: 15px;
-  border-radius: 4px;
-  margin-bottom: 20px;
-
-  &.alert-info {
-    background-color: #e1f5fe;
-    border: 1px solid #00bcd4;
-    color: #00838f;
-
-    .mat-icon {
-      vertical-align: middle;
-      margin-right: 8px;
-      color: #00bcd4;
-    }
-  }
-
-  &.alert-secondary {
-    background-color: #f5f5f5;
-    border: 1px solid #ddd;
-    color: #666;
-
-    .mat-icon {
-      vertical-align: middle;
-      margin-right: 8px;
-    }
-  }
-}
-
-/* // Messages Container */
-.messages-container {
+/* ========================================
+   MESSAGE THREAD STYLES (from message-thread.component.css)
+   ======================================== */
+.message-thread-container {
   max-height: 600px;
+  min-height: 300px;
   overflow-y: auto;
   padding: 20px;
   background-color: #f5f5f5;
-
-  &::-webkit-scrollbar {
-    width: 8px;
-  }
-
-  &::-webkit-scrollbar-track {
-    background: #f1f1f1;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background: #888;
-    border-radius: 4px;
-
-    &:hover {
-      background: #555;
-    }
-  }
 }
 
-.empty-messages {
+.message-thread-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.message-thread-container::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.message-thread-container::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+.message-thread-container::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+.empty-state {
   text-align: center;
   padding: 60px 20px;
   color: #999;
+}
 
-  .mat-icon {
-    font-size: 64px;
-    width: 64px;
-    height: 64px;
-    color: #ccc;
-    margin-bottom: 15px;
-  }
+.empty-state .mat-icon {
+  font-size: 64px;
+  width: 64px;
+  height: 64px;
+  color: #ccc;
+  margin-bottom: 15px;
+}
 
-  p {
-    font-size: 1.125rem;
-    margin: 0;
-  }
+.empty-state p {
+  font-size: 1.125rem;
+  margin: 0;
+}
+
+.messages-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
 .message-wrapper {
   display: flex;
-  margin-bottom: 20px;
   animation: slideIn 0.3s ease;
+}
 
-  &.message-customer {
-    justify-content: flex-start;
+.message-wrapper.message-customer {
+  justify-content: flex-start;
+}
 
-    .message-bubble {
-      background-color: #fff;
-      border-left: 3px solid #00bcd4;
-    }
-  }
+.message-wrapper.message-customer .message-bubble {
+  background-color: #fff;
+  border-left: 3px solid #00bcd4;
+}
 
-  &.message-staff {
-    justify-content: flex-end;
+.message-wrapper.message-staff {
+  justify-content: flex-end;
+}
 
-    .message-bubble {
-      background-color: #e8f5e9;
-      border-left: 3px solid #4caf50;
-    }
-  }
+.message-wrapper.message-staff .message-bubble {
+  background-color: #f3e5f5;
+  border-left: 3px solid #9c27b0;
 }
 
 @keyframes slideIn {
@@ -265,10 +205,11 @@
   padding: 15px;
   border-radius: 8px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+}
 
-  @media (max-width: 768px) {
-    max-width: 85%;
-  }
+.message-wrapper:hover .message-bubble {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 .message-header {
@@ -295,14 +236,14 @@
   font-weight: 600;
   color: white;
   flex-shrink: 0;
+}
 
-  &.avatar-customer {
-    background: linear-gradient(135deg, #00bcd4, #0097a7);
-  }
+.sender-avatar.avatar-customer {
+  background: linear-gradient(135deg, #00bcd4, #0097a7);
+}
 
-  &.avatar-staff {
-    background: linear-gradient(135deg, #66bb6a, #43a047);
-  }
+.sender-avatar.avatar-staff {
+  background: linear-gradient(135deg, #9c27b0, #7b1fa2);
 }
 
 .sender-details {
@@ -322,11 +263,6 @@
   color: #999;
 }
 
-.sender-badge .badge {
-  font-size: 0.6875rem;
-  padding: 0.25em 0.5em;
-}
-
 .message-content {
   font-size: 0.9375rem;
   line-height: 1.6;
@@ -341,102 +277,853 @@
   border-top: 1px solid rgba(0, 0, 0, 0.1);
 }
 
-.attachment-list {
+/* Telegram-Style Attachments */
+.attachment-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.attachment-item {
+  position: relative;
+}
+
+/* Image Attachments - Telegram Style */
+.attachment-image {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: #f0f0f0;
+}
+
+.attachment-image:hover {
+  transform: scale(1.02);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.message-image {
+  width: 100%;
+  height: auto;
+  max-height: 400px;
+  object-fit: cover;
+  display: block;
+  border-radius: 12px;
+}
+
+.image-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: all 0.3s ease;
+}
+
+.attachment-image:hover .image-overlay {
+  background: rgba(0, 0, 0, 0.3);
+  opacity: 1;
+}
+
+.image-overlay mat-icon {
+  color: white;
+  font-size: 48px;
+  width: 48px;
+  height: 48px;
+}
+
+.image-info {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.image-filename {
+  color: white;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.image-size {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.75rem;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* Document Attachments - Telegram Style */
+.attachment-doc {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+  border-radius: 12px;
+  background: white;
+  border: 2px solid #e0e0e0;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.attachment-doc:hover {
+  border-color: #00bcd4;
+  box-shadow: 0 2px 8px rgba(0, 188, 212, 0.2);
+}
+
+.attachment-doc.pdf-doc {
+  border-color: #f44336;
+}
+
+.attachment-doc.pdf-doc:hover {
+  border-color: #d32f2f;
+  box-shadow: 0 2px 8px rgba(244, 67, 54, 0.2);
+}
+
+.doc-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.pdf-doc .doc-icon {
+  background: linear-gradient(135deg, #ffebee, #ffcdd2);
+}
+
+.doc-icon mat-icon {
+  font-size: 28px;
+  width: 28px;
+  height: 28px;
+  color: #1976d2;
+}
+
+.pdf-doc .doc-icon mat-icon {
+  color: #d32f2f;
+}
+
+.doc-details {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.doc-name {
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: #333;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.doc-size {
+  font-size: 0.8125rem;
+  color: #999;
+}
+
+.doc-action {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #f5f5f5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.doc-action:hover {
+  background: #00bcd4;
+}
+
+.doc-action mat-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+  color: #666;
+}
+
+.doc-action:hover mat-icon {
+  color: white;
+}
+
+/* Image Preview Modal */
+.image-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.95);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  animation: fadeIn 0.3s ease;
+}
+
+.image-modal-content {
+  position: relative;
+  max-width: 90%;
+  max-height: 90%;
+  animation: zoomIn 0.3s ease;
+}
+
+.image-modal-content img {
+  max-width: 100%;
+  max-height: 90vh;
+  border-radius: 8px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+.image-modal-close {
+  position: absolute;
+  top: -50px;
+  right: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: white;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.image-modal-close:hover {
+  background: #f44336;
+}
+
+.image-modal-close mat-icon {
+  font-size: 24px;
+  width: 24px;
+  height: 24px;
+  color: #333;
+}
+
+.image-modal-close:hover mat-icon {
+  color: white;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes zoomIn {
+  from {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* ========================================
+   REPLY BOX STYLES (from reply-box.component.css)
+   ======================================== */
+.reply-box-container {
+  background: white;
+  border-radius: 8px;
+  padding: 15px;
+}
+
+/* File Preview Section */
+.file-preview-section {
+  margin-bottom: 15px;
+  padding: 12px;
+  background: #f9f9f9;
+  border-radius: 8px;
+  border: 2px dashed #ddd;
+  animation: slideIn 0.3s ease;
+}
+
+.file-preview-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.file-count {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #666;
+}
+
+.file-preview-list {
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
-.attachment-item {
+.file-preview-item {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 12px;
-  background-color: rgba(0, 0, 0, 0.03);
+  gap: 12px;
+  padding: 10px;
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  transition: all 0.2s ease;
+  animation: slideIn 0.2s ease;
+}
+
+.file-preview-item:hover {
+  border-color: #9c27b0;
+  box-shadow: 0 2px 6px rgba(156, 39, 176, 0.1);
+}
+
+.preview-image {
+  width: 60px;
+  height: 60px;
   border-radius: 6px;
-
-  .attachment-icon {
-    font-size: 20px;
-    width: 20px;
-    height: 20px;
-    color: #666;
-    flex-shrink: 0;
-  }
-
-  .attachment-link {
-    flex: 1;
-    color: #00bcd4;
-    text-decoration: none;
-    font-size: 0.875rem;
-
-    &:hover {
-      text-decoration: underline;
-    }
-  }
-
-  .attachment-size {
-    font-size: 0.75rem;
-    color: #999;
-  }
+  overflow: hidden;
+  flex-shrink: 0;
+  background: #f5f5f5;
 }
-/* 
-// Reply Form */
-.reply-form {
-  .reply-textarea {
-    width: 100%;
+
+.preview-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.preview-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 6px;
+  background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.preview-icon mat-icon {
+  font-size: 32px;
+  width: 32px;
+  height: 32px;
+  color: #1976d2;
+}
+
+.preview-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.preview-name {
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: #333;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.preview-size {
+  font-size: 0.8125rem;
+  color: #999;
+}
+
+.preview-remove {
+  width: 32px !important;
+  height: 32px !important;
+  flex-shrink: 0;
+}
+
+.preview-remove mat-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+  color: #666;
+}
+
+.preview-remove:hover mat-icon {
+  color: #f44336;
+}
+
+/* Message Input Section */
+/* Telegram Style - Horizontal Layout */
+.message-input-section.telegram-style {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  gap: 8px;
+  padding: 12px;
+  background: white;
+  border-radius: 24px;
+  border: 2px solid #e0e0e0;
+  transition: all 0.2s ease;
+}
+
+.message-input-section.telegram-style:focus-within {
+  border-color: #9c27b0;
+  box-shadow: 0 0 0 3px rgba(156, 39, 176, 0.1);
+}
+
+/* Textarea - Telegram Style */
+.telegram-textarea {
+  flex: 1;
+  padding: 8px 12px;
+  border: none;
+  background: transparent;
+  font-size: 0.9375rem;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  line-height: 1.4;
+  resize: none;
+  min-height: 36px;
+  max-height: 120px;
+  overflow-y: auto;
+  transition: all 0.2s ease;
+}
+
+.telegram-textarea:focus {
+  outline: none;
+}
+
+.telegram-textarea::placeholder {
+  color: #999;
+}
+
+/* Attach Button (LEFT) */
+.attach-button {
+  flex-shrink: 0;
+  width: 40px !important;
+  height: 40px !important;
+}
+
+/* Character Count (Compact) */
+.message-input-section.telegram-style .char-count {
+  font-size: 0.75rem;
+  color: #999;
+  white-space: nowrap;
+  margin: 0;
+  align-self: center;
+}
+
+/* Send Button (RIGHT) */
+.send-button {
+  flex-shrink: 0;
+  width: 40px !important;
+  height: 40px !important;
+  background: #9c27b0 !important;
+  color: white !important;
+}
+
+.send-button[disabled] {
+  background: #e0e0e0 !important;
+  color: #999 !important;
+}
+
+.send-button .mat-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+/* ========================================
+   UTILITY CLASSES
+   ======================================== */
+.text-muted {
+  color: #999 !important;
+}
+
+.text-danger {
+  color: #f44336 !important;
+}
+
+.text-success {
+  color: #4caf50 !important;
+}
+
+.text-primary {
+  color: #9c27b0 !important;
+}
+
+.border-top {
+  border-top: 1px solid #e0e0e0 !important;
+}
+
+.icon-sm {
+  font-size: 18px !important;
+  width: 18px !important;
+  height: 18px !important;
+  vertical-align: middle;
+  margin-right: 5px;
+}
+
+.icon-xs {
+  font-size: 14px !important;
+  width: 14px !important;
+  height: 14px !important;
+  vertical-align: middle;
+  margin-right: 3px;
+}
+
+.align-middle {
+  vertical-align: middle;
+}
+
+.d-flex {
+  display: flex;
+}
+
+.justify-content-between {
+  justify-content: space-between;
+}
+
+.align-items-center {
+  align-items: center;
+}
+
+.alert {
+  padding: 15px;
+  border-radius: 4px;
+  margin-bottom: 20px;
+}
+
+.alert.alert-secondary {
+  background-color: #f5f5f5;
+  border: 1px solid #ddd;
+  color: #666;
+}
+
+.alert.alert-secondary .mat-icon {
+  vertical-align: middle;
+  margin-right: 8px;
+}
+
+/* Button spacing */
+.mr-2 {
+  margin-right: 0.5rem !important;
+}
+
+.ml-2 {
+  margin-left: 0.5rem !important;
+}
+
+.ml-3 {
+  margin-left: 1rem !important;
+}
+
+.mt-3 {
+  margin-top: 1rem !important;
+}
+
+.mb-0 {
+  margin-bottom: 0 !important;
+}
+
+.mb-1 {
+  margin-bottom: 0.25rem !important;
+}
+
+.mb-2 {
+  margin-bottom: 0.5rem !important;
+}
+
+.mb-3 {
+  margin-bottom: 1rem !important;
+}
+
+.mb-4 {
+  margin-bottom: 1.5rem !important;
+}
+
+.pt-3 {
+  padding-top: 1rem !important;
+}
+
+.p-0 {
+  padding: 0 !important;
+}
+
+.py-5 {
+  padding-top: 3rem !important;
+  padding-bottom: 3rem !important;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.mx-auto {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.small {
+  font-size: 0.875rem;
+}
+
+h6 {
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+p {
+  margin-bottom: 0.5rem;
+}
+
+a {
+  color: #9c27b0;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* ========================================
+   RESPONSIVE DESIGN
+   ======================================== */
+@media (max-width: 768px) {
+  .message-thread-container {
+    padding: 15px;
+  }
+
+  .message-bubble {
+    max-width: 85%;
     padding: 12px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 0.9375rem;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-      sans-serif;
-    line-height: 1.6;
-    resize: vertical;
-
-    &:focus {
-      outline: none;
-      border-color: #4caf50;
-      box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.1);
-    }
-
-    &:disabled {
-      background-color: #f5f5f5;
-      cursor: not-allowed;
-    }
   }
 
-  .reply-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-
-    @media (max-width: 768px) {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 10px;
-    }
+  .sender-avatar {
+    width: 32px;
+    height: 32px;
+    font-size: 0.8125rem;
   }
 
-  .reply-info small {
-    display: flex;
-    align-items: center;
-    gap: 4px;
+  .sender-name {
+    font-size: 0.875rem;
   }
 
-  .reply-actions button {
-    display: flex;
-    align-items: center;
-    gap: 6px;
+  .message-content {
+    font-size: 0.875rem;
+  }
 
-    .mat-icon {
-      font-size: 18px;
-      width: 18px;
-      height: 18px;
-    }
+  .attachment-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .message-image {
+    max-height: 300px;
+  }
+
+  .attachment-doc {
+    padding: 12px;
+  }
+
+  .doc-icon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .doc-icon mat-icon {
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
+  }
+
+  .image-modal-content {
+    max-width: 95%;
+    max-height: 95%;
+  }
+
+  .image-modal-close {
+    top: -45px;
+    width: 36px;
+    height: 36px;
+  }
+
+  .reply-box-container {
+    padding: 12px;
+  }
+
+  .message-textarea {
+    min-height: 70px;
+    font-size: 0.875rem;
+  }
+
+  .file-preview-item {
+    padding: 8px;
+  }
+
+  .preview-image,
+  .preview-icon {
+    width: 50px;
+    height: 50px;
+  }
+
+  .preview-icon mat-icon {
+    font-size: 28px;
+    width: 28px;
+    height: 28px;
+  }
+
+  .preview-name {
+    font-size: 0.875rem;
+  }
+
+  .preview-size {
+    font-size: 0.75rem;
+  }
+
+  .actions-row {
+    flex-wrap: wrap;
+  }
+
+  .submit-button {
+    width: 100%;
+    margin-top: 8px;
+  }
+
+  .char-count {
+    order: -1;
+  }
+
+  .card-header .card-title {
+    font-size: 1rem;
+  }
+
+  .col-md-3,
+  .col-md-4,
+  .col-md-8 {
+    margin-bottom: 15px;
+  }
+  /* Telegram Style - Mobile Adjustments */
+  .message-input-section.telegram-style {
+    padding: 8px;
+    gap: 4px; /* Smaller gap */
+    border-radius: 20px; /* Slightly less rounded */
+  }
+
+  /* Textarea - More flexible on mobile */
+  .telegram-textarea {
+    font-size: 0.875rem;
+    padding: 6px 8px;
+    min-height: 32px;
+    max-height: 100px; /* Smaller max height */
+  }
+
+  /* Buttons - Smaller on mobile */
+  .attach-button,
+  .send-button {
+    width: 36px !important;
+    height: 36px !important;
+    padding: 0 !important;
+  }
+
+  .attach-button .mat-icon,
+  .send-button .mat-icon {
+    font-size: 20px !important;
+    width: 20px !important;
+    height: 20px !important;
+  }
+
+  /* Character Count - Hide or make smaller */
+  .message-input-section.telegram-style .char-count {
+    font-size: 0.625rem; /* Smaller text */
+    display: none; /* OR hide completely on very small screens */
+  }
+
+  /* Spinner - Smaller */
+  .send-button mat-spinner {
+    width: 16px !important;
+    height: 16px !important;
   }
 }
 
-/* // Material spinner override */
-::ng-deep .mat-spinner circle {
-  stroke: #4caf50;
+/* ========================================
+   SMOOTH SCROLL
+   ======================================== */
+.message-thread-container {
+  scroll-behavior: smooth;
+}
+
+/* ========================================
+   BUTTON HOVER EFFECTS
+   ======================================== */
+button[mat-icon-button]:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+button[mat-raised-button]:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ========================================
+   ACCORDION/COLLAPSIBLE
+   ======================================== */
+.card-header[style*="cursor: pointer"] {
+  user-select: none;
+  transition: background 0.2s ease;
+}
+
+.card-header[style*="cursor: pointer"]:hover {
+  opacity: 0.9;
+}
+
+.card-body {
+  transition: all 0.3s ease-in-out;
+}
+
+/* For VERY small screens (< 400px) */
+@media (max-width: 400px) {
+  .message-input-section.telegram-style {
+    padding: 6px;
+    gap: 3px;
+  }
+
+  /* Hide character count on tiny screens */
+  .message-input-section.telegram-style .char-count {
+    display: none !important;
+  }
+
+  /* Make buttons even smaller */
+  .attach-button,
+  .send-button {
+    width: 32px !important;
+    height: 32px !important;
+  }
+
+  .telegram-textarea {
+    font-size: 0.813rem;
+    padding: 4px 6px;
+  }
 }

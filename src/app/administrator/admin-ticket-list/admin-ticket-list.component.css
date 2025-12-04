@@ -245,3 +245,89 @@
     padding: 0.25em 0.5em;
   }
 }
+
+/* Customer Info Styling - Beautiful & Eye-catching */
+.customer-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.customer-name {
+  font-weight: 600;
+  color: #333;
+  font-size: 0.938rem;
+  display: block;
+}
+
+.customer-id-badge {
+  display: inline-block;
+  padding: 2px 10px;
+  font-size: 0.688rem;
+  font-weight: 600;
+  color: #fff;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 12px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  box-shadow: 0 2px 4px rgba(102, 126, 234, 0.3);
+  transition: all 0.2s ease;
+}
+
+.customer-id-badge:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(102, 126, 234, 0.4);
+}
+
+/* Alternative style options - you can choose which one you prefer */
+
+/* Option 2: Outlined style */
+.customer-id-badge-outlined {
+  display: inline-block;
+  padding: 2px 10px;
+  font-size: 0.688rem;
+  font-weight: 600;
+  color: #667eea;
+  background: transparent;
+  border: 2px solid #667eea;
+  border-radius: 12px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  transition: all 0.2s ease;
+}
+
+.customer-id-badge-outlined:hover {
+  background: #667eea;
+  color: #fff;
+}
+
+/* Option 3: Minimal with icon */
+.customer-id-minimal {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #666;
+  background: #f5f5f5;
+  border-radius: 4px;
+  border-left: 3px solid #667eea;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .customer-info {
+    gap: 2px;
+  }
+
+  .customer-name {
+    font-size: 0.875rem;
+  }
+
+  .customer-id-badge {
+    font-size: 0.625rem;
+    padding: 2px 8px;
+  }
+}

@@ -1,53 +1,71 @@
 <div class="reply-box-container">
-
-    <!-- Text Editor -->
-    <div class="editor-wrapper">
-        <textarea [(ngModel)]="replyMessage" class="form-control reply-textarea" rows="6" placeholder="Type your reply to the customer here...
-      
-You can use simple formatting:
-- New lines for paragraphs
-- Lists with dashes
-- Professional tone recommended" [disabled]="isSubmitting">
-    </textarea>
-        <div class="editor-footer">
-            <small class="text-muted">
-                <mat-icon class="icon-xs">info</mat-icon>
-                Customer will be notified via Telegram
-            </small>
-            <small class="text-muted">
-                {{ replyMessage.length }} characters
-            </small>
+    <!-- File Preview Section -->
+    <div class="file-preview-section" *ngIf="selectedFiles.length > 0">
+        <div class="file-preview-header">
+            <span class="file-count">{{ selectedFiles.length }} file(s) selected</span>
+            <button mat-icon-button (click)="clearAllFiles()" matTooltip="Remove all files">
+                <mat-icon>close</mat-icon>
+            </button>
+        </div>
+        <div class="file-preview-list">
+            <div *ngFor="let file of selectedFiles; let i = index" class="file-preview-item">
+                <!-- Image Preview -->
+                <div *ngIf="isImageFile(file.name)" class="preview-image">
+                    <img [src]="file.preview" [alt]="file.name">
+                </div>
+                <!-- File Icon -->
+                <div *ngIf="!isImageFile(file.name)" class="preview-icon">
+                    <mat-icon>{{ getFileIcon(file.name) }}</mat-icon>
+                </div>
+                <!-- File Info -->
+                <div class="preview-info">
+                    <span class="preview-name">{{ file.name }}</span>
+                    <span class="preview-size">{{ formatFileSize(file.size) }}</span>
+                </div>
+                <!-- Remove Button -->
+                <button mat-icon-button (click)="removeFile(i)" class="preview-remove">
+                    <mat-icon>close</mat-icon>
+                </button>
+            </div>
         </div>
     </div>
 
-    <!-- Options -->
-    <div class="reply-options mt-3">
-        <mat-checkbox [(ngModel)]="closeAfterReply" color="primary">
-            Close ticket after sending reply
-        </mat-checkbox>
+    <!-- Message Input Section -->
+    <div class="message-input-section">
+        <textarea [(ngModel)]="messageText" [placeholder]="placeholder" class="message-textarea" rows="3"
+            [disabled]="isSubmitting" (keydown)="onKeyDown($event)"></textarea>
+
+        <!-- Actions Row -->
+        <div class="actions-row">
+            <!-- File Upload Button -->
+            <div class="file-upload-wrapper">
+                <input type="file" #fileInput (change)="onFileSelect($event)" multiple accept="image/*,.pdf,.zip,.rar"
+                    style="display: none;">
+                <button mat-icon-button (click)="fileInput.click()" [disabled]="selectedFiles.length >= maxFiles"
+                    matTooltip="Attach files (Max {{ maxFiles }})">
+                    <mat-icon>attach_file</mat-icon>
+                </button>
+                <span class="file-limit-text">{{ selectedFiles.length }}/{{ maxFiles }}</span>
+            </div>
+
+            <!-- Character Count -->
+            <span class="char-count" [ngClass]="{'text-warning': messageText.length > 900}">
+                {{ messageText.length }} / 1000
+            </span>
+
+            <!-- Submit Button -->
+            <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="!isValid() || isSubmitting"
+                class="submit-button">
+                <mat-spinner *ngIf="isSubmitting" diameter="20" class="spinner-inline"></mat-spinner>
+                <mat-icon *ngIf="!isSubmitting">send</mat-icon>
+                <span *ngIf="!isSubmitting">{{ submitButtonText }}</span>
+            </button>
+        </div>
+
+        <!-- Hint Text -->
+        <div class="hint-text">
+            <mat-icon class="hint-icon">info</mat-icon>
+            <span>{{ hintText }}</span>
+        </div>
     </div>
-
-    <!-- Actions -->
-    <div class="reply-actions mt-3">
-        <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="!isValid() || isSubmitting"
-            class="mr-2">
-            <mat-icon>send</mat-icon>
-            {{ isSubmitting ? 'Sending...' : 'Send Reply' }}
-        </button>
-
-        <button mat-raised-button (click)="onCancel()" [disabled]="isSubmitting">
-            <mat-icon>clear</mat-icon>
-            Clear
-        </button>
-    </div>
-
-    <!-- Helper Text -->
-    <div class="helper-text mt-3">
-        <mat-icon class="icon-sm text-muted">lightbulb</mat-icon>
-        <small class="text-muted">
-            <strong>Tips:</strong> Be clear, courteous, and provide specific solutions.
-            If you need more info from the customer, ask specific questions.
-        </small>
-    </div>
-
 </div>
