@@ -12,6 +12,13 @@ export const customerTicketDetailRoutes: Routes = [
           title: "Ticket Detail",
         },
       },
+      {
+        path: ":ticketNumber",
+        component: CustomerTicketDetailComponent,
+        data: {
+          title: "Ticket Detail",
+        },
+      },
     ],
   },
 ];

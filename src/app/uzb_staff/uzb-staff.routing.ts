@@ -9,6 +9,7 @@ import { AdminAuthGuard } from "../services/admin-auth-guard.service";
 import { EmployeeAuthGuardService } from "../services/employee-auth-guard.service";
 import { EmployeeFinanceComponent } from "./employee-finance/employee-finance.component";
 import { DeliveriesListComponent2 } from "./deliveries-list-2/deliveries-list-2.component";
+import { InfoeachClientAdminComponent } from "./infoeach-client-admin/infoeach-client-admin.component";
 
 export const UzbStaffRoutes: Routes = [
   {
@@ -41,6 +42,10 @@ export const UzbStaffRoutes: Routes = [
       {
         path: "receiverslist",
         component: ReceiversListComponent,
+      },
+      {
+        path: "each-client-admin",
+        component: InfoeachClientAdminComponent,
       },
       {
         path: "scanuz",

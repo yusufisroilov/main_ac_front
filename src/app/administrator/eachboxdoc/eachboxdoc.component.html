@@ -5,21 +5,12 @@
         <div class="card-body">
           <form method="#" action="#" style="display: inline-flex">
             <mat-form-field class="example-full-width">
-              <input
-                matInput
-                placeholder="Karobka Nomerini kiriting:"
-                type="text"
-                (input)="takeBoxData($event.target.value)"
-              />
+              <input matInput placeholder="Karobka Nomerini kiriting:" type="text"
+                (input)="takeBoxData($event.target.value)" />
             </mat-form-field>
 
-            <button
-              *ngIf="printButtonCond"
-              mat-raised-button
-              class="btn btnprint btn-success"
-              style="margin: 12px"
-              (click)="print()"
-            >
+            <button *ngIf="printButtonCond" mat-raised-button class="btn btnprint btn-success" style="margin: 12px"
+              (click)="print()">
               <span class="btn-label">
                 <i class="material-icons">print</i>
               </span>
@@ -39,125 +30,105 @@
           <tbody>
             <tr>
               <td colspan="3" valign="bottom" height="20" align="center">
-                <b
-                  ><font face="Times New Roman" color="#000000"
-                    ><b>INVOICE</b></font
-                  ></b
-                >
+                <b>
+                  <font face="Times New Roman" color="#000000"><b>INVOICE</b></font>
+                </b>
               </td>
-              <td
-                style="
+              <td style="
                   border-top: 1px solid #000000;
                   border-bottom: 1px solid #000000;
                   border-left: 1px solid #000000;
-                "
-                valign="bottom"
-                align="center"
-              >
-                <b
-                  ><font face="Times New Roman" color="#000000"
-                    >ТАМОЖЕННАЯ ДЕКЛАРАЦИЯ</font
-                  ></b
-                >
+                " valign="bottom" align="center">
+                <b>
+                  <font face="Times New Roman" color="#000000">ТАМОЖЕННАЯ ДЕКЛАРАЦИЯ</font>
+                </b>
               </td>
               <td valign="bottom" align="center">
-                <b
-                  ><font face="Times New Roman" color="#000000"
-                    >INVOICE</font
-                  ></b
-                >
+                <b>
+                  <font face="Times New Roman" color="#000000">INVOICE</font>
+                </b>
               </td>
             </tr>
             <tr>
               <td rowspan="3" valign="middle" height="100" align="center">
-                <b><font face="Times New Roman" color="#000000">Из</font></b>
+                <b>
+                  <font face="Times New Roman" color="#000000">Из</font>
+                </b>
               </td>
               <td valign="bottom" align="left">
-                <b
-                  ><font face="Times New Roman" color="#000000"
-                    >Фамилия: Taobao or Pinduoduo</font
-                  ></b
-                >
+                <b>
+                  <font face="Times New Roman" color="#000000">Фамилия: Taobao or Pinduoduo</font>
+                </b>
               </td>
               <td rowspan="2" valign="bottom" align="center">
-                <b
-                  ><font face="Times New Roman" color="#000000"
-                    >Таможенная ссылка отправителя если имеется
-                  </font></b
-                >
+                <b>
+                  <font face="Times New Roman" color="#000000">Таможенная ссылка отправителя если имеется
+                  </font>
+                </b>
               </td>
               <td colspan="2" valign="middle" align="center">
-                <b
-                  ><font face="Times New Roman" color="#000000"
-                    >№ Отправления
+                <b>
+                  <font face="Times New Roman" color="#000000">№ Отправления
                   </font>
                 </b>
               </td>
             </tr>
             <tr>
               <td valign="middle" align="left">
-                <b
-                  ><font face="Times New Roman" color="#000000"
-                    >Компания: {{ company_name }}
-                  </font></b
-                >
+                <b>
+                  <font face="Times New Roman" color="#000000">Компания: {{ company_name }}
+                  </font>
+                </b>
               </td>
               <td colspan="2" rowspan="3" valign="middle" align="center">
-                <b
-                  ><font size="6" face="Times New Roman" color="#000000"
-                    ><br /><span
-                      style="display: flex; justify-content: center"
-                      >{{ box_number }}</span
-                    ></font
-                  ></b
-                >
+                <b>
+                  <font size="6" face="Times New Roman" color="#000000"><br /><span
+                      style="display: flex; justify-content: center">{{ box_number }}</span></font>
+                </b>
               </td>
             </tr>
             <tr>
               <td colspan="2" valign="middle" align="left">
-                <b
-                  ><font face="Times New Roman" color="#000000"
-                    >Улица: {{ company_address }} <br />
+                <b>
+                  <font face="Times New Roman" color="#000000">Улица: {{ company_address }} <br />
                     Почтовый индекс Город: {{ company_index }} Страна:
-                    {{ country_name }}</font
-                  ></b
-                >
+                    {{ country_name }}</font>
+                </b>
               </td>
             </tr>
             <tr>
               <td rowspan="3" valign="middle" height="75" align="center">
-                <b><font face="Times New Roman" color="#000000">В</font></b>
+                <b>
+                  <font face="Times New Roman" color="#000000">В</font>
+                </b>
               </td>
               <td colspan="2" rowspan="3" valign="top" align="left">
-                <b
-                  ><font face="Times New Roman" color="#000000">
+                <b>
+                  <font face="Times New Roman" color="#000000">
                     Фамилия и адрес получателя включая страну В:
                     <div class="fieldrecinfo">
                       {{ receiver_id }} {{ receiver_name }}
                       {{ receiver_passport }} <br />
                       {{ receiver_address }}
                     </div>
-                    <br /></font
-                ></b>
+                    <br />
+                  </font>
+                </b>
               </td>
             </tr>
             <tr>
               <td colspan="2" valign="middle" align="center">
-                <b
-                  ><font face="Times New Roman" color="#000000"
-                    >Реквизты импортера (если имеются) (ИНН/№НДС/индекс
-                    импортера)</font
-                  ></b
-                >
+                <b>
+                  <font face="Times New Roman" color="#000000">Реквизты импортера (если имеются) (ИНН/№НДС/индекс
+                    импортера)</font>
+                </b>
               </td>
             </tr>
             <tr>
               <td colspan="2" valign="bottom" align="center">
-                <b
-                  ><font face="Times New Roman" color="#000000"
-                    >№ телефона факса е-маил : 00860579-81560701</font
-                  ></b
-                >
+                <b>
+                  <font face="Times New Roman" color="#000000">№ телефона факса е-маил : 00860579-81560701</font>
+                </b>
               </td>
             </tr>
           </tbody>
@@ -192,25 +163,14 @@
             <tr class="view-footer-number">
               <td class="view-footer views-field views-field-title">-</td>
               <td class="view-footer views-field views-field-title">Итого</td>
-              <td
-                class="view-footer views-field views-field-field-quantity-1"
-                style="text-align: center"
-              >
+              <td class="view-footer views-field views-field-field-quantity-1" style="text-align: center">
                 {{ total_amount }}
               </td>
-              <td
-                class="view-footer views-field views-field-field-tracking-number2"
-              ></td>
-              <td
-                class="view-footer views-field views-field-field-item-weight"
-                style="text-align: center"
-              >
+              <td class="view-footer views-field views-field-field-tracking-number2"></td>
+              <td class="view-footer views-field views-field-field-item-weight" style="text-align: center">
                 {{ total_weight }}
               </td>
-              <td
-                class="view-footer views-field views-field-field-item-priceflt"
-                style="text-align: center"
-              >
+              <td class="view-footer views-field views-field-field-item-priceflt" style="text-align: center">
                 {{ total_price }}
               </td>
               <!--  <td class="view-footer views-field views-field-nothing-1  ">
@@ -226,29 +186,24 @@
             <colgroup width="503"></colgroup>
             <tr>
               <td colspan="4" valign="bottom" height="20" align="left">
-                <font face="Times New Roman" color="#000000"
-                  >Катогория отправления (10) Коммерчческий образец Поменение
-                  Подарок-X Документ Прочее</font
-                >
+                <font face="Times New Roman" color="#000000">Катогория отправления (10) Коммерчческий образец Поменение
+                  Подарок-X Документ Прочее</font>
               </td>
               <td colspan="1" valign="bottom" align="left">
-                <font face="Times New Roman" color="#000000"
-                  >Учреждение подачи/Дата подачи: {{ print_time }}
+                <font face="Times New Roman" color="#000000">Учреждение подачи/Дата подачи: {{ print_time }}
                 </font>
               </td>
             </tr>
             <tr>
               <td colspan="4" valign="bottom" height="20" align="left">
-                <font face="Times New Roman" color="#000000"
-                  >Подтверждаю точность сведений в настоящей момент декларации,
+                <font face="Times New Roman" color="#000000">Подтверждаю точность сведений в настоящей момент
+                  декларации,
                   а так же, что это отправение не содержит никаких опасных
-                  предметов, запрещенной почтовой службой</font
-                >
+                  предметов, запрещенной почтовой службой</font>
               </td>
               <td colspan="1" valign="bottom" align="left">
                 <font face="Times New Roman" color="#000000">
-                  Дата и подпись отправителя___________</font
-                >
+                  Дата и подпись отправителя___________</font>
               </td>
             </tr>
           </tbody>
@@ -311,31 +266,22 @@
   <div class="container-fluid">
     <div class="row">
       <div class="col-md-6">
-        <div class="card-body">
+        <!-- <div class="card-body">
           <form method="#" action="#" style="display: inline-flex">
             <mat-form-field class="example-full-width">
-              <input
-                matInput
-                placeholder="Karobka Nomerini kiriting:"
-                type="text"
-                (input)="takeBoxData2($event.target.value)"
-              />
+              <input matInput placeholder="Karobka Nomerini kiriting:" type="text"
+                (input)="takeBoxData2($event.target.value)" />
             </mat-form-field>
 
-            <button
-              *ngIf="printButtonCond"
-              mat-raised-button
-              class="btn btnprint btn-success"
-              style="margin: 12px"
-              (click)="print2()"
-            >
+            <button *ngIf="printButtonCond" mat-raised-button class="btn btnprint btn-success" style="margin: 12px"
+              (click)="print2()">
               <span class="btn-label">
                 <i class="material-icons">print</i>
               </span>
               PDF Yaratish
             </button>
           </form>
-        </div>
+        </div> -->
       </div>
 
       <!-- <div #printSection2 id="print-section2" >

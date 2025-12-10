@@ -146,11 +146,30 @@ export class AdminTicketDetailComponent implements OnInit {
       { value: "MANAGER", label: "Manager" },
     ];
 
-    // Get ticket ID from query params
-    this.route.queryParams.subscribe((params) => {
-      this.ticketId = params["ticket"];
-      if (this.ticketId) {
+    // Get ticket number from path params (e.g., /uzm/ticket-detail/T-2025-000123)
+    // or query params (e.g., /uzm/ticket-detail?ticket=123)
+    this.route.params.subscribe((params) => {
+      if (params["ticketNumber"]) {
+        this.ticketId = params["ticketNumber"];
         this.loadTicketDetail();
+      } else {
+        // Fallback to query params for backward compatibility
+        this.route.queryParams.subscribe((queryParams) => {
+          this.ticketId = queryParams["ticket"];
+          if (this.ticketId) {
+            this.loadTicketDetail();
+          } else {
+            swal
+              .fire({
+                icon: "error",
+                title: "Xatolik",
+                text: "Noto'g'ri murojaat raqami",
+              })
+              .then(() => {
+                this.router.navigate(["/uzm/tickets-list"]);
+              });
+          }
+        });
       }
     });
   }

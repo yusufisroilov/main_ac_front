@@ -68,7 +68,7 @@ export class DeliveryComponent implements OnInit, OnDestroy {
       .get(GlobalVars.baseUrl + "/delivery/list", this.options)
       .subscribe((response) => {
         this.allDataDone = response.json().deliviries;
-        console.log(this.allDataDone[1].additionalPhoneNumber);
+        // console.log(this.allDataDone[1].additionalPhoneNumber);
         // for (let index = 0; index < this.allData.length; index++) {
         //   const element = this.allData[index];
         //   this.orderTypeText[index] = GlobalVars.getDescriptionWithID(element.orderType, "uz");

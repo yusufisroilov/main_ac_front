@@ -13,7 +13,7 @@
 
                             <!-- Related Service -->
                             <div class="form-group">
-                                <label class="form-label">Related Service</label>
+                                <label class="form-label">Tegishli Xizmat</label>
                                 <select class="form-control" [(ngModel)]="relatedService" name="relatedService"
                                     [disabled]="isSubmitting">
                                     <option *ngFor="let service of serviceOptions" [value]="service.value">
@@ -24,43 +24,43 @@
 
                             <!-- Message (Rich Text Editor Style) -->
                             <div class="form-group">
-                                <label class="form-label required">Message*</label>
+                                <label class="form-label required">Xabar*</label>
 
                                 <!-- Editor Toolbar -->
                                 <div class="rich-text-toolbar">
-                                    <button type="button" class="toolbar-btn" title="Bold (Ctrl+B)"
+                                    <button type="button" class="toolbar-btn" title="Qalin (Ctrl+B)"
                                         (click)="formatBold()">
                                         <strong>B</strong>
                                     </button>
-                                    <button type="button" class="toolbar-btn" title="Italic (Ctrl+I)"
+                                    <button type="button" class="toolbar-btn" title="Qiyshiq (Ctrl+I)"
                                         (click)="formatItalic()">
                                         <em>I</em>
                                     </button>
-                                    <button type="button" class="toolbar-btn" title="Heading" (click)="formatHeading()">
+                                    <button type="button" class="toolbar-btn" title="Sarlavha" (click)="formatHeading()">
                                         <strong>H</strong>
                                     </button>
-                                    <button type="button" class="toolbar-btn" title="Link" (click)="insertLink()">
+                                    <button type="button" class="toolbar-btn" title="Havola" (click)="insertLink()">
                                         <mat-icon>link</mat-icon>
                                     </button>
-                                    <button type="button" class="toolbar-btn" title="Bullet List"
+                                    <button type="button" class="toolbar-btn" title="Nuqtali ro'yxat"
                                         (click)="insertBulletList()">
                                         <mat-icon>format_list_bulleted</mat-icon>
                                     </button>
-                                    <button type="button" class="toolbar-btn" title="Numbered List"
+                                    <button type="button" class="toolbar-btn" title="Raqamlangan ro'yxat"
                                         (click)="insertNumberedList()">
                                         <mat-icon>format_list_numbered</mat-icon>
                                     </button>
-                                    <button type="button" class="toolbar-btn" title="Quote" (click)="insertQuote()">
+                                    <button type="button" class="toolbar-btn" title="Iqtibos" (click)="insertQuote()">
                                         <mat-icon>format_quote</mat-icon>
                                     </button>
-                                    <button type="button" class="toolbar-btn btn-preview" title="Preview"
+                                    <button type="button" class="toolbar-btn btn-preview" title="Ko'rish"
                                         (click)="showPreview()">
-                                        <mat-icon>visibility</mat-icon> Preview
+                                        <mat-icon>visibility</mat-icon> Ko'rish
                                     </button>
-                                    <button type="button" class="toolbar-btn" title="Help" (click)="showHelp()">
+                                    <button type="button" class="toolbar-btn" title="Yordam" (click)="showHelp()">
                                         <mat-icon>help</mat-icon>
                                     </button>
-                                    <button type="button" class="toolbar-btn" title="Fullscreen"
+                                    <button type="button" class="toolbar-btn" title="To'liq ekran"
                                         (click)="toggleFullscreen()">
                                         <mat-icon>fullscreen</mat-icon>
                                     </button>
@@ -69,22 +69,22 @@
                                 <!-- Textarea -->
                                 <textarea #messageTextarea class="form-control message-textarea" [(ngModel)]="message"
                                     name="message" (ngModelChange)="onMessageChange()" rows="12"
-                                    [disabled]="isSubmitting" placeholder="Describe your issue in detail..."
+                                    [disabled]="isSubmitting" placeholder="Muammoni batafsil tavsiflang..."
                                     autofocus></textarea>
 
                                 <!-- Editor Footer Stats -->
                                 <div class="editor-footer">
                                     <span class="editor-stats">
-                                        lines: <strong>{{ getLineCount() }}</strong>
-                                        words: <strong>{{ getWordCount() }}</strong>
-                                        <span class="save-status">saved</span>
+                                        qatorlar: <strong>{{ getLineCount() }}</strong>
+                                        so'zlar: <strong>{{ getWordCount() }}</strong>
+                                        <span class="save-status">saqlandi</span>
                                     </span>
                                 </div>
                             </div>
 
                             <!-- Attachments -->
                             <div class="form-group">
-                                <label class="form-label">Attachments</label>
+                                <label class="form-label">Ilovalar</label>
 
                                 <!-- Hidden file input -->
                                 <input type="file" id="fileInput" multiple [accept]="allowedExtensions.join(',')"
@@ -100,7 +100,7 @@
                                                 <div *ngIf="isImage(file)" class="file-image-preview">
                                                     <img [src]="getImagePreview(file)" alt="Preview">
                                                     <button type="button" class="btn-remove-file"
-                                                        (click)="removeFile(i)" title="Remove file">
+                                                        (click)="removeFile(i)" title="Faylni o'chirish">
                                                         <mat-icon>close</mat-icon>
                                                     </button>
                                                 </div>
@@ -113,7 +113,7 @@
                                                         <span class="file-size">{{ getFileSize(file.size) }}</span>
                                                     </div>
                                                     <button type="button" class="btn-remove-file"
-                                                        (click)="removeFile(i)" title="Remove file">
+                                                        (click)="removeFile(i)" title="Faylni o'chirish">
                                                         <mat-icon>close</mat-icon>
                                                     </button>
                                                 </div>
@@ -125,16 +125,15 @@
                                         <button type="button" class="btn-choose-file" (click)="onChooseFile()"
                                             [disabled]="isSubmitting || selectedFiles.length >= maxFiles">
                                             <mat-icon>folder</mat-icon>
-                                            {{ selectedFiles.length === 0 ? 'Choose File' : 'Add More Files' }}
+                                            {{ selectedFiles.length === 0 ? 'Fayl tanlash' : 'Yana fayl qo\'shish' }}
                                         </button>
                                         <span class="file-count" *ngIf="selectedFiles.length > 0">
-                                            {{ selectedFiles.length }} / {{ maxFiles }} files selected
+                                            {{ selectedFiles.length }} / {{ maxFiles }} ta fayl tanlandi
                                         </span>
                                     </div>
 
                                     <small class="file-extensions-note">
-                                        Allowed File Extensions: .jpg, .gif, .jpeg, .png, .zip, .rar, .pdf (Max 5MB per
-                                        file)
+                                        Ruxsat etilgan fayl turlari: .jpg, .gif, .jpeg, .png, .zip, .rar, .pdf (Har bir fayl maks 5MB)
                                     </small>
                                 </div>
                             </div>
@@ -143,11 +142,11 @@
                             <div class="form-actions">
                                 <button mat-raised-button color="primary" type="button" (click)="onSubmit()"
                                     [disabled]="!isFormValid() || isSubmitting" class="btn-submit">
-                                    {{ isSubmitting ? 'Submitting...' : 'Submit' }}
+                                    {{ isSubmitting ? 'Yuborilmoqda...' : 'Yuborish' }}
                                 </button>
                                 <button mat-raised-button type="button" (click)="onCancel()" [disabled]="isSubmitting"
                                     class="btn-cancel">
-                                    Cancel
+                                    Bekor qilish
                                 </button>
                             </div>
 

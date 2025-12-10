@@ -48,18 +48,18 @@ export class CustomerCreateTicketComponent implements OnInit, AfterViewInit {
 
   // Service/Category options
   serviceOptions = [
-    { value: "None", label: "None" },
-    { value: "delivery", label: "Delivery Issue" },
-    { value: "payment", label: "Payment Issue" },
-    { value: "product", label: "Product Question" },
-    { value: "customs", label: "Customs Issue" },
-    { value: "damaged", label: "Damaged Cargo" },
-    { value: "lost", label: "Lost Package" },
-    { value: "pricing", label: "Pricing Question" },
-    { value: "tracking", label: "Tracking Issue" },
-    { value: "support", label: "General Support" },
-    { value: "complaint", label: "Complaint" },
-    { value: "other", label: "Other" },
+    { value: "None", label: "Yo'q" },
+    { value: "delivery", label: "Yetkazish muammosi" },
+    { value: "payment", label: "To'lov muammosi" },
+    { value: "product", label: "Mahsulot haqida savol" },
+    { value: "customs", label: "Bojxona muammosi" },
+    { value: "damaged", label: "Shikastlangan yuk" },
+    { value: "lost", label: "Yo'qolgan pochta" },
+    { value: "pricing", label: "Narx haqida savol" },
+    { value: "tracking", label: "Kuzatuv muammosi" },
+    { value: "support", label: "Umumiy yordam" },
+    { value: "complaint", label: "Shikoyat" },
+    { value: "other", label: "Boshqa" },
   ];
 
   constructor(
@@ -118,8 +118,8 @@ export class CustomerCreateTicketComponent implements OnInit, AfterViewInit {
     if (!this.isFormValid()) {
       swal.fire({
         icon: "warning",
-        title: "Incomplete Form",
-        text: "Please fill in the message field",
+        title: "To'ldirilmagan forma",
+        text: "Iltimos, xabar maydonini to'ldiring",
       });
       return;
     }
@@ -158,8 +158,8 @@ export class CustomerCreateTicketComponent implements OnInit, AfterViewInit {
           swal
             .fire({
               icon: "success",
-              title: "Ticket Created!",
-              html: `Your ticket <strong>#${data.ticket.ticket_number}</strong> has been created successfully.`,
+              title: "Murojaat yaratildi!",
+              html: `Sizning <strong>#${data.ticket.ticket_number}</strong> raqamli murojaatingiz muvaffaqiyatli yaratildi.`,
               confirmButtonText: "OK",
             })
             .then(() => {
@@ -170,8 +170,8 @@ export class CustomerCreateTicketComponent implements OnInit, AfterViewInit {
         const errorData = JSON.parse(xhr.responseText);
         swal.fire({
           icon: "error",
-          title: "Error",
-          text: errorData.error || "Failed to create ticket. Please try again.",
+          title: "Xatolik",
+          text: errorData.error || "Murojaatni yaratib bo'lmadi. Qayta urinib ko'ring.",
         });
       }
     };
@@ -180,8 +180,8 @@ export class CustomerCreateTicketComponent implements OnInit, AfterViewInit {
       this.isSubmitting = false;
       swal.fire({
         icon: "error",
-        title: "Error",
-        text: "Failed to create ticket. Please try again.",
+        title: "Xatolik",
+        text: "Murojaatni yaratib bo'lmadi. Qayta urinib ko'ring.",
       });
     };
 
@@ -195,12 +195,12 @@ export class CustomerCreateTicketComponent implements OnInit, AfterViewInit {
     if (this.hasUnsavedChanges()) {
       swal
         .fire({
-          title: "Discard Changes?",
-          text: "You have unsaved changes. Are you sure you want to leave?",
+          title: "O'zgarishlarni bekor qilasizmi?",
+          text: "Saqlanmagan o'zgarishlar bor. Haqiqatan chiqmoqchimisiz?",
           icon: "warning",
           showCancelButton: true,
-          confirmButtonText: "Yes, Discard",
-          cancelButtonText: "No, Stay",
+          confirmButtonText: "Ha, bekor qilish",
+          cancelButtonText: "Yo'q, qolish",
           confirmButtonColor: "#f44336",
         })
         .then((result) => {
@@ -234,7 +234,7 @@ export class CustomerCreateTicketComponent implements OnInit, AfterViewInit {
     const serviceObj = this.serviceOptions.find(
       (s) => s.value === this.relatedService
     );
-    const serviceLabel = serviceObj ? serviceObj.label : "Support Request";
+    const serviceLabel = serviceObj ? serviceObj.label : "Yordam so'rovi";
 
     // Truncate message for subject (first 50 chars)
     const messagePreview = this.message.trim().substring(0, 50);
@@ -281,8 +281,8 @@ export class CustomerCreateTicketComponent implements OnInit, AfterViewInit {
     if (this.selectedFiles.length + files.length > this.maxFiles) {
       swal.fire({
         icon: "warning",
-        title: "Too Many Files",
-        text: `You can only upload a maximum of ${this.maxFiles} files`,
+        title: "Juda ko'p fayllar",
+        text: `Siz maksimum ${this.maxFiles} ta fayl yuklashingiz mumkin`,
       });
       return;
     }
@@ -295,8 +295,8 @@ export class CustomerCreateTicketComponent implements OnInit, AfterViewInit {
       if (file.size > this.maxFileSize) {
         swal.fire({
           icon: "warning",
-          title: "File Too Large",
-          text: `${file.name} exceeds the maximum file size of 5MB`,
+          title: "Fayl juda katta",
+          text: `${file.name} maksimal fayl hajmidan (5MB) oshib ketdi`,
         });
         continue;
       }
@@ -306,10 +306,10 @@ export class CustomerCreateTicketComponent implements OnInit, AfterViewInit {
       if (!this.allowedExtensions.includes(fileExt)) {
         swal.fire({
           icon: "warning",
-          title: "Invalid File Type",
+          title: "Fayl turi noto'g'ri",
           text: `${
             file.name
-          } has an invalid file type. Allowed: ${this.allowedExtensions.join(
+          } fayl turi noto'g'ri. Ruxsat etilgan: ${this.allowedExtensions.join(
             ", "
           )}`,
         });
@@ -437,19 +437,19 @@ export class CustomerCreateTicketComponent implements OnInit, AfterViewInit {
   insertLink(): void {
     swal
       .fire({
-        title: "Insert Link",
+        title: "Havola qo'shish",
         html:
-          '<input id="linkText" class="swal2-input" placeholder="Link text">' +
+          '<input id="linkText" class="swal2-input" placeholder="Havola matni">' +
           '<input id="linkUrl" class="swal2-input" placeholder="https://example.com">',
         showCancelButton: true,
-        confirmButtonText: "Insert",
+        confirmButtonText: "Qo'shish",
         preConfirm: () => {
           const text = (document.getElementById("linkText") as HTMLInputElement)
             .value;
           const url = (document.getElementById("linkUrl") as HTMLInputElement)
             .value;
           if (!text || !url) {
-            swal.showValidationMessage("Please enter both text and URL");
+            swal.showValidationMessage("Iltimos, matn va URL ni kiriting");
             return false;
           }
           return { text, url };
@@ -488,10 +488,10 @@ export class CustomerCreateTicketComponent implements OnInit, AfterViewInit {
    */
   showPreview(): void {
     swal.fire({
-      title: "Message Preview",
+      title: "Xabar ko'rinishi",
       html: `<div style="text-align: left; white-space: pre-wrap;">${this.message}</div>`,
       width: "800px",
-      confirmButtonText: "Close",
+      confirmButtonText: "Yopish",
     });
   }
 
@@ -500,20 +500,20 @@ export class CustomerCreateTicketComponent implements OnInit, AfterViewInit {
    */
   showHelp(): void {
     swal.fire({
-      title: "Formatting Help",
+      title: "Formatlash yordami",
       html: `
         <div style="text-align: left;">
-          <p><strong>**bold**</strong> - Bold text</p>
-          <p><em>*italic*</em> - Italic text</p>
-          <p><strong># Heading</strong> - Heading</p>
-          <p><strong>[text](url)</strong> - Link</p>
-          <p><strong>- item</strong> - Bullet list</p>
-          <p><strong>1. item</strong> - Numbered list</p>
-          <p><strong>> quote</strong> - Quote</p>
+          <p><strong>**qalin**</strong> - Qalin matn</p>
+          <p><em>*qiyshiq*</em> - Qiyshiq matn</p>
+          <p><strong># Sarlavha</strong> - Sarlavha</p>
+          <p><strong>[matn](url)</strong> - Havola</p>
+          <p><strong>- element</strong> - Nuqtali ro'yxat</p>
+          <p><strong>1. element</strong> - Raqamlangan ro'yxat</p>
+          <p><strong>> iqtibos</strong> - Iqtibos</p>
         </div>
       `,
       width: "600px",
-      confirmButtonText: "Got it",
+      confirmButtonText: "Tushundim",
     });
   }
 

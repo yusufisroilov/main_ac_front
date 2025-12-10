@@ -144,6 +144,11 @@ export const AppRoutes: Routes = [
           ),
       },
       {
+        path: "admin",
+        loadChildren: () =>
+          import("./uzb_staff/uzb-staff.module").then((m) => m.UzbStaffModule),
+      },
+      {
         path: "forms",
         loadChildren: () => import("./forms/forms.module").then((m) => m.Forms),
       },

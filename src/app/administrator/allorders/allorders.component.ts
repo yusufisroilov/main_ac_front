@@ -640,7 +640,7 @@ export class AllordersComponent implements OnInit {
 
   pagebyNum(ipage) {
     this.currentPage = ipage;
-    console.log("current pagess ", this.currentPage);
+    // console.log("current pagess ", this.currentPage);
 
     this.isPageNumActive = true;
     document.getElementById("listcard").scrollIntoView();

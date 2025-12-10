@@ -10,13 +10,13 @@
                             <div class="header-text">
                                 <h4 class="card-title mb-0">
                                     <mat-icon class="align-middle">confirmation_number</mat-icon>
-                                    My Support Tickets
+                                    Mening Murojaatlarim
                                 </h4>
-                                <p class="card-category mb-0">View and manage your support requests</p>
+                                <p class="card-category mb-0">Yordam so'rovlaringizni ko'ring va boshqaring</p>
                             </div>
                             <button mat-raised-button color="accent" (click)="createNewTicket()" class="new-ticket-btn">
                                 <mat-icon>add</mat-icon>
-                                <span class="btn-text">New Ticket</span>
+                                <span class="btn-text">Yangi Murojaat</span>
                             </button>
                         </div>
                     </div>
@@ -31,7 +31,7 @@
                                     </div>
                                     <div class="info-content">
                                         <h3>{{ totalTickets }}</h3>
-                                        <p>Total Tickets</p>
+                                        <p>Jami Murojaatlar</p>
                                     </div>
                                 </div>
                             </div>
@@ -43,7 +43,7 @@
                                     </div>
                                     <div class="info-content">
                                         <!-- <h3>{{ tickets.filter(t => isWaitingForSupport(t)).length }}</h3> -->
-                                        <p>Waiting for Support</p>
+                                        <p>Yordam Kutilmoqda</p>
                                     </div>
                                 </div>
                             </div>
@@ -55,7 +55,7 @@
                                     </div>
                                     <div class="info-content">
                                         <!-- <h3>{{ tickets.filter(t => isWaitingForCustomer(t)).length }}</h3> -->
-                                        <p>Awaiting Your Reply</p>
+                                        <p>Javobingiz Kutilmoqda</p>
                                     </div>
                                 </div>
                             </div>
@@ -65,8 +65,8 @@
                         <div class="row mb-3">
                             <div class="col-lg-3 col-md-6 mb-3">
                                 <mat-form-field class="w-100" appearance="outline">
-                                    <mat-label>Search</mat-label>
-                                    <input matInput placeholder="Search by ticket # or subject"
+                                    <mat-label>Qidirish</mat-label>
+                                    <input matInput placeholder="Murojaat raqami yoki mavzu bo'yicha qidiring"
                                         [(ngModel)]="searchQuery" (keyup.enter)="onSearch()">
                                     <mat-icon matSuffix>search</mat-icon>
                                 </mat-form-field>
@@ -74,7 +74,7 @@
 
                             <div class="col-lg-3 col-md-6 mb-3">
                                 <mat-form-field class="w-100" appearance="outline">
-                                    <mat-label>Filter by Status</mat-label>
+                                    <mat-label>Holat bo'yicha filtrlash</mat-label>
                                     <mat-select [(ngModel)]="selectedStatus" (selectionChange)="onFilterChange()">
                                         <mat-option *ngFor="let option of statusOptions" [value]="option.value">
                                             {{ option.label }}
@@ -85,7 +85,7 @@
 
                             <div class="col-lg-3 col-md-6 mb-3">
                                 <mat-form-field class="w-100" appearance="outline">
-                                    <mat-label>Filter by Category</mat-label>
+                                    <mat-label>Kategoriya bo'yicha filtrlash</mat-label>
                                     <mat-select [(ngModel)]="selectedCategory" (selectionChange)="onFilterChange()">
                                         <mat-option *ngFor="let option of categoryOptions" [value]="option.value">
                                             {{ option.label }}
@@ -96,7 +96,7 @@
 
                             <div class="col-lg-3 col-md-6 mb-3">
                                 <mat-form-field class="w-100" appearance="outline">
-                                    <mat-label>Filter by Priority</mat-label>
+                                    <mat-label>Ustuvrolik bo'yicha filtrlash</mat-label>
                                     <mat-select [(ngModel)]="selectedPriority" (selectionChange)="onFilterChange()">
                                         <mat-option *ngFor="let option of priorityOptions" [value]="option.value">
                                             {{ option.label }}
@@ -111,11 +111,11 @@
                             <div class="col-md-12">
                                 <button mat-raised-button (click)="clearFilters()">
                                     <mat-icon>clear</mat-icon>
-                                    Clear Filters
+                                    Filtrlarni tozalash
                                 </button>
                                 <button mat-raised-button (click)="getListOfTickets()" class="ml-2">
                                     <mat-icon>refresh</mat-icon>
-                                    Refresh
+                                    Yangilash
                                 </button>
                             </div>
                         </div>
@@ -123,28 +123,28 @@
                         <!-- Loading Spinner -->
                         <div *ngIf="isLoading" class="text-center py-5">
                             <mat-spinner class="mx-auto"></mat-spinner>
-                            <p class="mt-3">Loading your tickets...</p>
+                            <p class="mt-3">Murojaatlaringiz yuklanmoqda...</p>
                         </div>
 
                         <!-- Empty State -->
                         <div *ngIf="!isLoading && tickets.length === 0" class="empty-state">
                             <mat-icon>inbox</mat-icon>
-                            <h3>No tickets found</h3>
+                            <h3>Murojaatlar topilmadi</h3>
                             <p class="text-muted" *ngIf="!hasActiveFilters()">
-                                You haven't created any support tickets yet.
+                                Siz hali hech qanday murojaat yaratmagansiz.
                             </p>
                             <p class="text-muted" *ngIf="hasActiveFilters()">
-                                No tickets match your current filters.
+                                Joriy filtrlarga mos murojaatlar yo'q.
                             </p>
                             <button mat-raised-button color="primary" (click)="createNewTicket()" class="mt-3"
                                 *ngIf="!hasActiveFilters()">
                                 <mat-icon>add</mat-icon>
-                                Create Your First Ticket
+                                Birinchi Murojaatni Yaratish
                             </button>
                             <button mat-raised-button color="primary" (click)="clearFilters()" class="mt-3"
                                 *ngIf="hasActiveFilters()">
                                 <mat-icon>clear</mat-icon>
-                                Clear Filters
+                                Filtrlarni tozalash
                             </button>
                         </div>
 
@@ -159,7 +159,7 @@
                                         <div class="ticket-info">
                                             <strong>{{ ticket.ticket_number }}</strong>
                                             <span class="badge badge-unread ml-2" *ngIf="hasUnreadMessages(ticket)">
-                                                {{ ticket.unread_messages_count }} new
+                                                {{ ticket.unread_messages_count }} yangi
                                             </span>
                                         </div>
                                     </div>
@@ -181,8 +181,7 @@
                                     </p>
                                     <p class="ticket-meta">
                                         <mat-icon class="icon-sm">chat</mat-icon>
-                                        {{ ticket.messages_count || 0 }} message{{ (ticket.messages_count || 0) !== 1 ?
-                                        's' : '' }}
+                                        {{ ticket.messages_count || 0 }} xabar
                                         <span class="ml-3">
                                             <mat-icon class="icon-sm">schedule</mat-icon>
                                             {{ getTimeAgo(ticket.updated_at) }}
@@ -234,9 +233,9 @@
                                 </nav>
 
                                 <p class="text-center text-muted">
-                                    Showing {{ (currentPage - 1) * pageSize + 1 }}
-                                    to {{ Math.min(currentPage * pageSize, totalTickets) }}
-                                    of {{ totalTickets }} tickets
+                                    {{ (currentPage - 1) * pageSize + 1 }}-dan
+                                    {{ Math.min(currentPage * pageSize, totalTickets) }}-gacha
+                                    (jami {{ totalTickets }} ta murojaat)
                                 </p>
                             </div>
                         </div>
@@ -253,14 +252,13 @@
                     <div class="card-body">
                         <h5>
                             <mat-icon class="align-middle">help</mat-icon>
-                            Need Help?
+                            Yordam kerakmi?
                         </h5>
                         <p class="mb-2">
-                            <strong>Response Time:</strong> We typically respond within 2-4 hours during business hours.
+                            <strong>Javob vaqti:</strong> Biz odatda ish soatlari davomida 2-4 soat ichida javob beramiz.
                         </p>
                         <p class="mb-0">
-                            <strong>Urgent Issues:</strong> For urgent delivery issues, please create a ticket with
-                            "Urgent" priority.
+                            <strong>Shoshilinch masalalar:</strong> Shoshilinch yetkazish muammolari uchun "Shoshilinch" ustuvorlikda murojaat yarating.
                         </p>
                     </div>
                 </div>

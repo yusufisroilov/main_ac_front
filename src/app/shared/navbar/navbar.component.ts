@@ -159,28 +159,28 @@ export class NavbarComponent implements OnInit, OnDestroy {
     // ============================================
     // SETUP NOTIFICATIONS
     // ============================================
-    console.log("🔔 Initializing notifications in navbar...");
+    // console.log("🔔 Navbar bildirnomalari boshlandi...");
 
     // Subscribe to notification counts
     this.notificationCountSubscription =
       this.notificationService.notificationCounts$.subscribe((counts) => {
         this.notificationCounts = counts;
 
-        console.log("📊 Notification counts updated:", counts);
+        // console.log("📊 Bildirnoma soni yangilandi:", counts);
       });
 
     // Subscribe to ticket notifications
     this.ticketNotificationSubscription =
       this.notificationService.ticketNotifications$.subscribe((list) => {
         this.ticketNotifications = list;
-        console.log("🎫 Ticket notifications updated:", list.length);
+        // console.log("🎫 Murojaat bildirnomalari yangilandi:", list.length);
       });
 
     // Subscribe to delivery notifications
     this.deliveryNotificationSubscription =
       this.notificationService.deliveryNotifications$.subscribe((list) => {
         this.deliveryNotifications = list;
-        console.log("🚚 Delivery notifications updated:", list.length);
+        // console.log("🚚 Yetkazish bildirnomalari yangilandi:", list.length);
       });
 
     // Start polling
@@ -188,7 +188,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    console.log("🔕 Cleaning up notifications in navbar...");
+    // console.log("🔕 Navbar bildirnomalari tozalanmoqda...");
 
     if (this._router) {
       this._router.unsubscribe();
@@ -215,10 +215,10 @@ export class NavbarComponent implements OnInit, OnDestroy {
   toggleTicketNotifications() {
     this.showTicketDropdown = !this.showTicketDropdown;
     this.showDeliveryDropdown = false; // Close other dropdown
-    console.log(
-      "🎫 Ticket dropdown:",
-      this.showTicketDropdown ? "OPEN" : "CLOSED"
-    );
+    // console.log(
+    //   "🎫 Murojaat menyusi:",
+    //   this.showTicketDropdown ? "OCHIQ" : "YOPIQ"
+    // );
   }
 
   /**
@@ -232,7 +232,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
    * Mark all tickets as read
    */
   markAllTicketsAsRead() {
-    console.log("📖 Mark all tickets as read");
+    // console.log("📖 Barcha murojaatlarni o'qilgan deb belgilash");
     this.notificationService.markAllAsRead();
     this.closeTicketDropdown();
   }
@@ -243,10 +243,10 @@ export class NavbarComponent implements OnInit, OnDestroy {
   toggleDeliveryNotifications() {
     this.showDeliveryDropdown = !this.showDeliveryDropdown;
     this.showTicketDropdown = false; // Close other dropdown
-    console.log(
-      "🚚 Delivery dropdown:",
-      this.showDeliveryDropdown ? "OPEN" : "CLOSED"
-    );
+    // console.log(
+    //   "🚚 Yetkazish menyusi:",
+    //   this.showDeliveryDropdown ? "OCHIQ" : "YOPIQ"
+    // );
   }
 
   /**
@@ -260,7 +260,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
    * Mark all deliveries as read
    */
   markAllDeliveriesAsRead() {
-    console.log("📖 Mark all deliveries as read");
+    // console.log("📖 Barcha yetkazishlarni o'qilgan deb belgilash");
     this.notificationService.markAllAsRead();
     this.closeDeliveryDropdown();
   }
@@ -269,7 +269,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
    * Handle notification click
    */
   onNotificationClick(notification: NotificationItem) {
-    console.log("🔔 Notification clicked:", notification);
+    // console.log("🔔 Bildirnomaga bosildi:", notification);
     this.notificationService.markAsRead(notification.id);
     this.router.navigate([notification.actionUrl]);
     this.closeTicketDropdown();
@@ -287,7 +287,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
    * Manually refresh notifications
    */
   refreshNotifications() {
-    console.log("🔄 Manually refreshing notifications...");
+    // console.log("🔄 Bildirnomalari qo'lda yangilanmoqda...");
     this.notificationService.refreshNotifications();
   }
 

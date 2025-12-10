@@ -16,6 +16,7 @@ import { FixedpluginModule } from "src/app/shared/fixedplugin/fixedplugin.module
 import { ComponentsModule } from "src/app/components/components.module";
 import { PaginationComponent } from "../shared/pagination/pagination.component";
 import { PaginationModule } from "../shared/pagination/pagination.module";
+import { InfoeachClientAdminComponent } from './infoeach-client-admin/infoeach-client-admin.component';
 
 @NgModule({
   imports: [
@@ -35,6 +36,7 @@ import { PaginationModule } from "../shared/pagination/pagination.module";
     DeliveriesComponent,
     EmployeeFinanceComponent,
     DeliveriesListComponent2,
+    InfoeachClientAdminComponent,
   ],
 })
 export class UzbStaffModule {}

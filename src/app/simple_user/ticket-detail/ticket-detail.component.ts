@@ -108,21 +108,30 @@ export class CustomerTicketDetailComponent implements OnInit, AfterViewChecked {
   }
 
   ngOnInit(): void {
-    // Get ticket number from query params
-    this.route.queryParams.subscribe((params) => {
-      this.ticketNumber = params["ticket"];
-      if (this.ticketNumber) {
+    // Get ticket number from path params (e.g., /customer-ticket-detail/T-2025-000123)
+    // or query params (e.g., /customer-ticket-detail?ticket=T-2025-000123)
+    this.route.params.subscribe((params) => {
+      if (params["ticketNumber"]) {
+        this.ticketNumber = params["ticketNumber"];
         this.loadTicketDetail();
       } else {
-        swal
-          .fire({
-            icon: "error",
-            title: "Error",
-            text: "Invalid ticket reference",
-          })
-          .then(() => {
-            this.router.navigate(["/customer-tickets"]);
-          });
+        // Fallback to query params for backward compatibility
+        this.route.queryParams.subscribe((queryParams) => {
+          this.ticketNumber = queryParams["ticket"];
+          if (this.ticketNumber) {
+            this.loadTicketDetail();
+          } else {
+            swal
+              .fire({
+                icon: "error",
+                title: "Xatolik",
+                text: "Noto'g'ri murojaat raqami",
+              })
+              .then(() => {
+                this.router.navigate(["/customer-tickets"]);
+              });
+          }
+        });
       }
     });
   }
@@ -165,8 +174,8 @@ export class CustomerTicketDetailComponent implements OnInit, AfterViewChecked {
             swal
               .fire({
                 icon: "error",
-                title: "Error",
-                text: data.message || "Failed to load ticket details",
+                title: "Xatolik",
+                text: data.message || "Murojaat ma'lumotlarini yuklab bo'lmadi",
               })
               .then(() => {
                 this.router.navigate(["/customer-tickets"]);
@@ -183,8 +192,8 @@ export class CustomerTicketDetailComponent implements OnInit, AfterViewChecked {
             swal
               .fire({
                 icon: "error",
-                title: "Ticket Not Found",
-                text: "The ticket you're looking for doesn't exist or you don't have access to it.",
+                title: "Murojaat Topilmadi",
+                text: "Siz qidirayotgan murojaat mavjud emas yoki sizda unga kirish huquqi yo'q.",
               })
               .then(() => {
                 this.router.navigate(["/customer-tickets"]);
@@ -192,8 +201,8 @@ export class CustomerTicketDetailComponent implements OnInit, AfterViewChecked {
           } else {
             swal.fire({
               icon: "error",
-              title: "Error",
-              text: "Failed to load ticket details. Please try again.",
+              title: "Xatolik",
+              text: "Murojaat ma'lumotlarini yuklab bo'lmadi. Qayta urinib ko'ring.",
             });
           }
         }
@@ -218,8 +227,8 @@ export class CustomerTicketDetailComponent implements OnInit, AfterViewChecked {
     if (this.selectedFiles.length + files.length > this.maxFiles) {
       swal.fire({
         icon: "warning",
-        title: "Too Many Files",
-        text: `You can only attach up to ${this.maxFiles} files. Currently selected: ${this.selectedFiles.length}`,
+        title: "Juda ko'p fayllar",
+        text: `Siz maksimum ${this.maxFiles} ta fayl yuklashingiz mumkin. Hozir tanlangan: ${this.selectedFiles.length}`,
       });
       return;
     }
@@ -232,10 +241,10 @@ export class CustomerTicketDetailComponent implements OnInit, AfterViewChecked {
       if (file.size > this.maxFileSize) {
         swal.fire({
           icon: "warning",
-          title: "File Too Large",
+          title: "Fayl juda katta",
           text: `${
             file.name
-          } is too large. Maximum file size is ${this.formatFileSize(
+          } juda katta hajmda. Maksimal fayl hajmi ${this.formatFileSize(
             this.maxFileSize
           )}`,
         });
@@ -260,8 +269,8 @@ export class CustomerTicketDetailComponent implements OnInit, AfterViewChecked {
       ) {
         swal.fire({
           icon: "warning",
-          title: "Invalid File Type",
-          text: `${file.name} is not a supported file type. Allowed: Images, PDF, ZIP, RAR`,
+          title: "Fayl turi noto'g'ri",
+          text: `${file.name} qo'llab-quvvatlanmaydi. Ruxsat etilgan: Rasm, PDF, ZIP, RAR`,
         });
         continue;
       }
@@ -375,8 +384,8 @@ export class CustomerTicketDetailComponent implements OnInit, AfterViewChecked {
           if (data.status === "success") {
             swal.fire({
               icon: "success",
-              title: "Reply Sent",
-              text: "Your reply has been sent to support",
+              title: "Javob yuborildi",
+              text: "Javobingiz yordam xizmatiga yuborildi",
               timer: 1500,
               showConfirmButton: false,
             });
@@ -392,8 +401,8 @@ export class CustomerTicketDetailComponent implements OnInit, AfterViewChecked {
             this.isSubmitting = false;
             swal.fire({
               icon: "error",
-              title: "Error",
-              text: data.message || "Failed to send reply",
+              title: "Xatolik",
+              text: data.message || "Javobni yuborib bo'lmadi",
             });
           }
         },
@@ -406,8 +415,8 @@ export class CustomerTicketDetailComponent implements OnInit, AfterViewChecked {
           } else {
             swal.fire({
               icon: "error",
-              title: "Error",
-              text: "Failed to send reply. Please try again.",
+              title: "Xatolik",
+              text: "Javobni yuborib bo'lmadi. Qayta urinib ko'ring.",
             });
           }
         }
@@ -529,10 +538,10 @@ export class CustomerTicketDetailComponent implements OnInit, AfterViewChecked {
     const diffHours = Math.floor(diffMs / 3600000);
     const diffDays = Math.floor(diffMs / 86400000);
 
-    if (diffMins < 1) return "Just now";
-    if (diffMins < 60) return `${diffMins}m ago`;
-    if (diffHours < 24) return `${diffHours}h ago`;
-    if (diffDays < 7) return `${diffDays}d ago`;
+    if (diffMins < 1) return "Hozirgina";
+    if (diffMins < 60) return `${diffMins} daqiqa oldin`;
+    if (diffHours < 24) return `${diffHours} soat oldin`;
+    if (diffDays < 7) return `${diffDays} kun oldin`;
 
     return d.toLocaleDateString("en-US", {
       month: "short",
@@ -599,11 +608,11 @@ export class CustomerTicketDetailComponent implements OnInit, AfterViewChecked {
    */
   getStatusLabel(status: string): string {
     const labels = {
-      unread: "Unread",
-      open: "Open",
-      answered: "Answered",
-      "customer-reply": "Waiting for Support",
-      closed: "Closed",
+      unread: "O'qilmagan",
+      open: "Ochiq",
+      answered: "Javob berilgan",
+      "customer-reply": "Yordam kutilmoqda",
+      closed: "Yopilgan",
     };
     return labels[status] || status;
   }
@@ -625,7 +634,13 @@ export class CustomerTicketDetailComponent implements OnInit, AfterViewChecked {
    * Get priority label
    */
   getPriorityLabel(priority: string): string {
-    return priority || "Medium";
+    const labels = {
+      "Urgent": "Shoshilinch",
+      "High": "Yuqori",
+      "Medium": "O'rta",
+      "Low": "Past"
+    };
+    return labels[priority] || "O'rta";
   }
 
   /**
@@ -633,17 +648,17 @@ export class CustomerTicketDetailComponent implements OnInit, AfterViewChecked {
    */
   getCategoryLabel(category: string): string {
     const labelMap: { [key: string]: string } = {
-      delivery: "Delivery Issue",
-      payment: "Payment",
-      product: "Product Question",
-      customs: "Customs",
-      damaged: "Damaged Cargo",
-      lost: "Lost Package",
-      pricing: "Pricing",
-      tracking: "Tracking",
-      support: "General Support",
-      complaint: "Complaint",
-      other: "Other",
+      delivery: "Yetkazish muammosi",
+      payment: "To'lov",
+      product: "Mahsulot haqida savol",
+      customs: "Bojxona",
+      damaged: "Shikastlangan yuk",
+      lost: "Yo'qolgan pochta",
+      pricing: "Narx",
+      tracking: "Kuzatuv",
+      support: "Umumiy yordam",
+      complaint: "Shikoyat",
+      other: "Boshqa",
     };
     return labelMap[category] || category;
   }
@@ -653,11 +668,11 @@ export class CustomerTicketDetailComponent implements OnInit, AfterViewChecked {
    */
   getStatusExplanation(status: string): string {
     const explanations: { [key: string]: string } = {
-      unread: "Your ticket has been received and will be reviewed soon",
-      open: "Support is working on your ticket",
-      answered: "Support has replied to your ticket",
-      "customer-reply": "Waiting for support response",
-      closed: "This ticket has been resolved and closed",
+      unread: "Murojaatingiz qabul qilindi va tez orada ko'rib chiqiladi",
+      open: "Yordam xizmati murojaatingiz ustida ishlamoqda",
+      answered: "Yordam xizmati murojaatingizga javob berdi",
+      "customer-reply": "Yordam javobi kutilmoqda",
+      closed: "Murojaat hal qilindi va yopildi",
     };
     return explanations[status] || "";
   }

@@ -69,37 +69,37 @@ export class CustomerTicketListComponent implements OnInit {
   ngOnInit(): void {
     // Status options (simplified for customers)
     this.statusOptions = [
-      { value: "all", label: "All Tickets" },
-      { value: "unread", label: "Unread" },
-      { value: "open", label: "Open" },
-      { value: "answered", label: "Answered by Support" },
-      { value: "customer-reply", label: "Waiting for Support" },
-      { value: "closed", label: "Closed" },
+      { value: "all", label: "Barcha murojaatlar" },
+      { value: "unread", label: "O'qilmagan" },
+      { value: "open", label: "Ochiq" },
+      { value: "answered", label: "Yordam javobi" },
+      { value: "customer-reply", label: "Yordam kutilmoqda" },
+      { value: "closed", label: "Yopilgan" },
     ];
 
     // Priority options
     this.priorityOptions = [
-      { value: "all", label: "All Priorities" },
-      { value: "Urgent", label: "Urgent" },
-      { value: "High", label: "High" },
-      { value: "Medium", label: "Medium" },
-      { value: "Low", label: "Low" },
+      { value: "all", label: "Barcha ustuvorliklar" },
+      { value: "Urgent", label: "Shoshilinch" },
+      { value: "High", label: "Yuqori" },
+      { value: "Medium", label: "O'rta" },
+      { value: "Low", label: "Past" },
     ];
 
     // Category options
     this.categoryOptions = [
-      { value: "all", label: "All Categories" },
-      { value: "delivery", label: "Delivery Issue" },
-      { value: "payment", label: "Payment" },
-      { value: "product", label: "Product Question" },
-      { value: "customs", label: "Customs" },
-      { value: "damaged", label: "Damaged Cargo" },
-      { value: "lost", label: "Lost Package" },
-      { value: "pricing", label: "Pricing" },
-      { value: "tracking", label: "Tracking" },
-      { value: "support", label: "General Support" },
-      { value: "complaint", label: "Complaint" },
-      { value: "other", label: "Other" },
+      { value: "all", label: "Barcha kategoriyalar" },
+      { value: "delivery", label: "Yetkazish muammosi" },
+      { value: "payment", label: "To'lov" },
+      { value: "product", label: "Mahsulot haqida savol" },
+      { value: "customs", label: "Bojxona" },
+      { value: "damaged", label: "Shikastlangan yuk" },
+      { value: "lost", label: "Yo'qolgan pochta" },
+      { value: "pricing", label: "Narx" },
+      { value: "tracking", label: "Kuzatuv" },
+      { value: "support", label: "Umumiy yordam" },
+      { value: "complaint", label: "Shikoyat" },
+      { value: "other", label: "Boshqa" },
     ];
   }
 
@@ -142,7 +142,7 @@ export class CustomerTicketListComponent implements OnInit {
           const data = response.json();
           if (data.status === "success") {
             this.tickets = data.tickets || [];
-            console.log("tickets ", this.tickets);
+            // console.log("tickets ", this.tickets);
 
             this.currentPage = data.pagination.page;
             this.totalPages = data.pagination.total_pages;
@@ -172,8 +172,8 @@ export class CustomerTicketListComponent implements OnInit {
           } else {
             swal.fire({
               icon: "error",
-              title: "Error",
-              text: "Failed to load tickets. Please try again.",
+              title: "Xatolik",
+              text: "Murojaatlarni yuklab bo'lmadi. Qayta urinib ko'ring.",
             });
           }
         }
@@ -298,11 +298,11 @@ export class CustomerTicketListComponent implements OnInit {
    */
   getStatusLabel(status: string): string {
     const labels = {
-      unread: "Unread",
-      open: "Open",
-      answered: "Answered",
-      "customer-reply": "Waiting for Support",
-      closed: "Closed",
+      unread: "O'qilmagan",
+      open: "Ochiq",
+      answered: "Javob berilgan",
+      "customer-reply": "Yordam kutilmoqda",
+      closed: "Yopilgan",
     };
     return labels[status] || status;
   }
@@ -324,7 +324,13 @@ export class CustomerTicketListComponent implements OnInit {
    * Get priority label
    */
   getPriorityLabel(priority: string): string {
-    return priority || "Medium";
+    const labels = {
+      Urgent: "Shoshilinch",
+      High: "Yuqori",
+      Medium: "O'rta",
+      Low: "Past",
+    };
+    return labels[priority] || "O'rta";
   }
 
   /**
@@ -352,17 +358,17 @@ export class CustomerTicketListComponent implements OnInit {
    */
   getCategoryLabel(category: string): string {
     const labelMap: { [key: string]: string } = {
-      delivery: "Delivery Issue",
-      payment: "Payment",
-      product: "Product Question",
-      customs: "Customs",
-      damaged: "Damaged Cargo",
-      lost: "Lost Package",
-      pricing: "Pricing",
-      tracking: "Tracking",
-      support: "General Support",
-      complaint: "Complaint",
-      other: "Other",
+      delivery: "Yetkazish muammosi",
+      payment: "To'lov",
+      product: "Mahsulot haqida savol",
+      customs: "Bojxona",
+      damaged: "Shikastlangan yuk",
+      lost: "Yo'qolgan pochta",
+      pricing: "Narx",
+      tracking: "Kuzatuv",
+      support: "Umumiy yordam",
+      complaint: "Shikoyat",
+      other: "Boshqa",
     };
     return labelMap[category] || category;
   }
@@ -396,10 +402,10 @@ export class CustomerTicketListComponent implements OnInit {
     const hours = Math.floor(diff / 3600000);
     const days = Math.floor(diff / 86400000);
 
-    if (minutes < 1) return "Just now";
-    if (minutes < 60) return `${minutes}m ago`;
-    if (hours < 24) return `${hours}h ago`;
-    if (days < 7) return `${days}d ago`;
+    if (minutes < 1) return "Hozirgina";
+    if (minutes < 60) return `${minutes} daqiqa oldin`;
+    if (hours < 24) return `${hours} soat oldin`;
+    if (days < 7) return `${days} kun oldin`;
 
     return this.formatDate(date);
   }
@@ -409,11 +415,11 @@ export class CustomerTicketListComponent implements OnInit {
    */
   getStatusExplanation(status: string): string {
     const explanations: { [key: string]: string } = {
-      unread: "Your ticket has been received",
-      open: "Support is reviewing your ticket",
-      answered: "Support has replied",
-      "customer-reply": "Waiting for support response",
-      closed: "Ticket resolved",
+      unread: "Murojaatingiz qabul qilindi",
+      open: "Yordam xizmati ko'rib chiqmoqda",
+      answered: "Yordam xizmati javob berdi",
+      "customer-reply": "Yordam javobi kutilmoqda",
+      closed: "Murojaat hal qilindi",
     };
     return explanations[status] || "";
   }

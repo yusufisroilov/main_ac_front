@@ -1,0 +1,365 @@
+/* Improved Modal Styling - Compact & User-Friendly */
+
+/* Prevent body scroll when modal is open */
+body.modal-open {
+  overflow: hidden !important;
+  position: fixed;
+  width: 100%;
+}
+
+#deliveryCreationModal .modal-dialog {
+  max-width: 900px;
+  margin: 1rem auto;
+  height: calc(100vh - 2rem);
+  display: flex;
+  align-items: center;
+}
+
+#deliveryCreationModal .modal-content {
+  max-height: calc(100vh - 2rem);
+  display: flex;
+  flex-direction: column;
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+#deliveryCreationModal .modal-header {
+  flex-shrink: 0;
+  padding: 1rem 1.5rem;
+  background: linear-gradient(60deg, #26c6da, #00acc1);
+  color: white;
+  border-radius: 8px 8px 0 0;
+  border-bottom: none;
+}
+
+#deliveryCreationModal .modal-header h4 {
+  color: white;
+  font-size: 1.3rem;
+  margin: 0;
+  font-weight: 500;
+}
+
+#deliveryCreationModal .modal-header .close {
+  color: white;
+  opacity: 0.9;
+  font-size: 2rem;
+  font-weight: 300;
+}
+
+#deliveryCreationModal .modal-body {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 1.25rem 1.5rem;
+  max-height: calc(100vh - 200px);
+}
+
+#deliveryCreationModal .modal-footer {
+  flex-shrink: 0;
+  padding: 1rem 1.5rem;
+  background-color: #f8f9fa;
+  border-top: 1px solid #dee2e6;
+  border-radius: 0 0 8px 8px;
+}
+
+/* Compact form styling */
+#deliveryCreationModal .form-group {
+  margin-bottom: 0.75rem;
+}
+
+#deliveryCreationModal .form-group label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+  color: #495057;
+}
+
+#deliveryCreationModal .form-control {
+  height: 38px;
+  font-size: 0.875rem;
+  padding: 0.5rem 0.75rem;
+}
+
+#deliveryCreationModal textarea.form-control {
+  height: 70px;
+  resize: none;
+}
+
+#deliveryCreationModal select.form-control {
+  height: 38px;
+}
+
+/* Compact rows */
+#deliveryCreationModal .row {
+  margin-left: -0.5rem;
+  margin-right: -0.5rem;
+}
+
+#deliveryCreationModal .row > [class*="col-"] {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+
+/* Section dividers */
+#deliveryCreationModal .section-divider {
+  border-bottom: 1px solid #e0e0e0;
+  margin: 1rem -1.5rem;
+  padding-bottom: 0.5rem;
+}
+
+#deliveryCreationModal .section-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+}
+
+#deliveryCreationModal .section-title i {
+  margin-right: 0.5rem;
+  font-size: 1.2rem;
+}
+
+/* Custom scrollbar */
+#deliveryCreationModal .modal-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+#deliveryCreationModal .modal-body::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+#deliveryCreationModal .modal-body::-webkit-scrollbar-thumb {
+  background: #26c6da;
+  border-radius: 10px;
+}
+
+#deliveryCreationModal .modal-body::-webkit-scrollbar-thumb:hover {
+  background: #00acc1;
+}
+
+/* ============================================
+   UPDATED: Compact Delivery Type Button Styles
+   ============================================ */
+
+/* Button container - 2x2 grid */
+.delivery-type-buttons {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+/* Compact buttons - smaller and cleaner */
+.delivery-type-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0.6rem 0.5rem;
+  border: 2px solid #dee2e6;
+  border-radius: 6px;
+  background: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #495057;
+  min-height: 65px;
+}
+
+/* Hover effect */
+.delivery-type-btn:hover {
+  border-color: #26c6da;
+  background-color: #f0f9ff;
+  transform: translateY(-1px);
+  box-shadow: 0 3px 6px rgba(38, 198, 218, 0.15);
+}
+
+/* Active/selected state */
+.delivery-type-btn.active {
+  border-color: #26c6da;
+  background: linear-gradient(60deg, #26c6da, #00acc1);
+  color: white;
+  box-shadow: 0 3px 8px rgba(38, 198, 218, 0.3);
+}
+
+.delivery-type-btn.active:hover {
+  background: linear-gradient(60deg, #00acc1, #0097a7);
+}
+
+/* Smaller icon size */
+.delivery-type-btn i {
+  font-size: 1.8rem;
+  margin-bottom: 0.3rem;
+}
+
+/* Compact text */
+.delivery-type-btn span {
+  font-size: 0.8rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+/* Focus state for accessibility */
+.delivery-type-btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(38, 198, 218, 0.25);
+}
+
+/* ============================================
+   End of Delivery Type Button Styles
+   ============================================ */
+
+/* Package selection table improvements */
+#deliveryCreationModal .table-sm {
+  font-size: 0.875rem;
+}
+
+#deliveryCreationModal .table-sm th {
+  background-color: #f8f9fa;
+  font-weight: 600;
+  border-bottom: 2px solid #dee2e6;
+  padding: 0.5rem;
+}
+
+#deliveryCreationModal .table-sm td {
+  padding: 0.5rem;
+  vertical-align: middle;
+}
+
+#deliveryCreationModal .table-hover tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+#deliveryCreationModal .table-info {
+  background-color: #d1ecf1 !important;
+}
+
+#deliveryCreationModal .table-warning {
+  background-color: #fff3cd !important;
+}
+
+/* Badge styling */
+#deliveryCreationModal .badge {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  font-weight: 500;
+}
+
+#deliveryCreationModal .badge-primary {
+  background-color: #007bff;
+}
+
+#deliveryCreationModal .badge-warning {
+  background-color: #ffc107;
+  color: #212529;
+}
+
+/* Button styling */
+#deliveryCreationModal .btn {
+  padding: 0.5rem 1.25rem;
+  font-size: 0.875rem;
+  border-radius: 4px;
+}
+
+#deliveryCreationModal .modal-footer .btn {
+  min-width: 120px;
+}
+
+/* Loading state */
+.spinner-border-sm {
+  width: 1rem;
+  height: 1rem;
+  border-width: 0.15rem;
+}
+
+/* Empty state */
+.empty-state {
+  text-align: center;
+  padding: 2rem 1rem;
+  color: #999;
+}
+
+.empty-state i {
+  font-size: 3rem;
+  color: #ddd;
+  margin-bottom: 0.5rem;
+}
+
+/* Alert styling for selection summary */
+#deliveryCreationModal .alert-info {
+  background-color: #e3f2fd;
+  border-color: #90caf9;
+  color: #0d47a1;
+}
+
+/* Checkbox styling */
+#deliveryCreationModal input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  #deliveryCreationModal .modal-dialog {
+    max-width: 95%;
+    margin: 0.5rem auto;
+  }
+
+  #deliveryCreationModal .modal-body {
+    padding: 1rem;
+  }
+
+  #deliveryCreationModal .col-md-6 {
+    margin-bottom: 0.5rem;
+  }
+
+  /* Stack buttons vertically on mobile */
+  .delivery-type-buttons {
+    grid-template-columns: 1fr;
+    gap: 0.6rem;
+  }
+
+  .delivery-type-btn {
+    min-height: 60px;
+    padding: 0.5rem 0.4rem;
+  }
+
+  .delivery-type-btn i {
+    font-size: 1.6rem;
+  }
+
+  .delivery-type-btn span {
+    font-size: 0.75rem;
+  }
+}
+
+/* Make inputs more compact on mobile */
+@media (max-width: 576px) {
+  #deliveryCreationModal .form-control {
+    height: 36px;
+    font-size: 0.8rem;
+  }
+
+  #deliveryCreationModal textarea.form-control {
+    height: 60px;
+  }
+
+  .delivery-type-btn {
+    min-height: 55px;
+    padding: 0.4rem 0.3rem;
+  }
+
+  .delivery-type-btn i {
+    font-size: 1.4rem;
+  }
+
+  .delivery-type-btn span {
+    font-size: 0.7rem;
+  }
+}

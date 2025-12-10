@@ -56,7 +56,7 @@ export const ROUTES: RouteInfo[] = [
   },
   {
     path: "/customer-tickets",
-    title: "Customer Tickets",
+    title: "Mening Murojaatlarim",
     type: "link",
     icontype: "cases",
   },
@@ -68,7 +68,7 @@ export const ROUTES: RouteInfo[] = [
   // },
   {
     path: "/create-ticket",
-    title: "Create Ticket",
+    title: "Yangi Murojaat",
     type: "link",
     icontype: "cases",
   },
@@ -103,14 +103,13 @@ export const EmployeeROUTE: RouteInfo[] = [
   },
   {
     path: "/uzm/deliveriesEmp",
-    title: "Employer Delivery List",
+    title: "Yetkazma Malumotlari",
     type: "link",
     icontype: "local_shipping",
   },
-
   {
     path: "/uzm/tickets-list",
-    title: "Tickets List ",
+    title: "Murojaatlar Ro'yxati",
     type: "link",
     icontype: "credit_card",
   },
@@ -135,13 +134,19 @@ export const adminROUTES: RouteInfo[] = [
     type: "link",
     icontype: "people_alt",
   },
-
   {
     path: "/uzm/allreceivers",
     title: "Hamma Qabul qilivchilar",
     type: "link",
     icontype: "contacts",
   },
+  {
+    path: "/admin/each-client-admin",
+    title: "Har bir Mijoz",
+    type: "link",
+    icontype: "badge",
+  },
+
   {
     path: "/uzs/uzparcelslist",
     title: "Hamma buyurtmalar",
@@ -159,6 +164,12 @@ export const adminROUTES: RouteInfo[] = [
     title: "Reyslar ro'yhati",
     type: "link",
     icontype: "flight_takeoff",
+  },
+  {
+    path: "/uzm/tickets-list",
+    title: "Murojaatlar Ro'yxati",
+    type: "link",
+    icontype: "credit_card",
   },
 ];
 
@@ -199,6 +210,24 @@ export const chinaStaffROUTES: RouteInfo[] = [
     title: "Consignment List",
     type: "link",
     icontype: "flight_takeoff",
+  },
+  {
+    path: "/customer-tickets",
+    title: "My Tickets",
+    type: "link",
+    icontype: "cases",
+  },
+  // {
+  //   path: "/customer-ticket-detail",
+  //   title: "Customer Detail",
+  //   type: "link",
+  //   icontype: "cases",
+  // },
+  {
+    path: "/create-ticket",
+    title: "New Ticket",
+    type: "link",
+    icontype: "cases",
   },
 ];
 
@@ -297,7 +326,7 @@ export const managerROUTES: RouteInfo[] = [
 
   {
     path: "/uzm/tickets-list",
-    title: "Tickets List ",
+    title: "Murojaatlar Ro'yxati",
     type: "link",
     icontype: "credit_card",
   },

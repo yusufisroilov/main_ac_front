@@ -151,10 +151,22 @@ export const AdminstratorRoutes: Routes = [
       },
       {
         path: "ticket-detail",
-        component: AdminTicketDetailComponent,
-        data: {
-          title: "Tickets Detail",
-        },
+        children: [
+          {
+            path: "",
+            component: AdminTicketDetailComponent,
+            data: {
+              title: "Tickets Detail",
+            },
+          },
+          {
+            path: ":ticketNumber",
+            component: AdminTicketDetailComponent,
+            data: {
+              title: "Tickets Detail",
+            },
+          },
+        ],
       },
       {
         path: "ticket-notes",

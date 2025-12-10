@@ -125,6 +125,7 @@ export class AdminTicketListComponent implements OnInit {
       { value: "YUKCHI", label: "Yukchi" },
       { value: "CHINASTAFF", label: "Xitoylik" },
       { value: "MANAGER", label: "Manager" },
+      { value: "ADMIN", label: "Admin" },
     ];
 
     this.startNotificationPolling();
@@ -366,6 +367,7 @@ export class AdminTicketListComponent implements OnInit {
           YUKCHI: "Yukchi",
           CHINASTAFF: "Xitoylik",
           MANAGER: "Manager",
+          ADMIN: "Admin",
         },
         inputPlaceholder: "Yangi Biriktiriluvchini Tanlash",
         showCancelButton: true,
