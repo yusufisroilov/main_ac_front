@@ -175,7 +175,22 @@ export class AdminTicketDetailComponent implements OnInit {
   }
 
   ngAfterViewInit() {
-    // Additional initialization if needed
+    // ✅ Auto-focus on reply box after view is initialized
+    this.focusReplyBox();
+  }
+
+  /**
+   * Focus on the reply box input field
+   */
+  private focusReplyBox(): void {
+    setTimeout(() => {
+      if (this.replyBoxComponent && !this.isTicketClosed()) {
+        // Try to focus the reply box component if it has a focus method
+        if (typeof this.replyBoxComponent.focusInput === "function") {
+          this.replyBoxComponent.focusInput();
+        }
+      }
+    }, 300);
   }
 
   /**
@@ -197,21 +212,21 @@ export class AdminTicketDetailComponent implements OnInit {
 
           if (this.ticket && this.ticket.messages) {
             this.ticket.messages.forEach((msg, index) => {
-              console.log(`Message ${index}:`, msg);
+              // console.log(`Message ${index}:`, msg);
               if (msg.attachments && msg.attachments.length > 0) {
-                console.log(
-                  `  Attachments for message ${index}:`,
-                  msg.attachments
-                );
+                // console.log(
+                //   `  Attachments for message ${index}:`,
+                //   msg.attachments
+                // );
                 msg.attachments.forEach((att, attIndex) => {
-                  console.log(`    Attachment ${attIndex}:`, {
-                    id: att.id,
-                    file_name: att.file_name,
-                    file_path: att.file_path,
-                    file_url: att.file_url, // ← Check if this exists!
-                    file_size: att.file_size,
-                    file_type: att.file_type,
-                  });
+                  // console.log(`    Attachment ${attIndex}:`, {
+                  //   id: att.id,
+                  //   file_name: att.file_name,
+                  //   file_path: att.file_path,
+                  //   file_url: att.file_url, // ← Check if this exists!
+                  //   file_size: att.file_size,
+                  //   file_type: att.file_type,
+                  // });
                 });
               }
             });
@@ -228,6 +243,9 @@ export class AdminTicketDetailComponent implements OnInit {
           }
 
           this.isLoading = false;
+
+          // ✅ Auto-focus on reply box after ticket loads
+          this.focusReplyBox();
         },
         (error) => {
           console.error("Error loading ticket:", error);
@@ -239,9 +257,9 @@ export class AdminTicketDetailComponent implements OnInit {
             swal
               .fire({
                 icon: "error",
-                title: "Error",
-                text: "Failed to load ticket details. Please try again.",
-                confirmButtonText: "Go Back",
+                title: "Xatolik",
+                text: "So'rovni yuklashda xatolik yuz berdi. Iltimos, qaytadan urinib ko'ring.",
+                confirmButtonText: "Orqaga Qaytish",
               })
               .then(() => {
                 this.router.navigate(["/uzm/tickets"]);
@@ -287,8 +305,8 @@ export class AdminTicketDetailComponent implements OnInit {
           if (response.json().status === "success") {
             swal.fire({
               icon: "success",
-              title: "Success",
-              text: "Reply sent successfully",
+              title: "Muvaffaqiyatli",
+              text: "Javob muvaffaqiyatli yuborildi",
               timer: 1500,
               showConfirmButton: false,
             });
@@ -313,8 +331,8 @@ export class AdminTicketDetailComponent implements OnInit {
           } else {
             swal.fire({
               icon: "error",
-              title: "Error",
-              text: "Failed to send reply. Please try again.",
+              title: "Xatolik",
+              text: "Javob yuborishda xatolik yuz berdi. Iltimos, qaytadan urinib ko'ring.",
             });
           }
         }
@@ -360,8 +378,8 @@ export class AdminTicketDetailComponent implements OnInit {
           if (response.json().status === "success") {
             swal.fire({
               icon: "success",
-              title: "Success",
-              text: "Internal note added",
+              title: "Muvaffaqiyatli",
+              text: "Ichki qayd qo'shildi",
               timer: 1500,
               showConfirmButton: false,
             });
@@ -386,8 +404,8 @@ export class AdminTicketDetailComponent implements OnInit {
           } else {
             swal.fire({
               icon: "error",
-              title: "Error",
-              text: "Failed to add internal note. Please try again.",
+              title: "Xatolik",
+              text: "Ichki qayd qo'shishda xatolik yuz berdi. Iltimos, qaytadan urinib ko'ring.",
             });
           }
         }
@@ -406,7 +424,7 @@ export class AdminTicketDetailComponent implements OnInit {
         .fire({
           title: "Yechimni kiriting",
           input: "text",
-          inputPlaceholder: "Resolution code or description",
+          inputPlaceholder: "Yechim kodi yoki tavsifi",
           showCancelButton: true,
           confirmButtonText: "Yopish So'rovni",
           inputValidator: (value) => {
@@ -452,8 +470,8 @@ export class AdminTicketDetailComponent implements OnInit {
 
             swal.fire({
               icon: "success",
-              title: "Success",
-              text: "Ticket status updated",
+              title: "Muvaffaqiyatli",
+              text: "So'rov holati yangilandi",
               timer: 1500,
               showConfirmButton: false,
             });
@@ -469,8 +487,8 @@ export class AdminTicketDetailComponent implements OnInit {
           } else {
             swal.fire({
               icon: "error",
-              title: "Error",
-              text: "Failed to update status. Please try again.",
+              title: "Xatolik",
+              text: "Holatni yangilashda xatolik yuz berdi. Iltimos, qaytadan urinib ko'ring.",
             });
           }
         }
@@ -500,8 +518,8 @@ export class AdminTicketDetailComponent implements OnInit {
 
             swal.fire({
               icon: "success",
-              title: "Success",
-              text: "Ticket priority updated",
+              title: "Muvaffaqiyatli",
+              text: "So'rov muhimligi yangilandi",
               timer: 1500,
               showConfirmButton: false,
             });
@@ -517,8 +535,8 @@ export class AdminTicketDetailComponent implements OnInit {
           } else {
             swal.fire({
               icon: "error",
-              title: "Error",
-              text: "Failed to update priority. Please try again.",
+              title: "Xatolik",
+              text: "Muhimlikni yangilashda xatolik yuz berdi. Iltimos, qaytadan urinib ko'ring.",
             });
           }
         }
@@ -529,7 +547,7 @@ export class AdminTicketDetailComponent implements OnInit {
    * Handle message edit
    */
   onMessageEdit(event: { messageId: number; newText: string }): void {
-    console.log("message edit ", event.messageId, event.newText);
+    // console.log("message edit ", event.messageId, event.newText);
 
     this.http
       .put(
@@ -581,7 +599,7 @@ export class AdminTicketDetailComponent implements OnInit {
         confirmButtonText: "Qayta biriktirish",
         inputValidator: (value) => {
           if (!value) {
-            return "You need to select someone!";
+            return "Biriktiriluvchini tanlash kerak!";
           }
         },
       })
@@ -607,8 +625,8 @@ export class AdminTicketDetailComponent implements OnInit {
 
                   swal.fire({
                     icon: "success",
-                    title: "Success",
-                    text: "Ticket reassigned successfully",
+                    title: "Muvaffaqiyatli",
+                    text: "So'rov qayta biriktirildi",
                     timer: 1500,
                     showConfirmButton: false,
                   });
@@ -624,8 +642,8 @@ export class AdminTicketDetailComponent implements OnInit {
                 } else {
                   swal.fire({
                     icon: "error",
-                    title: "Error",
-                    text: "Failed to reassign ticket. Please try again.",
+                    title: "Xatolik",
+                    text: "Qayta biriktirishda xatolik yuz berdi. Iltimos, qaytadan urinib ko'ring.",
                   });
                 }
               }
@@ -673,11 +691,11 @@ export class AdminTicketDetailComponent implements OnInit {
    */
   getStatusLabel(status: string): string {
     const labels = {
-      unread: "Unread",
-      open: "Open",
-      answered: "Answered",
-      "customer-reply": "Customer Reply",
-      closed: "Closed",
+      unread: "O'qilmagan",
+      open: "Ochiq",
+      answered: "Javob Berilgan",
+      "customer-reply": "Mijoz Javobi",
+      closed: "Yopilgan",
     };
     return labels[status] || status;
   }
@@ -749,11 +767,11 @@ export class AdminTicketDetailComponent implements OnInit {
     const diffDays = Math.floor(diffHours / 24);
 
     if (diffDays > 0) {
-      return `${diffDays} day${diffDays > 1 ? "s" : ""} ago`;
+      return `${diffDays} kun oldin`;
     } else if (diffHours > 0) {
-      return `${diffHours} hour${diffHours > 1 ? "s" : ""} ago`;
+      return `${diffHours} soat oldin`;
     } else {
-      return "Less than 1 hour ago";
+      return "1 soatdan kam oldin";
     }
   }
 
@@ -776,14 +794,14 @@ export class AdminTicketDetailComponent implements OnInit {
     if (!this.ticket) return "-";
 
     if (this.ticket.first_response_at) {
-      return "SLA Met";
+      return "SLA Bajarildi";
     }
 
     if (this.isSLABreached()) {
-      return "SLA Breached";
+      return "SLA Buzildi";
     }
 
-    return "Within SLA";
+    return "SLA Chegarasida";
   }
 
   /**

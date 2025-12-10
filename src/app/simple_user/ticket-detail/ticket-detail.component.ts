@@ -89,6 +89,9 @@ export class CustomerTicketDetailComponent implements OnInit, AfterViewChecked {
   @ViewChild("messagesContainer", { read: ElementRef })
   messagesContainer: ElementRef;
 
+  // ViewChild for reply textarea auto-focus
+  @ViewChild("replyTextarea") replyTextarea: ElementRef;
+
   // Auto-scroll control
   private shouldScrollToBottom = false;
 
@@ -169,6 +172,9 @@ export class CustomerTicketDetailComponent implements OnInit, AfterViewChecked {
 
             // Trigger scroll after data loaded
             this.shouldScrollToBottom = true;
+
+            // Focus on reply textarea after ticket loads
+            this.focusReplyTextarea();
           } else {
             this.isLoading = false;
             swal
@@ -580,6 +586,17 @@ export class CustomerTicketDetailComponent implements OnInit, AfterViewChecked {
         element.scrollTop = element.scrollHeight;
       }, 200);
     }
+  }
+
+  /**
+   * Focus on the reply textarea
+   */
+  private focusReplyTextarea(): void {
+    setTimeout(() => {
+      if (this.replyTextarea && this.replyTextarea.nativeElement && !this.isTicketClosed()) {
+        this.replyTextarea.nativeElement.focus();
+      }
+    }, 300);
   }
 
   /**

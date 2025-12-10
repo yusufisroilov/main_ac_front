@@ -32,7 +32,7 @@
 
     <!-- Message Input Section -->
     <div class="message-input-section">
-        <textarea [(ngModel)]="messageText" [placeholder]="placeholder" class="message-textarea" rows="3"
+        <textarea #messageInput [(ngModel)]="messageText" [placeholder]="placeholder" class="message-textarea" rows="3"
             [disabled]="isSubmitting" (keydown)="onKeyDown($event)"></textarea>
 
         <!-- Actions Row -->

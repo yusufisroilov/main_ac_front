@@ -205,7 +205,7 @@
                                         accept="image/*,.pdf,.zip,.rar" style="display: none;">
 
                                     <!-- Textarea (CENTER - grows) -->
-                                    <textarea [(ngModel)]="messageText" placeholder="Xabaringizni shu yerga yozing..."
+                                    <textarea #replyTextarea [(ngModel)]="messageText" placeholder="Xabaringizni shu yerga yozing..."
                                         class="message-textarea telegram-textarea" rows="1" [disabled]="isSubmitting"
                                         (keydown)="onKeyDown($event)">
                                 </textarea>

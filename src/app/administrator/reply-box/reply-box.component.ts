@@ -1,4 +1,12 @@
-import { Component, OnInit, Output, EventEmitter, Input } from "@angular/core";
+import {
+  Component,
+  OnInit,
+  Output,
+  EventEmitter,
+  Input,
+  ViewChild,
+  ElementRef,
+} from "@angular/core";
 import swal from "sweetalert2";
 
 interface FileWithPreview {
@@ -41,9 +49,20 @@ export class ReplyBoxComponent implements OnInit {
   selectedFiles: FileWithPreview[] = [];
   isSubmitting: boolean = false;
 
+  @ViewChild("messageInput") messageInput: ElementRef;
+
   constructor() {}
 
   ngOnInit(): void {}
+
+  /**
+   * Focus on the message input textarea
+   */
+  focusInput(): void {
+    if (this.messageInput && this.messageInput.nativeElement) {
+      this.messageInput.nativeElement.focus();
+    }
+  }
 
   /**
    * Handle file selection
@@ -59,8 +78,8 @@ export class ReplyBoxComponent implements OnInit {
     if (this.selectedFiles.length + files.length > this.maxFiles) {
       swal.fire({
         icon: "warning",
-        title: "Too Many Files",
-        text: `You can only attach up to ${this.maxFiles} files. Currently selected: ${this.selectedFiles.length}`,
+        title: "Juda Ko'p Fayllar",
+        text: `Siz faqat ${this.maxFiles} ta faylgacha biriktira olasiz. Hozirda tanlangan: ${this.selectedFiles.length}`,
       });
       return;
     }
@@ -73,10 +92,10 @@ export class ReplyBoxComponent implements OnInit {
       if (file.size > this.maxFileSize) {
         swal.fire({
           icon: "warning",
-          title: "File Too Large",
+          title: "Fayl Juda Katta",
           text: `${
             file.name
-          } is too large. Maximum file size is ${this.formatFileSize(
+          } juda katta. Maksimal fayl hajmi ${this.formatFileSize(
             this.maxFileSize
           )}`,
         });
@@ -101,8 +120,8 @@ export class ReplyBoxComponent implements OnInit {
       ) {
         swal.fire({
           icon: "warning",
-          title: "Invalid File Type",
-          text: `${file.name} is not a supported file type. Allowed: Images, PDF, ZIP, RAR`,
+          title: "Noto'g'ri Fayl Turi",
+          text: `${file.name} qo'llab-quvvatlanmaydigan fayl turi. Ruxsat etilgan: Rasmlar, PDF, ZIP, RAR`,
         });
         continue;
       }
@@ -184,7 +203,7 @@ export class ReplyBoxComponent implements OnInit {
    * Check if form is valid
    */
   isValid(): boolean {
-    return this.messageText.trim().length >= 5 || this.selectedFiles.length > 0;
+    return this.messageText.trim().length >= 1 || this.selectedFiles.length > 0;
   }
 
   /**

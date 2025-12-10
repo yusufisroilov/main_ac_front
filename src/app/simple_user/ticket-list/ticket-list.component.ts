@@ -1,4 +1,10 @@
-import { Component, OnInit } from "@angular/core";
+import {
+  Component,
+  OnInit,
+  ViewChild,
+  ElementRef,
+  AfterViewInit,
+} from "@angular/core";
 import { Router } from "@angular/router";
 import { GlobalVars } from "src/app/global-vars";
 import swal from "sweetalert2";
@@ -24,8 +30,11 @@ interface Ticket {
   templateUrl: "./ticket-list.component.html",
   styleUrls: ["./ticket-list.component.css"],
 })
-export class CustomerTicketListComponent implements OnInit {
+export class CustomerTicketListComponent implements OnInit, AfterViewInit {
   tickets: Ticket[] = [];
+
+  // ✅ ViewChild for search input auto-focus
+  @ViewChild("searchInput") searchInput: ElementRef;
 
   // Pagination
   currentPage: number = 1;
@@ -105,6 +114,19 @@ export class CustomerTicketListComponent implements OnInit {
 
   ngAfterViewInit() {
     this.getListOfTickets();
+    // ✅ Auto-focus on search input after tickets load
+    this.focusSearchInput();
+  }
+
+  /**
+   * ✅ Focus on search input field
+   */
+  private focusSearchInput(): void {
+    setTimeout(() => {
+      if (this.searchInput && this.searchInput.nativeElement) {
+        this.searchInput.nativeElement.focus();
+      }
+    }, 500);
   }
 
   /**
@@ -209,33 +231,53 @@ export class CustomerTicketListComponent implements OnInit {
   }
 
   /**
-   * Handle pagination by page number
+   * ✅ UNIFIED: Handle all pagination operations
+   * @param page - Target page number
+   * @param scrollType - Scroll behavior: 'top' | 'listcard' | 'none'
    */
-  pagebyNum(ipage: number) {
-    this.currentPage = ipage;
-    document.getElementById("listcard")?.scrollIntoView({ behavior: "smooth" });
-    this.getListOfTickets();
-  }
-
-  /**
-   * Handle page change from pagination component
-   */
-  onPageChanged(pageIndex: number) {
-    this.currentPage = pageIndex;
-    document.getElementById("listcard")?.scrollIntoView({ behavior: "smooth" });
-    this.getListOfTickets();
-  }
-
-  /**
-   * Handle pagination
-   */
-  onPageChange(page: number): void {
+  changePage(page: number, scrollType: "top" | "listcard" | "none" = "top"): void {
+    // Validate page number
     if (page < 1 || page > this.totalPages) {
       return;
     }
+
+    // Set current page
     this.currentPage = page;
+
+    // Handle scroll based on type
+    if (scrollType === "top") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } else if (scrollType === "listcard") {
+      document.getElementById("listcard")?.scrollIntoView({ behavior: "smooth" });
+    }
+    // scrollType === 'none' does nothing
+
+    // Reload tickets
     this.getListOfTickets();
-    window.scrollTo(0, 0);
+  }
+
+  /**
+   * @deprecated Use changePage() instead
+   * Kept for backward compatibility with existing HTML templates
+   */
+  pagebyNum(ipage: number) {
+    this.changePage(ipage, "listcard");
+  }
+
+  /**
+   * @deprecated Use changePage() instead
+   * Kept for backward compatibility with existing HTML templates
+   */
+  onPageChanged(pageIndex: number) {
+    this.changePage(pageIndex, "listcard");
+  }
+
+  /**
+   * @deprecated Use changePage() instead
+   * Kept for backward compatibility with existing HTML templates
+   */
+  onPageChange(page: number): void {
+    this.changePage(page, "top");
   }
 
   /**
