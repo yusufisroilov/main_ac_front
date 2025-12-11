@@ -165,7 +165,7 @@
         <!-- ========================================= -->
         <!-- DELIVERY NOTIFICATIONS                    -->
         <!-- ========================================= -->
-        <li class="nav-item notification-dropdown-container">
+        <li class="nav-item notification-dropdown-container" *ngIf="isVisibleToManCus()">
           <a class="nav-link" href="javascript:void(0)" (click)="toggleDeliveryNotifications()"
             style="position: relative;">
             <i class="material-icons">local_shipping</i>

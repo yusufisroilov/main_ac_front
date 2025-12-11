@@ -1,0 +1,31 @@
+/* emu-deliveries.component.css */
+
+/* Additional component-specific styles can be added here */
+/* Most styles are inherited from the global theme */
+
+.table-responsive {
+  overflow-x: auto;
+}
+
+.text-monospace {
+  font-family: "Courier New", Courier, monospace;
+}
+
+.btn-link {
+  padding: 0;
+  border: none;
+  background: none;
+}
+
+.row-collected {
+  background-color: #cce5ff !important; /* light blue */
+}
+
+.row-sent {
+  background-color: #d4edda !important; /* light green */
+}
+
+.row-collected td,
+.row-sent td {
+  transition: background-color 0.2s ease;
+}

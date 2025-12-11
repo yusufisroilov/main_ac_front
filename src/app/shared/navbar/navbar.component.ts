@@ -55,6 +55,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   showTicketDropdown = false;
   showDeliveryDropdown = false;
 
+  isVisibleToManCustomer: boolean;
   private notificationCountSubscription: Subscription;
   private ticketNotificationSubscription: Subscription;
   private deliveryNotificationSubscription: Subscription;
@@ -185,6 +186,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
     // Start polling
     this.notificationService.startPolling();
+    // the delivery related noficitions are shown only customer and Manager
   }
 
   ngOnDestroy() {
@@ -419,5 +421,10 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   getPath() {
     return this.location.prepareExternalUrl(this.location.path());
+  }
+
+  isVisibleToManCus(): boolean {
+    const role = localStorage.getItem("role");
+    return role === "MANAGER" || role === "CLIENT";
   }
 }

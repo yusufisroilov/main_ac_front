@@ -16,7 +16,11 @@ import { FixedpluginModule } from "src/app/shared/fixedplugin/fixedplugin.module
 import { ComponentsModule } from "src/app/components/components.module";
 import { PaginationComponent } from "../shared/pagination/pagination.component";
 import { PaginationModule } from "../shared/pagination/pagination.module";
-import { InfoeachClientAdminComponent } from './infoeach-client-admin/infoeach-client-admin.component';
+import { InfoeachClientAdminComponent } from "./infoeach-client-admin/infoeach-client-admin.component";
+import { OwnCourierDeliveriesComponent } from "./own-courier-deliveries/own-courier-deliveries.component";
+import { PickupDeliveriesComponent } from "./pickup-deliveries/pickup-deliveries.component";
+import { EmuDeliveriesComponent } from "./emu-deliveries/emu-deliveries.component";
+import { YandexDeliveriesComponent } from "./yandex-deliveries/yandex-deliveries.component";
 
 @NgModule({
   imports: [
@@ -37,6 +41,10 @@ import { InfoeachClientAdminComponent } from './infoeach-client-admin/infoeach-c
     EmployeeFinanceComponent,
     DeliveriesListComponent2,
     InfoeachClientAdminComponent,
+    OwnCourierDeliveriesComponent,
+    PickupDeliveriesComponent,
+    EmuDeliveriesComponent,
+    YandexDeliveriesComponent,
   ],
 })
 export class UzbStaffModule {}

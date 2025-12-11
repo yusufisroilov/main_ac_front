@@ -615,6 +615,7 @@ export class ParclesListComponent implements OnInit, AfterViewInit {
                 (response) => {
                   if (response.json().status == "error") {
                     this.registredMessage = response.json().message;
+
                     // swal.showValidationMessage('Not Added, check: ' + this.registredMessage);
                     swal
                       .fire("Not Added", this.registredMessage, "error")

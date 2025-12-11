@@ -93,15 +93,27 @@
                                 </div>
 
 
-                                <div class="col-md-4 text-right">
+                                <div class="col-md-6 text-right">
                                     <button class="btn btn-primary btn-sm mr-2" (click)="applyFilters()"
                                         [disabled]="loadingDeliveries">
                                         <i class="material-icons">search</i>
                                         Qidirish
                                     </button>
-                                    <button class="btn btn-secondary btn-sm" (click)="clearFilters()">
+                                    <button class="btn btn-secondary btn-sm mr-2" (click)="clearFilters()">
                                         <i class="material-icons">clear</i>
                                         Tozalash
+                                    </button>
+                                    <button class="btn btn-success btn-sm mr-2" (click)="bulkUpdateTodayEmuDeliveries()"
+                                        [disabled]="bulkUpdating || loadingDeliveries">
+                                        <span *ngIf="bulkUpdating" class="spinner-border spinner-border-sm mr-1"></span>
+                                        <i class="material-icons" *ngIf="!bulkUpdating">done_all</i>
+                                        Hammasini yuborildi deb belgilash
+                                    </button>
+                                    <button class="btn btn-info btn-sm" (click)="downloadEmuExcelForToday()"
+                                        [disabled]="downloadingExcel || loadingDeliveries">
+                                        <span *ngIf="downloadingExcel" class="spinner-border spinner-border-sm mr-1"></span>
+                                        <i class="material-icons" *ngIf="!downloadingExcel">download</i>
+                                        Bugungi EMUlarni Yuklash
                                     </button>
                                 </div>
                             </div>
@@ -151,7 +163,10 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr *ngFor="let delivery of deliveries; let i = index">
+                                        <tr *ngFor="let delivery of deliveries; let i = index" [ngClass]="{
+                                            'row-collected': delivery.status == 'collected',
+                                             'row-sent': delivery.status == 'sent'
+                                        }">
                                             <td class="text-center">
                                                 <strong>{{currentPage * deliveriesPerPage + i + 1}}</strong>
                                             </td>
@@ -197,7 +212,7 @@
                                                 <!-- Quick Send Button (only show for "created" status) -->
                                                 <button class="btn btn-sm btn-success me-1"
                                                     (click)="quickUpdateToSent(delivery, $event)"
-                                                    *ngIf="delivery.status === 'collected'" title="Yuborish">
+                                                    *ngIf="delivery.status == 'collected'" title="Yuborish">
                                                     <i class="material-icons">send</i>
                                                 </button>
                                                 <!-- View Details Button -->

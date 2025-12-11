@@ -790,3 +790,15 @@ body.modal-open {
 .table-hover tbody tr {
   transition: background-color 0.2s ease;
 }
+.row-collected {
+  background-color: #cce5ff !important; /* light blue */
+}
+
+.row-sent {
+  background-color: #d4edda !important; /* light green */
+}
+
+.row-collected td,
+.row-sent td {
+  transition: background-color 0.2s ease;
+}

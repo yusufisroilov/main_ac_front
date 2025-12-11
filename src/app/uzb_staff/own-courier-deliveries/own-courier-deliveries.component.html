@@ -1,0 +1,222 @@
+<!-- own-courier-deliveries.component.html -->
+<div class="main-content">
+    <div class="container-fluid">
+
+        <!-- Page Header -->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header card-header-icon card-header-warning">
+                        <div class="card-icon">
+                            <i class="material-icons">motorcycle</i>
+                        </div>
+                        <h4 class="card-title">Bizning Kuryer Yetkazishlar</h4>
+                        <p class="card-category">Bizning kuryer xizmati uchun qutillarni qayta ishlash</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter Section -->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header card-header-info">
+                        <h4 class="card-title">Filtrlar</h4>
+                        <p class="card-category">Yetkazishlarni filtrlash</p>
+                    </div>
+                    <div class="card-body">
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="bmd-label-floating">Vaqt Filtri</label>
+                                    <select class="form-control" [(ngModel)]="selectedDateFilter"
+                                        (change)="applyFilters()">
+                                        <option value="today">Bugun</option>
+                                        <option value="yesterday">Kecha</option>
+                                        <option value="week">Bu hafta</option>
+                                        <option value="month">Bu oy</option>
+                                        <option value="all">Barchasi</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="bmd-label-floating">Holat Filtri</label>
+                                    <select class="form-control" [(ngModel)]="selectedStatusFilter"
+                                        (change)="applyFilters()">
+                                        <option value="">Barchasi</option>
+                                        <option value="created">Yaratilgan</option>
+                                        <option value="sent">Yuborilgan</option>
+                                        <option value="delivered">Yetkazilgan</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <button class="btn btn-primary mt-3" (click)="applyFilters()"
+                                    [disabled]="loadingDeliveries">
+                                    <span *ngIf="loadingDeliveries"
+                                        class="spinner-border spinner-border-sm mr-1"></span>
+                                    <i class="material-icons" *ngIf="!loadingDeliveries">search</i>
+                                    Yangilash
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Deliveries List -->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header card-header-success">
+                        <h4 class="card-title">
+                            Bizning Kuryer Yetkazishlar
+                        </h4>
+                        <p class="card-category">
+                            {{selectedDateFilterText}} uchun {{totalDeliveries}} ta kuryer yetkazish
+                        </p>
+                    </div>
+                    <div class="card-body">
+
+                        <!-- Loading indicator -->
+                        <div *ngIf="loadingDeliveries" class="text-center p-4">
+                            <div class="spinner-border text-primary" role="status"></div>
+                            <p class="mt-2">Yetkazishlar yuklanmoqda...</p>
+                        </div>
+
+                        <!-- Deliveries table -->
+                        <div *ngIf="!loadingDeliveries && deliveries.length > 0">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead class="text-primary">
+                                        <tr>
+                                            <th>Quti Barkod</th>
+                                            <th>Mijoz</th>
+                                            <th>Qutillar</th>
+                                            <th>Telefon</th>
+                                            <th>Manzil</th>
+                                            <th>Holat</th>
+                                            <th>Yaratilgan</th>
+                                            <th>Amallar</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let delivery of deliveries" [ngClass]="{
+                                             'row-sent': delivery.status == 'sent'
+                                        }">
+                                            <td><code>{{delivery.barcode}}</code></td>
+                                            <td><strong>K{{delivery.owner_id}}</strong></td>
+                                            <td>{{delivery.total_packages}} ta</td>
+                                            <td>{{delivery.customer_phone}}</td>
+                                            <td>
+                                                <small
+                                                    *ngIf="delivery.delivery_address">{{delivery.delivery_address}}</small>
+                                                <small *ngIf="!delivery.delivery_address" class="text-muted">-</small>
+                                            </td>
+                                            <td>
+                                                <span class="badge" [class]="getStatusBadgeClass(delivery.status)">
+                                                    {{getStatusText(delivery.status)}}
+                                                </span>
+                                            </td>
+                                            <td><small>{{delivery.created_date | date:'short'}}</small></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-info mr-1"
+                                                    (click)="viewDeliveryDetails(delivery)">
+                                                    <i class="material-icons">visibility</i>
+                                                    Ko'rish
+                                                </button>
+
+                                                <!-- Berdim button -->
+                                                <button *ngIf="canProcessDelivery(delivery)"
+                                                    class="btn btn-sm btn-primary" (click)="processDelivery(delivery)">
+                                                    <i class="material-icons">send</i>
+                                                    Berdim
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- No deliveries message -->
+                        <div *ngIf="!loadingDeliveries && deliveries.length === 0" class="text-center p-4">
+                            <i class="material-icons" style="font-size: 48px; color: #ccc;">local_shipping</i>
+                            <h5 class="mt-2">Yetkazish topilmadi</h5>
+                            <p class="text-muted">Tanlangan filtrlar bo'yicha kuryer yetkazish mavjud emas</p>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Delivery Details Modal -->
+<div class="modal fade" id="deliveryDetailsModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content" *ngIf="selectedDelivery">
+            <div class="modal-header">
+                <h5 class="modal-title">Yetkazish Tafsilotlari - {{selectedDelivery.barcode}}</h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Asosiy Ma'lumotlar</h6>
+                        <p><strong>Mijoz ID:</strong> K{{selectedDelivery.owner_id}}</p>
+                        <p><strong>Telefon:</strong> {{selectedDelivery.customer_phone}}</p>
+                        <p><strong>Yetkazish turi:</strong> Bizning Kuryer</p>
+                        <p><strong>Qutillar soni:</strong> {{selectedDelivery.total_packages}} ta</p>
+                        <p><strong>Holat:</strong>
+                            <span class="badge" [class]="getStatusBadgeClass(selectedDelivery.status)">
+                                {{getStatusText(selectedDelivery.status)}}
+                            </span>
+                        </p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Qo'shimcha Ma'lumotlar</h6>
+                        <p *ngIf="selectedDelivery.delivery_address">
+                            <strong>Manzil:</strong> {{selectedDelivery.delivery_address}}
+                        </p>
+                        <p *ngIf="selectedDelivery.delivery_fee && selectedDelivery.delivery_fee > 0">
+                            <strong>Yetkazish to'lovi:</strong> {{selectedDelivery.delivery_fee | number}} so'm
+                        </p>
+                        <p><strong>Yaratilgan:</strong> {{selectedDelivery.created_date | date:'short'}}</p>
+                        <p *ngIf="selectedDelivery.sent_date">
+                            <strong>Yuborilgan:</strong> {{selectedDelivery.sent_date | date:'short'}}
+                        </p>
+                        <p *ngIf="selectedDelivery.delivered_date">
+                            <strong>Yetkazilgan:</strong> {{selectedDelivery.delivered_date | date:'short'}}
+                        </p>
+                    </div>
+                </div>
+                <div class="row" *ngIf="selectedDelivery.notes">
+                    <div class="col-md-12">
+                        <h6>Izohlar</h6>
+                        <p class="alert alert-info">{{selectedDelivery.notes}}</p>
+                    </div>
+                </div>
+                <div class="row"
+                    *ngIf="selectedDelivery.package_barcodes && selectedDelivery.package_barcodes.length > 0">
+                    <div class="col-md-12">
+                        <h6>Quti Barkodlari</h6>
+                        <p><small class="text-monospace">{{selectedDelivery.package_barcodes.join(', ')}}</small></p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Yopish</button>
+            </div>
+        </div>
+    </div>
+</div>

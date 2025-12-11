@@ -109,6 +109,8 @@ export class DeliveriesListComponent2 {
   loadingBranches: boolean = false;
   creatingDelivery: boolean = false;
   updatingStatus: boolean = false;
+  bulkUpdating: boolean = false;
+  downloadingExcel: boolean = false;
 
   constructor(
     public authService: AuthService,
@@ -350,6 +352,157 @@ export class DeliveriesListComponent2 {
     this.customStartDate = "today";
     this.customEndDate = "";
     this.applyFilters();
+  }
+
+  // Bulk update today's EMU deliveries to 'sent' status
+  bulkUpdateTodayEmuDeliveries() {
+    swal
+      .fire({
+        title: "Tasdiqlash",
+        text: "Bugungi barcha EMU yetkazishlarni 'Yuborildi' holatiga o'tkazmoqchimisiz?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Ha, yuborish",
+        cancelButtonText: "Bekor qilish",
+        customClass: {
+          confirmButton: "btn btn-success",
+          cancelButton: "btn btn-secondary",
+        },
+        buttonsStyling: false,
+      })
+      .then((result) => {
+        if (result.isConfirmed) {
+          this.bulkUpdating = true;
+
+          this.http
+            .post(
+              GlobalVars.baseUrl + "/deliveries/emu/bulk-update-today",
+              {},
+              this.options
+            )
+            .subscribe(
+              (response) => {
+                const result = response.json();
+                if (result.status === "success") {
+                  const updatedCount = result.data.updated_count || 0;
+                  const packagesCount = result.data.total_packages_updated || 0;
+
+                  swal.fire({
+                    icon: "success",
+                    title: "Muvaffaqiyatli!",
+                    html: `<strong>${updatedCount}</strong> ta yetkazish yuborildi<br>
+                           <small class="text-muted">${packagesCount} ta quti yangilandi</small>`,
+                    customClass: {
+                      confirmButton: "btn btn-success",
+                    },
+                    buttonsStyling: false,
+                  });
+
+                  // Reload deliveries list
+                  this.loadDeliveries();
+                } else {
+                  swal.fire({
+                    icon: "info",
+                    title: "Ma'lumot",
+                    text: result.message || "Yetkazishlar topilmadi",
+                    customClass: {
+                      confirmButton: "btn btn-info",
+                    },
+                    buttonsStyling: false,
+                  });
+                }
+                this.bulkUpdating = false;
+              },
+              (error) => {
+                swal.fire(
+                  "Xatolik",
+                  "Yetkazishlarni yangilashda xatolik yuz berdi",
+                  "error"
+                );
+                this.bulkUpdating = false;
+                if (error.status == 403) {
+                  this.authService.logout();
+                }
+              }
+            );
+        }
+      });
+  }
+
+  // Download today's EMU deliveries as Excel file
+  downloadEmuExcelForToday() {
+    this.downloadingExcel = true;
+
+    // Use HttpClient for proper Blob handling
+    const headers = new HttpHeaders({
+      Authorization: localStorage.getItem("token") || "",
+    });
+
+    this.httpClient
+      .get(GlobalVars.baseUrl + "/deliveries/emu/export-excel-today", {
+        headers: headers,
+        responseType: "blob", // Important: Handle response as Blob
+      })
+      .subscribe(
+        (blob: Blob) => {
+          // Create download link
+          const url = window.URL.createObjectURL(blob);
+          const link = document.createElement("a");
+          link.href = url;
+
+          // Generate filename with timestamp
+          const now = new Date();
+          const timestamp = now
+            .toISOString()
+            .replace(/:/g, "_")
+            .replace(/\..+/, "");
+          link.download = `EMU_Deliveries_${timestamp}.xlsx`;
+
+          // Trigger download
+          document.body.appendChild(link);
+          link.click();
+
+          // Cleanup
+          document.body.removeChild(link);
+          window.URL.revokeObjectURL(url);
+
+          // Show success message
+          swal.fire({
+            icon: "success",
+            title: "Yuklandi!",
+            text: "Excel fayl muvaffaqiyatli yuklandi",
+            timer: 2000,
+            showConfirmButton: false,
+            toast: true,
+            position: "top-end",
+          });
+
+          this.downloadingExcel = false;
+        },
+        (error) => {
+          if (error.status === 404) {
+            swal.fire({
+              icon: "info",
+              title: "Ma'lumot",
+              text: "Bugun uchun EMU yetkazishlari topilmadi",
+              customClass: {
+                confirmButton: "btn btn-info",
+              },
+              buttonsStyling: false,
+            });
+          } else {
+            swal.fire(
+              "Xatolik",
+              "Excel faylni yuklashda xatolik yuz berdi",
+              "error"
+            );
+          }
+          this.downloadingExcel = false;
+          if (error.status == 403) {
+            this.authService.logout();
+          }
+        }
+      );
   }
 
   // Pagination

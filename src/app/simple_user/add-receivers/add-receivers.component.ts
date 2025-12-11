@@ -122,7 +122,10 @@ export class AddReceiversComponent implements OnInit, OnChanges, AfterViewInit {
 
     this.checkPassport = false;
 
-    if (localStorage.getItem("role") == "MANAGER") {
+    if (
+      localStorage.getItem("role") == "MANAGER" ||
+      localStorage.getItem("role") == "ADMIN"
+    ) {
       this.showOnlyForManagers = true;
     }
   }

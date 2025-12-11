@@ -108,6 +108,30 @@ export const EmployeeROUTE: RouteInfo[] = [
     icontype: "local_shipping",
   },
   {
+    path: "/uzs/emu-deliveries",
+    title: "Bugungi EMU lar",
+    type: "link",
+    icontype: "airport_shuttle",
+  },
+  {
+    path: "/uzs/yandex-deliveries",
+    title: "Bugungi Yandex lar",
+    type: "link",
+    icontype: "local_taxi",
+  },
+  {
+    path: "/uzs/pickup-deliveries",
+    title: "Bugungi Mijoz olib Ketgan",
+    type: "link",
+    icontype: "how_to_reg",
+  },
+  {
+    path: "/uzs/courier-deliveries",
+    title: "Bugungi Kuryer Yetkazmalari",
+    type: "link",
+    icontype: "delivery_dining",
+  },
+  {
     path: "/uzm/tickets-list",
     title: "Murojaatlar Ro'yxati",
     type: "link",

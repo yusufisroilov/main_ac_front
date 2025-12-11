@@ -1,0 +1,317 @@
+<!-- emu-deliveries.component.html -->
+<div class="main-content">
+    <div class="container-fluid">
+
+        <!-- Page Header -->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header card-header-icon card-header-primary">
+                        <div class="card-icon">
+                            <i class="material-icons">local_post_office</i>
+                        </div>
+                        <h4 class="card-title">EMU Post Yetkazishlar</h4>
+                        <p class="card-category">EMU pochta xizmati uchun qutillarni qayta ishlash</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter Section -->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header card-header-info">
+                        <h4 class="card-title">Filtrlar</h4>
+                        <p class="card-category">Yetkazishlarni filtrlash</p>
+                    </div>
+                    <div class="card-body">
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="bmd-label-floating">Vaqt Filtri</label>
+                                    <select class="form-control" [(ngModel)]="selectedDateFilter"
+                                        (change)="applyFilters()">
+                                        <option value="today">Bugun</option>
+                                        <option value="yesterday">Kecha</option>
+                                        <option value="week">Bu hafta</option>
+                                        <option value="month">Bu oy</option>
+                                        <option value="all">Barchasi</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="bmd-label-floating">Holat Filtri</label>
+                                    <select class="form-control" [(ngModel)]="selectedStatusFilter"
+                                        (change)="applyFilters()">
+                                        <option value="">Barchasi</option>
+                                        <option value="created">Yaratilgan</option>
+                                        <option value="collected">Qabul qilingan</option>
+                                        <option value="sent">Yuborilgan</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <button class="btn btn-primary mt-3" (click)="applyFilters()"
+                                    [disabled]="loadingDeliveries">
+                                    <span *ngIf="loadingDeliveries"
+                                        class="spinner-border spinner-border-sm mr-1"></span>
+                                    <i class="material-icons" *ngIf="!loadingDeliveries">search</i>
+                                    Yangilash
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Deliveries List -->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header card-header-success">
+                        <h4 class="card-title">
+                            EMU Yetkazishlar
+                        </h4>
+                        <p class="card-category">
+                            {{selectedDateFilterText}} uchun {{totalDeliveries}} ta EMU yetkazish
+                        </p>
+                    </div>
+                    <div class="card-body">
+
+                        <!-- Loading indicator -->
+                        <div *ngIf="loadingDeliveries" class="text-center p-4">
+                            <div class="spinner-border text-primary" role="status"></div>
+                            <p class="mt-2">Yetkazishlar yuklanmoqda...</p>
+                        </div>
+
+                        <!-- Deliveries table -->
+                        <div *ngIf="!loadingDeliveries && deliveries.length > 0">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead class="text-primary">
+                                        <tr>
+                                            <th>Quti Barkod</th>
+                                            <th>Mijoz</th>
+                                            <th>Qutillar</th>
+                                            <th>Og'irligi</th>
+                                            <th>Telefon</th>
+                                            <th>Holat</th>
+                                            <th>Yaratilgan</th>
+                                            <th>Amallar</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let delivery of deliveries" [ngClass]="{
+                                            'row-collected': delivery.status == 'collected',
+                                             'row-sent': delivery.status == 'sent'
+                                        }">
+                                            <td><code>{{delivery.barcode}}</code></td>
+                                            <td><strong>K{{delivery.owner_id}}</strong></td>
+                                            <td>{{delivery.total_packages}} ta</td>
+                                            <td>
+                                                <span *ngIf="delivery.weight">{{delivery.weight}} kg</span>
+                                                <span *ngIf="!delivery.weight" class="text-muted">-</span>
+                                                <button *ngIf="canEditWeight(delivery)"
+                                                    class="btn btn-sm btn-link text-primary"
+                                                    (click)="editWeight(delivery)">
+                                                    <i class="material-icons">edit</i>
+                                                </button>
+                                            </td>
+                                            <td>{{delivery.customer_phone}}</td>
+                                            <td>
+                                                <span class="badge" [class]="getStatusBadgeClass(delivery.status)">
+                                                    {{getStatusText(delivery.status)}}
+                                                </span>
+                                            </td>
+                                            <td><small>{{delivery.created_date | date:'short'}}</small></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-info mr-1"
+                                                    (click)="viewDeliveryDetails(delivery)">
+                                                    <i class="material-icons">visibility</i>
+                                                    Ko'rish
+                                                </button>
+
+                                                <!-- EMU: Oldim button (requires weight) -->
+                                                <button *ngIf="canProcessDelivery(delivery)"
+                                                    class="btn btn-sm btn-success"
+                                                    (click)="processEmuDelivery(delivery)">
+                                                    <i class="material-icons">inventory</i>
+                                                    Oldim
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- No deliveries message -->
+                        <div *ngIf="!loadingDeliveries && deliveries.length === 0" class="text-center p-4">
+                            <i class="material-icons" style="font-size: 48px; color: #ccc;">local_shipping</i>
+                            <h5 class="mt-2">Yetkazish topilmadi</h5>
+                            <p class="text-muted">Tanlangan filtrlar bo'yicha EMU yetkazish mavjud emas</p>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Weight Input Modal for EMU -->
+<div class="modal fade" id="weightInputModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Og'irlik Kiritish</h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row" *ngIf="selectedDeliveryForWeight">
+                    <div class="col-md-12">
+                        <p><strong>Yetkazish ID:</strong> {{selectedDeliveryForWeight.barcode}}</p>
+                        <p><strong>Mijoz:</strong> K{{selectedDeliveryForWeight.owner_id}}</p>
+                        <p><strong>Qutillar soni:</strong> {{selectedDeliveryForWeight.total_packages}} ta</p>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="bmd-label-floating">Umumiy og'irlik (kg) *</label>
+                    <input type="number" class="form-control" [(ngModel)]="enteredWeight"
+                        placeholder="Og'irlikni kiriting" min="0" step="0.1" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="bmd-label-floating">Izoh</label>
+                    <textarea class="form-control" [(ngModel)]="weightNotes" rows="2"
+                        placeholder="Qo'shimcha izoh (ixtiyoriy)"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                    Bekor qilish
+                </button>
+                <button type="button" class="btn btn-success" (click)="saveWeightAndProcess()"
+                    [disabled]="!enteredWeight || processingDelivery">
+                    <span *ngIf="processingDelivery" class="spinner-border spinner-border-sm mr-1"></span>
+                    <i class="material-icons" *ngIf="!processingDelivery">save</i>
+                    Saqlash va Qabul qilish
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Weight Modal -->
+<div class="modal fade" id="editWeightModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Og'irlikni Tahrirlash</h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row" *ngIf="selectedDeliveryForWeight">
+                    <div class="col-md-12">
+                        <p><strong>Yetkazish ID:</strong> {{selectedDeliveryForWeight.barcode}}</p>
+                        <p><strong>Hozirgi og'irlik:</strong> {{selectedDeliveryForWeight.weight}} kg</p>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="bmd-label-floating">Yangi og'irlik (kg) *</label>
+                    <input type="number" class="form-control" [(ngModel)]="enteredWeight"
+                        placeholder="Yangi og'irlikni kiriting" min="0" step="0.1" required>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                    Bekor qilish
+                </button>
+                <button type="button" class="btn btn-warning" (click)="updateWeight()"
+                    [disabled]="!enteredWeight || processingDelivery">
+                    <span *ngIf="processingDelivery" class="spinner-border spinner-border-sm mr-1"></span>
+                    <i class="material-icons" *ngIf="!processingDelivery">edit</i>
+                    Yangilash
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delivery Details Modal -->
+<div class="modal fade" id="deliveryDetailsModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content" *ngIf="selectedDelivery">
+            <div class="modal-header">
+                <h5 class="modal-title">Yetkazish Tafsilotlari - {{selectedDelivery.barcode}}</h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Asosiy Ma'lumotlar</h6>
+                        <p><strong>Mijoz ID:</strong> K{{selectedDelivery.owner_id}}</p>
+                        <p><strong>Telefon:</strong> {{selectedDelivery.customer_phone}}</p>
+                        <p><strong>Yetkazish turi:</strong> EMU Post</p>
+                        <p><strong>Qutillar soni:</strong> {{selectedDelivery.total_packages}} ta</p>
+                        <p><strong>Og'irligi:</strong>
+                            <span *ngIf="selectedDelivery.weight">{{selectedDelivery.weight}} kg</span>
+                            <span *ngIf="!selectedDelivery.weight" class="text-muted">Kiritilmagan</span>
+                        </p>
+                        <p><strong>Holat:</strong>
+                            <span class="badge" [class]="getStatusBadgeClass(selectedDelivery.status)">
+                                {{getStatusText(selectedDelivery.status)}}
+                            </span>
+                        </p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Qo'shimcha Ma'lumotlar</h6>
+                        <p *ngIf="selectedDelivery.delivery_address">
+                            <strong>Manzil:</strong> {{selectedDelivery.delivery_address}}
+                        </p>
+                        <p *ngIf="selectedDelivery.delivery_fee && selectedDelivery.delivery_fee > 0">
+                            <strong>Yetkazish to'lovi:</strong> {{selectedDelivery.delivery_fee | number}} so'm
+                        </p>
+                        <p><strong>Yaratilgan:</strong> {{selectedDelivery.created_date | date:'short'}}</p>
+                        <p *ngIf="selectedDelivery.collected_date">
+                            <strong>Qabul qilingan:</strong> {{selectedDelivery.collected_date | date:'short'}}
+                        </p>
+                        <p *ngIf="selectedDelivery.sent_date">
+                            <strong>Yuborilgan:</strong> {{selectedDelivery.sent_date | date:'short'}}
+                        </p>
+                    </div>
+                </div>
+                <div class="row" *ngIf="selectedDelivery.notes">
+                    <div class="col-md-12">
+                        <h6>Izohlar</h6>
+                        <p class="alert alert-info">{{selectedDelivery.notes}}</p>
+                    </div>
+                </div>
+                <div class="row"
+                    *ngIf="selectedDelivery.package_barcodes && selectedDelivery.package_barcodes.length > 0">
+                    <div class="col-md-12">
+                        <h6>Quti Barkodlari</h6>
+                        <p><small class="text-monospace">{{selectedDelivery.package_barcodes.join(', ')}}</small></p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Yopish</button>
+            </div>
+        </div>
+    </div>
+</div>

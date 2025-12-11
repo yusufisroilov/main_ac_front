@@ -3,11 +3,18 @@ import { AuthGuard } from "./services/auth-guard.service";
 import { AddReceiversService } from "./simple_user/add-receivers/add-receivers.service";
 import { ReceiverService } from "./simple_user/receivers/receivers.service";
 import { AuthService } from "./pages/login/auth.service";
-import { NgModule } from "@angular/core";
+import { NgModule, LOCALE_ID } from "@angular/core";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { RouterModule } from "@angular/router";
 import { HttpClientModule } from "@angular/common/http";
-import { APP_BASE_HREF, DatePipe } from "@angular/common";
+import {
+  APP_BASE_HREF,
+  DatePipe,
+  DATE_PIPE_DEFAULT_OPTIONS,
+  registerLocaleData,
+} from "@angular/common";
+import localeUz from "@angular/common/locales/uz";
+
 import { FormsModule } from "@angular/forms";
 import { CommonModule } from "@angular/common";
 
@@ -119,7 +126,7 @@ import { PaginationModule } from "./shared/pagination/pagination.module";
   declarations: [],
 })
 export class MaterialModule {}
-
+registerLocaleData(localeUz, "uz-UZ");
 @NgModule({
   imports: [
     CommonModule,
@@ -150,6 +157,16 @@ export class MaterialModule {}
     DeliveryService,
     DatePipe,
     MdTableComponent,
+    // 🌍 Global locale: Uzbek
+    { provide: LOCALE_ID, useValue: "uz-UZ" },
+    // ⏰ Global timezone: Tashkent (UTC+5)
+    {
+      provide: DATE_PIPE_DEFAULT_OPTIONS,
+      useValue: {
+        timezone: "+0500", // Tashkent = UTC+5
+        // optionally: dateFormat: 'short' or 'medium'
+      },
+    },
   ],
 
   bootstrap: [AppComponent],
