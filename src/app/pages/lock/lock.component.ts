@@ -77,7 +77,7 @@ export class LockComponent implements OnInit, OnDestroy {
           this.isLoading = false;
 
           if (response.json().status == "ok") {
-            console.log("repsonse ", response.json());
+            // console.log("repsonse ", response.json());
 
             this.showResults = true;
             this.showError = false;

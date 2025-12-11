@@ -206,9 +206,9 @@ export class AdminTicketDetailComponent implements OnInit {
           const data = response.json();
           this.ticket = data.ticket;
 
-          // 🔍 DEBUG: Check message attachments structure
-          console.log("=== TICKET DATA ===");
-          console.log("Full ticket:", this.ticket);
+          // // 🔍 DEBUG: Check message attachments structure
+          // console.log("=== TICKET DATA ===");
+          // console.log("Full ticket:", this.ticket);
 
           if (this.ticket && this.ticket.messages) {
             this.ticket.messages.forEach((msg, index) => {
