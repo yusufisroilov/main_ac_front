@@ -119,14 +119,77 @@
   font-size: 13px;
 }
 
+.package-weight {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  color: #ff9800 !important;
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+.package-weight .material-icons {
+  font-size: 16px;
+}
+
 .package-label {
+  margin-bottom: 0.75rem;
+}
+
+/* Consignment tags container */
+.package-consignments {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+  margin-bottom: 0.75rem;
+}
+
+.consignment-tag {
+  display: inline-block;
+  background: #e3f2fd;
+  color: #1976d2;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  border: 1px solid #90caf9;
+}
+
+/* Tie group ID */
+.tie-group-id {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  color: #7b1fa2;
+  font-size: 11px;
+  font-weight: 600;
+  background: #f3e5f5;
+  padding: 6px 10px;
+  border-radius: 8px;
   margin-bottom: 0.5rem;
 }
 
-.package-consignment {
-  display: block;
-  color: #999;
-  font-size: 12px;
+.tie-group-id .material-icons {
+  font-size: 14px;
+}
+
+/* Barcode count */
+.barcode-count {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  color: #666;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.barcode-count .material-icons {
+  font-size: 14px;
+  color: #9c27b0;
 }
 
 /* Selection Summary */
@@ -175,6 +238,112 @@
 .form-control:focus {
   border-color: #9c27b0;
   box-shadow: 0 0 0 0.2rem rgba(156, 39, 176, 0.15);
+}
+
+/* Address Type Selector */
+.address-type-selector {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.address-type-option {
+  background: #fff;
+  border: 2px solid #e0e0e0;
+  border-radius: 10px;
+  padding: 1rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.address-type-option:hover {
+  border-color: #9c27b0;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.address-type-option.active {
+  border-color: #4caf50;
+  background: #e8f5e9;
+}
+
+.address-type-option .material-icons {
+  font-size: 32px;
+  color: #9c27b0;
+}
+
+.address-type-option.active .material-icons {
+  color: #4caf50;
+}
+
+.address-type-option span {
+  font-size: 14px;
+  font-weight: 600;
+  color: #3c4858;
+}
+
+/* Address Input Container */
+.address-input-container {
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.form-hint {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #999;
+  font-size: 13px;
+  margin-top: 0.5rem;
+}
+
+.form-hint .material-icons {
+  font-size: 16px;
+  color: #2196f3;
+}
+
+/* Map Instructions */
+.map-instructions {
+  background: #e3f2fd;
+  border: 1px solid #90caf9;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-top: 1rem;
+}
+
+.map-instructions strong {
+  display: block;
+  color: #1976d2;
+  margin-bottom: 0.75rem;
+  font-size: 14px;
+}
+
+.map-instructions ol {
+  margin: 0;
+  padding-left: 1.5rem;
+}
+
+.map-instructions li {
+  color: #424242;
+  font-size: 13px;
+  margin-bottom: 0.5rem;
+  line-height: 1.5;
 }
 
 /* Delivery Options - Simplified */

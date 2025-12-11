@@ -76,6 +76,10 @@ export class CustomerRequestsComponent implements OnInit {
   deliveryNotes: string;
   isUrgent: boolean;
 
+  // Map location feature
+  addressInputType: "text" | "map" = "text"; // 'text' or 'map'
+  mapLocationUrl: string;
+
   // Data properties
   regions: any[];
   branches: any[];
@@ -136,6 +140,8 @@ export class CustomerRequestsComponent implements OnInit {
     this.selectedEMUBranch = null;
     this.deliveryNotes = "";
     this.isUrgent = false;
+    this.addressInputType = "text";
+    this.mapLocationUrl = "";
 
     // Initialize loading states
     this.loadingPackages = false;
@@ -193,7 +199,7 @@ export class CustomerRequestsComponent implements OnInit {
           const result = response.json();
           if (result.status === "success") {
             this.customerPackages = result.data.package_groups || [];
-            // console.log("Loaded customer packages:", this.customerPackages);
+            console.log("Loaded customer packages:", this.customerPackages);
           } else {
             swal.fire(
               "Xatolik",
@@ -444,12 +450,16 @@ export class CustomerRequestsComponent implements OnInit {
       return;
     }
 
-    if (
-      (this.deliveryType === "Yandex" || this.deliveryType === "Own-Courier") &&
-      !this.deliveryAddress.trim()
-    ) {
-      swal.fire("Xatolik", "Yetkazish manzilini kiriting", "error");
-      return;
+    // Validate address based on input type
+    if (this.deliveryType === "Yandex" || this.deliveryType === "Own-Courier") {
+      if (this.addressInputType === "text" && !this.deliveryAddress.trim()) {
+        swal.fire("Xatolik", "Yetkazish manzilini kiriting", "error");
+        return;
+      }
+      if (this.addressInputType === "map" && !this.mapLocationUrl.trim()) {
+        swal.fire("Xatolik", "Xarita manzilini kiriting", "error");
+        return;
+      }
     }
 
     this.submittingRequest = true;
@@ -468,8 +478,11 @@ export class CustomerRequestsComponent implements OnInit {
     // FIXED: Send barcodes as JSON array string (not double-encoded)
     formData.append("package_barcodes", JSON.stringify(this.selectedPackages));
 
-    if (this.deliveryAddress.trim()) {
+    // Send address based on input type (text or map URL)
+    if (this.addressInputType === "text" && this.deliveryAddress.trim()) {
       formData.append("delivery_address", this.deliveryAddress.trim());
+    } else if (this.addressInputType === "map" && this.mapLocationUrl.trim()) {
+      formData.append("delivery_address", this.mapLocationUrl.trim());
     }
 
     if (this.selectedBranchId) {
@@ -690,6 +703,8 @@ export class CustomerRequestsComponent implements OnInit {
     this.deliveryType = "Pick-up";
     this.customerPhone = "";
     this.deliveryAddress = "";
+    this.mapLocationUrl = "";
+    this.addressInputType = "text";
     this.selectedEMUBranch = null;
     this.deliveryNotes = "";
     this.isUrgent = false;
