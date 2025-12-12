@@ -138,32 +138,44 @@ export class YandexDeliveriesComponent implements OnInit {
     swal
       .fire({
         title: "Tasdiqlash",
-        text: `${delivery.barcode} yetkazishni Yandex kuryer xizmatiga topshirdingizmi?`,
+        html: `
+        <p>${delivery.barcode} Yandex kuryerga topshirildimi?</p>
+        <input id="note-input" class="swal2-input" placeholder="Izoh kiriting..." />
+      `,
         icon: "question",
         showCancelButton: true,
-        confirmButtonText: "Ha, topshirdim",
+        confirmButtonText: "Ha",
         cancelButtonText: "Bekor qilish",
         customClass: {
           confirmButton: "btn btn-success",
           cancelButton: "btn btn-secondary",
         },
         buttonsStyling: false,
+
+        preConfirm: () => {
+          const input = document.getElementById(
+            "note-input"
+          ) as HTMLInputElement;
+          return input?.value?.trim() || "";
+        },
       })
       .then((result) => {
         if (result.isConfirmed) {
-          this.updateDeliveryStatus(delivery, "sent");
+          const note = result.value;
+          this.updateDeliveryStatus(delivery, "sent", note);
         }
       });
   }
 
   // Update delivery status
-  updateDeliveryStatus(delivery: Delivery, newStatus: string) {
+  updateDeliveryStatus(delivery: Delivery, newStatus: string, notes?: string) {
     this.processingDelivery = true;
 
     const updateData = {
       new_status: newStatus,
       processed_by_employee: this.currentEmployee,
       sent_date: new Date().toISOString(),
+      notes: notes,
     };
 
     this.http

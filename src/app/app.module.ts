@@ -159,11 +159,11 @@ registerLocaleData(localeUz, "uz-UZ");
     MdTableComponent,
     // 🌍 Global locale: Uzbek
     { provide: LOCALE_ID, useValue: "uz-UZ" },
-    // ⏰ Global timezone: Tashkent (UTC+5)
+    // ⏰ Global timezone: UTC+10
     {
       provide: DATE_PIPE_DEFAULT_OPTIONS,
       useValue: {
-        timezone: "+0500", // Tashkent = UTC+5
+        timezone: "+1000", // UTC+10
         // optionally: dateFormat: 'short' or 'medium'
       },
     },
