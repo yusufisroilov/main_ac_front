@@ -5,89 +5,88 @@
         <!-- Page Header -->
         <div class="row">
             <div class="col-md-12">
-                <div class="card">
-                    <div class="card-header card-header-icon card-header-primary">
-                        <div class="card-icon">
-                            <i class="material-icons">assignment</i>
-                        </div>
-                        <h4 class="card-title">Yetkazish So'rovlari</h4>
-                        <p class="card-category">Mijozlardan kelgan yetkazish so'rovlarini boshqarish</p>
-                    </div>
-                    <div class="card-body">
-
-                        <!-- Compact Filters -->
-                        <div class="filters-section mb-3">
-                            <div class="row align-items-end">
-                                <div class="col-md-3 col-sm-6">
-                                    <div class="form-group mb-0">
-                                        <label class="filter-label">Yetkazish Turi</label>
-                                        <select class="form-control form-control-sm" [(ngModel)]="filterDeliveryType"
-                                            (change)="applyFilters()">
-                                            <option value="">Barchasi</option>
-                                            <option value="EMU">EMU</option>
-                                            <option value="Yandex">Yandex</option>
-                                            <option value="Own-Courier">Kuryer</option>
-                                            <option value="Pick-up">Olib ketish</option>
-                                        </select>
-                                    </div>
+                <div class="card header-shell mb-3">
+                    <div class="card-header compact-header">
+                        <div class="header-main">
+                            <div class="title-stack">
+                                <div class="card-icon tight-icon">
+                                    <i class="material-icons">assignment</i>
                                 </div>
-
-                                <div class="col-md-2 col-sm-6">
-                                    <div class="form-group mb-0">
-                                        <label class="filter-label">Shoshilinch</label>
-                                        <select class="form-control form-control-sm" [(ngModel)]="filterUrgent"
-                                            (change)="applyFilters()">
-                                            <option value="">Barchasi</option>
-                                            <option value="true">Shoshilinch</option>
-                                            <option value="false">Oddiy</option>
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-3 col-sm-6">
-                                    <div class="form-group mb-0">
-                                        <label class="filter-label">Mijoz ID</label>
-                                        <input type="text" class="form-control form-control-sm"
-                                            [(ngModel)]="filterCustomerId" placeholder="ID kiriting"
-                                            (keyup.enter)="applyFilters()">
-                                    </div>
-                                </div>
-
-                                <div class="col-md-4 col-sm-6">
-                                    <div class="form-group mb-0">
-                                        <button class="btn btn-primary btn-sm mr-2" (click)="applyFilters()"
-                                            [disabled]="loadingRequests">
-                                            <i class="material-icons">search</i>
-                                            Qidirish
-                                        </button>
-                                        <button class="btn btn-secondary btn-sm" (click)="clearFilters()">
-                                            <i class="material-icons">clear</i>
-                                            Tozalash
-                                        </button>
-                                    </div>
+                                <div>
+                                    <h4 class="card-title mb-0">Yetkazish So'rovlari</h4>
+                                    <p class="card-category mb-0 text-muted">Asosiy ma'lumotlarni ko'rish uchun
+                                        filtrlashni yuqorida qoldirdik</p>
                                 </div>
                             </div>
-                        </div>
-
-                        <!-- View Toggle Buttons -->
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="btn-group" role="group">
-                                    <button class="btn btn-sm" [class.btn-primary]="!showArchiveTable"
+                            <div class="header-actions">
+                                <div class="stat-chips d-none d-sm-flex">
+                                    <span class="stat-chip info">
+                                        <i class="material-icons">pending_actions</i>
+                                        {{totalRequests || 0}} kutilayotgan
+                                    </span>
+                                    <span class="stat-chip neutral">
+                                        <i class="material-icons">inventory_2</i>
+                                        {{totalArchiveRequests || 0}} arxiv
+                                    </span>
+                                </div>
+                                <div class="btn-group btn-group-sm shadowless" role="group">
+                                    <button class="btn" [class.btn-primary]="!showArchiveTable"
                                         [class.btn-outline-primary]="showArchiveTable" (click)="showPendingTableView()">
                                         <i class="material-icons">schedule</i>
                                         Kutilayotgan
                                     </button>
-                                    <button class="btn btn-sm" [class.btn-primary]="showArchiveTable"
+                                    <button class="btn" [class.btn-primary]="showArchiveTable"
                                         [class.btn-outline-primary]="!showArchiveTable"
                                         (click)="showArchiveTableView()">
                                         <i class="material-icons">archive</i>
                                         Arxiv
                                     </button>
                                 </div>
+                                <button class="btn btn-light btn-icon"
+                                    (click)="showArchiveTable ? loadArchivedRequests() : loadPendingRequests()"
+                                    [disabled]="loadingRequests">
+                                    <i class="material-icons">refresh</i>
+                                </button>
                             </div>
                         </div>
-
+                        <div class="filter-toolbar">
+                            <div class="filter-pill">
+                                <label>Yetkazish</label>
+                                <select class="form-control form-control-xs" [(ngModel)]="filterDeliveryType"
+                                    (change)="applyFilters()">
+                                    <option value="">Barchasi</option>
+                                    <option value="EMU">EMU</option>
+                                    <option value="Yandex">Yandex</option>
+                                    <option value="Own-Courier">Kuryer</option>
+                                    <option value="Pick-up">Olib ketish</option>
+                                </select>
+                            </div>
+                            <div class="filter-pill">
+                                <label>Shoshilinch</label>
+                                <select class="form-control form-control-xs" [(ngModel)]="filterUrgent"
+                                    (change)="applyFilters()">
+                                    <option value="">Barchasi</option>
+                                    <option value="true">Shoshilinch</option>
+                                    <option value="false">Oddiy</option>
+                                </select>
+                            </div>
+                            <div class="filter-pill">
+                                <label>Mijoz ID</label>
+                                <input type="text" class="form-control form-control-xs" [(ngModel)]="filterCustomerId"
+                                    placeholder="ID" (keyup.enter)="applyFilters()">
+                            </div>
+                            <div class="filter-actions">
+                                <button class="btn btn-primary btn-xs" (click)="applyFilters()"
+                                    [disabled]="loadingRequests">
+                                    <i class="material-icons">search</i>
+                                    Qidirish
+                                </button>
+                                <button class="btn btn-outline-secondary btn-xs" (click)="clearFilters()">
+                                    <i class="material-icons">clear</i>
+                                    Tozalash
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -108,11 +107,7 @@
                                     <span *ngIf="totalArchiveRequests === 0">Hozircha arxiv so'rov yo'q</span>
                                 </p>
                             </div>
-                            <button class="btn btn-sm btn-white" (click)="loadArchivedRequests()"
-                                [disabled]="loadingRequests">
-                                <i class="material-icons">refresh</i>
-                                <span class="d-none d-md-inline ml-1">Yangilash</span>
-                            </button>
+
                         </div>
                     </div>
                     <div class="card-body">
@@ -217,11 +212,7 @@
                                     <span *ngIf="totalRequests === 0">Hozircha yangi so'rov yo'q</span>
                                 </p>
                             </div>
-                            <button class="btn btn-sm btn-white" (click)="loadPendingRequests()"
-                                [disabled]="loadingRequests">
-                                <i class="material-icons">refresh</i>
-                                <span class="d-none d-md-inline ml-1">Yangilash</span>
-                            </button>
+
                         </div>
                     </div>
                     <div class="card-body">

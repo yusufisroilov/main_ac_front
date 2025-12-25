@@ -2,85 +2,67 @@
 <div class="main-content">
     <div class="container-fluid">
 
-        <!-- Page Header -->
+        <!-- Main Card with Integrated Filters -->
         <div class="row">
             <div class="col-md-12">
                 <div class="card">
-                    <div class="card-header card-header-icon card-header-success">
-                        <div class="card-icon">
-                            <i class="material-icons">person</i>
-                        </div>
-                        <h4 class="card-title">O'zim Olaman Yetkazishlar</h4>
-                        <p class="card-category">Mijoz o'zi ombordan oladigan qutillar</p>
-                    </div>
-                </div>
-            </div>
-        </div>
+                    <!-- Card Header with Icon, Title, and Inline Filters -->
+                    <div class="card-header card-header-icon card-header-success"
+                        style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; padding: 15px 20px;">
 
-        <!-- Filter Section -->
-        <div class="row">
-            <div class="col-md-12">
-                <div class="card">
-                    <div class="card-header card-header-info">
-                        <h4 class="card-title">Filtrlar</h4>
-                        <p class="card-category">Yetkazishlarni filtrlash</p>
-                    </div>
-                    <div class="card-body">
-
-                        <div class="row">
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label class="bmd-label-floating">Vaqt Filtri</label>
-                                    <select class="form-control" [(ngModel)]="selectedDateFilter"
-                                        (change)="applyFilters()">
-                                        <option value="today">Bugun</option>
-                                        <option value="yesterday">Kecha</option>
-                                        <option value="week">Bu hafta</option>
-                                        <option value="month">Bu oy</option>
-                                        <option value="all">Barchasi</option>
-                                    </select>
-                                </div>
+                        <!-- Left Side: Icon and Title -->
+                        <div style="display: flex; align-items: center; gap: 15px; flex: 1; min-width: 250px;">
+                            <div class="card-icon" style="margin: 0;">
+                                <i class="material-icons">person</i>
                             </div>
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label class="bmd-label-floating">Holat Filtri</label>
-                                    <select class="form-control" [(ngModel)]="selectedStatusFilter"
-                                        (change)="applyFilters()">
-                                        <option value="">Barchasi</option>
-                                        <option value="created">Yaratilgan</option>
-                                        <option value="sent">Mijoz oldi</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <button class="btn btn-primary mt-3" (click)="applyFilters()"
-                                    [disabled]="loadingDeliveries">
-                                    <span *ngIf="loadingDeliveries"
-                                        class="spinner-border spinner-border-sm mr-1"></span>
-                                    <i class="material-icons" *ngIf="!loadingDeliveries">search</i>
-                                    Yangilash
-                                </button>
+                            <div>
+                                <h4 class="card-title" style="margin: 0; font-size: 18px;">O'zim Olaman Yetkazishlar
+                                </h4>
+                                <p class="card-category" style="margin: 0; font-size: 13px;">
+                                    {{selectedDateFilterText}} • {{totalDeliveries}} ta yetkazish
+                                </p>
                             </div>
                         </div>
 
-                    </div>
-                </div>
-            </div>
-        </div>
+                        <!-- Right Side: Compact Filters -->
+                        <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                            <!-- Date Filter -->
+                            <div style="min-width: 140px;">
+                                <select class="form-control form-control-sm" [(ngModel)]="selectedDateFilter"
+                                    (change)="applyFilters()"
+                                    style="font-size: 13px; padding: 6px 10px; background: rgba(255,255,255,0.9);">
+                                    <option value="today">📅 Bugun</option>
+                                    <option value="yesterday">📅 Kecha</option>
+                                    <option value="week">📅 Bu hafta</option>
+                                    <option value="month">📅 Bu oy</option>
+                                    <option value="all">📅 Barchasi</option>
+                                </select>
+                            </div>
 
-        <!-- Deliveries List -->
-        <div class="row">
-            <div class="col-md-12">
-                <div class="card">
-                    <div class="card-header card-header-success">
-                        <h4 class="card-title">
-                            O'zim Olaman Yetkazishlar
-                        </h4>
-                        <p class="card-category">
-                            {{selectedDateFilterText}} uchun {{totalDeliveries}} ta mijoz o'zi olish
-                        </p>
+                            <!-- Status Filter -->
+                            <div style="min-width: 140px;">
+                                <select class="form-control form-control-sm" [(ngModel)]="selectedStatusFilter"
+                                    (change)="applyFilters()"
+                                    style="font-size: 13px; padding: 6px 10px; background: rgba(255,255,255,0.9);">
+                                    <option value="">🔍 Barcha holat</option>
+                                    <option value="created">✨ Yaratilgan</option>
+                                    <option value="sent">✅ Mijoz oldi</option>
+                                </select>
+                            </div>
+
+                            <!-- Refresh Button -->
+                            <button class="btn btn-white btn-sm" (click)="applyFilters()" [disabled]="loadingDeliveries"
+                                style="font-size: 13px; padding: 6px 12px; min-width: 100px;">
+                                <span *ngIf="loadingDeliveries" class="spinner-border spinner-border-sm mr-1"></span>
+                                <i class="material-icons" *ngIf="!loadingDeliveries"
+                                    style="font-size: 16px; vertical-align: middle;">refresh</i>
+                                Yangilash
+                            </button>
+                        </div>
                     </div>
-                    <div class="card-body">
+
+                    <!-- Card Body with Table -->
+                    <div class="card-body" style="padding: 20px;">
 
                         <!-- Loading indicator -->
                         <div *ngIf="loadingDeliveries" class="text-center p-4">
@@ -126,10 +108,17 @@
 
                                                 <!-- Berdim button -->
                                                 <button *ngIf="canProcessDelivery(delivery)"
-                                                    class="btn btn-sm btn-primary" (click)="processDelivery(delivery)">
+                                                    class="btn btn-sm btn-primary mr-1" (click)="processDelivery(delivery)">
                                                     <i class="material-icons">send</i>
                                                     Berdim
                                                 </button>
+
+                                                <!-- Print Check button -->
+                                                <button class="btn btn-sm btn-success" (click)="printDeliveryCheck(delivery)">
+                                                    <i class="material-icons">print</i>
+                                                    Chek
+                                                </button>
+
                                             </td>
                                         </tr>
                                     </tbody>
@@ -138,14 +127,18 @@
                         </div>
 
                         <!-- No deliveries message -->
-                        <div *ngIf="!loadingDeliveries && deliveries.length === 0" class="text-center p-4">
-                            <i class="material-icons" style="font-size: 48px; color: #ccc;">local_shipping</i>
-                            <h5 class="mt-2">Yetkazish topilmadi</h5>
-                            <p class="text-muted">Tanlangan filtrlar bo'yicha mijoz olish yetkazish mavjud emas</p>
+                        <div *ngIf="!loadingDeliveries && deliveries.length === 0" class="text-center"
+                            style="padding: 40px 20px;">
+                            <i class="material-icons" style="font-size: 64px; color: #ccc;">person</i>
+                            <h5 class="mt-3" style="color: #666;">Yetkazish topilmadi</h5>
+                            <p class="text-muted" style="font-size: 14px;">Tanlangan filtrlar bo'yicha mijoz olish
+                                yetkazish mavjud emas</p>
                         </div>
 
                     </div>
+                    <!-- End Card Body -->
                 </div>
+                <!-- End Card -->
             </div>
         </div>
 
@@ -207,3 +200,6 @@
         </div>
     </div>
 </div>
+
+<!-- Hidden Print Check Component -->
+<app-print-check #printCheck></app-print-check>

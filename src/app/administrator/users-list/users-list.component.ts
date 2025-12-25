@@ -353,6 +353,7 @@ export class UsersListComponent implements OnInit {
             )
             .subscribe(
               (response) => {
+                this.getListOfUsers();
                 if (response.json().status == "error") {
                   this.registredMessage = response.json().message;
                   // swal.showValidationMessage('Not Added, check: ' + this.registredMessage);

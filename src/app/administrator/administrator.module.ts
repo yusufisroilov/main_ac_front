@@ -3,6 +3,7 @@ import { AllordersComponent } from "./allorders/allorders.component";
 import { AllconsignmentsComponent } from "./allconsignments/allconsignments.component";
 import { AllboxesComponent } from "./allboxes/allboxes.component";
 import { UsersListComponent } from "./users-list/users-list.component";
+import { ForDebtManagementComponent } from "./for-debt-management/for-debt-management.component";
 
 import { NgModule } from "@angular/core";
 import { RouterModule } from "@angular/router";
@@ -67,6 +68,7 @@ import { ActivityLogComponent } from "./activity-log/activity-log.component";
     ReplyBoxComponent,
     InternalNotesComponent,
     ActivityLogComponent,
+    ForDebtManagementComponent,
   ],
 })
 export class AdminstratorModule {}

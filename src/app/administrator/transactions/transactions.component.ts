@@ -113,6 +113,7 @@ export class TransactionsComponent implements OnInit {
       .subscribe(
         (response) => {
           this.allTransactions = response.json().transactions;
+
           this.currentPage = response.json().currentPage;
           this.totalPages = response.json().totalPages;
           if (this.totalPages > 1) {
@@ -227,7 +228,6 @@ export class TransactionsComponent implements OnInit {
       .subscribe(
         (response) => {
           this.allTransactions = response.json().transactions;
-          // console.log("all transaac ", this.allTransactions);
 
           this.currentPage = response.json().currentPage;
           this.totalPages = response.json().totalPages;

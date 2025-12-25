@@ -1,0 +1,21 @@
+<!-- Hidden Print Section - Only visible during print -->
+<div #printSection id="print-section-check" *ngIf="printCondition" style="display: none;">
+  --- ⭐ Yuk Z ⭐ ---
+  <div>
+    <span style="font-size: 36px"><strong>K{{ data?.customerId }}</strong></span>
+  </div>
+  <div></div>
+  <div>Partiyasi: {{ data?.consignmentName }}</div>
+  <div style="margin: 2px 2px">
+    Soni: <strong>{{ data?.quantity }} </strong> ta
+  </div>
+  <div style="margin: 2px 2px">
+    Og'irligi: <strong>{{ data?.weight }}</strong> kg
+  </div>
+  <div>
+    <i>
+      Izoh: <span> {{ data?.notes }}</span>
+    </i>
+  </div>
+  <br />
+</div>

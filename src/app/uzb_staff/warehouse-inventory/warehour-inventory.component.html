@@ -6,91 +6,138 @@
         <div class="row">
             <div class="col-md-12">
                 <div class="card">
-                    <div class="card-header card-header-gradient">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <h3 class="card-title mb-1">
-                                    <i class="material-icons align-middle">inventory_2</i>
+                    <div class="card-header card-header-gradient" style="padding: 15px 20px;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; gap: 15px; flex-wrap: wrap;">
+                            <!-- Left: Title and Description -->
+                            <div style="flex: 1; min-width: 200px;">
+                                <h3 class="card-title" style="margin: 0 0 4px 0; font-size: 20px; display: flex; align-items: center; gap: 8px;">
+                                    <i class="material-icons" style="font-size: 24px;">inventory_2</i>
                                     Ombor Qutilari
                                 </h3>
-                                <p class="card-category mb-0">Omborda qolgan qutillarni kuzatish va boshqarish</p>
+                                <p class="card-category" style="margin: 0; font-size: 13px; color: rgba(255,255,255,0.8);">Omborda qolgan qutillarni kuzatish va boshqarish</p>
                             </div>
-                            <button class="btn btn-white btn-round" (click)="loadWarehouseInventory()"
-                                [disabled]="loadingInventory">
-                                <i class="material-icons">refresh</i>
-                                Yangilash
-                            </button>
+
+                            <!-- Right: Action Buttons (Refresh and Search) -->
+                            <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                                <!-- Refresh Button -->
+                                <button class="btn btn-white btn-sm" (click)="loadWarehouseInventory()"
+                                    [disabled]="loadingInventory"
+                                    style="display: flex; align-items: center; gap: 6px; font-size: 13px; padding: 8px 14px; white-space: nowrap; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                                    <i class="material-icons" style="font-size: 18px;">refresh</i>
+                                    Yangilash
+                                </button>
+
+                                <!-- Search Box (shows on medium+ screens, or toggle on small) -->
+                                <div style="position: relative; min-width: 240px; max-width: 320px;">
+                                    <i class="material-icons" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 20px; color: #666; z-index: 1;">search</i>
+                                    <input type="text" class="form-control form-control-sm" [(ngModel)]="filterCustomerId"
+                                        placeholder="Mijoz ID bo'yicha qidirish..."
+                                        style="padding: 8px 12px 8px 42px; font-size: 13px; background: rgba(255,255,255,0.95); border-radius: 20px; border: 1px solid rgba(0,0,0,0.1);">
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="card-body">
 
-                        <!-- Summary Cards -->
-                        <div class="row" *ngIf="inventorySummary">
-                            <div class="col-lg-3 col-md-6 col-sm-6">
-                                <div class="stats-card stats-warning">
-                                    <div class="stats-icon">
-                                        <i class="material-icons">inventory</i>
-                                    </div>
-                                    <div class="stats-content">
-                                        <p class="stats-label">Jami Qutillar</p>
-                                        <h3 class="stats-value">{{inventorySummary.total_packages}}</h3>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-3 col-md-6 col-sm-6">
-                                <div class="stats-card stats-success">
-                                    <div class="stats-icon">
-                                        <i class="material-icons">people</i>
-                                    </div>
-                                    <div class="stats-content">
-                                        <p class="stats-label">Mijozlar</p>
-                                        <h3 class="stats-value">{{inventorySummary.total_customers}}</h3>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-3 col-md-6 col-sm-6">
-                                <div class="stats-card stats-info">
-                                    <div class="stats-icon">
-                                        <i class="material-icons">link</i>
-                                    </div>
-                                    <div class="stats-content">
-                                        <p class="stats-label">Bog'langan</p>
-                                        <h3 class="stats-value">{{inventorySummary.tied_packages}}</h3>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-3 col-md-6 col-sm-6">
-                                <div class="stats-card stats-danger">
-                                    <div class="stats-icon">
-                                        <i class="material-icons">shopping_bag</i>
-                                    </div>
-                                    <div class="stats-content">
-                                        <p class="stats-label">Mahsulotlar</p>
-                                        <h3 class="stats-value">{{inventorySummary.total_items}}</h3>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <!-- Compact Summary & Actions - All in One Row -->
+                        <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap; padding: 10px 0;">
 
-                        <!-- Action Buttons -->
-                        <div class="row mt-4">
-                            <div class="col-md-12">
-                                <div class="btn-group-modern">
-                                    <button class="btn btn-primary btn-action" (click)="showAddPackageForm()">
-                                        <i class="material-icons">add_box</i>
-                                        <span>Yangi Quti</span>
-                                    </button>
-
-                                    <button class="btn btn-info btn-action" (click)="showTyingInterface()">
-                                        <i class="material-icons">link</i>
-                                        <span>Qutillarni Bog'lash</span>
-                                    </button>
-
-                                    <button class="btn btn-warning btn-action" (click)="showInventoryView()">
-                                        <i class="material-icons">view_list</i>
-                                        <span>Inventar Ko'rish</span>
-                                    </button>
+                            <!-- Compact Stats -->
+                            <div *ngIf="inventorySummary" style="display: flex; gap: 12px; flex: 1; flex-wrap: wrap;">
+                                <!-- Stat 1: Total Packages -->
+                                <div
+                                    style="display: flex; align-items: center; gap: 8px; padding: 8px 14px; background: #fff3e0; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                                    <i class="material-icons" style="font-size: 22px; color: #ff9800;">inventory</i>
+                                    <div>
+                                        <p style="margin: 0; font-size: 11px; color: #666; line-height: 1;">Jami
+                                            Qutillar</p>
+                                        <h4 style="margin: 0; font-size: 18px; font-weight: 600; color: #333;">
+                                            {{inventorySummary.total_packages}}</h4>
+                                    </div>
                                 </div>
+
+                                <!-- Stat 2: Customers -->
+                                <div
+                                    style="display: flex; align-items: center; gap: 8px; padding: 8px 14px; background: #e8f5e9; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                                    <i class="material-icons" style="font-size: 22px; color: #4caf50;">people</i>
+                                    <div>
+                                        <p style="margin: 0; font-size: 11px; color: #666; line-height: 1;">Mijozlar</p>
+                                        <h4 style="margin: 0; font-size: 18px; font-weight: 600; color: #333;">
+                                            {{inventorySummary.total_customers}}</h4>
+                                    </div>
+                                </div>
+
+                                <!-- Stat 3: Tied Packages -->
+                                <div
+                                    style="display: flex; align-items: center; gap: 8px; padding: 8px 14px; background: #e3f2fd; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                                    <i class="material-icons" style="font-size: 22px; color: #2196f3;">link</i>
+                                    <div>
+                                        <p style="margin: 0; font-size: 11px; color: #666; line-height: 1;">Bog'langan
+                                        </p>
+                                        <h4 style="margin: 0; font-size: 18px; font-weight: 600; color: #333;">
+                                            {{inventorySummary.tied_packages}}</h4>
+                                    </div>
+                                </div>
+
+                                <!-- Stat 4: Items -->
+                                <div
+                                    style="display: flex; align-items: center; gap: 8px; padding: 8px 14px; background: #ffebee; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                                    <i class="material-icons" style="font-size: 22px; color: #f44336;">shopping_bag</i>
+                                    <div>
+                                        <p style="margin: 0; font-size: 11px; color: #666; line-height: 1;">Mahsulotlar
+                                        </p>
+                                        <h4 style="margin: 0; font-size: 18px; font-weight: 600; color: #333;">
+                                            {{inventorySummary.total_items}}</h4>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Compact Action Buttons (Right Side) with Active States -->
+                            <div style="display: flex; gap: 8px; margin-left: auto; flex-wrap: wrap; justify-content: flex-end;">
+                                <!-- Add Package Button -->
+                                <button class="btn btn-sm" (click)="showAddPackageForm()"
+                                    [class.btn-primary]="showAddForm"
+                                    [class.btn-outline-primary]="!showAddForm"
+                                    [style.background]="showAddForm ? '#2196f3' : 'transparent'"
+                                    [style.color]="showAddForm ? '#fff' : '#2196f3'"
+                                    [style.border]="showAddForm ? '2px solid #2196f3' : '2px solid #2196f3'"
+                                    [style.box-shadow]="showAddForm ? '0 4px 8px rgba(33,150,243,0.4), inset 0 0 0 1px rgba(255,255,255,0.2)' : '0 2px 4px rgba(0,0,0,0.1)'"
+                                    [style.transform]="showAddForm ? 'scale(1.02)' : 'scale(1)'"
+                                    style="display: flex; align-items: center; gap: 6px; font-size: 13px; padding: 8px 14px; white-space: nowrap; transition: all 0.2s ease; position: relative;">
+                                    <i class="material-icons" style="font-size: 18px;">add_box</i>
+                                    Yangi Quti
+                                    <span *ngIf="showAddForm" style="position: absolute; bottom: -2px; left: 50%; transform: translateX(-50%); width: 70%; height: 3px; background: #fff; border-radius: 2px;"></span>
+                                </button>
+
+                                <!-- Tying Interface Button -->
+                                <button class="btn btn-sm" (click)="showTyingInterface()"
+                                    [class.btn-info]="showTyingView"
+                                    [class.btn-outline-info]="!showTyingView"
+                                    [style.background]="showTyingView ? '#00bcd4' : 'transparent'"
+                                    [style.color]="showTyingView ? '#fff' : '#00bcd4'"
+                                    [style.border]="showTyingView ? '2px solid #00bcd4' : '2px solid #00bcd4'"
+                                    [style.box-shadow]="showTyingView ? '0 4px 8px rgba(0,188,212,0.4), inset 0 0 0 1px rgba(255,255,255,0.2)' : '0 2px 4px rgba(0,0,0,0.1)'"
+                                    [style.transform]="showTyingView ? 'scale(1.02)' : 'scale(1)'"
+                                    style="display: flex; align-items: center; gap: 6px; font-size: 13px; padding: 8px 14px; white-space: nowrap; transition: all 0.2s ease; position: relative;">
+                                    <i class="material-icons" style="font-size: 18px;">link</i>
+                                    Bog'lash
+                                    <span *ngIf="showTyingView" style="position: absolute; bottom: -2px; left: 50%; transform: translateX(-50%); width: 70%; height: 3px; background: #fff; border-radius: 2px;"></span>
+                                </button>
+
+                                <!-- Inventory View Button -->
+                                <button class="btn btn-sm" (click)="showInventoryView()"
+                                    [class.btn-warning]="showInventory"
+                                    [class.btn-outline-warning]="!showInventory"
+                                    [style.background]="showInventory ? '#ff9800' : 'transparent'"
+                                    [style.color]="showInventory ? '#fff' : '#ff9800'"
+                                    [style.border]="showInventory ? '2px solid #ff9800' : '2px solid #ff9800'"
+                                    [style.box-shadow]="showInventory ? '0 4px 8px rgba(255,152,0,0.4), inset 0 0 0 1px rgba(255,255,255,0.2)' : '0 2px 4px rgba(0,0,0,0.1)'"
+                                    [style.transform]="showInventory ? 'scale(1.02)' : 'scale(1)'"
+                                    style="display: flex; align-items: center; gap: 6px; font-size: 13px; padding: 8px 14px; white-space: nowrap; transition: all 0.2s ease; position: relative;">
+                                    <i class="material-icons" style="font-size: 18px;">view_list</i>
+                                    Inventar
+                                    <span *ngIf="showInventory" style="position: absolute; bottom: -2px; left: 50%; transform: translateX(-50%); width: 70%; height: 3px; background: #fff; border-radius: 2px;"></span>
+                                </button>
                             </div>
                         </div>
 
@@ -99,62 +146,74 @@
             </div>
         </div>
 
-        <!-- Add Package Form -->
+        <!-- Add Package Form - Compact Version -->
         <div class="row" *ngIf="showAddForm">
             <div class="col-md-8 mx-auto">
-                <div class="card card-modern">
-                    <div class="card-header bg-success">
-                        <h4 class="card-title text-white mb-0">
-                            <i class="material-icons align-middle">add_circle</i>
+                <div class="card card-modern" style="box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
+                    <div class="card-header bg-success" style="padding: 12px 20px;">
+                        <h5 class="card-title text-white mb-0"
+                            style="font-size: 16px; display: flex; align-items: center; gap: 8px;">
+                            <i class="material-icons" style="font-size: 20px;">add_circle</i>
                             Yangi Quti Qo'shish
-                        </h4>
+                        </h5>
                     </div>
-                    <div class="card-body">
+                    <div class="card-body" style="padding: 20px;">
                         <form>
                             <div class="row">
                                 <div class="col-md-6">
-                                    <div class="form-group-modern">
-                                        <label>Mijoz ID </label>
-                                        <input type="text" class="form-control" [(ngModel)]="newPackage.owner_id"
-                                            name="ownerId" placeholder="Masalan: 8" required>
+                                    <div class="form-group-modern" style="margin-bottom: 15px;">
+                                        <label style="font-size: 13px; margin-bottom: 6px; font-weight: 500;">Mijoz
+                                            ID</label>
+                                        <input type="text" class="form-control form-control-sm"
+                                            [(ngModel)]="newPackage.owner_id" name="ownerId" placeholder="Masalan: 8"
+                                            required style="font-size: 13px; padding: 8px 12px;">
                                     </div>
                                 </div>
 
                                 <div class="col-md-6">
-                                    <div class="form-group-modern">
-                                        <label>Partiya Nomi</label>
-                                        <input type="text" class="form-control"
+                                    <div class="form-group-modern" style="margin-bottom: 15px;">
+                                        <label style="font-size: 13px; margin-bottom: 6px; font-weight: 500;">Partiya
+                                            Nomi</label>
+                                        <input type="text" class="form-control form-control-sm"
                                             [(ngModel)]="newPackage.consignment_name" name="consignmentName"
-                                            placeholder="Masalan: CU109" required>
+                                            placeholder="Masalan: CU109" required
+                                            style="font-size: 13px; padding: 8px 12px;">
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Preview barcode -->
-                            <div class="row" *ngIf="newPackage.owner_id && newPackage.consignment_name">
+                            <!-- Preview barcode - Compact -->
+                            <div class="row" *ngIf="newPackage.owner_id && newPackage.consignment_name"
+                                style="margin-top: 10px;">
                                 <div class="col-md-12">
-                                    <div class="barcode-preview">
-                                        <i class="material-icons">qr_code_2</i>
+                                    <div class="barcode-preview"
+                                        style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f5f5f5; border-radius: 6px; border-left: 3px solid #4caf50;">
+                                        <i class="material-icons" style="font-size: 24px; color: #4caf50;">qr_code_2</i>
                                         <div>
-                                            <small class="text-muted">Barcode Preview</small>
-                                            <h5 class="mb-0">K{{newPackage.owner_id}}-{{newPackage.consignment_name}}
-                                            </h5>
+                                            <small class="text-muted"
+                                                style="font-size: 11px; display: block; line-height: 1;">Barcode
+                                                Preview</small>
+                                            <strong
+                                                style="font-size: 15px; color: #333;">K{{newPackage.owner_id}}-{{newPackage.consignment_name}}</strong>
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="row mt-4">
+                            <div class="row" style="margin-top: 20px;">
                                 <div class="col-md-12 text-right">
-                                    <button type="button" class="btn btn-secondary mr-2" (click)="cancelAddPackage()">
-                                        <i class="material-icons">close</i>
+                                    <button type="button" class="btn btn-secondary btn-sm mr-2"
+                                        (click)="cancelAddPackage()"
+                                        style="display: inline-flex; align-items: center; gap: 6px; font-size: 13px; padding: 8px 16px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                                        <i class="material-icons" style="font-size: 18px;">close</i>
                                         Bekor qilish
                                     </button>
-                                    <button type="button" class="btn btn-success" (click)="addPackage()"
-                                        [disabled]="!newPackage.owner_id || !newPackage.consignment_name || addingPackage">
-                                        <span *ngIf="addingPackage"
-                                            class="spinner-border spinner-border-sm mr-1"></span>
-                                        <i class="material-icons" *ngIf="!addingPackage">check</i>
+                                    <button type="button" class="btn btn-success btn-sm" (click)="addPackage()"
+                                        [disabled]="!newPackage.owner_id || !newPackage.consignment_name || addingPackage"
+                                        style="display: inline-flex; align-items: center; gap: 6px; font-size: 13px; padding: 8px 16px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                                        <span *ngIf="addingPackage" class="spinner-border spinner-border-sm"></span>
+                                        <i class="material-icons" *ngIf="!addingPackage"
+                                            style="font-size: 18px;">check</i>
                                         Qo'shish
                                     </button>
                                 </div>
@@ -188,15 +247,7 @@
                                             (keyup.enter)="findPackagesToTie()" placeholder="Masalan: CU109">
                                     </div>
                                 </div>
-                                <div class="col-md-4">
-                                    <button class="btn btn-primary btn-lg btn-block" (click)="findPackagesToTie()"
-                                        [disabled]="!selectedConsignment || loadingPackagesToTie">
-                                        <span *ngIf="loadingPackagesToTie"
-                                            class="spinner-border spinner-border-sm mr-1"></span>
-                                        <i class="material-icons" *ngIf="!loadingPackagesToTie">search</i>
-                                        Qidirish
-                                    </button>
-                                </div>
+
                             </div>
                         </div>
 
@@ -331,20 +382,7 @@
                 <div class="card card-modern">
                     <div class="card-header bg-info">
                         <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <h4 class="card-title text-white mb-1">
-                                    <i class="material-icons align-middle">view_list</i>
-                                    Ombor Inventari
-                                </h4>
-                                <p class="card-category text-black-100 mb-0">
-                                    Jami {{warehouseInventory.length}} mijoz, {{getTotalPackages()}} quti
-                                </p>
-                            </div>
-                            <div class="search-box">
-                                <i class="material-icons">search</i>
-                                <input type="text" class="form-control" [(ngModel)]="filterCustomerId"
-                                    placeholder="Mijoz ID bo'yicha qidirish...">
-                            </div>
+
                         </div>
                     </div>
                     <div class="card-body">

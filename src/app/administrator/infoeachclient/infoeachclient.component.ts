@@ -27,6 +27,11 @@ interface PackageGroup {
   selected?: boolean;
   selectionType?: "full" | "partial";
   selectedConsignment?: string;
+  // NEW: Debt fields
+  debt_uzs?: number;
+  debt_usd?: number;
+  has_high_debt?: boolean;
+  consignments_with_debt?: string[];
 }
 
 declare interface Task {
@@ -98,6 +103,14 @@ export class InfoeachclientComponent implements OnInit {
   deliveryFee: number = 0;
   yandexFee: number = 0;
   deliveryNotes: string = "";
+  forDebtAmount: number = 0; // NEW: For debt payment
+
+  // NEW: Debt tracking
+  showDebtWarning: boolean = false;
+  packagesWithHighDebt: PackageGroup[] = [];
+  debtConsignments: string[] = [];
+  totalDebtUzs: number = 0;
+  totalDebtUsd: number = 0;
 
   // NEW: Auto-fill tracking properties
   isEmuDataAutoFilled: boolean = false;
@@ -242,6 +255,7 @@ export class InfoeachclientComponent implements OnInit {
           '<input id="input-cash" type="text" class="form-control m-2" placeholder="NAQD PUL BERDI" />' +
           '<input id="input-card" type="text" class="form-control m-2" placeholder="PLASTIKDA BERDI" />' +
           '<input id="input-bank-acc" type="text" class="form-control m-2" placeholder="Terminalda (Uzum/PayMe QR) BERDI" />' +
+          '<input id="input-debt" type="text" class="form-control m-2" placeholder="QARZGA" />' +
           '<input id="input-izoh" type="text" class="form-control m-2" placeholder="IZOH" />' +
           "</div>",
         showCancelButton: true,
@@ -258,7 +272,8 @@ export class InfoeachclientComponent implements OnInit {
           let card = $("#input-card").val();
           let bankacc = $("#input-bank-acc").val();
           let izohh = $("#input-izoh").val();
-
+          let for_debt = $("#input-debt").val();
+          // console.log("for debt ", for_debt);
           this.http
             .post(
               GlobalVars.baseUrl +
@@ -274,6 +289,8 @@ export class InfoeachclientComponent implements OnInit {
                 cash +
                 "&bank_account=" +
                 bankacc +
+                "&for_debt=" +
+                for_debt +
                 "&comment=" +
                 izohh,
               "",
@@ -605,7 +622,12 @@ export class InfoeachclientComponent implements OnInit {
 
   // ADD this new method for printing payment receipt from modal
   printPaymentReceiptFromModal() {
+    // console.log("=== printPaymentReceiptFromModal CALLED ===");
+    // console.log("selectedConsignmentId:", this.selectedConsignmentId);
+    // console.log("customerPackages:", this.customerPackages);
+
     if (!this.selectedConsignmentId) {
+      // console.log("ERROR: No selectedConsignmentId");
       swal.fire("Xatolik", "Consignment ma'lumotlari topilmadi", "error");
       return;
     }
@@ -615,7 +637,10 @@ export class InfoeachclientComponent implements OnInit {
       (group) => group.selected
     );
 
+    console.log("selectedGroups:", selectedGroups);
+
     if (selectedGroups.length === 0) {
+      // console.log("ERROR: No selected groups");
       swal.fire("Xatolik", "Qutillar tanlanmagan", "error");
       return;
     }
@@ -722,7 +747,6 @@ export class InfoeachclientComponent implements OnInit {
       partyNameDisplay = Array.from(allConsignments).join(", ");
     }
 
-    // Call the print function with collected data
     this.printChekYuborish(
       this.selectedConsignmentId,
       partyNameDisplay,
@@ -732,82 +756,23 @@ export class InfoeachclientComponent implements OnInit {
     );
   }
   printChekYuborish(ids, name, weight, counter, barcodes: string[] = []) {
-    swal.fire({
-      html:
-        "<style>" +
-        ".inline-label {" +
-        "display: inline-block;" +
-        "width: auto;" +
-        "margin-right: 5px;" +
-        "text-align: right;" +
-        "vertical-align: right;" +
-        "}" +
-        ".inline-input {" +
-        "display: inline-block;" +
-        "width: auto;" +
-        "vertical-align: right;" +
-        "}" +
-        "</style>" +
-        '<div class="form-group">' +
-        '<label for="input-party" class="inline-label">Partiya:</label> ' +
-        '<input id="input-party" type="text" class="form-control m-2 inline-input" />' +
-        '<br><label for="input-id" class="inline-label">ID:</label>' +
-        '<input id="input-id" type="text" class="form-control m-2 inline-input" />' +
-        '<br><label for="input-weight" class="inline-label">Ogirligi:</label>' +
-        '<input id="input-weight" type="text" class="form-control m-2 inline-input" /> kg' +
-        '<br><label for="input-counter" class="inline-label">Soni:</label>' +
-        '<input  id="input-counter" type="text" class="form-control m-2 inline-input" /> ta' +
-        '<br><label for="input-izoh" class="inline-label">Izoh:</label>' +
-        '<input  id="input-izoh" type="text" class="form-control m-2 inline-input" />' +
-        "</div>",
-      showCancelButton: true,
+    this.idsChek = this.currentID;
+    this.nameChek = name;
+    this.weightChek = weight;
+    this.counterChek = counter;
+    this.izohChek = this.deliveryNotes;
 
-      confirmButtonText: "Print",
-      customClass: {
-        confirmButton: "btn btn-success",
-        cancelButton: "btn btn-danger",
-      },
-      buttonsStyling: false,
+    this.printCondition3 = true;
 
-      // ✅ FIX 1: Allow input focus
-      focusConfirm: false,
-
-      // ✅ FIX 2: Don't close on backdrop click
-      allowOutsideClick: false,
-
-      // ✅ FIX 3: Don't close on escape key
-      allowEscapeKey: true,
-
-      didOpen: () => {
-        $("#input-party").val(name);
-        $("#input-id").val(this.currentID);
-        $("#input-weight").val(weight);
-        $("#input-counter").val(counter);
-
-        // ✅ FIX 4: Auto-focus on izoh field for convenience
-        setTimeout(() => {
-          $("#input-izoh").focus();
-        }, 100);
-      },
-      preConfirm: (result) => {
-        this.idsChek = $("#input-id").val();
-        this.nameChek = $("#input-party").val();
-        this.weightChek = $("#input-weight").val();
-        this.counterChek = $("#input-counter").val();
-        this.izohChek = $("#input-izoh").val();
-
-        this.printCondition3 = true;
-
-        this.changeDetectorRef.detectChanges();
-        this.printContents =
-          document.getElementById("print-section3").innerHTML;
-        this.popupWin = window.open(
-          "",
-          "_blank",
-          "top=0,left=0,height=100%,width=auto"
-        );
-        this.popupWin.document.open();
-        this.popupWin.document.write(`
+    this.changeDetectorRef.detectChanges();
+    this.printContents = document.getElementById("print-section3").innerHTML;
+    this.popupWin = window.open(
+      "",
+      "_blank",
+      "top=0,left=0,height=100%,width=auto"
+    );
+    this.popupWin.document.open();
+    this.popupWin.document.write(`
           <html>
             <head>
               <title>Print tab</title>
@@ -824,20 +789,11 @@ export class InfoeachclientComponent implements OnInit {
         </body>
           </html>`);
 
-        this.popupWin.document.close();
-        this.printCondition3 = false;
-      },
-    });
-
+    this.popupWin.document.close();
     this.printCondition3 = false;
   }
 
-  // printChekYuborish(
-  //   ids: string,
-  //   name: string,
-  //   weight: number,
-  //   counter: string
-  // ) {
+  //   printChekYuborish(ids, name, weight, counter, barcodes: string[] = []) {
   //   swal.fire({
   //     html:
   //       "<style>" +
@@ -859,26 +815,43 @@ export class InfoeachclientComponent implements OnInit {
   //       '<input id="input-party" type="text" class="form-control m-2 inline-input" />' +
   //       '<br><label for="input-id" class="inline-label">ID:</label>' +
   //       '<input id="input-id" type="text" class="form-control m-2 inline-input" />' +
-  //       '<br><label for="input-weight" class="inline-label">Og\'irligi:</label>' +
+  //       '<br><label for="input-weight" class="inline-label">Ogirligi:</label>' +
   //       '<input id="input-weight" type="text" class="form-control m-2 inline-input" /> kg' +
   //       '<br><label for="input-counter" class="inline-label">Soni:</label>' +
-  //       '<input id="input-counter" type="text" class="form-control m-2 inline-input" /> ta' +
+  //       '<input  id="input-counter" type="text" class="form-control m-2 inline-input" /> ta' +
   //       '<br><label for="input-izoh" class="inline-label">Izoh:</label>' +
-  //       '<input id="input-izoh" type="text" class="form-control m-2 inline-input" />' +
+  //       '<input  id="input-izoh" type="text" class="form-control m-2 inline-input" value="' +
+  //       (this.deliveryNotes || "") +
+  //       '" />' +
   //       "</div>",
   //     showCancelButton: true,
+
   //     confirmButtonText: "Print",
   //     customClass: {
   //       confirmButton: "btn btn-success",
   //       cancelButton: "btn btn-danger",
   //     },
   //     buttonsStyling: false,
+
+  //     // ✅ FIX 1: Allow input focus
+  //     focusConfirm: false,
+
+  //     // ✅ FIX 2: Don't close on backdrop click
+  //     allowOutsideClick: false,
+
+  //     // ✅ FIX 3: Don't close on escape key
+  //     allowEscapeKey: true,
+
   //     didOpen: () => {
   //       $("#input-party").val(name);
   //       $("#input-id").val(this.currentID);
   //       $("#input-weight").val(weight);
   //       $("#input-counter").val(counter);
-  //       $("#input-izoh").prop("disabled", false); // ✅ Force enable
+
+  //       // ✅ FIX 4: Auto-focus on izoh field for convenience
+  //       setTimeout(() => {
+  //         $("#input-izoh").focus();
+  //       }, 100);
   //     },
   //     preConfirm: (result) => {
   //       this.idsChek = $("#input-id").val();
@@ -888,30 +861,10 @@ export class InfoeachclientComponent implements OnInit {
   //       this.izohChek = $("#input-izoh").val();
 
   //       this.printCondition3 = true;
+
   //       this.changeDetectorRef.detectChanges();
-
-  //       // Update print section to include items and barcodes
-  //       const printContent = `
-  //       --- ⭐ Yuk Z ⭐ ---
-  //       <div>
-  //         <span style="font-size: 36px"><strong>K${this.idsChek}</strong></span>
-  //       </div>
-  //       <div></div>
-  //       <div>Partiyasi: ${this.nameChek}</div>
-  //       <div style="margin: 2px 2px">
-  //         Soni: <strong>${this.counterChek}</strong> ta quti
-  //       </div>
-  //       <div style="margin: 2px 2px">
-  //         Og'irligi: <strong>${this.weightChek}</strong> kg
-  //       </div>
-  //       <div>
-  //         <i>
-  //           Izoh: <span>${this.izohChek}</span>
-  //         </i>
-  //       </div>
-  //       <br />
-  //     `;
-
+  //       this.printContents =
+  //         document.getElementById("print-section3").innerHTML;
   //       this.popupWin = window.open(
   //         "",
   //         "_blank",
@@ -919,20 +872,28 @@ export class InfoeachclientComponent implements OnInit {
   //       );
   //       this.popupWin.document.open();
   //       this.popupWin.document.write(`
-  //       <html>
-  //         <head>
-  //           <title>To'lov Cheki</title>
-  //           <style>
-  //             body { text-align: center; font-family: monospace; }
-  //           </style>
-  //         </head>
-  //         <body onload="window.print(); window.close();">${printContent}</body>
-  //       </html>
-  //     `);
+  //         <html>
+  //           <head>
+  //             <title>Print tab</title>
+  //             <style>
+  //               body
+  //               {
+  //                 text-align: center;
+  //               }
+
+  //             </style>
+  //           </head>
+  //       <body onload="window.print(); window.close();"> ${this.printContents}
+
+  //       </body>
+  //         </html>`);
+
   //       this.popupWin.document.close();
   //       this.printCondition3 = false;
   //     },
   //   });
+
+  //   this.printCondition3 = false;
   // }
 
   // NEW: Show delivery creation modal
@@ -950,6 +911,12 @@ export class InfoeachclientComponent implements OnInit {
     this.loadingCustomerPackages = true;
     this.customerPackages = [];
     this.selectedPackageIdentifiers = [];
+    // Reset debt tracking
+    this.showDebtWarning = false;
+    this.packagesWithHighDebt = [];
+    this.debtConsignments = [];
+    this.totalDebtUzs = 0;
+    this.totalDebtUsd = 0;
 
     this.http
       .get(
@@ -961,9 +928,13 @@ export class InfoeachclientComponent implements OnInit {
           const result = response.json();
           if (result.status === "success") {
             this.customerPackages = result.data.package_groups || [];
-            // console.log("customer packages ", this.customerPackages);
 
             this.customerPhone = result.data.phone_number;
+
+            // NEW: Check for packages with high debt
+            this.checkForHighDebt();
+
+            // Select all packages by default (admin can unselect those with debt)
             this.customerPackages.forEach((group) => (group.selected = true));
             this.updateSelectedPackages();
           } else {
@@ -982,6 +953,41 @@ export class InfoeachclientComponent implements OnInit {
           }
         }
       );
+  }
+
+  // NEW: Check for packages with high debt
+  checkForHighDebt() {
+    this.packagesWithHighDebt = [];
+    this.debtConsignments = [];
+    this.totalDebtUzs = 0;
+    this.totalDebtUsd = 0;
+
+    this.customerPackages.forEach((group) => {
+      if (group.has_high_debt) {
+        this.packagesWithHighDebt.push(group);
+        // Add consignment names
+        if (
+          group.consignments_with_debt &&
+          group.consignments_with_debt.length > 0
+        ) {
+          group.consignments_with_debt.forEach((consignment) => {
+            if (!this.debtConsignments.includes(consignment)) {
+              this.debtConsignments.push(consignment);
+            }
+          });
+        }
+      }
+      // Calculate total debt
+      this.totalDebtUzs += group.debt_uzs || 0;
+      this.totalDebtUsd += group.debt_usd || 0;
+    });
+
+    // Show warning if there are packages with high debt
+    if (this.packagesWithHighDebt.length > 0) {
+      this.showDebtWarning = true;
+    } else {
+      this.showDebtWarning = false;
+    }
   }
 
   // NEW: Update selected packages
@@ -1259,6 +1265,14 @@ export class InfoeachclientComponent implements OnInit {
     }
   }
 
+  // NEW: Check if selected packages have high debt
+  hasSelectedPackagesWithHighDebt(): boolean {
+    const selectedWithDebt = this.customerPackages.filter(
+      (group) => group.selected && group.has_high_debt
+    );
+    return selectedWithDebt.length > 0;
+  }
+
   // NEW: Validation for delivery creation
   canCreateDelivery(): boolean {
     if (this.selectedPackageIdentifiers.length === 0 || !this.deliveryType) {
@@ -1269,11 +1283,57 @@ export class InfoeachclientComponent implements OnInit {
       return false;
     }
 
+    // NEW: Check if selected packages have high debt
+    if (this.hasSelectedPackagesWithHighDebt()) {
+      return false;
+    }
+
     return true;
   }
 
   // NEW: Create delivery with enhanced package selection logic
   createDelivery() {
+    // NEW: Double-check for high debt before creating
+    if (this.hasSelectedPackagesWithHighDebt()) {
+      const selectedWithDebt = this.customerPackages.filter(
+        (group) => group.selected && group.has_high_debt
+      );
+      const debtConsignmentNames = [];
+      selectedWithDebt.forEach((group) => {
+        if (group.consignments_with_debt) {
+          group.consignments_with_debt.forEach((c) => {
+            if (!debtConsignmentNames.includes(c)) {
+              debtConsignmentNames.push(c);
+            }
+          });
+        }
+      });
+
+      swal.fire({
+        icon: "error",
+        title: "Yetkazish yaratib bo'lmaydi",
+        html: `
+          <p style="font-size: 16px; margin-bottom: 10px;">
+            <b>Bu ${debtConsignmentNames.join(
+              ", "
+            )} reyslarda qarzdorlik bor!</b>
+          </p>
+          <p style="font-size: 14px; color: #d32f2f;">
+            Iltimos oldin qarzdorlikni yoping yoki qarzdor qutillarni olib tashlang.
+          </p>
+        `,
+        confirmButtonText: "Tushunarli",
+        customClass: {
+          confirmButton: "btn btn-danger",
+        },
+        buttonsStyling: false,
+      });
+
+      // Close modal
+      this.closeDeliveryModal();
+      return;
+    }
+
     if (!this.canCreateDelivery()) {
       swal.fire("Xatolik", "Barcha majburiy maydonlarni to'ldiring", "error");
       return;
@@ -1320,10 +1380,6 @@ export class InfoeachclientComponent implements OnInit {
       delivery_fee: this.deliveryFee || 0,
       notes: this.deliveryNotes || null,
       admin_created_by: localStorage.getItem("username") || null,
-      // Add flag to indicate if there are partial tied group selections
-      has_partial_tied_selections: this.customerPackages.some(
-        (g) => g.selected && g.selectionType === "partial"
-      ),
     };
 
     this.http
@@ -1336,15 +1392,19 @@ export class InfoeachclientComponent implements OnInit {
         (response) => {
           const result = response.json();
           if (result.status === "success") {
-            // Prepare print data
+            // Prepare print data FIRST
             this.deliveryBarcode = result.data.delivery_barcode;
             this.deliveryTypeText = this.getDeliveryTypeText(this.deliveryType);
             this.totalSelectedPackagesForPrint =
               this.getTotalSelectedPackages();
             this.currentDate = new Date().toLocaleDateString("uz-UZ");
 
-            // Collect selected barcodes for printing
+            // Collect selected barcodes and calculate totals for printing
             const selectedBarcodes = [];
+            let totalItems = 0;
+            let totalWeight = 0;
+            const consignmentNames = new Set<string>();
+
             this.customerPackages.forEach((group) => {
               if (group.selected) {
                 if (group.selectionType === "partial") {
@@ -1354,36 +1414,65 @@ export class InfoeachclientComponent implements OnInit {
                     )
                     .map((pkg) => pkg.barcode);
                   selectedBarcodes.push(...currentConsignmentBarcodes);
+
+                  // Calculate totals for partial selection
+                  group.packages
+                    .filter(
+                      (pkg) => pkg.consignment === this.selectedConsignmentName
+                    )
+                    .forEach((pkg) => {
+                      totalItems += parseInt(pkg.items_count) || 0;
+                      totalWeight += parseFloat(pkg.weight) || 0;
+                      consignmentNames.add(pkg.consignment);
+                    });
                 } else {
                   selectedBarcodes.push(...group.package_barcodes);
+                  totalItems += group.total_items || 0;
+                  // Calculate weight from packages
+                  if (group.packages && group.packages.length > 0) {
+                    group.packages.forEach((pkg) => {
+                      totalWeight += parseFloat(pkg.weight) || 0;
+                    });
+                  }
+                  group.consignments.forEach((c) => consignmentNames.add(c));
                 }
               }
             });
-            this.selectedBarcodes = selectedBarcodes.join(", ");
 
-            swal
-              .fire({
-                icon: "success",
-                title: "Muvaffaqiyat!",
-                text: "Yetkazish yaratildi va qutillar yuborildi",
-                showCancelButton: true,
-                confirmButtonText: "Chek Chop Etish",
-                cancelButtonText: "Yopish",
-                customClass: {
-                  confirmButton: "btn btn-success",
-                  cancelButton: "btn btn-secondary",
-                },
-                buttonsStyling: false,
-              })
-              .then((result) => {
-                if (result.isConfirmed) {
-                  // Print the delivery receipt when user clicks "Chek Chop Etish"
-                  this.printPaymentReceiptFromModal();
-                }
-                this.closeDeliveryModal();
-                // Refresh the consignment data to reflect updated package status
-                this.getListOfPartyBoxes(this.currentID);
-              });
+            this.selectedBarcodes = selectedBarcodes.join(", ");
+            const consignmentNameDisplay =
+              Array.from(consignmentNames).join(", ");
+
+            // Store data for potential reprint
+            const printData = {
+              id: this.currentID,
+              name: consignmentNameDisplay,
+              weight: totalWeight.toFixed(2),
+              items: totalItems,
+              barcodes: selectedBarcodes,
+            };
+
+            // Call print function directly with calculated data
+            this.printChekYuborish(
+              printData.id,
+              printData.name,
+              printData.weight,
+              printData.items,
+              printData.barcodes
+            );
+
+            // console.log("=== PRINT FUNCTION RETURNED ===");
+
+            // Close modal and refresh data
+            this.closeDeliveryModal();
+            this.getListOfPartyBoxes(this.currentID);
+
+            // Show success notification with buttons
+            swal.fire({
+              icon: "success",
+              title: "Muvaffaqiyat!",
+              text: "Yetkazish muvaffaqiyatli yaratildi",
+            });
           } else {
             swal.fire(
               "Xatolik",
@@ -1425,8 +1514,15 @@ export class InfoeachclientComponent implements OnInit {
     this.selectedBranchId = null;
     this.selectedBranchName = "";
     this.branches = [];
+    this.forDebtAmount = 0; // NEW: Reset for_debt
 
-    // ADD THESE LINES:
+    // Reset debt tracking
+    this.showDebtWarning = false;
+    this.packagesWithHighDebt = [];
+    this.debtConsignments = [];
+    this.totalDebtUzs = 0;
+    this.totalDebtUsd = 0;
+
     this.isEmuDataAutoFilled = false;
     this.lastEmuDeliveryId = "";
     this.autoFilledFields = {

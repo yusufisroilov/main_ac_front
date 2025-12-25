@@ -130,7 +130,7 @@ export class AdminTicketDashboardComponent implements OnInit {
         (response) => {
           const data = response.json();
           this.recentTickets = data.tickets || [];
-          console.log("recent tickets ", this.recentTickets);
+          // console.log("recent tickets ", this.recentTickets);
 
           this.loadingRecent = false;
         },

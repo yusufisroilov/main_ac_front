@@ -96,10 +96,22 @@ export const EmployeeROUTE: RouteInfo[] = [
     icontype: "list",
   },
   {
+    path: "/admin/each-client-admin",
+    title: "Har bir Mijoz",
+    type: "link",
+    icontype: "badge",
+  },
+  {
     path: "/uzs/employee-finance",
     title: "Xisob Kitob",
     type: "link",
     icontype: "account_balance_wallet",
+  },
+  {
+    path: "/uzm/warehouse-inventory",
+    title: "Officedagi Yuklar",
+    type: "link",
+    icontype: "inventory_2",
   },
   {
     path: "/uzm/deliveriesEmp",
@@ -136,12 +148,6 @@ export const EmployeeROUTE: RouteInfo[] = [
     title: "Murojaatlar Ro'yxati",
     type: "link",
     icontype: "credit_card",
-  },
-  {
-    path: "/uzm/warehouse-inventory",
-    title: "Officedagi Yuklar",
-    type: "link",
-    icontype: "inventory_2",
   },
 ];
 
@@ -311,6 +317,7 @@ export const managerROUTES: RouteInfo[] = [
     type: "link",
     icontype: "account_balance_wallet",
   },
+
   {
     path: "/uzm/infoeachclient",
     title: "Har bir mijoz",
@@ -335,17 +342,18 @@ export const managerROUTES: RouteInfo[] = [
     type: "link",
     icontype: "local_shipping",
   },
-  {
-    path: "/uzm/admin-del-requests",
-    title: "Yetkazish So'rovlari",
-    type: "link",
-    icontype: "assignment",
-  },
+
   {
     path: "/uzm/transactions",
     title: "Tranzaksiyalar ",
     type: "link",
     icontype: "credit_card",
+  },
+  {
+    path: "/uzm/for-debt-management",
+    title: "Qarzlarni Boshqarish",
+    type: "link",
+    icontype: "payments",
   },
 
   {
@@ -354,34 +362,16 @@ export const managerROUTES: RouteInfo[] = [
     type: "link",
     icontype: "credit_card",
   },
-  // {
-  //   path: "/uzm/ticket-detail",
-  //   title: "Tickets Details ",
-  //   type: "link",
-  //   icontype: "credit_card",
-  // },
-  // {
-  //   path: "/uzm/ticket-notes",
-  //   title: "Tickets Notes ",
-  //   type: "link",
-  //   icontype: "credit_card",
-  // },
+  {
+    path: "/uzm/admin-del-requests",
+    title: "Yetkazish So'rovlari",
+    type: "link",
+    icontype: "assignment",
+  },
 
-  // {
-  //   path: "/uzm/message-thread",
-  //   title: "Message Thread ",
-  //   type: "link",
-  //   icontype: "credit_card",
-  // },
-  // {
-  //   path: "/uzm/reply-box",
-  //   title: "Reply Box ",
-  //   type: "link",
-  //   icontype: "credit_card",
-  // },
   {
     path: "/uzm/ticket-dashboard",
-    title: "Ticket Dashboard ",
+    title: "Murojaatlar Oynasi",
     type: "link",
     icontype: "credit_card",
   },

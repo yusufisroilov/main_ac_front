@@ -802,3 +802,146 @@ body.modal-open {
 .row-sent td {
   transition: background-color 0.2s ease;
 }
+/* ===================================
+   CONTROLS WRAPPER - RESPONSIVE
+   =================================== */
+.controls-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  flex: 1;
+}
+
+.control-item {
+  font-size: 12px;
+  padding: 5px 8px;
+  background: rgba(255, 255, 255, 0.9);
+  flex-shrink: 0;
+}
+
+.control-item.form-control-sm {
+  width: 110px;
+}
+
+.search-wrapper {
+  position: relative;
+  width: 140px;
+}
+
+.search-wrapper .search-icon {
+  position: absolute;
+  left: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 16px;
+  color: #666;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.search-wrapper input {
+  padding-left: 30px;
+  border-radius: 15px;
+  width: 100%;
+}
+
+.btn-control {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  white-space: nowrap;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.btn-control .material-icons {
+  font-size: 14px;
+}
+
+.btn-control .spinner-border-sm {
+  width: 12px;
+  height: 12px;
+}
+
+/* Tablet responsive */
+@media (max-width: 992px) {
+  .controls-wrapper {
+    gap: 5px;
+  }
+
+  .control-item {
+    font-size: 11px;
+    padding: 4px 6px;
+  }
+
+  .control-item.form-control-sm {
+    width: 100px;
+  }
+
+  .search-wrapper {
+    width: 120px;
+  }
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .controls-wrapper {
+    gap: 4px;
+  }
+
+  .control-item {
+    font-size: 11px;
+    padding: 4px 6px;
+  }
+
+  .control-item.form-control-sm {
+    width: 90px;
+  }
+
+  .search-wrapper {
+    width: 110px;
+  }
+
+  .btn-control .btn-text {
+    display: none;
+  }
+
+  .btn-control {
+    padding: 4px 8px;
+    min-width: 36px;
+    justify-content: center;
+  }
+
+  .btn-control .material-icons {
+    margin: 0;
+  }
+}
+
+/* Small mobile responsive */
+@media (max-width: 480px) {
+  .controls-wrapper {
+    gap: 3px;
+  }
+
+  .control-item.form-control-sm {
+    width: 80px;
+    font-size: 10px;
+  }
+
+  .search-wrapper {
+    width: 100px;
+  }
+
+  .search-wrapper input {
+    font-size: 10px;
+  }
+
+  .btn-control {
+    padding: 4px 6px;
+    min-width: 32px;
+  }
+
+  .btn-control .material-icons {
+    font-size: 16px;
+  }
+}

@@ -1,11 +1,15 @@
 // yandex-deliveries.component.ts
-import { Component, OnInit, ChangeDetectorRef } from "@angular/core";
+import { Component, OnInit, ChangeDetectorRef, ViewChild } from "@angular/core";
 import { Router } from "@angular/router";
 import { GlobalVars } from "src/app/global-vars";
 import swal from "sweetalert2";
 import { HttpClient, HttpHeaders, HttpParams } from "@angular/common/http";
 import { Http, RequestOptions, Headers, Response } from "@angular/http";
 import { AuthService } from "src/app/pages/login/auth.service";
+import {
+  PrintCheckComponent,
+  PrintCheckData,
+} from "src/app/shared/print-check/print-check.component";
 
 declare var $: any;
 
@@ -41,6 +45,10 @@ interface Delivery {
   styleUrls: ["./yandex-deliveries.component.css"],
 })
 export class YandexDeliveriesComponent implements OnInit {
+  @ViewChild("printCheck") printCheckComponent: PrintCheckComponent;
+  // Print data
+  printData: PrintCheckData;
+
   headers12: any;
   options: any;
 
@@ -285,5 +293,10 @@ export class YandexDeliveriesComponent implements OnInit {
       all: "Barcha vaqtlar",
     };
     return filters[this.selectedDateFilter] || this.selectedDateFilter;
+  }
+  // Print delivery check
+  printDeliveryCheck(delivery: Delivery) {
+    // PrintCheckComponent will fetch data from backend and print
+    this.printCheckComponent.print(delivery.id);
   }
 }

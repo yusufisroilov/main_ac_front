@@ -107,7 +107,8 @@ export class EmployeeFinanceComponent implements OnInit {
       dataRows: [],
     };
 
-    this.currentParty = localStorage.getItem("current_party");
+    this.currentParty =
+      GlobalVars.currentParty || localStorage.getItem("current_party") || "";
   }
 
   ngAfterViewInit() {
@@ -160,7 +161,16 @@ export class EmployeeFinanceComponent implements OnInit {
     });
 
     $(".card .material-datatables label").addClass("form-group");
-    this.currentParty = localStorage.getItem("current_party");
+
+    // // Debug logging
+    // console.log("🔍 Debug currentParty:");
+    // console.log("  GlobalVars.currentParty:", GlobalVars.currentParty);
+    // console.log("  localStorage current_party:", localStorage.getItem("current_party"));
+
+    this.currentParty =
+      GlobalVars.currentParty || localStorage.getItem("current_party") || "";
+    // console.log("  Final currentParty value:", this.currentParty);
+
     return this.getListOfFinance();
   }
 
@@ -512,6 +522,12 @@ export class EmployeeFinanceComponent implements OnInit {
           cancelButton: "btn btn-danger",
         },
         buttonsStyling: false,
+        didOpen: () => {
+          const input = document.getElementById("name");
+          if (input) {
+            input.focus();
+          }
+        },
         preConfirm: (result) => {
           let name = $("#name").val();
 
@@ -554,7 +570,9 @@ export class EmployeeFinanceComponent implements OnInit {
                       if (result.isConfirmed) {
                         this.findConsignmentByName();
                         this.currentParty =
-                          localStorage.getItem("current_party");
+                          GlobalVars.currentParty ||
+                          localStorage.getItem("current_party") ||
+                          "";
                       } else {
                         this.getListOfFinance();
                         return false;
@@ -581,7 +599,10 @@ export class EmployeeFinanceComponent implements OnInit {
               buttonsStyling: false,
             })
             .then(() => {
-              this.currentParty = localStorage.getItem("current_party");
+              this.currentParty =
+                GlobalVars.currentParty ||
+                localStorage.getItem("current_party") ||
+                "";
             });
         }
       });

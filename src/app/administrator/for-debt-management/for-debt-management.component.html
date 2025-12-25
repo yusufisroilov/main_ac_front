@@ -1,0 +1,177 @@
+<div class="main-content">
+  <div class="container-fluid">
+
+    <!-- Main Card -->
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card">
+
+          <!-- Card Header - Compact Design -->
+          <div class="card-header card-header-icon card-header-danger"
+            style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 15px 20px;">
+
+            <!-- Left: Icon and Title with Summary -->
+            <div style="display: flex; align-items: center; gap: 15px; flex: 1; min-width: 250px;">
+              <div class="card-icon"
+                style="margin: 0; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;">
+                <i class="material-icons" style="font-size: 28px;">account_balance_wallet</i>
+              </div>
+              <div>
+                <h4 class="card-title" style="margin: 0; font-size: 18px;">Qarzlarni Boshqarish</h4>
+                <p class="card-category" style="margin: 0; font-size: 13px;">
+                  <strong>{{totalItems}}</strong> ta mijoz •
+                  Jami: <strong style="color: #f44336;">{{formatCurrency(totalForDebtUZS)}}</strong> so'm
+                </p>
+              </div>
+            </div>
+
+            <!-- Right: Filters - All in One Line -->
+            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: flex-end;">
+              <!-- Customer ID Search -->
+              <div style="position: relative; min-width: 120px; max-width: 150px; flex: 0 0 auto;">
+                <i class="material-icons"
+                  style="position: absolute; left: 5px; top: 50%; transform: translateY(-50%); font-size: 16px; color: #666; z-index: 1;">
+                  search
+                </i>
+                <input type="text" class="form-control form-control-sm" [(ngModel)]="searchOwnerId"
+                  (keyup.enter)="applyFilters()" placeholder="Mijoz ID..."
+                  style="padding: 6px 10px 6px 32px; font-size: 12px; background: rgba(255,255,255,0.9); border-radius: 18px; width: 100%;">
+              </div>
+
+              <!-- Date Range - Start -->
+              <input type="date" class="form-control form-control-sm" [(ngModel)]="filterStartDate"
+                (change)="applyFilters()" placeholder="Dan"
+                style="font-size: 12px; padding: 6px 8px; width: 140px; max-width: 140px; flex: 0 0 auto; background: rgba(255,255,255,0.9);">
+
+              <!-- Date Range - End -->
+              <input type="date" class="form-control form-control-sm" [(ngModel)]="filterEndDate"
+                (change)="applyFilters()" placeholder="Gacha"
+                style="font-size: 12px; padding: 6px 8px; width: 140px; max-width: 140px; flex: 0 0 auto; background: rgba(255,255,255,0.9);">
+
+              <!-- Sort Button -->
+              <button class="btn btn-white btn-sm" (click)="toggleSortOrder()"
+                style="display: flex; align-items: center; gap: 4px; font-size: 12px; padding: 6px 10px; white-space: nowrap; box-shadow: 0 1px 3px rgba(0,0,0,0.1); flex: 0 0 auto;">
+                <i class="material-icons" style="font-size: 16px;">
+                  {{sortOrder === 'DESC' ? 'arrow_downward' : 'arrow_upward'}}
+                </i>
+                {{sortOrder === 'DESC' ? 'Yuqori' : 'Past'}}
+              </button>
+
+              <!-- Clear Filters -->
+              <button class="btn btn-warning btn-sm" (click)="clearFilters()"
+                style="display: flex; align-items: center; gap: 4px; font-size: 12px; padding: 6px 10px; white-space: nowrap; box-shadow: 0 1px 3px rgba(0,0,0,0.1); flex: 0 0 auto;">
+                <i class="material-icons" style="font-size: 16px;">clear</i>
+                Tozalash
+              </button>
+
+              <!-- Refresh -->
+              <button class="btn btn-info btn-sm" (click)="loadFinancesWithForDebt()" [disabled]="loadingFinances"
+                style="display: flex; align-items: center; gap: 4px; font-size: 12px; padding: 6px 10px; white-space: nowrap; box-shadow: 0 1px 3px rgba(0,0,0,0.1); flex: 0 0 auto;">
+                <i class="material-icons" style="font-size: 16px;" [class.rotate]="loadingFinances">refresh</i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Card Body -->
+          <div class="card-body" style="padding: 20px;">
+
+            <!-- Loading State -->
+            <div *ngIf="loadingFinances" class="text-center" style="padding: 40px 20px;">
+              <div class="spinner-border text-danger" role="status" style="width: 3rem; height: 3rem;">
+              </div>
+              <p class="mt-3 text-muted">Ma'lumotlar yuklanmoqda...</p>
+            </div>
+
+            <!-- Finances Table -->
+            <div *ngIf="!loadingFinances && finances.length > 0">
+              <div class="table-responsive">
+                <table class="table table-hover table-striped">
+                  <thead class="thead-light">
+                    <tr>
+                      <th class="text-center">#</th>
+                      <th>Mijoz</th>
+                      <th>Partiya</th>
+                      <th class="text-right">Qarz (for_debt)</th>
+                      <th class="text-center">Sana</th>
+                      <th class="text-center">Amallar</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let finance of finances; let i = index">
+                      <td class="text-center">
+                        <strong>{{currentPage * pageSize + i + 1}}</strong>
+                      </td>
+                      <td>
+                        <strong class="text-primary">K{{finance.owner_id}}</strong>
+                        <span *ngIf="finance.owner && finance.owner.username">
+                          <br>
+                          <small class="text-muted">{{finance.owner.username}}</small>
+                        </span>
+                      </td>
+                      <td>
+                        <span class="badge badge-info" style="font-size: 13px; padding: 5px 10px;">
+                          {{finance.consignment}}
+                        </span>
+                      </td>
+                      <td class="text-right">
+                        <strong class="text-danger" style="font-size: 16px;">
+                          {{formatCurrency(finance.for_debt)}} so'm
+                        </strong>
+                      </td>
+                      <td class="text-center">
+                        <small class="text-muted">{{formatDate(finance.for_debt_registered)}}</small>
+                      </td>
+                      <td class="text-center">
+                        <button class="btn btn-success btn-sm" (click)="addPaymentForDebt(finance)"
+                          title="To'lov qo'shish" style="font-size: 12px; padding: 6px 12px;">
+                          <i class="material-icons" style="font-size: 16px;">payment</i>
+                          To'lov
+                        </button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <!-- Pagination -->
+              <div class="row mt-4" *ngIf="totalPages > 1">
+                <div class="col-md-12">
+                  <nav aria-label="Page navigation">
+                    <ul class="pagination justify-content-center">
+                      <li class="page-item" [class.disabled]="currentPage === 0">
+                        <a class="page-link" (click)="prevPage()" style="cursor: pointer;">
+                          <i class="material-icons">chevron_left</i>
+                        </a>
+                      </li>
+                      <li class="page-item" *ngFor="let page of getPageNumbers()" [class.active]="page === currentPage">
+                        <a class="page-link" (click)="goToPage(page)" style="cursor: pointer;">{{page + 1}}</a>
+                      </li>
+                      <li class="page-item" [class.disabled]="currentPage === totalPages - 1">
+                        <a class="page-link" (click)="nextPage()" style="cursor: pointer;">
+                          <i class="material-icons">chevron_right</i>
+                        </a>
+                      </li>
+                    </ul>
+                  </nav>
+                </div>
+              </div>
+            </div>
+
+            <!-- No Data Message -->
+            <div *ngIf="!loadingFinances && finances.length === 0" class="text-center" style="padding: 60px 20px;">
+              <i class="material-icons" style="font-size: 80px; color: #ccc;">account_balance_wallet</i>
+              <h5 class="mt-3">Qarzli mijozlar topilmadi</h5>
+              <p class="text-muted">Hech qanday mijozda for_debt mavjud emas yoki filterlar natija bermadi</p>
+              <button class="btn btn-warning btn-sm mt-3" (click)="clearFilters()">
+                <i class="material-icons" style="font-size: 16px;">clear</i>
+                Filterlarni tozalash
+              </button>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

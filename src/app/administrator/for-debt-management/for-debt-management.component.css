@@ -1,0 +1,256 @@
+/* Rotating animation for refresh button */
+.rotate {
+  animation: rotate 1s linear infinite;
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Table styling */
+.table-hover tbody tr:hover {
+  background-color: #f5f5f5;
+  cursor: pointer;
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+  /* On tablets and smaller, allow filters to wrap naturally */
+  .card-header > div:last-child {
+    width: 100%;
+    justify-content: flex-start !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .card-header {
+    padding: 12px 15px !important;
+  }
+
+  /* Stack icon+title and filters vertically on mobile */
+  .card-header > div:first-child {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+
+  .card-header > div:last-child {
+    width: 100%;
+    justify-content: flex-start !important;
+    gap: 6px !important;
+  }
+
+  /* Make filters smaller on mobile */
+  .card-header input[type="date"],
+  .card-header input[type="text"] {
+    font-size: 11px !important;
+    padding: 5px 6px !important;
+    min-width: 100px !important;
+    max-width: 120px !important;
+  }
+
+  .card-header input[type="text"] {
+    padding-left: 28px !important;
+  }
+
+  .card-header button {
+    font-size: 11px !important;
+    padding: 5px 8px !important;
+  }
+
+  .card-header .material-icons {
+    font-size: 14px !important;
+  }
+
+  /* Table adjustments */
+  .table-responsive {
+    font-size: 11px;
+  }
+
+  .table th,
+  .table td {
+    padding: 6px 4px !important;
+  }
+
+  .btn-sm {
+    font-size: 10px !important;
+    padding: 4px 8px !important;
+  }
+
+  /* Hide less important columns on very small screens */
+  .table thead th:nth-child(5),
+  .table tbody td:nth-child(5) {
+    display: none;
+  }
+}
+
+@media (max-width: 576px) {
+  /* Ultra-compact for very small screens */
+  .card-title {
+    font-size: 14px !important;
+  }
+
+  .card-category {
+    font-size: 10px !important;
+  }
+
+  .card-icon {
+    width: 40px !important;
+    height: 40px !important;
+  }
+
+  .card-icon .material-icons {
+    font-size: 22px !important;
+  }
+
+  /* Hide partiya column on very small screens */
+  .table thead th:nth-child(3),
+  .table tbody td:nth-child(3) {
+    display: none;
+  }
+}
+
+/* Custom scrollbar for table */
+.table-responsive::-webkit-scrollbar {
+  height: 8px;
+}
+
+.table-responsive::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 10px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Modal backdrop fix */
+.modal-backdrop {
+  z-index: 1040 !important;
+}
+
+.modal {
+  z-index: 1050 !important;
+}
+
+/* Payment input focus */
+.form-control:focus {
+  border-color: #4caf50;
+  box-shadow: 0 0 0 0.2rem rgba(76, 175, 80, 0.25);
+}
+
+/* Badge styling */
+.badge {
+  font-weight: 500;
+}
+
+/* Alert improvements */
+.alert {
+  border-radius: 8px;
+}
+
+.alert-warning {
+  background-color: #fff3e0;
+  border-color: #ff9800;
+  color: #e65100;
+}
+
+.alert-info {
+  background-color: #e3f2fd;
+  border-color: #2196f3;
+  color: #0d47a1;
+}
+
+.alert-danger {
+  background-color: #ffebee;
+  border-color: #f44336;
+  color: #c62828;
+}
+
+/* Summary cards animation */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.card-body > div:first-child {
+  animation: fadeInUp 0.5s ease-out;
+}
+
+/* Pagination styling */
+.pagination .page-link {
+  color: #4caf50;
+  border: 1px solid #dee2e6;
+  padding: 0.5rem 0.75rem;
+  margin: 0 2px;
+  border-radius: 4px;
+}
+
+.pagination .page-link:hover {
+  background-color: #4caf50;
+  color: white;
+  border-color: #4caf50;
+}
+
+.pagination .page-item.active .page-link {
+  background-color: #4caf50;
+  border-color: #4caf50;
+  color: white;
+}
+
+.pagination .page-item.disabled .page-link {
+  color: #6c757d;
+  pointer-events: none;
+  background-color: #fff;
+  border-color: #dee2e6;
+}
+
+/* Button hover effects */
+.btn-success:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(76, 175, 80, 0.3);
+  transition: all 0.2s ease;
+}
+
+.btn-warning:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(255, 152, 0, 0.3);
+  transition: all 0.2s ease;
+}
+
+.btn-info:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(33, 150, 243, 0.3);
+  transition: all 0.2s ease;
+}
+
+/* Material icons alignment */
+.material-icons {
+  vertical-align: middle;
+}
+
+/* Input number hide spinners */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+}

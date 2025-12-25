@@ -5,6 +5,7 @@ import { AllconsignmentsComponent } from "./allconsignments/allconsignments.comp
 import { AllordersComponent } from "./allorders/allorders.component";
 import { AllreceiversComponent } from "./allreceivers/allreceivers.component";
 import { UsersListComponent } from "./users-list/users-list.component";
+import { ForDebtManagementComponent } from "./for-debt-management/for-debt-management.component";
 
 import { ForeignStaffAuthGuard } from "./../services/foreign-staff-auth-guard.service";
 
@@ -78,6 +79,14 @@ export const AdminstratorRoutes: Routes = [
         component: FinanceComponent,
         data: {
           title: "Xisob Kitob",
+        },
+      },
+      {
+        path: "for-debt-management",
+        canActivate: [ManagerAuthGuardService],
+        component: ForDebtManagementComponent,
+        data: {
+          title: "Qarzlarni Boshqarish",
         },
       },
       {

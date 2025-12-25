@@ -157,7 +157,7 @@ export class AllreceiversComponent implements OnInit {
     localStorage.setItem("recdistrict_id", district_id);
     localStorage.setItem("recstreet", street);
     localStorage.setItem("recapartment", apartment);
-
+    localStorage.setItem("recparent_id", parent_id);
     localStorage.setItem("editpr", "edit");
 
     this.router.navigate(["/addreceivers"]);

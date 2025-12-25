@@ -1,28 +1,20 @@
-import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
+import { Injectable } from "@angular/core";
+import { Router } from "@angular/router";
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root",
 })
 export class ManagerAuthGuardService {
+  constructor(private router: Router) {}
 
-  constructor(private router: Router) { }
+  canActivate() {
+    let isAdmin = localStorage.getItem("role");
 
-  canActivate(){
-
-    let isAdmin = localStorage.getItem('role');
-
-    if(isAdmin == "MANAGER" || isAdmin == "UZBSTAFF")
-     {
-       return true;
-      
+    if (isAdmin == "MANAGER" || isAdmin == "UZBSTAFF") {
+      return true;
     } else {
-
-
-    this.router.navigate(['/dashboard']);
-    return false;
+      this.router.navigate(["/dashboard"]);
+      return false;
+    }
   }
-
-  }
-
 }

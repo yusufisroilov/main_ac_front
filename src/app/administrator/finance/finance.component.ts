@@ -112,6 +112,7 @@ export class FinanceComponent implements OnInit {
         "To'ladi USD",
         "To'ladi NAQD",
         "To'ladi PLASTIK",
+        "To'ladi Terminal",
         "QOLDI",
       ],
 
@@ -538,6 +539,12 @@ export class FinanceComponent implements OnInit {
           cancelButton: "btn btn-danger",
         },
         buttonsStyling: false,
+        didOpen: () => {
+          const input = document.getElementById("name");
+          if (input) {
+            input.focus();
+          }
+        },
         preConfirm: (result) => {
           let name = $("#name").val();
 

@@ -2,34 +2,7 @@
 <div class="main-content">
     <div class="container-fluid">
 
-        <!-- Page Header -->
-        <div class="row">
-            <div class="col-md-12">
-                <div class="card">
-                    <div class="card-header card-header-icon card-header-primary">
-                        <div class="card-icon">
-                            <i class="material-icons">local_shipping</i>
-                        </div>
-                        <h4 class="card-title">Yetkazish Boshqaruvi</h4>
-                        <p class="card-category">Barcha yetkazishlarni kuzatish va boshqarish</p>
-                    </div>
-                    <div class="card-body">
 
-                        <!-- Action Buttons -->
-                        <div class="row">
-                            <div class="col-md-12">
-                                <button class="btn btn-success" (click)="loadDeliveries()"
-                                    [disabled]="loadingDeliveries">
-                                    <i class="material-icons">refresh</i>
-                                    Yangilash
-                                </button>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-            </div>
-        </div>
 
         <!-- Deliveries List -->
         <div class="row">
@@ -159,7 +132,7 @@
                                             <th>Turi</th>
                                             <th class="text-center">Qutillar</th>
                                             <th class="text-center">Og'irligi</th>
-                                            <th>Telefon</th>
+                                            <th>Izoh</th>
                                             <th class="text-center">Holat</th>
                                             <th>Sana</th>
                                             <th class="text-center">Amallar</th>
@@ -193,7 +166,7 @@
                                                 <span *ngIf="!delivery.weight" class="text-muted">-</span>
                                             </td>
                                             <td>
-                                                <small>{{delivery.customer_phone}}</small>
+                                                <small>{{delivery.notes}}</small>
                                             </td>
                                             <td class="text-center">
                                                 <span class="badge badge-pill"

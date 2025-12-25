@@ -2,138 +2,107 @@
 <div class="main-content">
     <div class="container-fluid">
 
-        <!-- Page Header -->
-        <div class="row">
-            <div class="col-md-12">
-                <div class="card">
-                    <div class="card-header card-header-icon card-header-primary">
-                        <div class="card-icon">
-                            <i class="material-icons">local_shipping</i>
-                        </div>
-                        <h4 class="card-title">Bugungi EMU lar Ro'yxati</h4>
-                        <p class="card-category">EMU filiallarga yetkazishlarni kuzatish va boshqarish</p>
-                    </div>
-                    <div class="card-body">
 
-
-                    </div>
-                </div>
-            </div>
-        </div>
 
         <!-- Deliveries List -->
         <div class="row">
             <div class="col-md-12">
                 <div class="card">
-                    <div class="card-header card-header-warning">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <h4 class="card-title mb-1">Yetkazishlar Ro'yxati</h4>
-                                <p class="card-category mb-0">
-                                    Jami <strong>{{totalDeliveries}}</strong> ta yetkazish
+                    <!-- Card Header with Icon, Title, Filters, Search, and All Action Buttons in One Line -->
+                    <div class="card-header card-header-icon card-header-warning"
+                        style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 12px 20px;">
+
+                        <!-- Compact Icon and Title -->
+                        <div style="display: flex; align-items: center; gap: 10px; flex: 0 0 auto;">
+                            <div class="card-icon"
+                                style="margin: 0; width: 40px; height: 40px; min-height: 40px; display: flex; align-items: center; justify-content: center;">
+                                <i class="material-icons" style="font-size: 20px;">local_shipping</i>
+                            </div>
+                            <div style="min-width: 150px;">
+                                <h4 class="card-title"
+                                    style="margin: 0; font-size: 16px; white-space: nowrap; line-height: 1.2;">
+                                    Yetkazishlar</h4>
+                                <p class="card-category" style="margin: 0; font-size: 11px; line-height: 1.2;">
+                                    <strong>{{totalDeliveries}}</strong> ta
                                 </p>
                             </div>
                         </div>
-                    </div>
-                    <div class="card-body">
+                        <!-- All Controls in One Row (wraps on small screens) -->
+                        <div class="controls-wrapper">
+                            <!-- Date Range Filter -->
+                            <select class="form-control form-control-sm control-item" [(ngModel)]="filterDateRange"
+                                (change)="applyFilters()">
+                                <option value="">📅 Vaqt</option>
+                                <option value="today">Bugun</option>
+                                <option value="week">Bu hafta</option>
+                                <option value="month">Bu oy</option>
+                                <option value="custom">Boshqa</option>
+                            </select>
 
-                        <!-- Compact Filters -->
-                        <div class="filters-section mb-4">
-                            <div class="row align-items-end">
-                                <!-- <div class="col-md-2">
-                                    <div class="form-group mb-0">
-                                        <label class="filter-label">Yetkazish Turi</label>
-                                        <select class="form-control form-control-sm" [(ngModel)]="filterDeliveryType"
-                                            (change)="applyFilters()">
-                                            <option value="">Barchasi</option>
-                                            <option value="EMU">EMU</option>
-                                            <option value="Yandex">Yandex</option>
-                                            <option value="Own-Courier">Kuryer</option>
-                                            <option value="Pick-up">Olib ketish</option>
-                                        </select>
-                                    </div>
-                                </div> -->
+                            <!-- Status Filter -->
+                            <select class="form-control form-control-sm control-item" [(ngModel)]="filterStatus"
+                                (change)="applyFilters()">
+                                <option value="">📋 Holat</option>
+                                <option value="collected">Yig'ilgan</option>
+                                <option value="created">Yaratilgan</option>
+                                <option value="sent">Yuborilgan</option>
+                                <option value="returned">Qaytarilgan</option>
+                                <option value="cancelled">Bekor qilingan</option>
+                            </select>
 
-                                <div class="col-md-2">
-                                    <div class="form-group mb-0">
-                                        <label class="filter-label">Holat</label>
-                                        <select class="form-control form-control-sm" [(ngModel)]="filterStatus"
-                                            (change)="applyFilters()">
-                                            <option value="">Barchasi</option>
-                                            <option value="collected">Yig'ilgan</option>
-                                            <option value="created">Yaratilgan</option>
-                                            <option value="sent">Yuborilgan</option>
-                                            <option value="returned">Qaytarilgan</option>
-                                            <option value="cancelled">Bekor qilingan</option>
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-2">
-                                    <div class="form-group mb-0">
-                                        <label class="filter-label">Vaqt</label>
-                                        <select class="form-control form-control-sm" [(ngModel)]="filterDateRange"
-                                            (change)="applyFilters()">
-                                            <option value="">Barchasi</option>
-                                            <option value="today">Bugun</option>
-                                            <option value="week">Bu hafta</option>
-                                            <option value="month">Bu oy</option>
-                                            <option value="custom">Boshqa</option>
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-2">
-                                    <div class="form-group mb-0">
-                                        <label class="filter-label">Mijoz ID</label>
-                                        <input type="text" class="form-control form-control-sm"
-                                            [(ngModel)]="filterCustomerId" (keyup.enter)="applyFilters()"
-                                            placeholder="ID kiriting">
-                                    </div>
-                                </div>
-
-
-                                <div class="col-md-6 text-right">
-                                    <button class="btn btn-primary btn-sm mr-2" (click)="applyFilters()"
-                                        [disabled]="loadingDeliveries">
-                                        <i class="material-icons">search</i>
-                                        Qidirish
-                                    </button>
-                                    <button class="btn btn-secondary btn-sm mr-2" (click)="clearFilters()">
-                                        <i class="material-icons">clear</i>
-                                        Tozalash
-                                    </button>
-                                    <button class="btn btn-success btn-sm mr-2" (click)="bulkUpdateTodayEmuDeliveries()"
-                                        [disabled]="bulkUpdating || loadingDeliveries">
-                                        <span *ngIf="bulkUpdating" class="spinner-border spinner-border-sm mr-1"></span>
-                                        <i class="material-icons" *ngIf="!bulkUpdating">done_all</i>
-                                        Hammasini yuborildi deb belgilash
-                                    </button>
-                                    <button class="btn btn-info btn-sm" (click)="downloadEmuExcelForToday()"
-                                        [disabled]="downloadingExcel || loadingDeliveries">
-                                        <span *ngIf="downloadingExcel" class="spinner-border spinner-border-sm mr-1"></span>
-                                        <i class="material-icons" *ngIf="!downloadingExcel">download</i>
-                                        Bugungi EMUlarni Yuklash
-                                    </button>
-                                </div>
+                            <!-- Customer ID Search -->
+                            <div class="search-wrapper control-item">
+                                <i class="material-icons search-icon">search</i>
+                                <input type="text" class="form-control form-control-sm" [(ngModel)]="filterCustomerId"
+                                    (keyup.enter)="applyFilters()" placeholder="Mijoz ID...">
                             </div>
 
-                            <!-- Custom date range -->
-                            <div class="row mt-3" *ngIf="filterDateRange === 'custom'">
-                                <div class="col-md-3">
-                                    <div class="form-group mb-0">
-                                        <label class="filter-label">Boshlanish</label>
-                                        <input type="date" class="form-control form-control-sm"
-                                            [(ngModel)]="customStartDate" (change)="applyFilters()">
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="form-group mb-0">
-                                        <label class="filter-label">Tugash</label>
-                                        <input type="date" class="form-control form-control-sm"
-                                            [(ngModel)]="customEndDate" (change)="applyFilters()">
-                                    </div>
-                                </div>
+                            <!-- Clear Button -->
+                            <button class="btn btn-white btn-sm control-item btn-control" (click)="clearFilters()">
+                                <i class="material-icons">clear</i>
+                                <span class="btn-text">Tozalash</span>
+                            </button>
+
+                            <!-- Bulk Update Button with better icon visibility -->
+                            <button class="btn btn-success btn-sm control-item btn-control"
+                                (click)="bulkUpdateTodayEmuDeliveries()" [disabled]="bulkUpdating || loadingDeliveries"
+                                style="background: linear-gradient(135deg, #4caf50 0%, #66bb6a 100%); border: none;">
+                                <span *ngIf="bulkUpdating" class="spinner-border spinner-border-sm"></span>
+                                <i class="material-icons" *ngIf="!bulkUpdating"
+                                    style="color: white; text-shadow: 0 1px 2px rgba(0,0,0,0.2);">done_all</i>
+                                <span class="btn-text" style="color: white;">Yuborildi</span>
+                            </button>
+
+                            <!-- Download Excel Button with better icon visibility -->
+                            <button class="btn btn-info btn-sm control-item btn-control"
+                                (click)="downloadEmuExcelForToday()" [disabled]="downloadingExcel || loadingDeliveries"
+                                style="background: linear-gradient(135deg, #00bcd4 0%, #26c6da 100%); border: none;">
+                                <span *ngIf="downloadingExcel" class="spinner-border spinner-border-sm"></span>
+                                <i class="material-icons" *ngIf="!downloadingExcel"
+                                    style="color: white; text-shadow: 0 1px 2px rgba(0,0,0,0.2);">download</i>
+                                <span class="btn-text" style="color: white;">Excel</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="card-body" style="padding: 20px;">
+
+                        <!-- Custom Date Range (shown when selected) -->
+                        <div *ngIf="filterDateRange === 'custom'"
+                            style="display: flex; gap: 15px; align-items: center; padding: 12px 15px; background: #fff3e0; border-radius: 8px; margin-bottom: 15px; flex-wrap: wrap;">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <label style="margin: 0; font-size: 13px; font-weight: 500; white-space: nowrap;">📅
+                                    Boshlanish:</label>
+                                <input type="date" class="form-control form-control-sm" [(ngModel)]="customStartDate"
+                                    (change)="applyFilters()"
+                                    style="font-size: 13px; padding: 6px 10px; min-width: 150px;">
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <label style="margin: 0; font-size: 13px; font-weight: 500; white-space: nowrap;">📅
+                                    Tugash:</label>
+                                <input type="date" class="form-control form-control-sm" [(ngModel)]="customEndDate"
+                                    (change)="applyFilters()"
+                                    style="font-size: 13px; padding: 6px 10px; min-width: 150px;">
                             </div>
                         </div>
 
@@ -156,7 +125,7 @@
                                             <th>Turi</th>
                                             <th class="text-center">Qutillar</th>
                                             <th class="text-center">Og'irligi</th>
-                                            <th>Telefon</th>
+                                            <th>Izohlar</th>
                                             <th class="text-center">Holat</th>
                                             <th>Sana</th>
                                             <th class="text-center">Amallar</th>
@@ -193,7 +162,7 @@
                                                 <span *ngIf="!delivery.weight" class="text-muted">-</span>
                                             </td>
                                             <td>
-                                                <small>{{delivery.customer_phone}}</small>
+                                                <small>{{delivery.notes}}</small>
                                             </td>
                                             <td class="text-center">
                                                 <span class="badge badge-pill"

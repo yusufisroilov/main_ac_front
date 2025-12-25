@@ -21,6 +21,7 @@ import { OwnCourierDeliveriesComponent } from "./own-courier-deliveries/own-cour
 import { PickupDeliveriesComponent } from "./pickup-deliveries/pickup-deliveries.component";
 import { EmuDeliveriesComponent } from "./emu-deliveries/emu-deliveries.component";
 import { YandexDeliveriesComponent } from "./yandex-deliveries/yandex-deliveries.component";
+import { SharedModule } from "src/app/shared/shared.module";
 
 @NgModule({
   imports: [
@@ -32,6 +33,7 @@ import { YandexDeliveriesComponent } from "./yandex-deliveries/yandex-deliveries
     FixedpluginModule,
     ComponentsModule,
     PaginationModule,
+    SharedModule,
   ],
   declarations: [
     BoxesListComponent,

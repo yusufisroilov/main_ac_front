@@ -1,28 +1,140 @@
 /* ===================================
    FILTERS SECTION
    =================================== */
-.filters-section {
-  background-color: #f8f9fa;
-  padding: 1rem;
+.header-shell {
+  border: 1px solid #edf1f5;
+}
+
+.compact-header {
+  padding: 0.75rem 1rem 0.5rem;
+  border-bottom: 1px solid #eef1f6;
+}
+
+.header-main {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.title-stack {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.tight-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  background: #f3e5f5;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #8e24aa;
+  box-shadow: inset 0 0 0 1px #e7d7ee;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.btn-icon {
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
   border-radius: 8px;
-  border: 1px solid #e3e3e3;
-  margin-bottom: 1rem;
+  border: 1px solid #e3e6ed;
 }
 
-.filter-label {
+.shadowless .btn {
+  box-shadow: none !important;
+}
+
+.stat-chips {
+  display: inline-flex;
+  gap: 0.4rem;
+}
+
+.stat-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 10px;
   font-size: 12px;
-  font-weight: 500;
-  color: #3c4858;
-  margin-bottom: 5px;
-  display: block;
+  font-weight: 600;
+  letter-spacing: 0.1px;
+  text-transform: uppercase;
 }
 
-.form-control-sm {
-  height: calc(1.5em + 0.5rem + 2px);
+.stat-chip i.material-icons {
+  font-size: 16px;
+}
+
+.stat-chip.info {
+  background: #e3f2fd;
+  color: #1565c0;
+}
+
+.stat-chip.neutral {
+  background: #f4f6f9;
+  color: #5f6470;
+}
+
+.filter-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.filter-pill {
+  display: flex;
+  flex-direction: column;
+  min-width: 140px;
   padding: 0.25rem 0.5rem;
-  font-size: 0.875rem;
-  line-height: 1.5;
-  border-radius: 0.2rem;
+  background: #f9fafb;
+  border: 1px solid #edf0f4;
+  border-radius: 8px;
+}
+
+.filter-pill label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  color: #707683;
+  margin-bottom: 3px;
+}
+
+.filter-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.form-control-xs {
+  height: 32px;
+  padding: 0.2rem 0.5rem;
+  font-size: 13px;
+  border-radius: 6px;
+}
+
+.btn-xs {
+  padding: 0.35rem 0.6rem;
+  font-size: 12px;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
 }
 
 /* ===================================
@@ -37,7 +149,7 @@
 
 .table {
   margin-bottom: 0;
-  min-width: 900px;
+  min-width: 780px;
 }
 
 .table thead.thead-light {
@@ -51,7 +163,7 @@
   color: #3c4858;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  padding: 12px 8px;
+  padding: 10px 6px;
   vertical-align: middle;
   white-space: nowrap;
   position: sticky;
@@ -61,7 +173,7 @@
 }
 
 .table tbody td {
-  padding: 12px 8px;
+  padding: 10px 6px;
   vertical-align: middle;
   font-size: 14px;
   white-space: nowrap;
@@ -472,6 +584,23 @@
     flex-wrap: wrap;
     gap: 0.5rem;
   }
+
+  .header-actions {
+    justify-content: flex-start;
+  }
+
+  .stat-chips {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .filter-toolbar {
+    gap: 0.35rem;
+  }
+
+  .filter-pill {
+    flex: 1 1 calc(50% - 0.5rem);
+  }
 }
 
 /* ===================================
@@ -514,7 +643,7 @@
 
   .table {
     font-size: 12px;
-    min-width: 800px;
+    min-width: 700px;
   }
 
   .table thead th {
@@ -622,6 +751,28 @@
   .payment-image-card img {
     height: 120px;
   }
+
+  .header-main {
+    align-items: flex-start;
+  }
+
+  .header-actions {
+    width: 100%;
+  }
+
+  .filter-pill {
+    flex: 1 1 100%;
+  }
+
+  .filter-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .btn-xs {
+    flex: 1;
+    justify-content: center;
+  }
 }
 
 /* ===================================
@@ -633,7 +784,7 @@
   }
 
   .table {
-    min-width: 750px;
+    min-width: 640px;
   }
 
   .modal-dialog {

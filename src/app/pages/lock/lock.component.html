@@ -4,178 +4,137 @@
 
     <div class="container">
       <div class="row">
-        <div class="col-md-8 ml-auto mr-auto">
+        <div class="col-md-10 ml-auto mr-auto">
 
-          <!-- Main Search Card -->
-          <div class="card card-profile card-modern">
-            <div class="card-header">
-              <div class="card-avatar">
-                <a>
-                  <img class="img" src="./assets/img/faces/logo.png" alt="Logo">
-                </a>
+          <!-- Main Search Card - Simple Design -->
+          <div class="card">
+            <div class="card-body" style="padding: 20px;">
+              <div style="text-align: center; margin-bottom: 24px;">
+                <img src="./assets/img/faces/logo.png" alt="Logo"
+                  style="width: 80px; height: 80px; object-fit: contain; margin-bottom: 12px;">
+                <h4 style="margin: 0 0 6px 0; font-size: 20px; font-weight: 600; color: #333;">Yukni Kuzatish</h4>
+                <p style="margin: 0; font-size: 14px; color: #666;">Trek raqamini kiriting</p>
               </div>
-            </div>
 
-            <div class="card-body">
-              <h3 class="card-title-main">Yukni kuzatish Trek nomer orqali</h3>
-              <p class="card-subtitle">Trek raqamini kiriting!!!</p>
-
-              <div class="search-container">
-                <mat-form-field class="full-width-input" appearance="outline">
-                  <mat-label>Trek Raqami</mat-label>
-                  <input matInput placeholder="Enter tracking number" type="text" id="trek_raqami" name="trackingNumber"
-                    [(ngModel)]="trackingNum" (keyup.enter)="checkParcel()" [disabled]="isLoading">
-                </mat-form-field>
-
-                <button mat-raised-button color="primary" class="search-btn" (click)="checkParcel()"
-                  [disabled]="!trackingNum || isLoading">
-                  <span *ngIf="!isLoading">
-                    <mat-icon>search</mat-icon>
-                    Search
-                  </span>
-                  <span *ngIf="isLoading" class="loading-content">
-                    <mat-spinner diameter="20"></mat-spinner>
-                    Searching...
-                  </span>
+              <div style="display: flex; gap: 8px; max-width: 500px; margin: 0 auto;">
+                <input type="text" class="form-control" [(ngModel)]="trackingNum"
+                  (keyup.enter)="checkParcel()" placeholder="Trek raqamini kiriting..."
+                  [disabled]="isLoading"
+                  style="padding: 10px 16px; font-size: 14px; border-radius: 8px;">
+                <button class="btn btn-primary" (click)="checkParcel()"
+                  [disabled]="!trackingNum || isLoading"
+                  style="padding: 10px 24px; font-size: 14px; border-radius: 8px; white-space: nowrap;">
+                  <span *ngIf="!isLoading">Qidirish</span>
+                  <span *ngIf="isLoading">Kutish...</span>
                 </button>
               </div>
             </div>
           </div>
 
-          <!-- Loading Animation -->
-          <div *ngIf="isLoading" class="card card-loading">
-            <div class="card-body text-center">
-              <div class="loading-animation">
-                <div class="truck-animation">
-                  <mat-icon class="delivery-icon">local_shipping</mat-icon>
-                  <div class="loading-dots">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                  </div>
-                </div>
-                <p class="loading-text">Tracking your parcel...</p>
+          <!-- Loading State -->
+          <div *ngIf="isLoading" class="card" style="margin-top: 20px;">
+            <div class="card-body text-center" style="padding: 40px 20px;">
+              <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
               </div>
+              <p class="mt-3 text-muted">Ma'lumotlar qidirilmoqda...</p>
             </div>
           </div>
 
-          <!-- Results Card -->
-          <div *ngIf="showResults && !isLoading" class="card card-results" [@slideIn]>
-            <div class="card-header card-header-success">
-              <h4 class="card-title">
-                <mat-icon>check_circle</mat-icon>
-                Yukingiz topildi
-              </h4>
-            </div>
+          <!-- Results Card - Simple Design -->
+          <div *ngIf="showResults && !isLoading" class="card" style="margin-top: 20px;">
+            <div class="card-body" style="padding: 20px;">
 
-            <div class="card-body">
+              <!-- Success Message -->
+              <div style="text-align: center; margin-bottom: 24px;">
+                <i class="material-icons" style="font-size: 48px; color: #4caf50;">check_circle</i>
+                <h4 style="margin: 8px 0 0 0; font-size: 18px; font-weight: 600; color: #333;">Yukingiz Topildi</h4>
+              </div>
 
-              <!-- Tracking Info -->
-              <div class="info-section">
-                <div class="info-item highlight">
-                  <mat-icon>qr_code_2</mat-icon>
-                  <div class="info-content">
-                    <span class="info-label">Trek Raqami</span>
-                    <span class="info-value">{{trackingNumber}}</span>
-                  </div>
+              <!-- Main Info - Simple List -->
+              <div style="max-width: 600px; margin: 0 auto 24px auto;">
+                <div class="info-row">
+                  <span class="info-label">Trek Raqami:</span>
+                  <span class="info-value text-primary">{{trackingNumber}}</span>
                 </div>
-
-                <div class="info-item highlight" *ngIf="orderStatusDescriptionUZ">
-                  <mat-icon>inventory_2</mat-icon>
-                  <div class="info-content">
-                    <span class="info-label">Mahsulot Statusi:</span>
-                    <span class="info-value">{{orderStatusDescriptionUZ}}</span>
-                  </div>
+                <div class="info-row" *ngIf="orderNameRu">
+                  <span class="info-label">Mahsulot:</span>
+                  <span class="info-value">{{orderNameRu}}</span>
                 </div>
-
-                <div class="info-item highlight" *ngIf="orderNameRu">
-                  <mat-icon>inventory_2</mat-icon>
-                  <div class="info-content">
-                    <span class="info-label">Mahsulot Nomi:</span>
-                    <span class="info-value">{{orderNameRu}}</span>
-                  </div>
+                <div class="info-row" *ngIf="orderStatusDescriptionUZ">
+                  <span class="info-label">Status:</span>
+                  <span class="info-value">
+                    <span class="badge badge-success">{{orderStatusDescriptionUZ}}</span>
+                  </span>
                 </div>
-
-                <div class="info-item" *ngIf="boxNumber">
-                  <mat-icon>widgets</mat-icon>
-                  <div class="info-content">
-                    <span class="info-label">Partiya Nomi:</span>
-                    <span class="info-value">CU{{boxNumber | slice:2:5}}</span>
-                  </div>
+                <div class="info-row" *ngIf="boxNumber">
+                  <span class="info-label">Partiya:</span>
+                  <span class="info-value">
+                    <span class="badge badge-info">CU{{boxNumber | slice:2:5}}</span>
+                  </span>
                 </div>
               </div>
 
-              <mat-divider class="section-divider"></mat-divider>
-
-              <!-- Timeline -->
-              <div class="timeline-section" *ngIf="hasTrackingDates">
-                <h5 class="timeline-title">
-                  <mat-icon>timeline</mat-icon>
-                  Vaqt bo'yicha statuslar
+              <!-- Timeline - Simple List -->
+              <div *ngIf="hasTrackingDates" style="max-width: 600px; margin: 0 auto 24px auto;">
+                <h5 style="font-size: 15px; font-weight: 600; color: #333; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 2px solid #e0e0e0;">
+                  Vaqt Bo'yicha Statuslar
                 </h5>
 
-                <div class="timeline">
-                  <div class="timeline-item" *ngIf="in_foreign_warehouse_date"
-                    [class.completed]="in_foreign_warehouse_date">
-                    <div class="timeline-marker">
-                      <mat-icon>warehouse</mat-icon>
-                    </div>
-                    <div class="timeline-content">
-                      <div class="timeline-title">Xitoy omborida ro'yxatdan o'tgan sana: </div>
+                <div class="timeline-simple">
+                  <div class="timeline-item" *ngIf="in_foreign_warehouse_date">
+                    <i class="material-icons">check_circle</i>
+                    <div>
+                      <div class="timeline-text">Xitoy omborida</div>
                       <div class="timeline-date">{{in_foreign_warehouse_date | slice:0:10}}</div>
                     </div>
                   </div>
 
-                  <div class="timeline-item" *ngIf="in_foreign_airport_date"
-                    [class.completed]="in_foreign_airport_date">
-                    <div class="timeline-marker">
-                      <mat-icon>flight_takeoff</mat-icon>
-                    </div>
-                    <div class="timeline-content">
-                      <div class="timeline-title">Xitoy Aeroportiga yuborilgan sana: </div>
+                  <div class="timeline-item" *ngIf="in_foreign_airport_date">
+                    <i class="material-icons">check_circle</i>
+                    <div>
+                      <div class="timeline-text">Xitoy Aeroportida</div>
                       <div class="timeline-date">{{in_foreign_airport_date | slice:0:10}}</div>
                     </div>
                   </div>
 
-                  <div class="timeline-item" *ngIf="in_uzb_airport_date" [class.completed]="in_uzb_airport_date">
-                    <div class="timeline-marker">
-                      <mat-icon>flight_land</mat-icon>
-                    </div>
-                    <div class="timeline-content">
-                      <div class="timeline-title">O'zbekiston Aerportiga kelgan sana:</div>
+                  <div class="timeline-item" *ngIf="in_uzb_airport_date">
+                    <i class="material-icons">check_circle</i>
+                    <div>
+                      <div class="timeline-text">O'zbekiston Aeroportida</div>
                       <div class="timeline-date">{{in_uzb_airport_date | slice:0:10}}</div>
                     </div>
                   </div>
 
-                  <div class="timeline-item" *ngIf="in_uzb_warehouse_date" [class.completed]="in_uzb_warehouse_date">
-                    <div class="timeline-marker">
-                      <mat-icon>home</mat-icon>
-                    </div>
-                    <div class="timeline-content">
-                      <div class="timeline-title">O'zbekiston Skladimizga kelgan sana:</div>
+                  <div class="timeline-item" *ngIf="in_uzb_warehouse_date">
+                    <i class="material-icons">check_circle</i>
+                    <div>
+                      <div class="timeline-text">O'zbekiston Skladida</div>
                       <div class="timeline-date">{{in_uzb_warehouse_date | slice:0:10}}</div>
                     </div>
                   </div>
                 </div>
               </div>
 
-              <button mat-stroked-button class="search-again-btn" (click)="resetSearch()">
-                <mat-icon>refresh</mat-icon>
-                Qaytadan Qidirish
-              </button>
+              <!-- Reset Button -->
+              <div style="text-align: center;">
+                <button class="btn btn-primary" (click)="resetSearch()"
+                  style="padding: 10px 24px; font-size: 14px; border-radius: 8px;">
+                  Qaytadan Qidirish
+                </button>
+              </div>
             </div>
           </div>
 
           <!-- Error Card -->
-          <div *ngIf="showError && !isLoading" class="card card-error" [@slideIn]>
-            <div class="card-body text-center">
-              <mat-icon class="error-icon">error_outline</mat-icon>
-              <h4 class="error-title">Parcel Not Found</h4>
-              <p class="error-message">{{errorMessage || 'The tracking number you entered was not found in our
-                system.'}}</p>
-              <button mat-raised-button color="primary" (click)="resetSearch()">
-                <mat-icon>refresh</mat-icon>
-                Try Again
+          <div *ngIf="showError && !isLoading" class="card" style="margin-top: 20px;">
+            <div class="card-body text-center" style="padding: 60px 20px;">
+              <i class="material-icons" style="font-size: 80px; color: #ff9800;">error_outline</i>
+              <h4 class="mt-3" style="font-size: 20px; font-weight: 600;">Topilmadi</h4>
+              <p class="text-muted">{{errorMessage || 'Trek raqami bo\'yicha ma\'lumot topilmadi'}}</p>
+              <button class="btn btn-warning btn-sm mt-3" (click)="resetSearch()"
+                style="padding: 8px 20px; font-size: 13px;">
+                <i class="material-icons" style="font-size: 16px; vertical-align: middle; margin-right: 4px;">refresh</i>
+                Qaytadan Urinish
               </button>
             </div>
           </div>

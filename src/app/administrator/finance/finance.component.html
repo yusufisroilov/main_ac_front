@@ -122,6 +122,7 @@
                       <th class="text-center">{{ dataTable.headerRow[6] }}</th>
                       <th class="text-center">{{ dataTable.headerRow[7] }}</th>
                       <th class="text-center">{{ dataTable.headerRow[8] }}</th>
+                      <th class="text-center">{{ dataTable.headerRow[9] }}</th>
                       <th>Qarz UZS</th>
                       <!-- <th><i class="material-icons">local_shipping</i></th> -->
                       <th class="text-center">Actions</th>
@@ -148,6 +149,11 @@
                       <td>
                         {{
                         row.paid_plastic | currency : " " : "symbol" : "4.0-0"
+                        }}
+                      </td>
+                      <td>
+                        {{
+                        row.paid_bank_account | currency : " " : "symbol" : "4.0-0"
                         }}
                       </td>
                       <td>{{ row.debt }}$</td>

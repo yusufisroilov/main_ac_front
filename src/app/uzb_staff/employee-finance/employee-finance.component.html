@@ -1,22 +1,6 @@
 <div class="main-content">
   <div class="container-fluid">
 
-    <!-- Action Buttons -->
-    <div class="row">
-      <div class="col-md-12">
-        <div class="action-buttons-container">
-          <button type="button" mat-raised-button (click)="findConsignmentByName()" class="btn btn-primary action-btn">
-            <i class="material-icons">flight_land</i>
-            Partiya Belgilash
-          </button>
-
-          <button type="button" mat-raised-button (click)="recordFinance()" class="btn btn-success action-btn">
-            <i class="material-icons">add</i>
-            Xisob Qo'shish
-          </button>
-        </div>
-      </div>
-    </div>
 
     <!-- Stats Cards -->
     <div class="row" *ngIf="showLastFinance">
@@ -40,31 +24,52 @@
       <div class="col-md-12">
         <div class="card" id="listcard">
 
-          <div class="card-header card-header-success card-header-icon">
-            <div class="card-icon">
-              <i class="material-icons">assignment</i>
-            </div>
-            <h4 class="card-title">
-              Xisob Kitoblar Jadvali
-              <br>
-              <small>Hozirda Ochiq Reys: <b>{{ currentParty }}</b></small>
-            </h4>
-          </div>
+          <!-- Card Header with Icon, Title, Buttons, and Search - All in One Row -->
+          <div class="card-header card-header-success card-header-icon"
+            style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap; padding: 15px 20px;">
 
-          <div class="card-body">
+            <!-- Left: Icon and Title -->
+            <div style="display: flex; align-items: center; gap: 15px; min-width: 200px;">
+              <div class="card-icon" style="margin: 0;">
+                <i class="material-icons">assignment</i>
+              </div>
+              <div>
+                <h4 class="card-title" style="margin: 0; font-size: 18px; white-space: nowrap;">Xisob Kitoblar Reys:
+                  <b>{{ currentParty }}</b>
+                </h4>
 
-            <!-- Search -->
-            <div class="row">
-              <div class="col-md-6 offset-md-3">
-                <div class="search-container">
-                  <div class="d-flex align-items-center">
-                    <i class="material-icons search-icon">search</i>
-                    <input type="text" placeholder="Mijoz ID raqami bo'yicha qidirish..."
-                      (input)="getListOfFinanceWithFilter($event.target.value)" style="width: 100%;" />
-                  </div>
-                </div>
               </div>
             </div>
+
+            <!-- Center: Action Buttons -->
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+              <button type="button" mat-raised-button (click)="findConsignmentByName()" class="btn btn-primary btn-sm"
+                style="display: flex; align-items: center; gap: 6px; font-size: 13px; padding: 8px 16px; white-space: nowrap; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                <i class="material-icons" style="font-size: 18px;">flight_land</i>
+                Partiya Belgilash
+              </button>
+
+              <button type="button" mat-raised-button (click)="recordFinance()" class="btn btn-success btn-sm"
+                style="display: flex; align-items: center; gap: 6px; font-size: 13px; padding: 8px 16px; white-space: nowrap; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                <i class="material-icons" style="font-size: 18px;">add</i>
+                Xisob Qo'shish
+              </button>
+            </div>
+
+            <!-- Right: Search -->
+            <div style="min-width: 280px; max-width: 350px; flex: 1; margin-left: auto;">
+              <div style="position: relative; display: flex; align-items: center;">
+                <i class="material-icons"
+                  style="position: absolute; left: 12px; color: #666; font-size: 20px; z-index: 1;">search</i>
+                <input type="text" class="form-control form-control-sm"
+                  placeholder="Mijoz ID raqami bo'yicha qidirish..."
+                  (input)="getListOfFinanceWithFilter($event.target.value)"
+                  style="padding: 8px 12px 8px 42px; font-size: 13px; background: rgba(255,255,255,0.95); border-radius: 25px; border: 1px solid rgba(255,255,255,0.3); box-shadow: 0 2px 4px rgba(0,0,0,0.1); width: 100%;" />
+              </div>
+            </div>
+          </div>
+
+          <div class="card-body" style="padding: 20px;">
 
             <!-- Pagination Top -->
             <ul class="pagination" *ngIf="needPagination">
