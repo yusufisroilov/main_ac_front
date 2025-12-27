@@ -88,6 +88,7 @@ export class OrderBoxesComponent implements OnInit {
       .subscribe(
         (response) => {
           this.allDataBoxes = response.json().consignments;
+          console.log("partiyalr ", this.allDataBoxes);
         },
         (error) => {
           if (error.status == 403) {

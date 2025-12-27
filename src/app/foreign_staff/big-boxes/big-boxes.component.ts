@@ -174,8 +174,10 @@ export class BigBoxesComponent implements OnInit {
                     )
                     .subscribe((response) => {
                       if (response.json().status == "ok") {
-                        this.thingsInBox = response.json().orders;
+                        this.thingsInBox = response.json().boxes;
+
                         this.total_count = response.json().total_count;
+                        console.log("thing in box ", this.total_count);
                       }
                     });
                 }
@@ -588,9 +590,16 @@ export class BigBoxesComponent implements OnInit {
                       this.options
                     )
                     .subscribe((response) => {
+                      // console.log(
+                      //   "response json scan parcel ",
+                      //   response.json()
+                      // );
                       if (response.json().status == "ok") {
                         this.thingsInBox = response.json().boxes;
+                        this.total_count = response.json().total_count;
                       }
+                      // Refresh the boxes list to update counts and weights
+                      this.getlistofboxs();
                     });
                 }
               },

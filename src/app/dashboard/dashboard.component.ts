@@ -279,7 +279,119 @@ export class DashboardComponent implements OnInit, AfterViewInit {
            });
        }
 
-      
 
+
+   }
+
+   // Get finance totals by customer ID and date
+   showFinanceTotals() {
+     swal.fire({
+       title: 'Moliyaviy Ma\'lumotlar',
+       html:
+         '<div class="form-group">' +
+         '<label for="owner-id" style="display: block; text-align: left; margin-bottom: 5px; font-weight: 500;">Mijoz ID (Owner ID)</label>' +
+         '<input id="owner-id" type="text" class="form-control swal2-input" placeholder="Masalan: 12345" style="margin: 0 0 15px 0;">' +
+         '<label for="from-date" style="display: block; text-align: left; margin-bottom: 5px; font-weight: 500;">Boshlanish Sanasi</label>' +
+         '<input id="from-date" type="date" class="form-control swal2-input" style="margin: 0;">' +
+         '</div>',
+       focusConfirm: false,
+       showCancelButton: true,
+       confirmButtonText: 'Qidirish',
+       cancelButtonText: 'Bekor qilish',
+       customClass: {
+         confirmButton: 'btn btn-success',
+         cancelButton: 'btn btn-secondary'
+       },
+       buttonsStyling: false,
+       preConfirm: () => {
+         const ownerId = (<HTMLInputElement>document.getElementById('owner-id')).value;
+         const fromDate = (<HTMLInputElement>document.getElementById('from-date')).value;
+
+         if (!ownerId || !fromDate) {
+           swal.showValidationMessage('Iltimos barcha maydonlarni to\'ldiring');
+           return false;
+         }
+
+         // Show loading
+         swal.fire({
+           title: 'Yuklanmoqda...',
+           text: 'Ma\'lumotlar yuklanmoqda',
+           allowOutsideClick: false,
+           didOpen: () => {
+             swal.showLoading();
+           }
+         });
+
+         // Make the API request
+         this.http.get(
+           GlobalVars.baseUrl + `/finance/totals-by-date?owner_id=${ownerId}&fromDate=${fromDate}`,
+           this.options
+         ).subscribe(
+           (response) => {
+             const result = response.json();
+
+             if (result.status === 'ok') {
+               // Display the results in a modern, professional way
+               swal.fire({
+                 title: '<strong style="font-size: 18px;">Moliyaviy Hisobot</strong>',
+                 icon: 'success',
+                 html:
+                   '<div style="text-align: left; padding: 10px;">' +
+                   '<div style="background: #f8f9fa; padding: 8px 12px; border-radius: 6px; margin-bottom: 10px;">' +
+                   '<p style="margin: 3px 0; color: #666; font-size: 12px;"><i class="material-icons" style="vertical-align: middle; font-size: 14px;">person</i> <strong>ID:</strong> <span style="color: #333; font-weight: 600;">' + ownerId + '</span></p>' +
+                   '<p style="margin: 3px 0; color: #666; font-size: 12px;"><i class="material-icons" style="vertical-align: middle; font-size: 14px;">calendar_today</i> <strong>Sana:</strong> <span style="color: #333;">' + fromDate + '</span> dan</p>' +
+                   '</div>' +
+                   '<div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 12px; border-radius: 6px; color: white; margin-bottom: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">' +
+                   '<p style="margin: 0 0 5px 0; font-size: 11px; opacity: 0.9;">Jami Og\'irlik</p>' +
+                   '<h3 style="margin: 0; font-size: 22px; font-weight: 700;">' + result.total_weight + ' <span style="font-size: 14px;">kg</span></h3>' +
+                   '</div>' +
+                   '<div style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); padding: 12px; border-radius: 6px; color: white; margin-bottom: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">' +
+                   '<p style="margin: 0 0 5px 0; font-size: 11px; opacity: 0.9;">Jami Summa</p>' +
+                   '<h3 style="margin: 0; font-size: 22px; font-weight: 700;">$' + result.total_sum_usd + '</h3>' +
+                   '</div>' +
+                   '<div style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); padding: 12px; border-radius: 6px; color: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">' +
+                   '<p style="margin: 0 0 5px 0; font-size: 11px; opacity: 0.9;">Yozuvlar Soni</p>' +
+                   '<h3 style="margin: 0; font-size: 22px; font-weight: 700;">' + result.count + '</h3>' +
+                   '</div>' +
+                   '</div>',
+                 showConfirmButton: true,
+                 confirmButtonText: 'Yopish',
+                 customClass: {
+                   confirmButton: 'btn btn-primary'
+                 },
+                 buttonsStyling: false,
+                 width: '400px'
+               });
+             } else {
+               swal.fire({
+                 icon: 'info',
+                 title: 'Ma\'lumot topilmadi',
+                 text: result.message || 'Berilgan ma\'lumotlar bo\'yicha yozuvlar topilmadi',
+                 confirmButtonText: 'OK',
+                 customClass: {
+                   confirmButton: 'btn btn-primary'
+                 },
+                 buttonsStyling: false
+               });
+             }
+           },
+           (error) => {
+             console.error('Error fetching finance totals:', error);
+             swal.fire({
+               icon: 'error',
+               title: 'Xatolik',
+               text: 'Ma\'lumotlarni yuklashda xatolik yuz berdi',
+               confirmButtonText: 'OK',
+               customClass: {
+                 confirmButton: 'btn btn-danger'
+               },
+               buttonsStyling: false
+             });
+           }
+         );
+
+         return false; // Prevent the popup from closing
+       }
+     });
    }
 }
