@@ -331,7 +331,7 @@ export class InfoeachclientComponent implements OnInit {
 
           let usd2: number = +usd;
           const cash2: number = +cash;
-          const card2: number = +cash;
+          const card2: number = +card;
           const bankacc2: number = +bankacc;
 
           this.http
