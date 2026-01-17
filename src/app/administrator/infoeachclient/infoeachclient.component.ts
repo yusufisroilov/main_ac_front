@@ -326,8 +326,8 @@ export class InfoeachclientComponent implements OnInit {
           var NewUserId = this.currentID.toString();
           if (usd == "") usd = 0;
           if (cash == "") cash = 0;
-          if (cash == "") card = 0;
-          if (bankacc == "") card = 0;
+          if (card == "") card = 0;
+          if (bankacc == "") bankacc = 0;
 
           let usd2: number = +usd;
           const cash2: number = +cash;
