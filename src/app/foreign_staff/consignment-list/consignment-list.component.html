@@ -11,16 +11,9 @@
           </div>
           <div class="card-body">
             <div class="row">
-              <button
-                *ngIf="!showOnlyManagers631"
-                (click)="joinConsignments()"
-                mat-raised-button
-                type="button"
-                class="col-sm-3 col-lg-2 btn btn-danger"
-              >
-                Partiyalarni birlashtirish<i class="material-icons"
-                  >join_inner</i
-                >
+              <button *ngIf="!showOnlyManagers631" (click)="joinConsignments()" mat-raised-button type="button"
+                class="col-sm-3 col-lg-2 btn btn-danger">
+                Partiyalarni birlashtirish<i class="material-icons">join_inner</i>
               </button>
             </div>
 
@@ -52,53 +45,36 @@
                       <!-- If there is a rate, show the value + an edit button -->
                       <ng-container *ngIf="consignment.rate; else addRateBlock">
                         <span class="me-2">{{ consignment.rate }}</span>
-                        <button
-                          type="button"
-                          mat-icon-button
-                          color="primary"
-                          (click)="
+                        <button type="button" mat-icon-button color="primary" (click)="
                             reOpenFinance(consignment.name, consignment.rate)
-                          "
-                          title="Edit rate"
-                        >
+                          " title="Edit rate">
                           <mat-icon>edit</mat-icon>
                         </button>
                       </ng-container>
 
                       <!-- Otherwise show an “add” button -->
                       <ng-template #addRateBlock>
-                        <button
-                          type="button"
-                          mat-icon-button
-                          style="color: green;"
-                          (click)="
+                        <button type="button" mat-icon-button style="color: green;" (click)="
                             reOpenFinance(consignment.name, consignment.rate)
-                          "
-                          title="Add rate"
-                        >
-                         Kurs <mat-icon>add</mat-icon>
+                          " title="Add rate">
+                          Kurs <mat-icon>add</mat-icon>
                         </button>
                       </ng-template>
                     </td>
-                    <td
-                    *ngIf="consignment.isHongKong == true; else elseBlockAvia"
-                    
-                    style="font-weight: bold; color: rgb(33, 6, 186)"
-                  >
-                  AVTO 🚚
-                  </td>
-                  <ng-template #elseBlockAvia>
-                    <td style="font-weight: bold; color: rgb(0, 229, 255)">AVIA 🛬</td>
-                  </ng-template>
+                    <td *ngIf="consignment.isHongKong == true; else elseBlockAvia"
+                      style="font-weight: bold; color: rgb(33, 6, 186)">
+                      AVTO 🚚
+                    </td>
+                    <ng-template #elseBlockAvia>
+                      <td style="font-weight: bold; color: rgb(0, 229, 255)">AVIA 🛬</td>
+                    </ng-template>
                     <td>{{ consignment.airway_bill }}</td>
                     <td>{{ consignment.mass }}</td>
                     <td>{{ consignment.volume }}</td>
                     <td>{{ consignment.number_of_boxes }}</td>
 
-                    <td
-                      *ngIf="consignment.name == activeConsignment; else elseBlock"
-                      style="font-weight: bold; color: green"
-                    >
+                    <td *ngIf="consignment.name == activeConsignment; else elseBlock"
+                      style="font-weight: bold; color: green">
                       OPEN
                     </td>
                     <ng-template #elseBlock>
@@ -109,107 +85,53 @@
                                                 XA<i class="material-icons">flight_takeoff</i>
                                               </button> -->
 
-                      <button
-                       
-                        (click)="changeStatusParty(consignment.name, '5')"
-                        mat-raised-button
-                        type="button"
-                        class="btn btn-info"
-                      >
+                      <button *ngIf="showOnlyForManagers" (click)="changeStatusParty(consignment.name, '5')"
+                        mat-raised-button type="button" class="btn btn-info">
                         UA<i class="material-icons">flight_land</i>
                       </button>
 
-                      <button
-                        *ngIf="showOnlyForManagers"
-                        (click)="receiversReport(consignment.name)"
-                        mat-raised-button
-                        type="button"
-                        class="btn btn-success"
-                      >
+                      <button *ngIf="showOnlyForManagers" (click)="receiversReport(consignment.name)" mat-raised-button
+                        type="button" class="btn btn-success">
                         List<i class="material-icons">fact_check</i>
                       </button>
-                      <button
-                        *ngIf="!showOnlyForManagers && !showOnlyManagers631"
-                        (click)="reOpenParty(consignment.name)"
-                        mat-raised-button
-                        type="button"
-                        class="btn btn-info"
-                      >
+                      <button *ngIf="!showOnlyForManagers && !showOnlyManagers631"
+                        (click)="reOpenParty(consignment.name)" mat-raised-button type="button" class="btn btn-info">
                         Reopen<i class="material-icons">list</i>
                       </button>
-                      <button
-                        *ngIf="
+                      <button *ngIf="
                           showOnlyForManagers && !consignment.isHongKong;
                           else elsehkBlock
-                        "
-                        (click)="
+                        " (click)="
                           makeHKparty(
                             consignment.name,
                             consignment.hongKongRate
                           )
-                        "
-                        mat-raised-button
-                        type="button"
-                        class="btn btn-outline-secondary"
-                      >
+                        " mat-raised-button type="button" class="btn btn-outline-secondary">
                         AVTO<i class="material-icons">local_activity</i>
                       </button>
                       <ng-template #elsehkBlock>
-                        <button
-                          *ngIf="showOnlyForManagers && consignment.isHongKong"
-                          (click)="undoHKparty(consignment.name)"
-                          mat-raised-button
-                          type="button"
-                          class="btn btn-danger"
-                        >
+                        <button *ngIf="showOnlyForManagers && consignment.isHongKong"
+                          (click)="undoHKparty(consignment.name)" mat-raised-button type="button"
+                          class="btn btn-danger">
                           AVTO<i class="material-icons">local_activity</i>
                         </button>
                       </ng-template>
 
-                      <button
-                        *ngIf="showOnlyForManagers || !showOnlyManagers631"
-                        (click)="takeSNK(consignment.name)"
-                        mat-raised-button
-                        type="button"
-                        class="btn btn-warning"
-                      >
+                      <button *ngIf="showOnlyForManagers || !showOnlyManagers631" (click)="takeSNK(consignment.name)"
+                        mat-raised-button type="button" class="btn btn-warning">
                         SNK<i class="material-icons">get_app</i>
                       </button>
-                      <button
-                        *ngIf="!showOnlyForManagers && !showOnlyManagers631"
-                        mat-raised-button
-                        type="button"
-                        class="btn btn-success"
-                      >
-                        <i
-                          (click)="editParty(consignment.name)"
-                          class="material-icons"
-                          >edit</i
-                        >
+                      <button *ngIf="!showOnlyForManagers && !showOnlyManagers631" mat-raised-button type="button"
+                        class="btn btn-success">
+                        <i (click)="editParty(consignment.name)" class="material-icons">edit</i>
                       </button>
-                      <a
-                        mat-raised-button
-                        *ngIf="!showOnlyForManagers && !showOnlyManagers631"
-                        type="button"
-                        class="btn btn-warning"
-                      >
-                        <i
-                          (click)="takePackingcList(consignment.name)"
-                          class="material-icons"
-                          >file_present</i
-                        >
+                      <a mat-raised-button *ngIf="!showOnlyForManagers && !showOnlyManagers631" type="button"
+                        class="btn btn-warning">
+                        <i (click)="takePackingcList(consignment.name)" class="material-icons">file_present</i>
                       </a>
-                      <a
-                        *ngIf="!showOnlyForManagers && !showOnlyManagers631"
-                        mat-raised-button
-                        type="button"
-                        class="btn btn-info"
-                      >
-                        <i
-                          (click)="takeManifestExcel(consignment.name)"
-                          class="material-icons"
-                          >print</i
-                        >
+                      <a *ngIf="!showOnlyForManagers && !showOnlyManagers631" mat-raised-button type="button"
+                        class="btn btn-info">
+                        <i (click)="takeManifestExcel(consignment.name)" class="material-icons">print</i>
                       </a>
                       <!-- <button mat-raised-button href="/#/fs/manifestprint" type="button" class="btn btn-danger" (click)="deleteReceivers(receiver)">
                                                 <i class="material-icons">close</i>
@@ -223,12 +145,7 @@
         </div>
       </div>
     </div>
-    <div
-      #printSection
-      id="print-section"
-      *ngIf="printManifestCond"
-      class="printsection"
-    >
+    <div #printSection id="print-section" *ngIf="printManifestCond" class="printsection">
       <div style="display: inline-block; justify-content: center">
         <br />
         <br />
@@ -236,92 +153,61 @@
           <colgroup width="360" span="2"></colgroup>
           <tbody>
             <tr>
-              <td
-                style="
+              <td style="
                   border-top: 1px solid #000000;
                   border-bottom: 1px solid #000000;
                   border-left: 1px solid #000000;
                   border-right: 1px solid #000000;
-                "
-                valign="middle"
-                height="60"
-                align="center"
-              >
-                <b
-                  ><font face="Times New Roman" color="#000000"
-                    >Жўнатувчи ташкилот номи: Guangzhou Shangfeng International
-                    Supply Chain Co., LTD</font
-                  ></b
-                >
+                " valign="middle" height="60" align="center">
+                <b>
+                  <font face="Times New Roman" color="#000000">Жўнатувчи ташкилот номи: Guangzhou Shangfeng
+                    International
+                    Supply Chain Co., LTD</font>
+                </b>
               </td>
-              <td
-                style="
+              <td style="
                   border-top: 1px solid #000000;
                   border-bottom: 1px solid #000000;
                   border-left: 1px solid #000000;
                   border-right: 1px solid #000000;
-                "
-                valign="middle"
-                align="center"
-              >
-                <b
-                  ><font face="Times New Roman" color="#000000"
-                    >Қабул қилувчи ташкилот номи:YUMA BEST SOFT Limited
-                    Liability Company</font
-                  ></b
-                >
+                " valign="middle" align="center">
+                <b>
+                  <font face="Times New Roman" color="#000000">Қабул қилувчи ташкилот номи:YUMA BEST SOFT Limited
+                    Liability Company</font>
+                </b>
               </td>
             </tr>
             <tr>
-              <td
-                style="
+              <td style="
                   border-top: 1px solid #000000;
                   border-bottom: 1px solid #000000;
                   border-left: 1px solid #000000;
                   border-right: 1px solid #000000;
-                "
-                valign="bottom"
-                height="247"
-                align="center"
-              >
-                <font face="DejaVu Sans Mono" color="#000000"
-                  >Манзили: ROOM 406 BLOCK F QIANGSHENG BUILDING,NO,12 JIANGXIA
+                " valign="bottom" height="247" align="center">
+                <font face="DejaVu Sans Mono" color="#000000">Манзили: ROOM 406 BLOCK F QIANGSHENG BUILDING,NO,12
+                  JIANGXIA
                   NORTH-MIDDLE ROAD,HUANGSHI STREET,BAIYUN DISTRICT GUANGZHOU
-                  CITY, CHINA<br />Телефон рақами: 13560272583</font
-                >
+                  CITY, CHINA<br />Телефон рақами: 13560272583</font>
               </td>
-              <td
-                style="
+              <td style="
                   border-top: 1px solid #000000;
                   border-bottom: 1px solid #000000;
                   border-left: 1px solid #000000;
                   border-right: 1px solid #000000;
-                "
-                valign="bottom"
-                align="center"
-              >
-                <font face="Times New Roman" color="#000000"
-                  >Манзили: 36 Room, 8 Apartment, Yalangach Street Mirzo Ulugbek
+                " valign="bottom" align="center">
+                <font face="Times New Roman" color="#000000">Манзили: 36 Room, 8 Apartment, Yalangach Street Mirzo
+                  Ulugbek
                   district, Tashkent city, Republic of Uzbekistan<br />Телефон
-                  рақами: +998977200821<br />STIR-307269925<br
-                /></font>
+                  рақами: +998977200821<br />STIR-307269925<br /></font>
               </td>
             </tr>
             <tr>
-              <td
-                style="border-top: 1px solid #000000"
-                colspan="2"
-                valign="middle"
-                height="60"
-                align="center"
-              >
-                <b
-                  ><font face="Times New Roman" color="#000000"
-                    >CARGO MANIFEST<br />ГРУЗОВОЙ МАНИФЕСТ<br />{{
-                      consingmentName
-                    }}</font
-                  ></b
-                >
+              <td style="border-top: 1px solid #000000" colspan="2" valign="middle" height="60" align="center">
+                <b>
+                  <font face="Times New Roman" color="#000000">CARGO MANIFEST<br />ГРУЗОВОЙ МАНИФЕСТ<br />{{
+                    consingmentName
+                    }}</font>
+                </b>
               </td>
             </tr>
           </tbody>
@@ -336,369 +222,235 @@
           <colgroup width="85"></colgroup>
           <tbody>
             <tr>
-              <td
-                style="
+              <td style="
                   border-top: 1px solid #000000;
                   border-bottom: 1px solid #000000;
                   border-left: 1px solid #000000;
                   border-right: 1px solid #000000;
-                "
-                colspan="9"
-                valign="bottom"
-                height="20"
-                align="center"
-              >
-                <font face="Times New Roman" color="#000000"
-                  >Name of documents in cargo manifest/ Перечень сведений,
-                  указываемых в манифест</font
-                >
+                " colspan="9" valign="bottom" height="20" align="center">
+                <font face="Times New Roman" color="#000000">Name of documents in cargo manifest/ Перечень сведений,
+                  указываемых в манифест</font>
               </td>
             </tr>
             <tr>
-              <td
-                style="
+              <td style="
                   border-top: 1px solid #000000;
                   border-bottom: 1px solid #000000;
                   border-left: 1px solid #000000;
                   border-right: 1px solid #000000;
-                "
-                colspan="9"
-                valign="bottom"
-                height="20"
-                align="center"
-              >
-                <font face="Times New Roman" color="#000000"
-                  >Waybill number/ Номер транспортной накладной</font
-                >
+                " colspan="9" valign="bottom" height="20" align="center">
+                <font face="Times New Roman" color="#000000">Waybill number/ Номер транспортной накладной</font>
               </td>
             </tr>
             <tr>
-              <td
-                style="
+              <td style="
                   border-top: 1px solid #000000;
                   border-bottom: 1px solid #000000;
                   border-left: 1px solid #000000;
                   border-right: 1px solid #000000;
-                "
-                valign="middle"
-                height="79"
-                align="center"
-              >
+                " valign="middle" height="79" align="center">
                 <font face="Times New Roman" color="#000000">№</font>
               </td>
-              <td
-                style="
+              <td style="
                   border-top: 1px solid #000000;
                   border-bottom: 1px solid #000000;
                   border-left: 1px solid #000000;
                   border-right: 1px solid #000000;
-                "
-                valign="middle"
-                align="center"
-              >
-                <b
-                  ><font face="Times New Roman" color="#000000"
-                    >Invoice numbers/1. Тижорат хужжати раками</font
-                  ></b
-                >
+                " valign="middle" align="center">
+                <b>
+                  <font face="Times New Roman" color="#000000">Invoice numbers/1. Тижорат хужжати раками</font>
+                </b>
               </td>
-              <td
-                style="
+              <td style="
                   border-top: 1px solid #000000;
                   border-bottom: 1px solid #000000;
                   border-left: 1px solid #000000;
                   border-right: 1px solid #000000;
-                "
-                valign="middle"
-                align="center"
-              >
-                <font face="Times New Roman" color="#000000"
-                  >sender’s name/2. Халқаро куриерлик жўнатмаси
-                  жўнатувчиси</font
-                >
+                " valign="middle" align="center">
+                <font face="Times New Roman" color="#000000">sender’s name/2. Халқаро куриерлик жўнатмаси
+                  жўнатувчиси</font>
               </td>
-              <td
-                style="
+              <td style="
                   border-top: 1px solid #000000;
                   border-bottom: 1px solid #000000;
                   border-left: 1px solid #000000;
                   border-right: 1px solid #000000;
-                "
-                valign="middle"
-                align="center"
-              >
-                <font face="Times New Roman" color="#000000"
-                  >Receiver’s name/ 3. Халқаро куриерлик жўнатмаси қабул
-                  қилувчиси</font
-                >
+                " valign="middle" align="center">
+                <font face="Times New Roman" color="#000000">Receiver’s name/ 3. Халқаро куриерлик жўнатмаси қабул
+                  қилувчиси</font>
               </td>
-              <td
-                style="
+              <td style="
                   border-top: 1px solid #000000;
                   border-bottom: 1px solid #000000;
                   border-left: 1px solid #000000;
                   border-right: 1px solid #000000;
-                "
-                valign="middle"
-                align="center"
-              >
-                <font face="Times New Roman" color="#000000"
-                  >Passport number/ ва унинг манзили</font
-                >
+                " valign="middle" align="center">
+                <font face="Times New Roman" color="#000000">Passport number/ ва унинг манзили</font>
               </td>
-              <td
-                style="
+              <td style="
                   border-top: 1px solid #000000;
                   border-bottom: 1px solid #000000;
                   border-left: 1px solid #000000;
                   border-right: 1px solid #000000;
-                "
-                valign="middle"
-                align="center"
-              >
-                <font face="Times New Roman" color="#000000"
-                  >Short name/4. Жўнатманинг қисқача номи</font
-                >
+                " valign="middle" align="center">
+                <font face="Times New Roman" color="#000000">Short name/4. Жўнатманинг қисқача номи</font>
               </td>
-              <td
-                style="
+              <td style="
                   border-top: 1px solid #000000;
                   border-bottom: 1px solid #000000;
                   border-left: 1px solid #000000;
                   border-right: 1px solid #000000;
-                "
-                valign="middle"
-                align="center"
-              >
-                <font face="Times New Roman" color="#000000"
-                  >Gross weight/5. Жўнатманинг брутто вазни</font
-                >
+                " valign="middle" align="center">
+                <font face="Times New Roman" color="#000000">Gross weight/5. Жўнатманинг брутто вазни</font>
               </td>
-              <td
-                style="
+              <td style="
                   border-top: 1px solid #000000;
                   border-bottom: 1px solid #000000;
                   border-left: 1px solid #000000;
                   border-right: 1px solid #000000;
-                "
-                valign="middle"
-                align="center"
-              >
-                <font face="Times New Roman" color="#000000"
-                  >Total price/6. Фактура ыиймати</font
-                >
+                " valign="middle" align="center">
+                <font face="Times New Roman" color="#000000">Total price/6. Фактура ыиймати</font>
               </td>
-              <td
-                style="
+              <td style="
                   border-top: 1px solid #000000;
                   border-bottom: 1px solid #000000;
                   border-left: 1px solid #000000;
                   border-right: 1px solid #000000;
-                "
-                valign="middle"
-                align="center"
-              >
-                <font face="Times New Roman" color="#000000"
-                  >Currency/7. Валюта номи</font
-                >
+                " valign="middle" align="center">
+                <font face="Times New Roman" color="#000000">Currency/7. Валюта номи</font>
               </td>
             </tr>
             <tr *ngFor="let row of manifestData; let i = index">
-              <td
-                style="
+              <td style="
                   border-top: 1px solid #000000;
                   border-bottom: 1px solid #000000;
                   border-left: 1px solid #000000;
                   border-right: 1px solid #000000;
-                "
-                sdval="1"
-                sdnum="1033;"
-                valign="bottom"
-                height="20"
-                align="center"
-              >
+                " sdval="1" sdnum="1033;" valign="bottom" height="20" align="center">
                 <font face="Times New Roman" color="#000000">{{ i + 1 }}</font>
               </td>
-              <td
-                style="
+              <td style="
                   border-top: 1px solid #000000;
                   border-bottom: 1px solid #000000;
                   border-left: 1px solid #000000;
                   border-right: 1px solid #000000;
-                "
-                valign="bottom"
-                align="center"
-              >
-                <b
-                  ><font face="Times New Roman" color="#000000">{{
+                " valign="bottom" align="center">
+                <b>
+                  <font face="Times New Roman" color="#000000">{{
                     row.boxNumber
-                  }}</font></b
-                >
+                    }}</font>
+                </b>
               </td>
-              <td
-                style="
+              <td style="
                   border-top: 1px solid #000000;
                   border-bottom: 1px solid #000000;
                   border-left: 1px solid #000000;
                   border-right: 1px solid #000000;
-                "
-                valign="bottom"
-                align="center"
-              >
-                <b
-                  ><font face="Times New Roman" color="#000000"
-                    >Кент Лии</font
-                  ></b
-                >
+                " valign="bottom" align="center">
+                <b>
+                  <font face="Times New Roman" color="#000000">Кент Лии</font>
+                </b>
               </td>
-              <td
-                style="
+              <td style="
                   border-top: 1px solid #000000;
                   border-bottom: 1px solid #000000;
                   border-left: 1px solid #000000;
                   border-right: 1px solid #000000;
-                "
-                valign="bottom"
-                align="center"
-              >
-                <b
-                  ><font face="Times New Roman" color="#000000"
-                    >{{ row.receiverName }}, {{ row.passport }}</font
-                  ></b
-                >
+                " valign="bottom" align="center">
+                <b>
+                  <font face="Times New Roman" color="#000000">{{ row.receiverName }}, {{ row.passport }}</font>
+                </b>
               </td>
-              <td
-                style="
+              <td style="
                   border-top: 1px solid #000000;
                   border-bottom: 1px solid #000000;
                   border-left: 1px solid #000000;
                   border-right: 1px solid #000000;
-                "
-                valign="bottom"
-                align="center"
-              >
-                <b
-                  ><font face="Times New Roman" color="#000000">{{
+                " valign="bottom" align="center">
+                <b>
+                  <font face="Times New Roman" color="#000000">{{
                     row.address
-                  }}</font></b
-                >
+                    }}</font>
+                </b>
               </td>
-              <td
-                style="
+              <td style="
                   border-top: 1px solid #000000;
                   border-bottom: 1px solid #000000;
                   border-left: 1px solid #000000;
                   border-right: 1px solid #000000;
-                "
-                valign="bottom"
-                align="center"
-              >
+                " valign="bottom" align="center">
                 <font face="Times New Roman" color="#000000">{{
                   row.orderNames
-                }}</font>
+                  }}</font>
               </td>
-              <td
-                style="
+              <td style="
                   border-top: 1px solid #000000;
                   border-bottom: 1px solid #000000;
                   border-left: 1px solid #000000;
                   border-right: 1px solid #000000;
-                "
-                valign="bottom"
-                align="center"
-              >
+                " valign="bottom" align="center">
                 <font face="Times New Roman" color="#000000">{{
                   row.weight
-                }}</font>
+                  }}</font>
               </td>
-              <td
-                style="
+              <td style="
                   border-top: 1px solid #000000;
                   border-bottom: 1px solid #000000;
                   border-left: 1px solid #000000;
                   border-right: 1px solid #000000;
-                "
-                valign="bottom"
-                align="center"
-              >
+                " valign="bottom" align="center">
                 <font face="Times New Roman" color="#000000">{{
                   row.price
-                }}</font>
+                  }}</font>
               </td>
-              <td
-                style="
+              <td style="
                   border-top: 1px solid #000000;
                   border-bottom: 1px solid #000000;
                   border-left: 1px solid #000000;
                   border-right: 1px solid #000000;
-                "
-                valign="bottom"
-                align="center"
-              >
-                <font face="Times New Roman" color="#000000"
-                  >USD / доллар США</font
-                >
+                " valign="bottom" align="center">
+                <font face="Times New Roman" color="#000000">USD / доллар США</font>
               </td>
             </tr>
             <tr>
-              <td
-                style="
+              <td style="
                   border-top: 1px solid #000000;
                   border-bottom: 1px solid #000000;
                   border-left: 1px solid #000000;
                   border-right: 1px solid #000000;
-                "
-                colspan="6"
-                valign="middle"
-                height="20"
-                align="center"
-              >
-                <b
-                  ><font face="Times New Roman" color="#000000"
-                    >TOTAL/ Жами</font
-                  ></b
-                >
+                " colspan="6" valign="middle" height="20" align="center">
+                <b>
+                  <font face="Times New Roman" color="#000000">TOTAL/ Жами</font>
+                </b>
               </td>
-              <td
-                style="
+              <td style="
                   border-top: 1px solid #000000;
                   border-bottom: 1px solid #000000;
                   border-left: 1px solid #000000;
                   border-right: 1px solid #000000;
-                "
-                valign="middle"
-                align="center"
-              >
-                <b
-                  ><font face="Times New Roman" color="#000000">{{
+                " valign="middle" align="center">
+                <b>
+                  <font face="Times New Roman" color="#000000">{{
                     totalWeight
-                  }}</font></b
-                >
+                    }}</font>
+                </b>
               </td>
-              <td
-                style="
+              <td style="
                   border-top: 1px solid #000000;
                   border-bottom: 1px solid #000000;
                   border-left: 1px solid #000000;
                   border-right: 1px solid #000000;
-                "
-                valign="middle"
-                align="center"
-              >
+                " valign="middle" align="center">
                 <font face="Times New Roman" color="#000000">{{
                   totalPrice
-                }}</font>
+                  }}</font>
               </td>
-              <td
-                style="
+              <td style="
                   border-top: 1px solid #000000;
                   border-bottom: 1px solid #000000;
                   border-left: 1px solid #000000;
                   border-right: 1px solid #000000;
-                "
-                valign="middle"
-                align="center"
-              >
+                " valign="middle" align="center">
                 <font face="Times New Roman" color="#000000">USD</font>
               </td>
             </tr>
@@ -706,25 +458,21 @@
         </table>
 
         <div>
-          <p
-            style="
+          <p style="
               padding: 24px;
               margin: auto;
               color: black;
               font-family: 'Times New Roman', Times, serif;
-            "
-          >
+            ">
             Жўнатувчи ташкилот мухри: _________________________
           </p>
           <br />
-          <p
-            style="
+          <p style="
               padding: 24px;
               margin: auto;
               color: black;
               font-family: 'Times New Roman', Times, serif;
-            "
-          >
+            ">
             Қабул қилувчи ташкилот мухри: _________________________
           </p>
         </div>

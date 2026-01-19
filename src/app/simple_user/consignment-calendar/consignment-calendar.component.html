@@ -1,0 +1,75 @@
+<div class="consignment-tracker">
+  <!-- Header -->
+  <div class="tracker-header">
+    <div class="header-icon">
+      <i class="material-icons">local_shipping</i>
+    </div>
+    <div class="header-content">
+      <h4>Reyslar Taqvimi</h4>
+      <p class="header-description">
+        Ko'rsatilgan sanalarda Xitoy omboriga yetib borgan yuklar aynan shu reys orqali yuboriladi.
+      </p>
+    </div>
+    <button class="btn btn-sm btn-outline-primary refresh-btn" (click)="refreshCalendar()">
+      <i class="material-icons">refresh</i>
+    </button>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Yuklanmoqda...</p>
+  </div>
+
+  <!-- No Data State -->
+  <div *ngIf="!loading && calendarData.length === 0" class="empty-state">
+    <i class="material-icons">inventory_2</i>
+    <p>Hozircha reyslar yo'q</p>
+  </div>
+
+  <!-- Consignment Cards List with Progress Bar -->
+  <div class="consignment-list" *ngIf="!loading && calendarData.length > 0">
+    <div class="consignment-card" *ngFor="let consignment of calendarData">
+      <!-- Card Header -->
+      <div class="card-header-row">
+        <div class="consignment-name">
+          <i class="material-icons">inventory_2</i>
+          <span>{{ consignment.name }}</span>
+        </div>
+        <!-- <div class="status-badge" [style.background-color]="getStatusColor(consignment.currentStatus)">
+          {{ getStatusNameUz(consignment) }}
+        </div> -->
+      </div>
+
+      <!-- Progress Stepper -->
+      <div class="progress-stepper">
+        <ng-container *ngFor="let step of progressSteps; let i = index; let last = last">
+          <!-- Step -->
+          <div class="step" [class.completed]="isStepCompleted(consignment, step.status)"
+            [class.current]="isCurrentStep(consignment, step.status)"
+            [class.pending]="!isStepCompleted(consignment, step.status) && !isCurrentStep(consignment, step.status)">
+            <div class="step-icon">
+              <i class="material-icons">{{ step.icon }}</i>
+            </div>
+            <div class="step-info">
+              <span class="step-label">{{ step.label }}</span>
+              <span class="step-date" *ngIf="getStepDate(consignment, step.status)">
+                {{ formatDate(getStepDate(consignment, step.status)) }}
+              </span>
+              <span class="step-date pending" *ngIf="!getStepDate(consignment, step.status)">-</span>
+            </div>
+          </div>
+          <!-- Connector Line -->
+          <div class="step-connector" *ngIf="!last"
+            [class.active]="isLineActive(consignment, step.status, progressSteps[i + 1].status)">
+          </div>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+
+  <!-- Summary Footer -->
+  <div class="tracker-footer" *ngIf="!loading && calendarData.length > 0">
+    <span class="total-count">Jami: <strong>{{ calendarData.length }}</strong> ta reys</span>
+  </div>
+</div>

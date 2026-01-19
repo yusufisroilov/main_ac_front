@@ -7,6 +7,7 @@ import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { MaterialModule } from "src/app/app.module";
 import { customerDashboardRoutes } from "./customer-dashboard.routing";
 import { CustomerDashboardComponent } from "./customer-dashboard.component";
+import { ConsignmentCalendarModule } from "../consignment-calendar/consignment-calendar.module";
 
 @NgModule({
   imports: [
@@ -15,6 +16,7 @@ import { CustomerDashboardComponent } from "./customer-dashboard.component";
     FormsModule,
     MaterialModule,
     ReactiveFormsModule,
+    ConsignmentCalendarModule,
   ],
   declarations: [CustomerDashboardComponent],
 })

@@ -46,7 +46,7 @@ export class ConsignmentListComponent implements OnInit {
     private http: Http,
     private httpClient: HttpClient,
     private changeDetectorRef: ChangeDetectorRef,
-    public authService: AuthService
+    public authService: AuthService,
   ) {
     if (
       localStorage.getItem("role") == "MANAGER" ||
@@ -129,7 +129,7 @@ export class ConsignmentListComponent implements OnInit {
                 "&airway_bill=" +
                 airWayBill,
               "",
-              this.options
+              this.options,
             )
             .subscribe(
               (response) => {
@@ -152,7 +152,7 @@ export class ConsignmentListComponent implements OnInit {
                     .fire(
                       "Error happaned!",
                       "BAD REQUEST: WRONG TYPE OF INPUT",
-                      "error"
+                      "error",
                     )
                     .then((result) => {});
                 }
@@ -160,7 +160,7 @@ export class ConsignmentListComponent implements OnInit {
                 if (error.status == 403) {
                   this.authService.logout();
                 }
-              }
+              },
             );
         },
       })
@@ -198,7 +198,7 @@ export class ConsignmentListComponent implements OnInit {
             .post(
               GlobalVars.baseUrl + "/consignments/merge?consignments=" + valueB,
               "",
-              this.options
+              this.options,
             )
             .subscribe((response) => {
               swal.fire("O'zgartirildi", "", "success");
@@ -219,7 +219,7 @@ export class ConsignmentListComponent implements OnInit {
   takeSNK(partyNum: any) {
     window.open(
       GlobalVars.baseUrl + "/consignments/generate_snk?consignment=" + partyNum,
-      "_blank"
+      "_blank",
     );
     // this.http.get(GlobalVars.baseUrl + '/consignments/generate_snk?consignment=' + partyNum, this.options)
     // .subscribe(response => {
@@ -230,7 +230,7 @@ export class ConsignmentListComponent implements OnInit {
   takePackingcList(partyNum: any) {
     window.open(
       GlobalVars.baseUrl + "/consignments/packing_list?consignment=" + partyNum,
-      "_blank"
+      "_blank",
     );
     // this.http.get(GlobalVars.baseUrl + '/consignments/packing_list?consignment=' + partyNum, this.options)
     //  .subscribe(response => {
@@ -243,7 +243,7 @@ export class ConsignmentListComponent implements OnInit {
       GlobalVars.baseUrl +
         "/consignments/receiversReport?consignment=" +
         partyNum,
-      "_blank"
+      "_blank",
     );
     // this.http.get(GlobalVars.baseUrl + '/consignments/packing_list?consignment=' + partyNum, this.options)
     //  .subscribe(response => {
@@ -254,7 +254,7 @@ export class ConsignmentListComponent implements OnInit {
   takeManifestExcel(partyNum: any) {
     window.open(
       GlobalVars.baseUrl + "/consignments/manifest?consignment=" + partyNum,
-      "_blank"
+      "_blank",
     );
     // this.http.get(GlobalVars.baseUrl + '/consignments/packing_list?consignment=' + partyNum, this.options)
     //  .subscribe(response => {
@@ -271,7 +271,7 @@ export class ConsignmentListComponent implements OnInit {
     this.http
       .get(
         GlobalVars.baseUrl + "/consignments/manifest?consignment=" + consNum,
-        this.options
+        this.options,
       )
       .subscribe(
         (response) => {
@@ -286,7 +286,7 @@ export class ConsignmentListComponent implements OnInit {
           this.popupWin = window.open(
             "",
             "_blank",
-            "top=0,left=0,height=100%,width=auto"
+            "top=0,left=0,height=100%,width=auto",
           );
           this.popupWin.document.open();
           this.popupWin.document.write(`
@@ -314,7 +314,7 @@ export class ConsignmentListComponent implements OnInit {
           if (error.status == 403) {
             this.authService.logout();
           }
-        }
+        },
       );
   }
 
@@ -325,7 +325,7 @@ export class ConsignmentListComponent implements OnInit {
           "/consignments/reopen?consignment=" +
           consignmentName,
         "",
-        this.options
+        this.options,
       )
       .subscribe(
         (response) => {
@@ -349,7 +349,7 @@ export class ConsignmentListComponent implements OnInit {
           if (error.status == 403) {
             this.authService.logout();
           }
-        }
+        },
       );
   }
 
@@ -381,7 +381,7 @@ export class ConsignmentListComponent implements OnInit {
                 "&rate=" +
                 newRate,
               "",
-              this.options
+              this.options,
             )
             .subscribe(
               (response) => {
@@ -389,7 +389,7 @@ export class ConsignmentListComponent implements OnInit {
                   this.http
                     .get(
                       GlobalVars.baseUrl + "/consignments/list",
-                      this.options
+                      this.options,
                     )
                     .subscribe((response) => {
                       localStorage.setItem("current_party", consignmentName);
@@ -405,7 +405,7 @@ export class ConsignmentListComponent implements OnInit {
                 if (error.status == 403) {
                   this.authService.logout();
                 }
-              }
+              },
             );
         },
       })
@@ -444,7 +444,7 @@ export class ConsignmentListComponent implements OnInit {
                 "&hongKongRate=" +
                 newRate,
               "",
-              this.options
+              this.options,
             )
             .subscribe(
               (response) => {
@@ -452,7 +452,7 @@ export class ConsignmentListComponent implements OnInit {
                   this.http
                     .get(
                       GlobalVars.baseUrl + "/consignments/list",
-                      this.options
+                      this.options,
                     )
                     .subscribe((response) => {
                       this.consignments = response.json().consignments;
@@ -467,7 +467,7 @@ export class ConsignmentListComponent implements OnInit {
                 if (error.status == 403) {
                   this.authService.logout();
                 }
-              }
+              },
             );
         },
       })
@@ -495,7 +495,7 @@ export class ConsignmentListComponent implements OnInit {
                 "/consignments/undoHK?consignment=" +
                 consignmentName,
               "",
-              this.options
+              this.options,
             )
             .subscribe(
               (response) => {
@@ -503,7 +503,7 @@ export class ConsignmentListComponent implements OnInit {
                   this.http
                     .get(
                       GlobalVars.baseUrl + "/consignments/list",
-                      this.options
+                      this.options,
                     )
                     .subscribe((response) => {
                       swal.fire("O'zgardi!", "", "success");
@@ -519,7 +519,7 @@ export class ConsignmentListComponent implements OnInit {
                 if (error.status == 403) {
                   this.authService.logout();
                 }
-              }
+              },
             );
         } else if (result.isDenied) {
           swal.fire("O'zgarmadi", "", "info");
@@ -546,7 +546,7 @@ export class ConsignmentListComponent implements OnInit {
                 "&status=" +
                 status,
               "",
-              this.options
+              this.options,
             )
             .subscribe(
               (response) => {
@@ -554,7 +554,7 @@ export class ConsignmentListComponent implements OnInit {
                   this.http
                     .get(
                       GlobalVars.baseUrl + "/consignments/list",
-                      this.options
+                      this.options,
                     )
                     .subscribe((response) => {
                       swal.fire("O'zgardi!", "", "success");
@@ -570,7 +570,7 @@ export class ConsignmentListComponent implements OnInit {
                 if (error.status == 403) {
                   this.authService.logout();
                 }
-              }
+              },
             );
         } else if (result.isDenied) {
           swal.fire("O'zgarmadi", "", "info");

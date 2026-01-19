@@ -1,0 +1,403 @@
+/* Consignment Tracker Container */
+.consignment-tracker {
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+/* Tracker Header */
+.tracker-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.header-icon {
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, #9c27b0, #7b1fa2);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.header-icon i {
+  color: white;
+  font-size: 22px;
+}
+
+.header-content {
+  flex: 1;
+}
+
+.header-content h4 {
+  margin: 0 0 4px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+}
+
+.header-description {
+  margin: 0;
+  font-size: 12px;
+  color: #666;
+  line-height: 1.4;
+}
+
+.refresh-btn {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.refresh-btn i {
+  font-size: 20px;
+}
+
+/* Loading State */
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #e9ecef;
+  border-top-color: #9c27b0;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.loading-state p {
+  margin: 12px 0 0 0;
+  color: #666;
+  font-size: 14px;
+}
+
+/* Empty State */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  color: #999;
+}
+
+.empty-state i {
+  font-size: 48px;
+  margin-bottom: 12px;
+}
+
+.empty-state p {
+  margin: 0;
+  font-size: 14px;
+}
+
+/* Consignment List */
+.consignment-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Consignment Card */
+.consignment-card {
+  background: white;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.consignment-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+/* Card Header Row */
+.card-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.consignment-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.consignment-name i {
+  font-size: 20px;
+  color: #9c27b0;
+}
+
+.consignment-name span {
+  font-size: 15px;
+  font-weight: 600;
+  color: #333;
+}
+
+/* Status Badge */
+.status-badge {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 500;
+  color: white;
+  white-space: nowrap;
+}
+
+/* Progress Stepper */
+.progress-stepper {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 12px 0;
+}
+
+/* Step */
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 0 0 auto;
+  min-width: 80px;
+  max-width: 100px;
+}
+
+.step-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8px;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+/* Completed Step */
+.step.completed .step-icon {
+  background: linear-gradient(135deg, #4CAF50, #45a049);
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
+}
+
+.step.completed .step-icon i {
+  color: white;
+  font-size: 22px;
+}
+
+.step.completed .step-label {
+  color: #4CAF50;
+  font-weight: 600;
+}
+
+.step.completed .step-date {
+  color: #333;
+}
+
+/* Current Step */
+.step.current .step-icon {
+  background: linear-gradient(135deg, #9c27b0, #7b1fa2);
+  box-shadow: 0 4px 12px rgba(156, 39, 176, 0.4);
+  animation: pulse 2s infinite;
+}
+
+.step.current .step-icon i {
+  color: white;
+  font-size: 22px;
+}
+
+.step.current .step-label {
+  color: #9c27b0;
+  font-weight: 600;
+}
+
+.step.current .step-date {
+  color: #333;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 4px 12px rgba(156, 39, 176, 0.4);
+  }
+  50% {
+    box-shadow: 0 4px 20px rgba(156, 39, 176, 0.6);
+  }
+  100% {
+    box-shadow: 0 4px 12px rgba(156, 39, 176, 0.4);
+  }
+}
+
+/* Pending Step */
+.step.pending .step-icon {
+  background: #e0e0e0;
+  box-shadow: none;
+}
+
+.step.pending .step-icon i {
+  color: #999;
+  font-size: 22px;
+}
+
+.step.pending .step-label {
+  color: #999;
+}
+
+.step.pending .step-date {
+  color: #bbb;
+}
+
+/* Step Info */
+.step-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.step-label {
+  font-size: 10px;
+  line-height: 1.3;
+  margin-bottom: 4px;
+  max-width: 90px;
+}
+
+.step-date {
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.step-date.pending {
+  font-weight: 400;
+}
+
+/* Connector Line */
+.step-connector {
+  flex: 1;
+  height: 3px;
+  background: #e0e0e0;
+  margin-top: 20px;
+  margin-left: -5px;
+  margin-right: -5px;
+  border-radius: 2px;
+  transition: background 0.3s ease;
+}
+
+.step-connector.active {
+  background: linear-gradient(90deg, #4CAF50, #4CAF50);
+}
+
+/* Tracker Footer */
+.tracker-footer {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid #e9ecef;
+  text-align: center;
+}
+
+.total-count {
+  font-size: 13px;
+  color: #666;
+}
+
+.total-count strong {
+  color: #9c27b0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .consignment-tracker {
+    padding: 12px;
+  }
+
+  .progress-stepper {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    gap: 0;
+  }
+
+  .step {
+    min-width: 70px;
+    max-width: 80px;
+  }
+
+  .step-icon {
+    width: 38px;
+    height: 38px;
+  }
+
+  .step-icon i {
+    font-size: 18px !important;
+  }
+
+  .step-label {
+    font-size: 9px;
+    max-width: 70px;
+  }
+
+  .step-date {
+    font-size: 10px;
+  }
+
+  .step-connector {
+    margin-top: 18px;
+    min-width: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .card-header-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .step {
+    min-width: 60px;
+    max-width: 70px;
+  }
+
+  .step-icon {
+    width: 34px;
+    height: 34px;
+  }
+
+  .step-icon i {
+    font-size: 16px !important;
+  }
+
+  .step-label {
+    font-size: 8px;
+    max-width: 60px;
+  }
+
+  .step-connector {
+    margin-top: 16px;
+    min-width: 15px;
+  }
+}

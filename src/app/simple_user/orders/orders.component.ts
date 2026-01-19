@@ -112,6 +112,7 @@ export class OrdersComponent implements OnInit, AfterViewInit {
       .subscribe(
         (response) => {
           this.allData = response.json().orders;
+          console.log(this.allData);
 
           for (let index = 0; index < this.allData.length; index++) {
             const element = this.allData[index];
