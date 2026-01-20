@@ -19,6 +19,11 @@ interface ConsignmentCalendarItem {
     date: string | null;
     reached: boolean;
   }[];
+  // Direct date fields on consignment (for approximate dates)
+  in_foreign_warehouse_date?: string | null;
+  in_foreign_airport_date?: string | null;
+  in_uzb_airport_date?: string | null;
+  in_uzb_warehouse_date?: string | null;
 }
 
 interface ProgressStep {
@@ -73,7 +78,7 @@ export class ConsignmentCalendarComponent implements OnInit {
   progressSteps: ProgressStep[] = [
     {
       status: 2,
-      label: "Xitoy omborida",
+      label: "Qadoqlash jarayonida",
       icon: "warehouse",
       dateField: "in_foreign_warehouse_date",
     },
@@ -301,7 +306,10 @@ export class ConsignmentCalendarComponent implements OnInit {
     this.loadCalendarData();
   }
 
-  // Check if a step is completed (has a date in timeline)
+  // Status order for comparison (lower index = earlier in journey)
+  statusOrder: number[] = [2, 4, 5, 7];
+
+  // Check if a step is actually completed (status has reached or passed this step)
   isStepCompleted(
     consignment: ConsignmentCalendarItem,
     stepStatus: number,
@@ -310,7 +318,14 @@ export class ConsignmentCalendarComponent implements OnInit {
     const timelineItem = consignment.timeline.find(
       (t) => t.status === stepStatus,
     );
-    return timelineItem ? !!timelineItem.date : false;
+    // Check if timeline item has reached flag, or compare status order
+    if (timelineItem && timelineItem.reached !== undefined) {
+      return timelineItem.reached;
+    }
+    // Fallback: compare status order
+    const currentStatusIndex = this.statusOrder.indexOf(consignment.currentStatus);
+    const stepStatusIndex = this.statusOrder.indexOf(stepStatus);
+    return currentStatusIndex >= stepStatusIndex && this.getStepDate(consignment, stepStatus) !== null;
   }
 
   // Check if this is the current step
@@ -321,16 +336,60 @@ export class ConsignmentCalendarComponent implements OnInit {
     return consignment.currentStatus === stepStatus;
   }
 
-  // Get date for a specific step from timeline
+  // Check if a date is approximate (has date but status not yet reached)
+  isDateApproximate(
+    consignment: ConsignmentCalendarItem,
+    stepStatus: number,
+  ): boolean {
+    const hasDate = this.getStepDate(consignment, stepStatus) !== null;
+    if (!hasDate) return false;
+
+    // Check timeline reached flag first
+    if (consignment.timeline) {
+      const timelineItem = consignment.timeline.find(
+        (t) => t.status === stepStatus,
+      );
+      if (timelineItem && timelineItem.reached !== undefined) {
+        return !timelineItem.reached;
+      }
+    }
+
+    // Fallback: compare status order - if current status is before this step, date is approximate
+    const currentStatusIndex = this.statusOrder.indexOf(consignment.currentStatus);
+    const stepStatusIndex = this.statusOrder.indexOf(stepStatus);
+    return currentStatusIndex < stepStatusIndex;
+  }
+
+  // Map status to direct date field name
+  statusToDateField: { [key: number]: string } = {
+    2: "in_foreign_warehouse_date",
+    4: "in_foreign_airport_date",
+    5: "in_uzb_airport_date",
+    7: "in_uzb_warehouse_date",
+  };
+
+  // Get date for a specific step - check both timeline and direct fields
   getStepDate(
     consignment: ConsignmentCalendarItem,
     stepStatus: number,
   ): string | null {
-    if (!consignment.timeline) return null;
-    const timelineItem = consignment.timeline.find(
-      (t) => t.status === stepStatus,
-    );
-    return timelineItem ? timelineItem.date : null;
+    // First, try to get from timeline
+    if (consignment.timeline) {
+      const timelineItem = consignment.timeline.find(
+        (t) => t.status === stepStatus,
+      );
+      if (timelineItem && timelineItem.date) {
+        return timelineItem.date;
+      }
+    }
+
+    // Fallback: check direct date fields on consignment object
+    const dateField = this.statusToDateField[stepStatus];
+    if (dateField && consignment[dateField]) {
+      return consignment[dateField];
+    }
+
+    return null;
   }
 
   // Check if the line between steps should be active (completed)

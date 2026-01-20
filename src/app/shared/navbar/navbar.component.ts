@@ -68,7 +68,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
     private element: ElementRef,
     private router: Router,
     public authService: AuthService,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
   ) {
     this.location = location;
     this.nativeElement = element.nativeElement;
@@ -167,21 +167,21 @@ export class NavbarComponent implements OnInit, OnDestroy {
       this.notificationService.notificationCounts$.subscribe((counts) => {
         this.notificationCounts = counts;
 
-        // console.log("📊 Bildirnoma soni yangilandi:", counts);
+        console.log("📊 Bildirnoma soni yangilandi:", counts);
       });
 
     // Subscribe to ticket notifications
     this.ticketNotificationSubscription =
       this.notificationService.ticketNotifications$.subscribe((list) => {
         this.ticketNotifications = list;
-        // console.log("🎫 Murojaat bildirnomalari yangilandi:", list.length);
+        console.log("🎫 Murojaat bildirnomalari yangilandi:", list.length);
       });
 
     // Subscribe to delivery notifications
     this.deliveryNotificationSubscription =
       this.notificationService.deliveryNotifications$.subscribe((list) => {
         this.deliveryNotifications = list;
-        // console.log("🚚 Yetkazish bildirnomalari yangilandi:", list.length);
+        console.log("🚚 Yetkazish bildirnomalari yangilandi:", list.length);
       });
 
     // Start polling
@@ -235,7 +235,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
    */
   markAllTicketsAsRead() {
     // console.log("📖 Barcha murojaatlarni o'qilgan deb belgilash");
-    this.notificationService.markAllAsRead();
+    this.notificationService.markAllTicketsAsRead();
     this.closeTicketDropdown();
   }
 
@@ -263,7 +263,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
    */
   markAllDeliveriesAsRead() {
     // console.log("📖 Barcha yetkazishlarni o'qilgan deb belgilash");
-    this.notificationService.markAllAsRead();
+    this.notificationService.markAllDeliveriesAsRead();
     this.closeDeliveryDropdown();
   }
 
@@ -272,7 +272,8 @@ export class NavbarComponent implements OnInit, OnDestroy {
    */
   onNotificationClick(notification: NotificationItem) {
     // console.log("🔔 Bildirnomaga bosildi:", notification);
-    this.notificationService.markAsRead(notification.id);
+    // Use relatedId (ticket ID) to mark as read
+    this.notificationService.markAsRead(notification.relatedId.toString());
     this.router.navigate([notification.actionUrl]);
     this.closeTicketDropdown();
     this.closeDeliveryDropdown();

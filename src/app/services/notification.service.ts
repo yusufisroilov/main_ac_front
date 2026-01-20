@@ -155,12 +155,12 @@ export class NotificationService {
           const ticketListData = ticketListRes.json();
           const deliveryListData = deliveryListRes.json();
 
-          // console.log("✅ Xodim bildirnomalari yuklandi:", {
-          //   tickets: ticketData.notifications?.total_needs_attention || 0,
-          //   deliveries: deliveryData.notifications?.total_needs_attention || 0,
-          //   ticketDetails: ticketListData.notifications?.length || 0,
-          //   deliveryDetails: deliveryListData.notifications?.length || 0,
-          // });
+          console.log("✅ Xodim bildirnomalari yuklandi:", {
+            tickets: ticketData.notifications?.total_needs_attention || 0,
+            deliveries: deliveryData.notifications?.total_needs_attention || 0,
+            ticketDetails: ticketListData.notifications?.length || 0,
+            deliveryDetails: deliveryListData.notifications?.length || 0,
+          });
 
           // Update counts
           this.notificationCountSubject.next({
@@ -174,14 +174,14 @@ export class NotificationService {
 
           // Update ticket notification list
           this.ticketNotificationListSubject.next(
-            ticketListData.notifications || []
+            ticketListData.notifications || [],
           );
 
           // Update delivery notification list
           this.deliveryNotificationListSubject.next(
-            deliveryListData.notifications || []
+            deliveryListData.notifications || [],
           );
-        }
+        },
       )
       .catch((err) => {
         console.error("❌ Xodim bildirnomalari yuklashda xatolik:", err);
@@ -224,12 +224,12 @@ export class NotificationService {
           const ticketListData = ticketListRes.json();
           const deliveryListData = deliveryListRes.json();
 
-          // console.log("✅ Mijoz bildirnomalari yuklandi:", {
-          //   tickets: ticketData.notifications?.total_needs_attention || 0,
-          //   deliveries: deliveryData.notifications?.total_needs_attention || 0,
-          //   ticketDetails: ticketListData.notifications?.length || 0,
-          //   deliveryDetails: deliveryListData.notifications?.length || 0,
-          // });
+          console.log("✅ Mijoz bildirnomalari yuklandi:", {
+            tickets: ticketData.notifications?.total_needs_attention || 0,
+            deliveries: deliveryData.notifications?.total_needs_attention || 0,
+            ticketDetails: ticketListData.notifications?.length || 0,
+            deliveryDetails: deliveryListData.notifications?.length || 0,
+          });
 
           // Update counts
           this.notificationCountSubject.next({
@@ -243,14 +243,14 @@ export class NotificationService {
 
           // Update ticket notification list
           this.ticketNotificationListSubject.next(
-            ticketListData.notifications || []
+            ticketListData.notifications || [],
           );
 
           // Update delivery notification list
           this.deliveryNotificationListSubject.next(
-            deliveryListData.notifications || []
+            deliveryListData.notifications || [],
           );
-        }
+        },
       )
       .catch((err) => {
         console.error("❌ Mijoz bildirnomalari yuklashda xatolik:", err);
@@ -276,23 +276,79 @@ export class NotificationService {
   }
 
   /**
-   * Mark notification as read
+   * Mark a single ticket notification as read
+   * @param ticketId - The ticket ID or ticket_number
    */
-  markAsRead(notificationId: string): void {
-    // console.log("📖 O'qilgan deb belgilash:", notificationId);
-    // TODO: Implement API call to mark as read
-    // For now, just refresh notifications
-    this.refreshNotifications();
+  markAsRead(ticketId: string): void {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    const headers = new Headers({
+      Authorization: token,
+      "Content-Type": "application/json",
+    });
+    const options = new RequestOptions({ headers });
+
+    this.http
+      .put(`${this.baseUrl}/tickets/${ticketId}/mark-read`, {}, options)
+      .toPromise()
+      .then((res) => {
+        console.log("📖 Ticket marked as read:", ticketId);
+        this.refreshNotifications();
+      })
+      .catch((err) => {
+        console.error("❌ Error marking ticket as read:", err);
+      });
   }
 
   /**
-   * Mark all notifications as read
+   * Mark all ticket notifications as read
+   */
+  markAllTicketsAsRead(): void {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    const headers = new Headers({
+      Authorization: token,
+      "Content-Type": "application/json",
+    });
+    const options = new RequestOptions({ headers });
+
+    this.http
+      .put(`${this.baseUrl}/tickets/mark-all-read`, {}, options)
+      .toPromise()
+      .then((res) => {
+        console.log("📖 All tickets marked as read");
+        this.refreshNotifications();
+      })
+      .catch((err) => {
+        console.error("❌ Error marking all tickets as read:", err);
+      });
+  }
+
+  /**
+   * @deprecated Use markAllTicketsAsRead() instead
    */
   markAllAsRead(): void {
-    // console.log("📖 Barcha bildirnomalani o'qilgan deb belgilash");
-    // TODO: Implement API call to mark all as read
-    // For now, just refresh notifications
-    this.refreshNotifications();
+    this.markAllTicketsAsRead();
+  }
+
+  /**
+   * Mark all delivery notifications as read
+   * Note: Delivery notifications are status-based (pending, approved, etc.)
+   * This clears the local list - changes persist when request status changes
+   */
+  markAllDeliveriesAsRead(): void {
+    // Clear local delivery notification list
+    this.deliveryNotificationListSubject.next([]);
+    // Update counts
+    const currentCounts = this.notificationCountSubject.value;
+    this.notificationCountSubject.next({
+      ...currentCounts,
+      deliveryRequests: 0,
+      total: currentCounts.tickets,
+    });
+    console.log("📖 Delivery notifications cleared locally");
   }
 
   /**

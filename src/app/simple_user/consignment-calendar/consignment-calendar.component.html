@@ -53,9 +53,17 @@
             </div>
             <div class="step-info">
               <span class="step-label">{{ step.label }}</span>
-              <span class="step-date" *ngIf="getStepDate(consignment, step.status)">
+              <!-- Actual date (status reached) -->
+              <span class="step-date"
+                *ngIf="getStepDate(consignment, step.status) && !isDateApproximate(consignment, step.status)">
                 {{ formatDate(getStepDate(consignment, step.status)) }}
               </span>
+              <!-- Approximate date (status not yet reached) -->
+              <span class="step-date approximate"
+                *ngIf="getStepDate(consignment, step.status) && isDateApproximate(consignment, step.status)">
+                Taxminiy sana: {{ formatDate(getStepDate(consignment, step.status)) }}
+              </span>
+              <!-- No date -->
               <span class="step-date pending" *ngIf="!getStepDate(consignment, step.status)">-</span>
             </div>
           </div>

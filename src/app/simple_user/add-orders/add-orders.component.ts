@@ -304,24 +304,71 @@ export class AddOrdersComponent implements OnInit {
   }
 
   openPartyFunc() {
-    this.http
-      .post(GlobalVars.baseUrl + "/consignments/open", "", this.options)
-      .subscribe(
-        (response) => {
-          if (response.json().status == "ok") {
-            this.openDate = response.json().open_date;
-            this.consignmentName = response.json().consignment_name;
-            this.consignmentMessage = response.json().message;
-            this.consignmentId = response.json().id;
-            this.showPartyLink();
-          }
+    swal
+      .fire({
+        title: "Open New Consignment",
+        html: `
+          <div style="text-align: left; margin-bottom: 10px;">
+            <label style="font-weight: bold; display: block; margin-bottom: 5px;">
+              Approximate flight date <span style="color: red;">*</span>
+            </label>
+            <input type="date" id="flight-date" class="swal2-input" style="width: 100%; margin: 0;" required>
+            <small style="color: #666;">Enter the expected date when shipment will be sent to China airport</small>
+          </div>
+        `,
+        showCancelButton: true,
+        confirmButtonText: "Create Consignment",
+        cancelButtonText: "Cancel",
+        customClass: {
+          confirmButton: "btn btn-success",
+          cancelButton: "btn btn-danger",
         },
-        (error) => {
-          if (error.status == 403) {
-            this.authService.logout();
+        buttonsStyling: false,
+        preConfirm: () => {
+          const flightDate = (document.getElementById("flight-date") as HTMLInputElement).value;
+          if (!flightDate) {
+            swal.showValidationMessage("Please enter the approximate flight date");
+            return false;
           }
+          return { flightDate };
+        },
+      })
+      .then((result) => {
+        if (result.isConfirmed && result.value) {
+          const flightDate = result.value.flightDate;
+          this.http
+            .post(
+              GlobalVars.baseUrl + "/consignments/open?in_foreign_airport_date=" + flightDate,
+              "",
+              this.options
+            )
+            .subscribe(
+              (response) => {
+                if (response.json().status == "ok") {
+                  this.openDate = response.json().open_date;
+                  this.consignmentName = response.json().consignment_name;
+                  this.consignmentMessage = response.json().message;
+                  this.consignmentId = response.json().id;
+                  this.showPartyLink();
+                  swal.fire({
+                    icon: "success",
+                    title: "Consignment Created",
+                    text: "New consignment has been opened successfully!",
+                    customClass: {
+                      confirmButton: "btn btn-success",
+                    },
+                    buttonsStyling: false,
+                  });
+                }
+              },
+              (error) => {
+                if (error.status == 403) {
+                  this.authService.logout();
+                }
+              }
+            );
         }
-      );
+      });
   }
 
   closePartyFunc() {
