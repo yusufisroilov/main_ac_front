@@ -21,6 +21,7 @@ export class CustomerCreateTicketComponent implements OnInit, AfterViewInit {
 
   // Form fields
   relatedService: string = "None";
+  selectedRole: string = ""; // Customer selected role for ticket assignment
   message: string = "";
 
   // Form state
@@ -60,6 +61,16 @@ export class CustomerCreateTicketComponent implements OnInit, AfterViewInit {
     { value: "support", label: "Umumiy yordam" },
     { value: "complaint", label: "Shikoyat" },
     { value: "other", label: "Boshqa" },
+  ];
+
+  // Role options for ticket assignment
+  roleOptions = [
+    { value: "", label: "Avtomatik tanlash" },
+    { value: "MANAGER", label: "Menejer" },
+    { value: "DELIVERER", label: "Yetkazib beruvchi" },
+    { value: "ACCOUNTANT", label: "Hisobchi" },
+    { value: "CHINASTAFF", label: "Xitoy xodimi" },
+    { value: "YUKCHI", label: "Yukchi" },
   ];
 
   constructor(
@@ -136,6 +147,11 @@ export class CustomerCreateTicketComponent implements OnInit, AfterViewInit {
     formData.append("category", category);
     formData.append("priority", "Medium");
     formData.append("message_text", this.message.trim());
+
+    // Add selected role if customer chose one
+    if (this.selectedRole) {
+      formData.append("assigned_to", this.selectedRole);
+    }
 
     // Append files
     for (let i = 0; i < this.selectedFiles.length; i++) {

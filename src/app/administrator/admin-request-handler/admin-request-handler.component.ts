@@ -789,7 +789,11 @@ export class AdminRequestHandlerComponent {
   // Apply filters
   applyFilters() {
     this.currentPage = 0;
-    this.loadPendingRequests();
+    if (this.showArchiveTable) {
+      this.loadArchivedRequests();
+    } else {
+      this.loadPendingRequests();
+    }
   }
 
   // Clear filters
@@ -804,7 +808,11 @@ export class AdminRequestHandlerComponent {
   goToPage(page: number) {
     if (page >= 0 && page < this.totalPages) {
       this.currentPage = page;
-      this.loadPendingRequests();
+      if (this.showArchiveTable) {
+        this.loadArchivedRequests();
+      } else {
+        this.loadPendingRequests();
+      }
     }
   }
 

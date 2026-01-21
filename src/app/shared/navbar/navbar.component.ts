@@ -268,15 +268,33 @@ export class NavbarComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Handle notification click
+   * Handle ticket notification click
    */
-  onNotificationClick(notification: NotificationItem) {
-    // console.log("🔔 Bildirnomaga bosildi:", notification);
-    // Use relatedId (ticket ID) to mark as read
+  onTicketNotificationClick(notification: NotificationItem) {
     this.notificationService.markAsRead(notification.relatedId.toString());
     this.router.navigate([notification.actionUrl]);
     this.closeTicketDropdown();
+  }
+
+  /**
+   * Handle delivery notification click
+   */
+  onDeliveryNotificationClick(notification: NotificationItem) {
+    this.notificationService.markDeliveryAsRead(notification.relatedId.toString());
+    this.router.navigate([notification.actionUrl]);
     this.closeDeliveryDropdown();
+  }
+
+  /**
+   * Handle notification click (generic - for backwards compatibility)
+   */
+  onNotificationClick(notification: NotificationItem) {
+    // Determine notification type and call appropriate handler
+    if (notification.type?.startsWith("delivery") || notification.type?.startsWith("payment")) {
+      this.onDeliveryNotificationClick(notification);
+    } else {
+      this.onTicketNotificationClick(notification);
+    }
   }
 
   /**

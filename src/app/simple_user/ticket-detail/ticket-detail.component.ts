@@ -339,7 +339,7 @@ export class CustomerTicketDetailComponent implements OnInit, AfterViewChecked {
    * Check if form is valid
    */
   isValid(): boolean {
-    return this.messageText.trim().length >= 5 || this.selectedFiles.length > 0;
+    return this.messageText.trim().length >= 2 || this.selectedFiles.length > 0;
   }
 
   /**

@@ -22,6 +22,20 @@
                                 </select>
                             </div>
 
+                            <!-- Assign to Role -->
+                            <div class="form-group">
+                                <label class="form-label">Kimga yo'naltirish</label>
+                                <select class="form-control" [(ngModel)]="selectedRole" name="selectedRole"
+                                    [disabled]="isSubmitting">
+                                    <option *ngFor="let role of roleOptions" [value]="role.value">
+                                        {{ role.label }}
+                                    </option>
+                                </select>
+                                <small class="form-text text-muted">
+                                    Murojaatingizni qaysi xodimga yo'naltirishni tanlang. "Avtomatik tanlash" bo'lsa, tizim kategoriya asosida tanlaydi.
+                                </small>
+                            </div>
+
                             <!-- Message (Rich Text Editor Style) -->
                             <div class="form-group">
                                 <label class="form-label required">Xabar*</label>

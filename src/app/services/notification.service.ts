@@ -334,21 +334,78 @@ export class NotificationService {
   }
 
   /**
+   * Mark a single delivery request notification as read
+   * @param requestId - The delivery request ID
+   */
+  markDeliveryAsRead(requestId: string): void {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    const headers = new Headers({
+      Authorization: token,
+      "Content-Type": "application/json",
+    });
+    const options = new RequestOptions({ headers });
+
+    this.http
+      .put(`${this.baseUrl}/requests/${requestId}/mark-read`, {}, options)
+      .toPromise()
+      .then((res) => {
+        console.log("📖 Delivery request marked as read:", requestId);
+        this.refreshNotifications();
+      })
+      .catch((err) => {
+        console.error("❌ Error marking delivery request as read:", err);
+      });
+  }
+
+  /**
    * Mark all delivery notifications as read
-   * Note: Delivery notifications are status-based (pending, approved, etc.)
-   * This clears the local list - changes persist when request status changes
+   * Calls the backend API to persist the change
    */
   markAllDeliveriesAsRead(): void {
-    // Clear local delivery notification list
-    this.deliveryNotificationListSubject.next([]);
-    // Update counts
-    const currentCounts = this.notificationCountSubject.value;
-    this.notificationCountSubject.next({
-      ...currentCounts,
-      deliveryRequests: 0,
-      total: currentCounts.tickets,
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    const headers = new Headers({
+      Authorization: token,
+      "Content-Type": "application/json",
     });
-    console.log("📖 Delivery notifications cleared locally");
+    const options = new RequestOptions({ headers });
+
+    // Determine if staff or customer based on role
+    const role = localStorage.getItem("role");
+    const isStaff = [
+      "MANAGER",
+      "CHINASTAFF",
+      "YUKCHI",
+      "DELIVERER",
+      "ACCOUNTANT",
+      "ADMIN",
+    ].includes(role);
+
+    const endpoint = isStaff
+      ? `${this.baseUrl}/requests/admin/mark-all-read`
+      : `${this.baseUrl}/requests/customer/mark-all-read`;
+
+    this.http
+      .put(endpoint, {}, options)
+      .toPromise()
+      .then((res) => {
+        console.log("📖 All delivery requests marked as read");
+        this.refreshNotifications();
+      })
+      .catch((err) => {
+        console.error("❌ Error marking all delivery requests as read:", err);
+        // Fallback: clear local state
+        this.deliveryNotificationListSubject.next([]);
+        const currentCounts = this.notificationCountSubject.value;
+        this.notificationCountSubject.next({
+          ...currentCounts,
+          deliveryRequests: 0,
+          total: currentCounts.tickets,
+        });
+      });
   }
 
   /**
