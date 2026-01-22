@@ -14,6 +14,7 @@ import { EmuDeliveriesComponent } from "./emu-deliveries/emu-deliveries.componen
 import { YandexDeliveriesComponent } from "./yandex-deliveries/yandex-deliveries.component";
 import { OwnCourierDeliveriesComponent } from "./own-courier-deliveries/own-courier-deliveries.component";
 import { PickupDeliveriesComponent } from "./pickup-deliveries/pickup-deliveries.component";
+import { CargoTariffsComponent } from "./cargo-tariffs/cargo-tariffs.component";
 
 export const UzbStaffRoutes: Routes = [
   {
@@ -86,6 +87,14 @@ export const UzbStaffRoutes: Routes = [
       {
         path: "scanuz",
         component: ScanParcelUzbComponent,
+      },
+      {
+        path: "cargo-tariffs",
+        canActivate: [ManagerAuthGuardService],
+        component: CargoTariffsComponent,
+        data: {
+          title: "Kargo Tariflari",
+        },
       },
     ],
   },

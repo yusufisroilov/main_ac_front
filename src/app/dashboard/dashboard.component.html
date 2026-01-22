@@ -114,10 +114,15 @@
 
       <!-- Finance Totals Button -->
       <div class="row mb-3">
-        <div class="col-md-12">
+        <div class="col-md-12" style="display: flex; gap: 15px; flex-wrap: wrap;">
           <button class="btn btn-primary btn-lg" (click)="showFinanceTotals()" style="border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
             <i class="material-icons" style="vertical-align: middle;">assessment</i>
             Moliyaviy Hisobot
+          </button>
+          <!-- Cargo Tariffs Button - Only for Manager/UZBSTAFF -->
+          <button *ngIf="isManager()" class="btn btn-success btn-lg" (click)="goToCargoTariffs()" style="border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+            <i class="material-icons" style="vertical-align: middle;">price_change</i>
+            Kargo Tariflari
           </button>
         </div>
       </div>

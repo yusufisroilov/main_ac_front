@@ -22,6 +22,7 @@ import { PickupDeliveriesComponent } from "./pickup-deliveries/pickup-deliveries
 import { EmuDeliveriesComponent } from "./emu-deliveries/emu-deliveries.component";
 import { YandexDeliveriesComponent } from "./yandex-deliveries/yandex-deliveries.component";
 import { SharedModule } from "src/app/shared/shared.module";
+import { CargoTariffsComponent } from "./cargo-tariffs/cargo-tariffs.component";
 
 @NgModule({
   imports: [
@@ -47,6 +48,7 @@ import { SharedModule } from "src/app/shared/shared.module";
     PickupDeliveriesComponent,
     EmuDeliveriesComponent,
     YandexDeliveriesComponent,
+    CargoTariffsComponent,
   ],
 })
 export class UzbStaffModule {}

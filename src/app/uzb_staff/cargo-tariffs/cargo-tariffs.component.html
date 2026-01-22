@@ -1,0 +1,293 @@
+<div class="main-content">
+  <div class="container-fluid">
+
+    <!-- Main Card -->
+    <div class="row">
+      <div class="col-12">
+        <div class="card">
+
+          <!-- Card Header -->
+          <div class="card-header card-header-primary card-header-icon header-container">
+
+            <!-- Left: Icon and Title -->
+            <div class="header-title">
+              <div class="card-icon">
+                <i class="material-icons">price_change</i>
+              </div>
+              <div>
+                <h4 class="card-title">Kargo Tariflari</h4>
+              </div>
+            </div>
+
+            <!-- Right: Add Button (visible on desktop) -->
+            <div class="header-add-btn d-none d-md-block">
+              <button type="button" mat-raised-button (click)="openAddModal()" class="btn btn-success btn-sm">
+                <i class="material-icons">add</i>
+                <span>Yangi Tarif</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Filter Bar -->
+          <div class="filter-bar">
+            <div class="filter-group">
+              <select class="form-control form-control-sm filter-select" [(ngModel)]="filterCountryId">
+                <option value="">Barcha Mamlakatlar</option>
+                <option *ngFor="let country of countries" [value]="country.id">
+                  {{ country.name }}
+                </option>
+              </select>
+
+              <select class="form-control form-control-sm filter-select" [(ngModel)]="filterType">
+                <option value="">Barcha Turlar</option>
+                <option value="AVIA">AVIA</option>
+                <option value="AVTO">AVTO</option>
+                <option value="POTCHA">POTCHA</option>
+              </select>
+            </div>
+
+            <div class="filter-actions">
+              <button type="button" mat-raised-button (click)="applyFilter()" class="btn btn-info btn-sm">
+                <i class="material-icons">filter_list</i>
+                <span class="btn-text">Filtr</span>
+              </button>
+
+              <button type="button" mat-raised-button (click)="clearFilter()" class="btn btn-default btn-sm">
+                <i class="material-icons">clear</i>
+                <span class="btn-text">Tozalash</span>
+              </button>
+
+              <!-- Add Button (visible on mobile) -->
+              <button type="button" mat-raised-button (click)="openAddModal()" class="btn btn-success btn-sm d-md-none">
+                <i class="material-icons">add</i>
+                <span class="btn-text">Yangi</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="card-body">
+
+            <!-- Loading -->
+            <div *ngIf="isLoading" class="text-center py-4">
+              <i class="fa fa-spinner fa-spin fa-2x"></i>
+              <p>Yuklanmoqda...</p>
+            </div>
+
+            <!-- Desktop Table View -->
+            <div class="table-responsive d-none d-lg-block" *ngIf="!isLoading">
+              <table class="table table-hover">
+                <thead>
+                  <tr>
+                    <th class="text-center">#</th>
+                    <th class="text-center">Mamlakat</th>
+                    <th class="text-center">Turi</th>
+                    <th class="text-center">Vazn Oralig'i</th>
+                    <th class="text-center">Narx ($/kg)</th>
+                    <th class="text-center">Holati</th>
+                    <th class="text-center">Amallar</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let tariff of tariffs; let i = index">
+                    <td class="text-center">{{ i + 1 }}</td>
+                    <td class="text-center">
+                      <span class="country-badge">
+                        {{ tariff.country?.name || getCountryName(tariff.country_id) }}
+                      </span>
+                    </td>
+                    <td class="text-center">
+                      <span class="type-badge" [ngClass]="getTypeBadgeClass(tariff.type)">
+                        <i class="material-icons">{{ getTypeIcon(tariff.type) }}</i>
+                        {{ tariff.type }}
+                      </span>
+                    </td>
+                    <td class="text-center">
+                      <span class="weight-range">
+                        {{ formatWeight(tariff.min_weight, tariff.max_weight) }}
+                      </span>
+                    </td>
+                    <td class="text-center">
+                      <span class="rate-badge">
+                        ${{ tariff.rate_per_kg }}
+                      </span>
+                    </td>
+                    <td class="text-center">
+                      <span class="status-badge" [ngClass]="tariff.is_active ? 'status-active' : 'status-inactive'">
+                        {{ tariff.is_active ? 'Faol' : 'Nofaol' }}
+                      </span>
+                    </td>
+                    <td class="text-center">
+                      <button class="btn btn-link btn-info btn-just-icon" (click)="openEditModal(tariff)"
+                        title="Tahrirlash">
+                        <i class="material-icons">edit</i>
+                      </button>
+                      <button class="btn btn-link btn-danger btn-just-icon" (click)="deleteTariff(tariff)"
+                        title="O'chirish">
+                        <i class="material-icons">delete</i>
+                      </button>
+                    </td>
+                  </tr>
+
+                  <!-- Empty state -->
+                  <tr *ngIf="tariffs.length === 0">
+                    <td colspan="7" class="text-center py-4">
+                      <i class="material-icons empty-icon">inbox</i>
+                      <p class="empty-text">Tariflar topilmadi</p>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Mobile/Tablet Card View -->
+            <div class="tariff-cards d-lg-none" *ngIf="!isLoading">
+              <!-- Empty state -->
+              <div *ngIf="tariffs.length === 0" class="text-center py-4">
+                <i class="material-icons empty-icon">inbox</i>
+                <p class="empty-text">Tariflar topilmadi</p>
+              </div>
+
+              <!-- Tariff Cards -->
+              <div class="tariff-card" *ngFor="let tariff of tariffs; let i = index">
+                <div class="tariff-card-header">
+                  <div class="tariff-card-title">
+                    <span class="tariff-number">#{{ i + 1 }}</span>
+                    <span class="country-badge">
+                      {{ tariff.country?.name || getCountryName(tariff.country_id) }}
+                    </span>
+                  </div>
+                  <span class="status-badge" [ngClass]="tariff.is_active ? 'status-active' : 'status-inactive'">
+                    {{ tariff.is_active ? 'Faol' : 'Nofaol' }}
+                  </span>
+                </div>
+
+                <div class="tariff-card-body">
+                  <div class="tariff-info-row">
+                    <div class="tariff-info-item">
+                      <span class="info-label">Turi</span>
+                      <span class="type-badge" [ngClass]="getTypeBadgeClass(tariff.type)">
+                        <i class="material-icons">{{ getTypeIcon(tariff.type) }}</i>
+                        {{ tariff.type }}
+                      </span>
+                    </div>
+                    <div class="tariff-info-item">
+                      <span class="info-label">Narx</span>
+                      <span class="rate-badge">${{ tariff.rate_per_kg }}</span>
+                    </div>
+                  </div>
+                  <div class="tariff-info-row">
+                    <div class="tariff-info-item full-width">
+                      <span class="info-label">Vazn Oralig'i</span>
+                      <span class="weight-range">{{ formatWeight(tariff.min_weight, tariff.max_weight) }}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="tariff-card-actions">
+                  <button class="btn btn-info btn-sm" (click)="openEditModal(tariff)">
+                    <i class="material-icons">edit</i>
+                    Tahrirlash
+                  </button>
+                  <button class="btn btn-danger btn-sm" (click)="deleteTariff(tariff)">
+                    <i class="material-icons">delete</i>
+                    O'chirish
+                  </button>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Add/Edit Modal -->
+<div class="modal fade" id="tariffModal" tabindex="-1" role="dialog" aria-labelledby="tariffModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="tariffModalLabel">
+          {{ isEditing ? 'Tarifni Tahrirlash' : 'Yangi Tarif Qo\'shish' }}
+        </h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <!-- Country -->
+          <div class="form-group">
+            <label>Mamlakat</label>
+            <select class="form-control" [(ngModel)]="formCountryId" name="countryId">
+              <option *ngFor="let country of countries" [ngValue]="country.id">
+                {{ country.name }}
+              </option>
+            </select>
+          </div>
+
+          <!-- Type -->
+          <div class="form-group">
+            <label>Tarif Turi</label>
+            <select class="form-control" [(ngModel)]="formType" name="type">
+              <option *ngFor="let type of tariffTypes" [value]="type">
+                {{ type }}
+              </option>
+            </select>
+            <small class="text-muted">
+              AVIA - Oddiy havo yuki, AVTO - Yer yo'li, POTCHA - Maxsus (brend, batareya, suyuqlik)
+            </small>
+          </div>
+
+          <!-- Min Weight -->
+          <div class="form-group">
+            <label>Minimal Vazn (kg)</label>
+            <input type="number" class="form-control" [(ngModel)]="formMinWeight" name="minWeight" step="0.1" min="0">
+          </div>
+
+          <!-- Max Weight -->
+          <div class="form-group">
+            <label>Maksimal Vazn (kg)</label>
+            <div class="input-group">
+              <input type="number" class="form-control" [(ngModel)]="formMaxWeight" name="maxWeight" step="0.1" min="0"
+                [disabled]="formIsUnlimited">
+              <div class="input-group-append">
+                <div class="input-group-text">
+                  <label class="mb-0" style="display: flex; align-items: center; gap: 5px;">
+                    <input type="checkbox" [(ngModel)]="formIsUnlimited" name="isUnlimited"
+                      (change)="onUnlimitedChange()">
+                    Cheksiz
+                  </label>
+                </div>
+              </div>
+            </div>
+            <small class="text-muted">
+              "Cheksiz" - bu vazn oralig'i uchun yuqori chegara yo'q (masalan, 60+ kg)
+            </small>
+          </div>
+
+          <!-- Rate per KG -->
+          <div class="form-group">
+            <label>Narx ($/kg)</label>
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <span class="input-group-text">$</span>
+              </div>
+              <input type="number" class="form-control" [(ngModel)]="formRatePerKg" name="ratePerKg" step="0.1" min="0">
+            </div>
+          </div>
+
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Bekor qilish</button>
+        <button type="button" class="btn btn-primary" (click)="saveTariff()">
+          {{ isEditing ? 'Saqlash' : 'Qo\'shish' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
