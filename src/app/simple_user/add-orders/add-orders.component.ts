@@ -308,12 +308,22 @@ export class AddOrdersComponent implements OnInit {
       .fire({
         title: "Open New Consignment",
         html: `
-          <div style="text-align: left; margin-bottom: 10px;">
+          <div style="text-align: left; margin-bottom: 15px;">
             <label style="font-weight: bold; display: block; margin-bottom: 5px;">
-              Approximate flight date <span style="color: red;">*</span>
+              Consignment Type <span style="color: red;">*</span>
+            </label>
+            <select id="consignment-type" class="swal2-select" style="width: 100%; padding: 10px; border: 1px solid #d9d9d9; border-radius: 4px;">
+              <option value="" disabled selected>-- Select Type --</option>
+              <option value="AVIA">🛬 AVIA (Air Cargo)</option>
+              <option value="AVTO">🚚 AVTO (Truck/Land)</option>
+            </select>
+          </div>
+          <div style="text-align: left; margin-bottom: 10px;">
+            <label id="date-label" style="font-weight: bold; display: block; margin-bottom: 5px;">
+              Departure Date <span style="color: red;">*</span>
             </label>
             <input type="date" id="flight-date" class="swal2-input" style="width: 100%; margin: 0;" required>
-            <small style="color: #666;">Enter the expected date when shipment will be sent to China airport</small>
+            <small id="date-hint" style="color: #666;">First select consignment type above</small>
           </div>
         `,
         showCancelButton: true,
@@ -324,21 +334,42 @@ export class AddOrdersComponent implements OnInit {
           cancelButton: "btn btn-danger",
         },
         buttonsStyling: false,
+        didOpen: () => {
+          const typeSelect = document.getElementById("consignment-type") as HTMLSelectElement;
+          const dateLabel = document.getElementById("date-label");
+          const dateHint = document.getElementById("date-hint");
+
+          typeSelect.addEventListener("change", () => {
+            if (typeSelect.value === "AVTO") {
+              dateLabel.innerHTML = 'Truck Station Departure Date <span style="color: red;">*</span>';
+              dateHint.textContent = "Enter the date when shipment will depart from truck station (~20 days to UZB)";
+            } else if (typeSelect.value === "AVIA") {
+              dateLabel.innerHTML = 'China Airport Date <span style="color: red;">*</span>';
+              dateHint.textContent = "Enter the expected date when shipment will be sent to China airport (~3 days to UZB)";
+            }
+          });
+        },
         preConfirm: () => {
           const flightDate = (document.getElementById("flight-date") as HTMLInputElement).value;
-          if (!flightDate) {
-            swal.showValidationMessage("Please enter the approximate flight date");
+          const consignmentType = (document.getElementById("consignment-type") as HTMLSelectElement).value;
+          if (!consignmentType) {
+            swal.showValidationMessage("Please select consignment type");
             return false;
           }
-          return { flightDate };
+          if (!flightDate) {
+            swal.showValidationMessage("Please enter the date");
+            return false;
+          }
+          return { flightDate, consignmentType };
         },
       })
       .then((result) => {
         if (result.isConfirmed && result.value) {
           const flightDate = result.value.flightDate;
+          const consignmentType = result.value.consignmentType;
           this.http
             .post(
-              GlobalVars.baseUrl + "/consignments/open?in_foreign_airport_date=" + flightDate,
+              GlobalVars.baseUrl + "/consignments/open?in_foreign_airport_date=" + flightDate + "&type=" + consignmentType,
               "",
               this.options
             )
@@ -350,10 +381,11 @@ export class AddOrdersComponent implements OnInit {
                   this.consignmentMessage = response.json().message;
                   this.consignmentId = response.json().id;
                   this.showPartyLink();
+                  const typeLabel = consignmentType === "AVTO" ? "🚚 AVTO" : "🛬 AVIA";
                   swal.fire({
                     icon: "success",
                     title: "Consignment Created",
-                    text: "New consignment has been opened successfully!",
+                    text: `New ${typeLabel} consignment has been opened successfully!`,
                     customClass: {
                       confirmButton: "btn btn-success",
                     },

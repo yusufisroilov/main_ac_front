@@ -64,6 +64,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   goToCargoTariffs() {
     this.router.navigate(["/uzs/cargo-tariffs"]);
   }
+
   startAnimationForLineChart(chart: any) {
     let seq: any, delays: any, durations: any;
     seq = 0;
