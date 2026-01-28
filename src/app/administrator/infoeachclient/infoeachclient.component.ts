@@ -32,6 +32,7 @@ interface PackageGroup {
   debt_usd?: number;
   has_high_debt?: boolean;
   consignments_with_debt?: string[];
+  forDebt?: boolean;
 }
 
 declare interface Task {
@@ -148,7 +149,7 @@ export class InfoeachclientComponent implements OnInit {
     private changeDetectorRef: ChangeDetectorRef,
     private http: Http,
     private httpClient: HttpClient,
-    private router: Router
+    private router: Router,
   ) {
     this.orderTypeText = [];
     this.orderStatusText = [];
@@ -160,7 +161,7 @@ export class InfoeachclientComponent implements OnInit {
     this.headers22 = new Headers({ "Content-Type": "application/json" });
     this.headers22.append(
       "Authorization",
-      "Bearer " + localStorage.getItem("token_fin")
+      "Bearer " + localStorage.getItem("token_fin"),
     );
     this.options2 = new RequestOptions({ headers: this.headers22 });
 
@@ -206,13 +207,15 @@ export class InfoeachclientComponent implements OnInit {
     return this.http
       .get(
         GlobalVars.baseUrl + "/consignments/for_client?id=" + ownerid,
-        this.options
+        this.options,
       )
       .subscribe(
         (response) => {
           this.allDataBoxes = response
             .json()
             .consignments.filter((r) => r.quantity !== 0);
+
+          console.log("all Data Boxes ", this.allDataBoxes);
 
           this.umQarzUSZ = response.json().debt_uzs_total;
           this.umQarzUSD = response.json().debt_usd_total;
@@ -223,7 +226,7 @@ export class InfoeachclientComponent implements OnInit {
           if (error.status == 403) {
             this.authService.logout();
           }
-        }
+        },
       );
   }
 
@@ -255,7 +258,6 @@ export class InfoeachclientComponent implements OnInit {
           '<input id="input-cash" type="text" class="form-control m-2" placeholder="NAQD PUL BERDI" />' +
           '<input id="input-card" type="text" class="form-control m-2" placeholder="PLASTIKDA BERDI" />' +
           '<input id="input-bank-acc" type="text" class="form-control m-2" placeholder="Terminalda (Uzum/PayMe QR) BERDI" />' +
-          '<input id="input-debt" type="text" class="form-control m-2" placeholder="QARZGA" />' +
           '<input id="input-izoh" type="text" class="form-control m-2" placeholder="IZOH" />' +
           "</div>",
         showCancelButton: true,
@@ -272,8 +274,6 @@ export class InfoeachclientComponent implements OnInit {
           let card = $("#input-card").val();
           let bankacc = $("#input-bank-acc").val();
           let izohh = $("#input-izoh").val();
-          let for_debt = $("#input-debt").val();
-          // console.log("for debt ", for_debt);
           this.http
             .post(
               GlobalVars.baseUrl +
@@ -289,12 +289,10 @@ export class InfoeachclientComponent implements OnInit {
                 cash +
                 "&bank_account=" +
                 bankacc +
-                "&for_debt=" +
-                for_debt +
                 "&comment=" +
                 izohh,
               "",
-              this.options
+              this.options,
             )
             .subscribe(
               (response) => {
@@ -319,7 +317,7 @@ export class InfoeachclientComponent implements OnInit {
                       }
                     });
                 }
-              }
+              },
             );
 
           //start of xisob post request
@@ -348,7 +346,7 @@ export class InfoeachclientComponent implements OnInit {
                 comment: izohh,
                 category_id: "1",
               },
-              this.options2
+              this.options2,
             )
             .subscribe(
               (response) => {
@@ -370,14 +368,14 @@ export class InfoeachclientComponent implements OnInit {
                     .fire(
                       "Not Added",
                       "BAD REQUEST: WRONG TYPE OF INPUT",
-                      "error"
+                      "error",
                     )
                     .then((result) => {
                       if (result.isConfirmed) {
                       }
                     });
                 }
-              }
+              },
             );
 
           //end of xisob post request
@@ -437,7 +435,7 @@ export class InfoeachclientComponent implements OnInit {
                 "&comment=" +
                 izohh,
               "",
-              this.options
+              this.options,
             )
             .subscribe(
               (response) => {
@@ -459,7 +457,7 @@ export class InfoeachclientComponent implements OnInit {
                     .fire(
                       "Not Added",
                       `BAD REQUEST: ${error.json().error}`,
-                      "error"
+                      "error",
                     )
                     .then((result) => {
                       if (result.isConfirmed) {
@@ -467,7 +465,7 @@ export class InfoeachclientComponent implements OnInit {
                       }
                     });
                 }
-              }
+              },
             );
         },
       })
@@ -499,7 +497,7 @@ export class InfoeachclientComponent implements OnInit {
           this.currentID +
           "&consignment=" +
           partyNum,
-        this.options
+        this.options,
       )
       .subscribe(
         (response) => {
@@ -510,7 +508,7 @@ export class InfoeachclientComponent implements OnInit {
             const element = this.allData[index];
             this.orderTypeText[index] = GlobalVars.getDescriptionWithID(
               element.order_type,
-              "uz"
+              "uz",
             );
           }
 
@@ -518,7 +516,7 @@ export class InfoeachclientComponent implements OnInit {
             const element1 = this.allData[index];
             this.orderStatusText[index] = GlobalVars.getDesOrderStatusWithID(
               element1.status,
-              "uz"
+              "uz",
             );
           }
 
@@ -535,7 +533,7 @@ export class InfoeachclientComponent implements OnInit {
           if (error.status == 403) {
             this.authService.logout();
           }
-        }
+        },
       );
   }
 
@@ -558,7 +556,7 @@ export class InfoeachclientComponent implements OnInit {
             this.currentParty +
             "&trackingNumber=" +
             searchkey,
-          this.options
+          this.options,
         )
         .subscribe(
           (response) => {
@@ -568,7 +566,7 @@ export class InfoeachclientComponent implements OnInit {
               const element = this.allData[index];
               this.orderTypeText[index] = GlobalVars.getDescriptionWithID(
                 element.order_type,
-                "uz"
+                "uz",
               );
             }
 
@@ -576,7 +574,7 @@ export class InfoeachclientComponent implements OnInit {
               const element1 = this.allData[index];
               this.orderStatusText[index] = GlobalVars.getDesOrderStatusWithID(
                 element1.status,
-                "uz"
+                "uz",
               );
             }
 
@@ -593,7 +591,7 @@ export class InfoeachclientComponent implements OnInit {
             if (error.status == 403) {
               this.authService.logout();
             }
-          }
+          },
         );
     }
   }
@@ -607,7 +605,7 @@ export class InfoeachclientComponent implements OnInit {
     id: string,
     name: string,
     weight: string,
-    quantity: string
+    quantity: string,
   ) {
     // Store consignment details for payment receipt
     this.selectedConsignmentId = id;
@@ -634,10 +632,10 @@ export class InfoeachclientComponent implements OnInit {
 
     // Collect selected package information
     const selectedGroups = this.customerPackages.filter(
-      (group) => group.selected
+      (group) => group.selected,
     );
 
-    console.log("selectedGroups:", selectedGroups);
+    // console.log("selectedGroups:", selectedGroups);
 
     if (selectedGroups.length === 0) {
       // console.log("ERROR: No selected groups");
@@ -658,7 +656,7 @@ export class InfoeachclientComponent implements OnInit {
         if (group.selectionType === "partial") {
           // Partial selection - only current consignment packages
           const currentConsignmentPackages = group.packages.filter(
-            (pkg) => pkg.consignment === this.selectedConsignmentName
+            (pkg) => pkg.consignment === this.selectedConsignmentName,
           );
 
           // Use actual values from each package
@@ -752,7 +750,7 @@ export class InfoeachclientComponent implements OnInit {
       partyNameDisplay,
       totalWeight.toFixed(2),
       totalItems,
-      allBarcodes
+      allBarcodes,
     );
   }
   printChekYuborish(ids, name, weight, counter, barcodes: string[] = []) {
@@ -769,7 +767,7 @@ export class InfoeachclientComponent implements OnInit {
     this.popupWin = window.open(
       "",
       "_blank",
-      "top=0,left=0,height=100%,width=auto"
+      "top=0,left=0,height=100%,width=auto",
     );
     this.popupWin.document.open();
     this.popupWin.document.write(`
@@ -921,7 +919,7 @@ export class InfoeachclientComponent implements OnInit {
     this.http
       .get(
         GlobalVars.baseUrl + "/deliveries/admin?owner_id=" + this.currentID,
-        this.options
+        this.options,
       )
       .subscribe(
         (response) => {
@@ -941,7 +939,7 @@ export class InfoeachclientComponent implements OnInit {
             swal.fire(
               "Xatolik",
               result.message || "Qutillarni yuklashda xatolik",
-              "error"
+              "error",
             );
           }
           this.loadingCustomerPackages = false;
@@ -951,7 +949,7 @@ export class InfoeachclientComponent implements OnInit {
           if (error.status == 403) {
             this.authService.logout();
           }
-        }
+        },
       );
   }
 
@@ -1077,7 +1075,7 @@ export class InfoeachclientComponent implements OnInit {
   // NEW: Get package count for specific consignment in a group
   getPackageCountForConsignment(
     group: PackageGroup,
-    consignmentName: string
+    consignmentName: string,
   ): number {
     if (group.type === "single") {
       return group.consignments.includes(consignmentName) ? 1 : 0;
@@ -1118,14 +1116,14 @@ export class InfoeachclientComponent implements OnInit {
   // NEW: Check if tied packages are selected
   hasTiedPackagesSelected(): boolean {
     return this.customerPackages.some(
-      (group) => group.selected && group.type === "tied"
+      (group) => group.selected && group.type === "tied",
     );
   }
 
   // NEW: Get selected tied groups
   getSelectedTiedGroups(): PackageGroup[] {
     return this.customerPackages.filter(
-      (group) => group.selected && group.type === "tied"
+      (group) => group.selected && group.type === "tied",
     );
   }
 
@@ -1135,7 +1133,7 @@ export class InfoeachclientComponent implements OnInit {
       .filter(
         (group) =>
           group.selected &&
-          group.consignments.includes(this.selectedConsignmentName)
+          group.consignments.includes(this.selectedConsignmentName),
       )
       .reduce((total, group) => {
         if (group.selectionType === "partial") {
@@ -1143,7 +1141,7 @@ export class InfoeachclientComponent implements OnInit {
             total +
             this.getPackageCountForConsignment(
               group,
-              this.selectedConsignmentName
+              this.selectedConsignmentName,
             )
           );
         }
@@ -1158,7 +1156,7 @@ export class InfoeachclientComponent implements OnInit {
         .filter(
           (group) =>
             group.selected &&
-            !group.consignments.includes(this.selectedConsignmentName)
+            !group.consignments.includes(this.selectedConsignmentName),
         )
         .reduce((total, group) => total + group.total_packages, 0) +
       this.customerPackages
@@ -1166,7 +1164,7 @@ export class InfoeachclientComponent implements OnInit {
           (group) =>
             group.selected &&
             group.selectionType === "partial" &&
-            group.consignments.includes(this.selectedConsignmentName)
+            group.consignments.includes(this.selectedConsignmentName),
         )
         .reduce(
           (total, group) =>
@@ -1174,9 +1172,9 @@ export class InfoeachclientComponent implements OnInit {
             (group.total_packages -
               this.getPackageCountForConsignment(
                 group,
-                this.selectedConsignmentName
+                this.selectedConsignmentName,
               )),
-          0
+          0,
         )
     );
   }
@@ -1194,7 +1192,7 @@ export class InfoeachclientComponent implements OnInit {
         if (error.status == 403) {
           this.authService.logout();
         }
-      }
+      },
     );
   }
   // Add to infoeachclient.component.ts
@@ -1223,7 +1221,7 @@ export class InfoeachclientComponent implements OnInit {
       this.http
         .get(
           GlobalVars.baseUrl + "/branches?region_id=" + regionId,
-          this.options
+          this.options,
         )
         .subscribe(
           (response) => {
@@ -1236,7 +1234,7 @@ export class InfoeachclientComponent implements OnInit {
             if (error.status == 403) {
               this.authService.logout();
             }
-          }
+          },
         );
     }
   }
@@ -1268,72 +1266,30 @@ export class InfoeachclientComponent implements OnInit {
   // NEW: Check if selected packages have high debt
   hasSelectedPackagesWithHighDebt(): boolean {
     const selectedWithDebt = this.customerPackages.filter(
-      (group) => group.selected && group.has_high_debt
+      (group) => group.selected && group.has_high_debt,
     );
     return selectedWithDebt.length > 0;
   }
 
-  // NEW: Validation for delivery creation
+  // Validation for delivery creation
   canCreateDelivery(): boolean {
     if (this.selectedPackageIdentifiers.length === 0 || !this.deliveryType) {
       return false;
     }
 
-    if (!this.deliveryType) {
-      return false;
-    }
-
-    // NEW: Check if selected packages have high debt
-    if (this.hasSelectedPackagesWithHighDebt()) {
+    // Block if any selected package has debt > 3000 and nasiya not checked
+    const hasUnbypassedDebt = this.customerPackages.some(
+      (g) => g.selected && g.debt_uzs > 3000 && !g.forDebt,
+    );
+    if (hasUnbypassedDebt) {
       return false;
     }
 
     return true;
   }
 
-  // NEW: Create delivery with enhanced package selection logic
+  // Create delivery with enhanced package selection logic
   createDelivery() {
-    // NEW: Double-check for high debt before creating
-    if (this.hasSelectedPackagesWithHighDebt()) {
-      const selectedWithDebt = this.customerPackages.filter(
-        (group) => group.selected && group.has_high_debt
-      );
-      const debtConsignmentNames = [];
-      selectedWithDebt.forEach((group) => {
-        if (group.consignments_with_debt) {
-          group.consignments_with_debt.forEach((c) => {
-            if (!debtConsignmentNames.includes(c)) {
-              debtConsignmentNames.push(c);
-            }
-          });
-        }
-      });
-
-      swal.fire({
-        icon: "error",
-        title: "Yetkazish yaratib bo'lmaydi",
-        html: `
-          <p style="font-size: 16px; margin-bottom: 10px;">
-            <b>Bu ${debtConsignmentNames.join(
-              ", "
-            )} reyslarda qarzdorlik bor!</b>
-          </p>
-          <p style="font-size: 14px; color: #d32f2f;">
-            Iltimos oldin qarzdorlikni yoping yoki qarzdor qutillarni olib tashlang.
-          </p>
-        `,
-        confirmButtonText: "Tushunarli",
-        customClass: {
-          confirmButton: "btn btn-danger",
-        },
-        buttonsStyling: false,
-      });
-
-      // Close modal
-      this.closeDeliveryModal();
-      return;
-    }
-
     if (!this.canCreateDelivery()) {
       swal.fire("Xatolik", "Barcha majburiy maydonlarni to'ldiring", "error");
       return;
@@ -1344,7 +1300,7 @@ export class InfoeachclientComponent implements OnInit {
     // Find selected branch name for printing
     if (this.selectedBranchId) {
       const selectedBranch = this.branches.find(
-        (b) => b.id == this.selectedBranchId
+        (b) => b.id == this.selectedBranchId,
       );
       this.selectedBranchName = selectedBranch ? selectedBranch.name : "";
     }
@@ -1386,7 +1342,7 @@ export class InfoeachclientComponent implements OnInit {
       .post(
         GlobalVars.baseUrl + "/deliveries/admin/create",
         JSON.stringify(deliveryData),
-        this.options
+        this.options,
       )
       .subscribe(
         (response) => {
@@ -1410,7 +1366,7 @@ export class InfoeachclientComponent implements OnInit {
                 if (group.selectionType === "partial") {
                   const currentConsignmentBarcodes = group.packages
                     .filter(
-                      (pkg) => pkg.consignment === this.selectedConsignmentName
+                      (pkg) => pkg.consignment === this.selectedConsignmentName,
                     )
                     .map((pkg) => pkg.barcode);
                   selectedBarcodes.push(...currentConsignmentBarcodes);
@@ -1418,7 +1374,7 @@ export class InfoeachclientComponent implements OnInit {
                   // Calculate totals for partial selection
                   group.packages
                     .filter(
-                      (pkg) => pkg.consignment === this.selectedConsignmentName
+                      (pkg) => pkg.consignment === this.selectedConsignmentName,
                     )
                     .forEach((pkg) => {
                       totalItems += parseInt(pkg.items_count) || 0;
@@ -1458,26 +1414,39 @@ export class InfoeachclientComponent implements OnInit {
               printData.name,
               printData.weight,
               printData.items,
-              printData.barcodes
+              printData.barcodes,
             );
 
             // console.log("=== PRINT FUNCTION RETURNED ===");
+
+            // Collect nasiya groups BEFORE closing modal (closeDeliveryModal resets data)
+            const nasiyaGroups = this.customerPackages.filter(
+              (g) => g.selected && g.forDebt && g.debt_uzs > 0,
+            );
 
             // Close modal and refresh data
             this.closeDeliveryModal();
             this.getListOfPartyBoxes(this.currentID);
 
+            // Process nasiya payments if any
+            if (nasiyaGroups.length > 0) {
+              this.processNasiyaPayments(nasiyaGroups);
+            }
+
             // Show success notification with buttons
             swal.fire({
               icon: "success",
               title: "Muvaffaqiyat!",
-              text: "Yetkazish muvaffaqiyatli yaratildi",
+              text:
+                nasiyaGroups.length > 0
+                  ? "Yetkazish muvaffaqiyatli yaratildi. Nasiya to'lovlari qayd etildi."
+                  : "Yetkazish muvaffaqiyatli yaratildi",
             });
           } else {
             swal.fire(
               "Xatolik",
               result.message || "Yetkazish yaratishda xatolik",
-              "error"
+              "error",
             );
           }
           this.creatingDelivery = false;
@@ -1488,11 +1457,73 @@ export class InfoeachclientComponent implements OnInit {
           if (error.status == 403) {
             this.authService.logout();
           }
-        }
+        },
       );
   }
 
-  // NEW: Close delivery modal
+  // Process nasiya payments via /finance/pay for debt packages
+  processNasiyaPayments(nasiyaGroups: PackageGroup[]) {
+    const processedConsignments = new Set<string>();
+
+    nasiyaGroups.forEach((group) => {
+      const debtConsignments =
+        group.consignments_with_debt && group.consignments_with_debt.length > 0
+          ? group.consignments_with_debt
+          : group.consignments;
+      debtConsignments.forEach((consignmentName) => {
+        // Avoid duplicate calls for the same consignment
+        if (processedConsignments.has(consignmentName)) return;
+        processedConsignments.add(consignmentName);
+
+        // Find the consignment row in allDataBoxes to get its ID and debt amount
+        const consignmentRow = this.allDataBoxes?.find(
+          (r) => r.name == consignmentName,
+        );
+
+        // console.log("consigment row ", consignmentRow);
+
+        if (consignmentRow) {
+          const debtAmount = consignmentRow.debt_uzs || group.debt_uzs || 0;
+          if (debtAmount > 0) {
+            this.http
+              .post(
+                GlobalVars.baseUrl +
+                  "/finance/pay?id=" +
+                  consignmentRow.id +
+                  "&name=" +
+                  consignmentName +
+                  "&plastic=0&usd=0&cash=0&bank_account=0" +
+                  "&for_debt=" +
+                  debtAmount +
+                  "&comment=Nasiya yetkazish",
+                "",
+                this.options,
+              )
+              .subscribe(
+                (response) => {
+                  this.getListOfPartyBoxes(this.currentID);
+                  // console.log("Nasiya payment recorded for " + consignmentName);
+                },
+                (error) => {
+                  console.error(
+                    "Error recording nasiya for " + consignmentName,
+                    error,
+                  );
+                  swal.fire(
+                    "Xatolik",
+                    consignmentName +
+                      " uchun nasiya qayd etishda xatolik yuz berdi",
+                    "error",
+                  );
+                },
+              );
+          }
+        }
+      });
+    });
+  }
+
+  // Close delivery modal
   closeDeliveryModal() {
     $("#deliveryCreationModal").modal("hide");
     this.resetDeliveryForm();
@@ -1548,7 +1579,7 @@ export class InfoeachclientComponent implements OnInit {
     this.http
       .get(
         GlobalVars.baseUrl + "/deliveries/last_emu?owner_id=" + ownerId,
-        this.options
+        this.options,
       )
       .subscribe(
         (response) => {
@@ -1567,7 +1598,7 @@ export class InfoeachclientComponent implements OnInit {
                   GlobalVars.baseUrl +
                     "/branches?region_id=" +
                     lastDelivery.region_id,
-                  this.options
+                  this.options,
                 )
                 .subscribe(
                   (branchResponse) => {
@@ -1580,7 +1611,7 @@ export class InfoeachclientComponent implements OnInit {
                         this.autoFilledFields.branchId = true;
 
                         const selectedBranch = this.branches.find(
-                          (b) => b.id == lastDelivery.emu_branch_id
+                          (b) => b.id == lastDelivery.emu_branch_id,
                         );
                         this.selectedBranchName = selectedBranch
                           ? selectedBranch.name
@@ -1592,7 +1623,7 @@ export class InfoeachclientComponent implements OnInit {
                     if (error.status == 403) {
                       this.authService.logout();
                     }
-                  }
+                  },
                 );
             }
 
@@ -1643,7 +1674,7 @@ export class InfoeachclientComponent implements OnInit {
           if (error.status == 403) {
             this.authService.logout();
           }
-        }
+        },
       );
   }
 
@@ -1717,7 +1748,7 @@ export class InfoeachclientComponent implements OnInit {
           data[1] +
           " " +
           data[2] +
-          "'s row."
+          "'s row.",
       );
       e.preventDefault();
     });

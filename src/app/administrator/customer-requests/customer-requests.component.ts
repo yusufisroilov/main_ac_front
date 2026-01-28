@@ -113,7 +113,7 @@ export class CustomerRequestsComponent implements OnInit {
     private changeDetectorRef: ChangeDetectorRef,
     private http: Http,
     private httpClient: HttpClient,
-    private router: Router
+    private router: Router,
   ) {
     this.headers12 = new Headers({ "Content-Type": "application/json" });
     this.headers12.append("Authorization", localStorage.getItem("token"));
@@ -192,19 +192,19 @@ export class CustomerRequestsComponent implements OnInit {
     this.http
       .get(
         GlobalVars.baseUrl + "/deliveries/customer?owner_id=" + this.currentID,
-        this.options
+        this.options,
       )
       .subscribe(
         (response) => {
           const result = response.json();
           if (result.status === "success") {
             this.customerPackages = result.data.package_groups || [];
-            console.log("Loaded customer packages:", this.customerPackages);
+            // console.log("Loaded customer packages:", this.customerPackages);
           } else {
             swal.fire(
               "Xatolik",
               result.message || "Qutillarni yuklashda xatolik",
-              "error"
+              "error",
             );
           }
           this.loadingPackages = false;
@@ -214,7 +214,7 @@ export class CustomerRequestsComponent implements OnInit {
           if (error.status == 403) {
             this.authService.logout();
           }
-        }
+        },
       );
   }
 
@@ -232,7 +232,7 @@ export class CustomerRequestsComponent implements OnInit {
       if (group.selected) {
         // Add all barcodes from this group
         this.selectedPackages = this.selectedPackages.concat(
-          group.package_barcodes
+          group.package_barcodes,
         );
       }
     });
@@ -283,7 +283,7 @@ export class CustomerRequestsComponent implements OnInit {
           swal.fire(
             "Xatolik",
             result.message || "Viloyatlarni yuklashda xatolik",
-            "error"
+            "error",
           );
         }
         this.loadingRegions = false;
@@ -294,7 +294,7 @@ export class CustomerRequestsComponent implements OnInit {
         if (error.status == 403) {
           this.authService.logout();
         }
-      }
+      },
     );
   }
 
@@ -327,7 +327,7 @@ export class CustomerRequestsComponent implements OnInit {
             swal.fire(
               "Xatolik",
               result.message || "Filiallarni yuklashda xatolik",
-              "error"
+              "error",
             );
           }
           this.loadingBranches = false;
@@ -338,7 +338,7 @@ export class CustomerRequestsComponent implements OnInit {
           if (error.status == 403) {
             this.authService.logout();
           }
-        }
+        },
       );
   }
 
@@ -382,7 +382,7 @@ export class CustomerRequestsComponent implements OnInit {
         swal.fire(
           "Xatolik",
           `${file.name} fayli noto'g'ri formatda. Faqat rasm fayllari ruxsat etilgan.`,
-          "error"
+          "error",
         );
         return;
       }
@@ -392,7 +392,7 @@ export class CustomerRequestsComponent implements OnInit {
         swal.fire(
           "Xatolik",
           `${file.name} fayli juda katta (maksimal 5MB)`,
-          "error"
+          "error",
         );
         return;
       }
@@ -551,7 +551,7 @@ export class CustomerRequestsComponent implements OnInit {
               swal.fire(
                 "Xatolik",
                 result.message || "So'rov yuborishda xatolik",
-                "error"
+                "error",
               );
               this.showSendingAnimation = false;
             }
@@ -568,14 +568,14 @@ export class CustomerRequestsComponent implements OnInit {
             `So'rov yuborishda xatolik: ${
               error.json()?.error || error.message
             }`,
-            "error"
+            "error",
           );
           this.submittingRequest = false;
           this.uploadingImages = false;
           if (error.status == 403) {
             this.authService.logout();
           }
-        }
+        },
       );
   }
 
@@ -584,7 +584,7 @@ export class CustomerRequestsComponent implements OnInit {
     this.http
       .get(
         GlobalVars.baseUrl + "/requests/customer?owner_id=" + this.currentID,
-        this.options
+        this.options,
       )
       .subscribe(
         (response) => {
@@ -601,7 +601,7 @@ export class CustomerRequestsComponent implements OnInit {
           if (error.status == 403) {
             this.authService.logout();
           }
-        }
+        },
       );
   }
   // FIXED: Get requested packages barcodes from JSON string
@@ -665,7 +665,7 @@ export class CustomerRequestsComponent implements OnInit {
             .put(
               GlobalVars.baseUrl + "/requests/cancel?request_id=" + requestId,
               JSON.stringify({ owner_id: this.currentID }),
-              this.options
+              this.options,
             )
             .subscribe(
               (response) => {
@@ -690,7 +690,7 @@ export class CustomerRequestsComponent implements OnInit {
                 if (error.status == 403) {
                   this.authService.logout();
                 }
-              }
+              },
             );
         }
       });

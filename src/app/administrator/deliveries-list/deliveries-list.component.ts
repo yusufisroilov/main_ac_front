@@ -115,7 +115,7 @@ export class DeliveriesListComponent {
     private changeDetectorRef: ChangeDetectorRef,
     private http: Http,
     private httpClient: HttpClient,
-    private router: Router
+    private router: Router,
   ) {
     this.headers12 = new Headers({ "Content-Type": "application/json" });
     this.headers12.append("Authorization", localStorage.getItem("token"));
@@ -153,7 +153,7 @@ export class DeliveriesListComponent {
         GlobalVars.baseUrl +
           "/deliveries/admin?owner_id=" +
           this.customerIdInput,
-        this.options
+        this.options,
       )
       .subscribe(
         (response) => {
@@ -169,7 +169,7 @@ export class DeliveriesListComponent {
             swal.fire(
               "Xatolik",
               result.message || "Qutillarni yuklashda xatolik",
-              "error"
+              "error",
             );
           }
           this.loadingCustomerPackages = false;
@@ -180,7 +180,7 @@ export class DeliveriesListComponent {
           if (error.status == 403) {
             this.authService.logout();
           }
-        }
+        },
       );
   }
 
@@ -218,7 +218,7 @@ export class DeliveriesListComponent {
         if (error.status == 403) {
           this.authService.logout();
         }
-      }
+      },
     );
   }
 
@@ -235,7 +235,7 @@ export class DeliveriesListComponent {
       this.http
         .get(
           GlobalVars.baseUrl + "/branches?region_id=" + regionId,
-          this.options
+          this.options,
         )
         .subscribe(
           (response) => {
@@ -250,7 +250,7 @@ export class DeliveriesListComponent {
             if (error.status == 403) {
               this.authService.logout();
             }
-          }
+          },
         );
     }
   }
@@ -331,7 +331,7 @@ export class DeliveriesListComponent {
     this.http
       .get(
         GlobalVars.baseUrl + "/deliveries/filtered?" + params.toString(),
-        this.options
+        this.options,
       )
       .subscribe(
         (response) => {
@@ -350,7 +350,7 @@ export class DeliveriesListComponent {
             swal.fire(
               "Xatolik",
               result.message || "Yetkazishlarni yuklashda xatolik",
-              "error"
+              "error",
             );
           }
           this.loadingDeliveries = false;
@@ -361,7 +361,7 @@ export class DeliveriesListComponent {
           if (error.status == 403) {
             this.authService.logout();
           }
-        }
+        },
       );
   }
 
@@ -405,7 +405,7 @@ export class DeliveriesListComponent {
     this.http
       .get(
         GlobalVars.baseUrl + "/deliveries/detail?delivery_id=" + delivery_id,
-        this.options
+        this.options,
       )
       .subscribe(
         (response) => {
@@ -419,7 +419,7 @@ export class DeliveriesListComponent {
           if (error.status == 403) {
             this.authService.logout();
           }
-        }
+        },
       );
     this.showDetailsModal = true;
   }
@@ -480,7 +480,7 @@ export class DeliveriesListComponent {
           "/deliveries/status?delivery_id=" +
           this.selectedDelivery.id,
         JSON.stringify(updateData),
-        this.options
+        this.options,
       )
       .subscribe(
         (response) => {
@@ -508,7 +508,7 @@ export class DeliveriesListComponent {
           if (error.status == 403) {
             this.authService.logout();
           }
-        }
+        },
       );
   }
 
@@ -587,7 +587,7 @@ export class DeliveriesListComponent {
     const tables = document.querySelectorAll(".table");
     tables.forEach((table) => {
       const headers = Array.from(table.querySelectorAll("thead th")).map(
-        (th) => th.textContent?.trim() || ""
+        (th) => th.textContent?.trim() || "",
       );
       const rows = table.querySelectorAll("tbody tr");
 
@@ -615,7 +615,7 @@ export class DeliveriesListComponent {
     if (cleaned.length === 9) {
       return `${cleaned.slice(0, 2)} ${cleaned.slice(2, 5)} ${cleaned.slice(
         5,
-        7
+        7,
       )} ${cleaned.slice(7, 9)}`;
     }
 
@@ -624,5 +624,54 @@ export class DeliveriesListComponent {
   // Navigate to today's EMU deliveries
   goToTodayEmuDeliveries() {
     this.router.navigate(["/uzs/deliveries-list2"]);
+  }
+
+  // Hidden: Bulk send all "created" deliveries
+  sendAllCreatedDeliveries() {
+    swal
+      .fire({
+        title: "Barcha yaratilganlarni yuborish?",
+        text: "Barcha 'yaratilgan' holatdagi yetkazishlar 'yuborilgan' holatiga o'tkaziladi",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Ha, yuborish",
+        cancelButtonText: "Bekor qilish",
+        customClass: {
+          confirmButton: "btn btn-success",
+          cancelButton: "btn btn-danger",
+        },
+        buttonsStyling: false,
+      })
+      .then((result) => {
+        if (result.isConfirmed) {
+          this.http
+            .post(GlobalVars.baseUrl + "/deliveries/send-all", "", this.options)
+            .subscribe(
+              (response) => {
+                const res = response.json();
+                if (res.status === "ok") {
+                  swal.fire({
+                    icon: "success",
+                    title: "Muvaffaqiyat!",
+                    text: res.message || "Barcha yetkazishlar yuborildi",
+                  });
+                  this.loadDeliveries();
+                } else {
+                  swal.fire(
+                    "Xatolik",
+                    res.message || "Xatolik yuz berdi",
+                    "error",
+                  );
+                }
+              },
+              (error) => {
+                swal.fire("Xatolik", "So'rov yuborishda xatolik", "error");
+                if (error.status == 403) {
+                  this.authService.logout();
+                }
+              },
+            );
+        }
+      });
   }
 }

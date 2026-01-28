@@ -59,7 +59,7 @@ export class OrdersComponent implements OnInit, AfterViewInit {
     private http: Http,
     private httpClient: HttpClient,
     private router: Router,
-    public authService: AuthService
+    public authService: AuthService,
   ) {
     this.orderTypeText = [];
     this.orderStatusText = [];
@@ -107,18 +107,18 @@ export class OrdersComponent implements OnInit, AfterViewInit {
           this.pageSize +
           "&ownerID=" +
           ownerid,
-        this.options
+        this.options,
       )
       .subscribe(
         (response) => {
           this.allData = response.json().orders;
-          console.log(this.allData);
+          // console.log(this.allData);
 
           for (let index = 0; index < this.allData.length; index++) {
             const element = this.allData[index];
             this.orderTypeText[index] = GlobalVars.getDescriptionWithID(
               element.order_type,
-              "uz"
+              "uz",
             );
           }
 
@@ -126,7 +126,7 @@ export class OrdersComponent implements OnInit, AfterViewInit {
             const element1 = this.allData[index];
             this.orderStatusText[index] = GlobalVars.getDesOrderStatusWithID(
               element1.status,
-              "uz"
+              "uz",
             );
           }
 
@@ -144,7 +144,7 @@ export class OrdersComponent implements OnInit, AfterViewInit {
           if (error.status == 403) {
             this.authService.logout();
           }
-        }
+        },
       );
   }
 
@@ -161,7 +161,7 @@ export class OrdersComponent implements OnInit, AfterViewInit {
           "&size=" +
           this.pageSize +
           filterLink,
-        this.options
+        this.options,
       )
       .subscribe(
         (response) => {
@@ -171,7 +171,7 @@ export class OrdersComponent implements OnInit, AfterViewInit {
             const element = this.allData[index];
             this.orderTypeText[index] = GlobalVars.getDescriptionWithID(
               element.orderType,
-              "uz"
+              "uz",
             );
           }
 
@@ -179,7 +179,7 @@ export class OrdersComponent implements OnInit, AfterViewInit {
             const element1 = this.allData[index];
             this.orderStatusText[index] = GlobalVars.getDesOrderStatusWithID(
               element1.status,
-              "uz"
+              "uz",
             );
           }
 
@@ -197,7 +197,7 @@ export class OrdersComponent implements OnInit, AfterViewInit {
           if (error.status == 403) {
             this.authService.logout();
           }
-        }
+        },
       );
   }
 
@@ -210,7 +210,7 @@ export class OrdersComponent implements OnInit, AfterViewInit {
       this.http
         .get(
           GlobalVars.baseUrl + "/orders/search?tracking_number=" + searchkey,
-          this.options
+          this.options,
         )
         .subscribe(
           (response) => {
@@ -220,7 +220,7 @@ export class OrdersComponent implements OnInit, AfterViewInit {
               const element = this.allData[index];
               this.orderTypeText[index] = GlobalVars.getDescriptionWithID(
                 element.orderType,
-                "uz"
+                "uz",
               );
             }
 
@@ -228,7 +228,7 @@ export class OrdersComponent implements OnInit, AfterViewInit {
               const element1 = this.allData[index];
               this.orderStatusText[index] = GlobalVars.getDesOrderStatusWithID(
                 element1.status,
-                "uz"
+                "uz",
               );
             }
 
@@ -246,7 +246,7 @@ export class OrdersComponent implements OnInit, AfterViewInit {
             if (error.status == 403) {
               this.authService.logout();
             }
-          }
+          },
         );
     }
   }
@@ -283,7 +283,7 @@ export class OrdersComponent implements OnInit, AfterViewInit {
               GlobalVars.orderTypes[i].id,
               '">',
               GlobalVars.orderTypes[i].description_en,
-              "</option>"
+              "</option>",
             );
           }
           $("#types").html(options.join(""));
@@ -310,7 +310,7 @@ export class OrdersComponent implements OnInit, AfterViewInit {
                 "&type=" +
                 typeOfParcel,
               "",
-              this.options
+              this.options,
             )
             .subscribe(
               (response) => {
@@ -334,7 +334,7 @@ export class OrdersComponent implements OnInit, AfterViewInit {
                     .fire(
                       "Not Added",
                       "BAD REQUEST: WRONG TYPE OF INPUT",
-                      "error"
+                      "error",
                     )
                     .then((result) => {
                       if (result.isConfirmed) {
@@ -345,7 +345,7 @@ export class OrdersComponent implements OnInit, AfterViewInit {
                 if (error.status == 403) {
                   this.authService.logout();
                 }
-              }
+              },
             );
         },
       })
@@ -389,7 +389,7 @@ export class OrdersComponent implements OnInit, AfterViewInit {
                 "/orders/client_received?tracking_number=" +
                 trNum,
               "",
-              this.options
+              this.options,
             )
             .subscribe(
               (response) => {
@@ -411,7 +411,7 @@ export class OrdersComponent implements OnInit, AfterViewInit {
                 if (error.status == 403) {
                   this.authService.logout();
                 }
-              }
+              },
             );
         }
       });
@@ -468,7 +468,7 @@ export class OrdersComponent implements OnInit, AfterViewInit {
           data[1] +
           " " +
           data[2] +
-          "'s row."
+          "'s row.",
       );
       e.preventDefault();
     });

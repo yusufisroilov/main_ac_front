@@ -167,21 +167,21 @@ export class NavbarComponent implements OnInit, OnDestroy {
       this.notificationService.notificationCounts$.subscribe((counts) => {
         this.notificationCounts = counts;
 
-        console.log("📊 Bildirnoma soni yangilandi:", counts);
+        // console.log("📊 Bildirnoma soni yangilandi:", counts);
       });
 
     // Subscribe to ticket notifications
     this.ticketNotificationSubscription =
       this.notificationService.ticketNotifications$.subscribe((list) => {
         this.ticketNotifications = list;
-        console.log("🎫 Murojaat bildirnomalari yangilandi:", list.length);
+        // console.log("🎫 Murojaat bildirnomalari yangilandi:", list.length);
       });
 
     // Subscribe to delivery notifications
     this.deliveryNotificationSubscription =
       this.notificationService.deliveryNotifications$.subscribe((list) => {
         this.deliveryNotifications = list;
-        console.log("🚚 Yetkazish bildirnomalari yangilandi:", list.length);
+        // console.log("🚚 Yetkazish bildirnomalari yangilandi:", list.length);
       });
 
     // Start polling
@@ -280,7 +280,9 @@ export class NavbarComponent implements OnInit, OnDestroy {
    * Handle delivery notification click
    */
   onDeliveryNotificationClick(notification: NotificationItem) {
-    this.notificationService.markDeliveryAsRead(notification.relatedId.toString());
+    this.notificationService.markDeliveryAsRead(
+      notification.relatedId.toString(),
+    );
     this.router.navigate([notification.actionUrl]);
     this.closeDeliveryDropdown();
   }
@@ -290,7 +292,10 @@ export class NavbarComponent implements OnInit, OnDestroy {
    */
   onNotificationClick(notification: NotificationItem) {
     // Determine notification type and call appropriate handler
-    if (notification.type?.startsWith("delivery") || notification.type?.startsWith("payment")) {
+    if (
+      notification.type?.startsWith("delivery") ||
+      notification.type?.startsWith("payment")
+    ) {
       this.onDeliveryNotificationClick(notification);
     } else {
       this.onTicketNotificationClick(notification);

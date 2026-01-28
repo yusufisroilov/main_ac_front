@@ -155,12 +155,12 @@ export class NotificationService {
           const ticketListData = ticketListRes.json();
           const deliveryListData = deliveryListRes.json();
 
-          console.log("✅ Xodim bildirnomalari yuklandi:", {
-            tickets: ticketData.notifications?.total_needs_attention || 0,
-            deliveries: deliveryData.notifications?.total_needs_attention || 0,
-            ticketDetails: ticketListData.notifications?.length || 0,
-            deliveryDetails: deliveryListData.notifications?.length || 0,
-          });
+          // console.log("✅ Xodim bildirnomalari yuklandi:", {
+          //   tickets: ticketData.notifications?.total_needs_attention || 0,
+          //   deliveries: deliveryData.notifications?.total_needs_attention || 0,
+          //   ticketDetails: ticketListData.notifications?.length || 0,
+          //   deliveryDetails: deliveryListData.notifications?.length || 0,
+          // });
 
           // Update counts
           this.notificationCountSubject.next({
@@ -224,12 +224,12 @@ export class NotificationService {
           const ticketListData = ticketListRes.json();
           const deliveryListData = deliveryListRes.json();
 
-          console.log("✅ Mijoz bildirnomalari yuklandi:", {
-            tickets: ticketData.notifications?.total_needs_attention || 0,
-            deliveries: deliveryData.notifications?.total_needs_attention || 0,
-            ticketDetails: ticketListData.notifications?.length || 0,
-            deliveryDetails: deliveryListData.notifications?.length || 0,
-          });
+          // console.log("✅ Mijoz bildirnomalari yuklandi:", {
+          //   tickets: ticketData.notifications?.total_needs_attention || 0,
+          //   deliveries: deliveryData.notifications?.total_needs_attention || 0,
+          //   ticketDetails: ticketListData.notifications?.length || 0,
+          //   deliveryDetails: deliveryListData.notifications?.length || 0,
+          // });
 
           // Update counts
           this.notificationCountSubject.next({
@@ -293,7 +293,7 @@ export class NotificationService {
       .put(`${this.baseUrl}/tickets/${ticketId}/mark-read`, {}, options)
       .toPromise()
       .then((res) => {
-        console.log("📖 Ticket marked as read:", ticketId);
+        // console.log("📖 Ticket marked as read:", ticketId);
         this.refreshNotifications();
       })
       .catch((err) => {
@@ -318,7 +318,6 @@ export class NotificationService {
       .put(`${this.baseUrl}/tickets/mark-all-read`, {}, options)
       .toPromise()
       .then((res) => {
-        console.log("📖 All tickets marked as read");
         this.refreshNotifications();
       })
       .catch((err) => {
@@ -351,7 +350,7 @@ export class NotificationService {
       .put(`${this.baseUrl}/requests/${requestId}/mark-read`, {}, options)
       .toPromise()
       .then((res) => {
-        console.log("📖 Delivery request marked as read:", requestId);
+        // console.log("📖 Delivery request marked as read:", requestId);
         this.refreshNotifications();
       })
       .catch((err) => {
@@ -392,7 +391,7 @@ export class NotificationService {
       .put(endpoint, {}, options)
       .toPromise()
       .then((res) => {
-        console.log("📖 All delivery requests marked as read");
+        // console.log("📖 All delivery requests marked as read");
         this.refreshNotifications();
       })
       .catch((err) => {

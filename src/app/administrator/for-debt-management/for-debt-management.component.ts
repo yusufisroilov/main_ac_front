@@ -268,7 +268,10 @@ export class ForDebtManagementComponent implements OnInit {
 
   // Helper: Format currency
   formatCurrency(value: number): string {
-    return value.toLocaleString("uz-UZ");
+    if (value == null) return "0";
+    const intPart = Math.floor(Math.abs(value));
+    const formatted = intPart.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+    return value < 0 ? "-" + formatted : formatted;
   }
 
   // Helper: Format date

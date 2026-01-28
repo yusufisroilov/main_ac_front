@@ -53,7 +53,7 @@ export class OrderBoxesComponent implements OnInit {
     public authService: AuthService,
     private http: Http,
     private httpClient: HttpClient,
-    private router: Router
+    private router: Router,
   ) {
     this.orderTypeText = [];
     this.orderStatusText = [];
@@ -83,18 +83,18 @@ export class OrderBoxesComponent implements OnInit {
     return this.http
       .get(
         GlobalVars.baseUrl + "/consignments/for_client?id=" + ownerid,
-        this.options
+        this.options,
       )
       .subscribe(
         (response) => {
           this.allDataBoxes = response.json().consignments;
-          console.log("partiyalr ", this.allDataBoxes);
+          // console.log("partiyalr ", this.allDataBoxes);
         },
         (error) => {
           if (error.status == 403) {
             this.authService.logout();
           }
-        }
+        },
       );
   }
 
@@ -158,7 +158,7 @@ export class OrderBoxesComponent implements OnInit {
           ownerid +
           "&consignment=" +
           partyNum,
-        this.options
+        this.options,
       )
       .subscribe(
         (response) => {
@@ -169,7 +169,7 @@ export class OrderBoxesComponent implements OnInit {
             const element = this.allData[index];
             this.orderTypeText[index] = GlobalVars.getDescriptionWithID(
               element.order_type,
-              "uz"
+              "uz",
             );
           }
 
@@ -177,7 +177,7 @@ export class OrderBoxesComponent implements OnInit {
             const element1 = this.allData[index];
             this.orderStatusText[index] = GlobalVars.getDesOrderStatusWithID(
               element1.status,
-              "uz"
+              "uz",
             );
           }
 
@@ -195,7 +195,7 @@ export class OrderBoxesComponent implements OnInit {
           if (error.status == 403) {
             this.authService.logout();
           }
-        }
+        },
       );
   }
 
@@ -218,7 +218,7 @@ export class OrderBoxesComponent implements OnInit {
             this.currentParty +
             "&trackingNumber=" +
             searchkey,
-          this.options
+          this.options,
         )
         .subscribe(
           (response) => {
@@ -228,7 +228,7 @@ export class OrderBoxesComponent implements OnInit {
               const element = this.allData[index];
               this.orderTypeText[index] = GlobalVars.getDescriptionWithID(
                 element.orderType,
-                "uz"
+                "uz",
               );
             }
 
@@ -236,7 +236,7 @@ export class OrderBoxesComponent implements OnInit {
               const element1 = this.allData[index];
               this.orderStatusText[index] = GlobalVars.getDesOrderStatusWithID(
                 element1.status,
-                "uz"
+                "uz",
               );
             }
 
@@ -254,7 +254,7 @@ export class OrderBoxesComponent implements OnInit {
             if (error.status == 403) {
               this.authService.logout();
             }
-          }
+          },
         );
     }
   }
@@ -285,7 +285,7 @@ export class OrderBoxesComponent implements OnInit {
                 "/orders/client_received?tracking_number=" +
                 trNum,
               "",
-              this.options
+              this.options,
             )
             .subscribe(
               (response) => {
@@ -307,7 +307,7 @@ export class OrderBoxesComponent implements OnInit {
                 if (error.status == 403) {
                   this.authService.logout();
                 }
-              }
+              },
             );
         }
       });
@@ -348,7 +348,7 @@ export class OrderBoxesComponent implements OnInit {
           data[1] +
           " " +
           data[2] +
-          "'s row."
+          "'s row.",
       );
       e.preventDefault();
     });

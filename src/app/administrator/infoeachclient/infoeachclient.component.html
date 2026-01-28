@@ -239,6 +239,13 @@
                     <td class="text-center">
                       {{ row.debt_uzs | currency : " " : "symbol" : "1.0-0" }}
                       Sum
+                      <div *ngIf="row.for_debt" style="margin-top: 4px;">
+                        <span class="badge badge-warning" style="font-size: 11px; padding: 3px 8px;">
+                          <i class="material-icons"
+                            style="font-size: 12px; vertical-align: middle;">account_balance_wallet</i>
+                          Nasiya: {{ row.for_debt | currency : ' ' : 'symbol' : '1.0-0' }} so'm
+                        </span>
+                      </div>
                     </td>
                     <td class="td-actions text-right">
                       <button mat-raised-button type="button" class="btn btn-warning"
@@ -291,10 +298,13 @@
             </div>
 
             <!-- NEW: Debt Warning Banner -->
-            <div *ngIf="!loadingCustomerPackages && showDebtWarning" class="alert alert-danger" role="alert" style="padding: 8px 12px; margin-bottom: 10px;">
+            <div *ngIf="!loadingCustomerPackages && showDebtWarning" class="alert alert-warning" role="alert"
+              style="padding: 8px 12px; margin-bottom: 10px;">
               <p class="mb-1" style="font-size: 13px;">
-                <i class="material-icons" style="font-size: 14px; vertical-align: middle;">warning</i>
-                <strong>{{ debtConsignments.join(', ') }}</strong> - Qarz: <strong>{{ totalDebtUzs | currency : ' ' : 'symbol' : '1.0-0' }} so'm</strong>
+                <i class="material-icons" style="font-size: 14px; vertical-align: middle;">info</i>
+                <strong>{{ debtConsignments.join(', ') }}</strong> - Qarz: <strong>{{ totalDebtUzs | currency : ' ' :
+                  'symbol' : '1.0-0' }} so'm</strong>.
+                Nasiyaga berish uchun "Nasiya" ustunini belgilang.
               </p>
             </div>
 
@@ -325,6 +335,7 @@
                           <th class="text-center" style="padding: 6px 8px;">Mahsulotlar</th>
                           <th style="padding: 6px 8px;">Partiyalar</th>
                           <th style="padding: 6px 8px;">Holat</th>
+                          <th style="padding: 6px 8px;">Nasiya</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -344,10 +355,12 @@
                               </div>
                             </td>
                             <td style="padding: 6px 8px;">
-                              <span *ngIf="group.type === 'tied'" class="badge badge-info" style="font-size: 11px; padding: 3px 6px;">
+                              <span *ngIf="group.type === 'tied'" class="badge badge-info"
+                                style="font-size: 11px; padding: 3px 6px;">
                                 Bog'langan
                               </span>
-                              <span *ngIf="group.type === 'single'" class="badge badge-secondary" style="font-size: 11px; padding: 3px 6px;">
+                              <span *ngIf="group.type === 'single'" class="badge badge-secondary"
+                                style="font-size: 11px; padding: 3px 6px;">
                                 Alohida
                               </span>
                             </td>
@@ -375,20 +388,36 @@
                                 class="badge badge-secondary" style="font-size: 11px; padding: 3px 6px;">
                                 Boshqa
                               </span>
-                              <span *ngIf="group.selectionType === 'single'" class="badge badge-warning ml-1" style="font-size: 11px; padding: 3px 6px;">
+                              <span *ngIf="group.selectionType === 'single'" class="badge badge-warning ml-1"
+                                style="font-size: 11px; padding: 3px 6px;">
                                 Qisman
                               </span>
-                              <!-- NEW: Debt Badge -->
-                              <span *ngIf="group.has_high_debt" class="badge badge-danger ml-1" style="font-size: 11px; padding: 3px 6px;">
+                              <!-- Debt Badge -->
+                              <span *ngIf="group.has_high_debt" class="badge badge-danger ml-1"
+                                style="font-size: 11px; padding: 3px 6px;">
                                 <i class="material-icons" style="font-size: 12px; vertical-align: middle;">error</i>
                                 Qarz: {{ group.debt_uzs | currency : ' ' : 'symbol' : '1.0-0' }} so'm
+                              </span>
+                            </td>
+                            <td style="padding: 6px 8px;">
+                              <div *ngIf="group.has_high_debt && group.selected" class="form-check">
+                                <label class="form-check-label">
+                                  <input class="form-check-input" type="checkbox" [(ngModel)]="group.forDebt">
+                                  <span class="form-check-sign">
+                                    <span class="check"></span>
+                                  </span>
+                                </label>
+                              </div>
+                              <span *ngIf="group.has_high_debt && group.selected && group.forDebt"
+                                class="badge badge-warning" style="font-size: 10px; padding: 2px 5px;">
+                                Nasiya
                               </span>
                             </td>
                           </tr>
 
                           <!-- Partial Selection Options -->
                           <tr *ngIf="hasMultipleConsignments(group)" class="bg-light">
-                            <td colspan="6" class="text-center" style="padding: 6px 8px;">
+                            <td colspan="7" class="text-center" style="padding: 6px 8px;">
                               <button class="btn btn-sm btn-warning mr-2" (click)="selectFullTiedGroup(group)"
                                 [disabled]="group.selected" style="font-size: 11px; padding: 4px 8px;">
                                 Butun guruhni tanlash ({{ group.total_packages }} ta)
@@ -408,7 +437,8 @@
 
 
                   <!-- Tied Package Warning -->
-                  <div *ngIf="hasTiedPackagesSelected()" class="alert alert-warning mt-2" style="padding: 6px 10px; margin-bottom: 8px;">
+                  <div *ngIf="hasTiedPackagesSelected()" class="alert alert-warning mt-2"
+                    style="padding: 6px 10px; margin-bottom: 8px;">
                     <small style="font-size: 12px;">
                       <i class="material-icons" style="font-size: 14px; vertical-align: middle;">warning</i>
                       Bog'langan Qutillar
@@ -428,18 +458,21 @@
                       Yetkazish Turi
                     </label>
                     <div class="delivery-type-buttons" style="display: flex; gap: 6px;">
-                      <button type="button" class="delivery-type-btn btn btn-sm" [class.active]="deliveryType === 'Pick-up'"
-                        (click)="selectDeliveryType('Pick-up')" style="flex: 1; padding: 6px 8px; font-size: 12px;">
+                      <button type="button" class="delivery-type-btn btn btn-sm"
+                        [class.active]="deliveryType === 'Pick-up'" (click)="selectDeliveryType('Pick-up')"
+                        style="flex: 1; padding: 6px 8px; font-size: 12px;">
                         <i class="material-icons" style="font-size: 16px;">person</i>
                         <span>O'zim olaman</span>
                       </button>
-                      <button type="button" class="delivery-type-btn btn btn-sm" [class.active]="deliveryType === 'Yandex'"
-                        (click)="selectDeliveryType('Yandex')" style="flex: 1; padding: 6px 8px; font-size: 12px;">
+                      <button type="button" class="delivery-type-btn btn btn-sm"
+                        [class.active]="deliveryType === 'Yandex'" (click)="selectDeliveryType('Yandex')"
+                        style="flex: 1; padding: 6px 8px; font-size: 12px;">
                         <i class="material-icons" style="font-size: 16px;">local_taxi</i>
                         <span>Yandex</span>
                       </button>
-                      <button type="button" class="delivery-type-btn btn btn-sm" [class.active]="deliveryType === 'Own-Courier'"
-                        (click)="selectDeliveryType('Own-Courier')" style="flex: 1; padding: 6px 8px; font-size: 12px;">
+                      <button type="button" class="delivery-type-btn btn btn-sm"
+                        [class.active]="deliveryType === 'Own-Courier'" (click)="selectDeliveryType('Own-Courier')"
+                        style="flex: 1; padding: 6px 8px; font-size: 12px;">
                         <i class="material-icons" style="font-size: 16px;">delivery_dining</i>
                         <span>Kuryer</span>
                       </button>
@@ -462,8 +495,9 @@
                           style="font-size: 14px; color: #2196f3; vertical-align: middle;"
                           title="Avtomatik to'ldirilgan">auto_awesome</i>
                       </label>
-                      <input type="tel" class="form-control form-control-sm" [(ngModel)]="customerPhone" placeholder="+998..."
-                        (input)="onPhoneManualChange()" style="font-size: 13px; padding: 6px 10px;"
+                      <input type="tel" class="form-control form-control-sm" [(ngModel)]="customerPhone"
+                        placeholder="+998..." (input)="onPhoneManualChange()"
+                        style="font-size: 13px; padding: 6px 10px;"
                         [style.background-color]="autoFilledFields.phone ? '#e3f2fd' : ''">
                     </div>
                   </div>
@@ -471,8 +505,9 @@
                   <div class="col-md-6">
                     <div class="form-group" style="margin-bottom: 0;">
                       <label class="bmd-label-floating" style="font-size: 12px;">Izohlar</label>
-                      <input type="text" class="form-control form-control-sm" autocomplete="{{deli}}" [(ngModel)]="deliveryNotes"
-                        placeholder="Qo'shimcha ma'lumotlar" style="font-size: 13px; padding: 6px 10px;">
+                      <input type="text" class="form-control form-control-sm" autocomplete="{{deli}}"
+                        [(ngModel)]="deliveryNotes" placeholder="Qo'shimcha ma'lumotlar"
+                        style="font-size: 13px; padding: 6px 10px;">
                     </div>
                   </div>
                 </div>
@@ -505,7 +540,8 @@
                           style="font-size: 14px; color: #2196f3; vertical-align: middle;"
                           title="Avtomatik to'ldirilgan">auto_awesome</i>
                       </label>
-                      <select class="form-control form-control-sm" [(ngModel)]="selectedRegionId" (change)="onRegionSelect($event)"
+                      <select class="form-control form-control-sm" [(ngModel)]="selectedRegionId"
+                        (change)="onRegionSelect($event)"
                         [style.background-color]="autoFilledFields.regionId ? '#e3f2fd' : ''"
                         style="font-size: 13px; padding: 6px 10px;">
                         <option value="">Viloyat tanlang</option>
@@ -523,8 +559,8 @@
                           style="font-size: 14px; color: #2196f3; vertical-align: middle;"
                           title="Avtomatik to'ldirilgan">auto_awesome</i>
                       </label>
-                      <select class="form-control form-control-sm" [(ngModel)]="selectedBranchId" [disabled]="!selectedRegionId"
-                        (change)="onBranchManualChange()"
+                      <select class="form-control form-control-sm" [(ngModel)]="selectedBranchId"
+                        [disabled]="!selectedRegionId" (change)="onBranchManualChange()"
                         [style.background-color]="autoFilledFields.branchId ? '#e3f2fd' : ''"
                         style="font-size: 13px; padding: 6px 10px;">
                         <option value="">Filial tanlang</option>
@@ -564,7 +600,8 @@
             </div>
 
             <!-- No packages message -->
-            <div *ngIf="!loadingCustomerPackages && customerPackages.length === 0" class="text-center" style="padding: 20px 10px;">
+            <div *ngIf="!loadingCustomerPackages && customerPackages.length === 0" class="text-center"
+              style="padding: 20px 10px;">
               <i class="material-icons" style="font-size: 48px; color: #ccc;">inbox</i>
               <p class="mt-2 mb-1" style="font-size: 14px; font-weight: 500;">Omborda quti yo'q</p>
               <p class="text-muted mb-0" style="font-size: 12px;">Bu mijozning barcha qutilari allaqachon yuborilgan</p>
