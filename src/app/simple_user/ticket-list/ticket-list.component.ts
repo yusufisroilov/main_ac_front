@@ -61,6 +61,9 @@ export class CustomerTicketListComponent implements OnInit, AfterViewInit {
   priorityOptions: any = [];
   categoryOptions: any = [];
 
+  // Language
+  isChinaStaff: boolean = false;
+
   // HTTP setup
   headers12: any;
   options: any;
@@ -76,40 +79,69 @@ export class CustomerTicketListComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
-    // Status options (simplified for customers)
-    this.statusOptions = [
-      { value: "all", label: "Barcha murojaatlar" },
-      { value: "unread", label: "O'qilmagan" },
-      { value: "open", label: "Ochiq" },
-      { value: "answered", label: "Yordam javobi" },
-      { value: "customer-reply", label: "Yordam kutilmoqda" },
-      { value: "closed", label: "Yopilgan" },
-    ];
+    this.isChinaStaff = localStorage.getItem("role") === "CHINASTAFF";
 
-    // Priority options
-    this.priorityOptions = [
-      { value: "all", label: "Barcha ustuvorliklar" },
-      { value: "Urgent", label: "Shoshilinch" },
-      { value: "High", label: "Yuqori" },
-      { value: "Medium", label: "O'rta" },
-      { value: "Low", label: "Past" },
-    ];
-
-    // Category options
-    this.categoryOptions = [
-      { value: "all", label: "Barcha kategoriyalar" },
-      { value: "delivery", label: "Yetkazish muammosi" },
-      { value: "payment", label: "To'lov" },
-      { value: "product", label: "Mahsulot haqida savol" },
-      { value: "customs", label: "Bojxona" },
-      { value: "damaged", label: "Shikastlangan yuk" },
-      { value: "lost", label: "Yo'qolgan pochta" },
-      { value: "pricing", label: "Narx" },
-      { value: "tracking", label: "Kuzatuv" },
-      { value: "support", label: "Umumiy yordam" },
-      { value: "complaint", label: "Shikoyat" },
-      { value: "other", label: "Boshqa" },
-    ];
+    if (this.isChinaStaff) {
+      this.statusOptions = [
+        { value: "all", label: "All Tickets" },
+        { value: "unread", label: "Unread" },
+        { value: "open", label: "Open" },
+        { value: "answered", label: "Answered" },
+        { value: "customer-reply", label: "Waiting for Support" },
+        { value: "closed", label: "Closed" },
+      ];
+      this.priorityOptions = [
+        { value: "all", label: "All Priorities" },
+        { value: "Urgent", label: "Urgent" },
+        { value: "High", label: "High" },
+        { value: "Medium", label: "Medium" },
+        { value: "Low", label: "Low" },
+      ];
+      this.categoryOptions = [
+        { value: "all", label: "All Categories" },
+        { value: "delivery", label: "Delivery Issue" },
+        { value: "payment", label: "Payment" },
+        { value: "product", label: "Product Question" },
+        { value: "customs", label: "Customs" },
+        { value: "damaged", label: "Damaged Cargo" },
+        { value: "lost", label: "Lost Package" },
+        { value: "pricing", label: "Pricing" },
+        { value: "tracking", label: "Tracking" },
+        { value: "support", label: "General Support" },
+        { value: "complaint", label: "Complaint" },
+        { value: "other", label: "Other" },
+      ];
+    } else {
+      this.statusOptions = [
+        { value: "all", label: "Barcha murojaatlar" },
+        { value: "unread", label: "O'qilmagan" },
+        { value: "open", label: "Ochiq" },
+        { value: "answered", label: "Yordam javobi" },
+        { value: "customer-reply", label: "Yordam kutilmoqda" },
+        { value: "closed", label: "Yopilgan" },
+      ];
+      this.priorityOptions = [
+        { value: "all", label: "Barcha ustuvorliklar" },
+        { value: "Urgent", label: "Shoshilinch" },
+        { value: "High", label: "Yuqori" },
+        { value: "Medium", label: "O'rta" },
+        { value: "Low", label: "Past" },
+      ];
+      this.categoryOptions = [
+        { value: "all", label: "Barcha kategoriyalar" },
+        { value: "delivery", label: "Yetkazish muammosi" },
+        { value: "payment", label: "To'lov" },
+        { value: "product", label: "Mahsulot haqida savol" },
+        { value: "customs", label: "Bojxona" },
+        { value: "damaged", label: "Shikastlangan yuk" },
+        { value: "lost", label: "Yo'qolgan pochta" },
+        { value: "pricing", label: "Narx" },
+        { value: "tracking", label: "Kuzatuv" },
+        { value: "support", label: "Umumiy yordam" },
+        { value: "complaint", label: "Shikoyat" },
+        { value: "other", label: "Boshqa" },
+      ];
+    }
   }
 
   ngAfterViewInit() {
@@ -194,8 +226,10 @@ export class CustomerTicketListComponent implements OnInit, AfterViewInit {
           } else {
             swal.fire({
               icon: "error",
-              title: "Xatolik",
-              text: "Murojaatlarni yuklab bo'lmadi. Qayta urinib ko'ring.",
+              title: this.isChinaStaff ? "Error" : "Xatolik",
+              text: this.isChinaStaff
+                ? "Failed to load tickets. Please try again."
+                : "Murojaatlarni yuklab bo'lmadi. Qayta urinib ko'ring.",
             });
           }
         }
@@ -339,6 +373,16 @@ export class CustomerTicketListComponent implements OnInit, AfterViewInit {
    * Get status label
    */
   getStatusLabel(status: string): string {
+    if (this.isChinaStaff) {
+      const labels = {
+        unread: "Unread",
+        open: "Open",
+        answered: "Answered",
+        "customer-reply": "Waiting for Support",
+        closed: "Closed",
+      };
+      return labels[status] || status;
+    }
     const labels = {
       unread: "O'qilmagan",
       open: "Ochiq",
@@ -366,6 +410,15 @@ export class CustomerTicketListComponent implements OnInit, AfterViewInit {
    * Get priority label
    */
   getPriorityLabel(priority: string): string {
+    if (this.isChinaStaff) {
+      const labels = {
+        Urgent: "Urgent",
+        High: "High",
+        Medium: "Medium",
+        Low: "Low",
+      };
+      return labels[priority] || "Medium";
+    }
     const labels = {
       Urgent: "Shoshilinch",
       High: "Yuqori",
@@ -399,6 +452,22 @@ export class CustomerTicketListComponent implements OnInit, AfterViewInit {
    * Get friendly category label
    */
   getCategoryLabel(category: string): string {
+    if (this.isChinaStaff) {
+      const labelMap: { [key: string]: string } = {
+        delivery: "Delivery Issue",
+        payment: "Payment",
+        product: "Product Question",
+        customs: "Customs",
+        damaged: "Damaged Cargo",
+        lost: "Lost Package",
+        pricing: "Pricing",
+        tracking: "Tracking",
+        support: "General Support",
+        complaint: "Complaint",
+        other: "Other",
+      };
+      return labelMap[category] || category;
+    }
     const labelMap: { [key: string]: string } = {
       delivery: "Yetkazish muammosi",
       payment: "To'lov",
@@ -444,10 +513,17 @@ export class CustomerTicketListComponent implements OnInit, AfterViewInit {
     const hours = Math.floor(diff / 3600000);
     const days = Math.floor(diff / 86400000);
 
-    if (minutes < 1) return "Hozirgina";
-    if (minutes < 60) return `${minutes} daqiqa oldin`;
-    if (hours < 24) return `${hours} soat oldin`;
-    if (days < 7) return `${days} kun oldin`;
+    if (this.isChinaStaff) {
+      if (minutes < 1) return "Just now";
+      if (minutes < 60) return `${minutes} min ago`;
+      if (hours < 24) return `${hours} hours ago`;
+      if (days < 7) return `${days} days ago`;
+    } else {
+      if (minutes < 1) return "Hozirgina";
+      if (minutes < 60) return `${minutes} daqiqa oldin`;
+      if (hours < 24) return `${hours} soat oldin`;
+      if (days < 7) return `${days} kun oldin`;
+    }
 
     return this.formatDate(date);
   }
@@ -456,6 +532,16 @@ export class CustomerTicketListComponent implements OnInit, AfterViewInit {
    * Get status explanation text
    */
   getStatusExplanation(status: string): string {
+    if (this.isChinaStaff) {
+      const explanations: { [key: string]: string } = {
+        unread: "Your ticket has been received",
+        open: "Support is reviewing",
+        answered: "Support has replied",
+        "customer-reply": "Waiting for support reply",
+        closed: "Ticket resolved",
+      };
+      return explanations[status] || "";
+    }
     const explanations: { [key: string]: string } = {
       unread: "Murojaatingiz qabul qilindi",
       open: "Yordam xizmati ko'rib chiqmoqda",

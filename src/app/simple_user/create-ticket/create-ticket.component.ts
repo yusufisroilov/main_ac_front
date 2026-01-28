@@ -29,6 +29,9 @@ export class CustomerCreateTicketComponent implements OnInit, AfterViewInit {
   lineCount: number = 0;
   wordCount: number = 0;
 
+  // Language
+  isChinaStaff: boolean = false;
+
   // File upload
   selectedFiles: File[] = [];
   maxFiles: number = 5;
@@ -48,35 +51,15 @@ export class CustomerCreateTicketComponent implements OnInit, AfterViewInit {
   options: any;
 
   // Service/Category options
-  serviceOptions = [
-    { value: "None", label: "Yo'q" },
-    { value: "delivery", label: "Yetkazish muammosi" },
-    { value: "payment", label: "To'lov muammosi" },
-    { value: "product", label: "Mahsulot haqida savol" },
-    { value: "customs", label: "Bojxona muammosi" },
-    { value: "damaged", label: "Shikastlangan yuk" },
-    { value: "lost", label: "Yo'qolgan pochta" },
-    { value: "pricing", label: "Narx haqida savol" },
-    { value: "tracking", label: "Kuzatuv muammosi" },
-    { value: "support", label: "Umumiy yordam" },
-    { value: "complaint", label: "Shikoyat" },
-    { value: "other", label: "Boshqa" },
-  ];
+  serviceOptions: any[] = [];
 
   // Role options for ticket assignment
-  roleOptions = [
-    { value: "", label: "Avtomatik tanlash" },
-    { value: "MANAGER", label: "Menejer" },
-    { value: "DELIVERER", label: "Yetkazib beruvchi" },
-    { value: "ACCOUNTANT", label: "Hisobchi" },
-    { value: "CHINASTAFF", label: "Xitoy xodimi" },
-    { value: "YUKCHI", label: "Yukchi" },
-  ];
+  roleOptions: any[] = [];
 
   constructor(
     private http: Http,
     private router: Router,
-    public authService: AuthService
+    public authService: AuthService,
   ) {
     this.headers12 = new Headers({ "Content-Type": "application/json" });
     this.headers12.append("Authorization", localStorage.getItem("token"));
@@ -84,7 +67,51 @@ export class CustomerCreateTicketComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
-    // Component initialized
+    this.isChinaStaff = localStorage.getItem("role") === "CHINASTAFF";
+
+    if (this.isChinaStaff) {
+      this.serviceOptions = [
+        { value: "None", label: "None" },
+        { value: "delivery", label: "Delivery Issue" },
+        { value: "payment", label: "Payment Issue" },
+        { value: "product", label: "Product Question" },
+        { value: "customs", label: "Customs Issue" },
+        { value: "damaged", label: "Damaged Cargo" },
+        { value: "lost", label: "Lost Package" },
+        { value: "pricing", label: "Pricing Question" },
+        { value: "tracking", label: "Tracking Issue" },
+        { value: "support", label: "General Support" },
+        { value: "complaint", label: "Complaint" },
+        { value: "other", label: "Other" },
+      ];
+      this.roleOptions = [
+        { value: "", label: "Auto Assign" },
+        { value: "MANAGER", label: "Manager" },
+        { value: "CHINASTAFF", label: "China Staff" },
+        { value: "YUKCHI", label: "Loader" },
+      ];
+    } else {
+      this.serviceOptions = [
+        { value: "None", label: "Yo'q" },
+        { value: "delivery", label: "Yetkazish muammosi" },
+        { value: "payment", label: "To'lov muammosi" },
+        { value: "product", label: "Mahsulot haqida savol" },
+        { value: "customs", label: "Bojxona muammosi" },
+        { value: "damaged", label: "Shikastlangan yuk" },
+        { value: "lost", label: "Yo'qolgan pochta" },
+        { value: "pricing", label: "Narx haqida savol" },
+        { value: "tracking", label: "Kuzatuv muammosi" },
+        { value: "support", label: "Umumiy yordam" },
+        { value: "complaint", label: "Shikoyat" },
+        { value: "other", label: "Boshqa" },
+      ];
+      this.roleOptions = [
+        { value: "", label: "Avtomatik tanlash" },
+        { value: "MANAGER", label: "Menejer" },
+        { value: "CHINASTAFF", label: "Xitoy xodimi" },
+        { value: "YUKCHI", label: "Yukchi" },
+      ];
+    }
   }
 
   ngAfterViewInit(): void {
@@ -129,8 +156,8 @@ export class CustomerCreateTicketComponent implements OnInit, AfterViewInit {
     if (!this.isFormValid()) {
       swal.fire({
         icon: "warning",
-        title: "To'ldirilmagan forma",
-        text: "Iltimos, xabar maydonini to'ldiring",
+        title: this.isChinaStaff ? "Incomplete form" : "To'ldirilmagan forma",
+        text: this.isChinaStaff ? "Please fill in the message field" : "Iltimos, xabar maydonini to'ldiring",
       });
       return;
     }
@@ -174,8 +201,10 @@ export class CustomerCreateTicketComponent implements OnInit, AfterViewInit {
           swal
             .fire({
               icon: "success",
-              title: "Murojaat yaratildi!",
-              html: `Sizning <strong>#${data.ticket.ticket_number}</strong> raqamli murojaatingiz muvaffaqiyatli yaratildi.`,
+              title: this.isChinaStaff ? "Ticket Created!" : "Murojaat yaratildi!",
+              html: this.isChinaStaff
+                ? `Your ticket <strong>#${data.ticket.ticket_number}</strong> has been created successfully.`
+                : `Sizning <strong>#${data.ticket.ticket_number}</strong> raqamli murojaatingiz muvaffaqiyatli yaratildi.`,
               confirmButtonText: "OK",
             })
             .then(() => {
@@ -186,8 +215,10 @@ export class CustomerCreateTicketComponent implements OnInit, AfterViewInit {
         const errorData = JSON.parse(xhr.responseText);
         swal.fire({
           icon: "error",
-          title: "Xatolik",
-          text: errorData.error || "Murojaatni yaratib bo'lmadi. Qayta urinib ko'ring.",
+          title: this.isChinaStaff ? "Error" : "Xatolik",
+          text:
+            errorData.error ||
+            (this.isChinaStaff ? "Failed to create ticket. Please try again." : "Murojaatni yaratib bo'lmadi. Qayta urinib ko'ring."),
         });
       }
     };
@@ -196,8 +227,8 @@ export class CustomerCreateTicketComponent implements OnInit, AfterViewInit {
       this.isSubmitting = false;
       swal.fire({
         icon: "error",
-        title: "Xatolik",
-        text: "Murojaatni yaratib bo'lmadi. Qayta urinib ko'ring.",
+        title: this.isChinaStaff ? "Error" : "Xatolik",
+        text: this.isChinaStaff ? "Failed to create ticket. Please try again." : "Murojaatni yaratib bo'lmadi. Qayta urinib ko'ring.",
       });
     };
 
@@ -211,12 +242,12 @@ export class CustomerCreateTicketComponent implements OnInit, AfterViewInit {
     if (this.hasUnsavedChanges()) {
       swal
         .fire({
-          title: "O'zgarishlarni bekor qilasizmi?",
-          text: "Saqlanmagan o'zgarishlar bor. Haqiqatan chiqmoqchimisiz?",
+          title: this.isChinaStaff ? "Discard changes?" : "O'zgarishlarni bekor qilasizmi?",
+          text: this.isChinaStaff ? "You have unsaved changes. Are you sure you want to leave?" : "Saqlanmagan o'zgarishlar bor. Haqiqatan chiqmoqchimisiz?",
           icon: "warning",
           showCancelButton: true,
-          confirmButtonText: "Ha, bekor qilish",
-          cancelButtonText: "Yo'q, qolish",
+          confirmButtonText: this.isChinaStaff ? "Yes, discard" : "Ha, bekor qilish",
+          cancelButtonText: this.isChinaStaff ? "No, stay" : "Yo'q, qolish",
           confirmButtonColor: "#f44336",
         })
         .then((result) => {
@@ -248,7 +279,7 @@ export class CustomerCreateTicketComponent implements OnInit, AfterViewInit {
    */
   getAutoGeneratedSubject(): string {
     const serviceObj = this.serviceOptions.find(
-      (s) => s.value === this.relatedService
+      (s) => s.value === this.relatedService,
     );
     const serviceLabel = serviceObj ? serviceObj.label : "Yordam so'rovi";
 
@@ -297,8 +328,10 @@ export class CustomerCreateTicketComponent implements OnInit, AfterViewInit {
     if (this.selectedFiles.length + files.length > this.maxFiles) {
       swal.fire({
         icon: "warning",
-        title: "Juda ko'p fayllar",
-        text: `Siz maksimum ${this.maxFiles} ta fayl yuklashingiz mumkin`,
+        title: this.isChinaStaff ? "Too many files" : "Juda ko'p fayllar",
+        text: this.isChinaStaff
+          ? `You can upload a maximum of ${this.maxFiles} files`
+          : `Siz maksimum ${this.maxFiles} ta fayl yuklashingiz mumkin`,
       });
       return;
     }
@@ -311,8 +344,10 @@ export class CustomerCreateTicketComponent implements OnInit, AfterViewInit {
       if (file.size > this.maxFileSize) {
         swal.fire({
           icon: "warning",
-          title: "Fayl juda katta",
-          text: `${file.name} maksimal fayl hajmidan (5MB) oshib ketdi`,
+          title: this.isChinaStaff ? "File too large" : "Fayl juda katta",
+          text: this.isChinaStaff
+            ? `${file.name} exceeds the maximum file size (5MB)`
+            : `${file.name} maksimal fayl hajmidan (5MB) oshib ketdi`,
         });
         continue;
       }
@@ -322,12 +357,10 @@ export class CustomerCreateTicketComponent implements OnInit, AfterViewInit {
       if (!this.allowedExtensions.includes(fileExt)) {
         swal.fire({
           icon: "warning",
-          title: "Fayl turi noto'g'ri",
-          text: `${
-            file.name
-          } fayl turi noto'g'ri. Ruxsat etilgan: ${this.allowedExtensions.join(
-            ", "
-          )}`,
+          title: this.isChinaStaff ? "Invalid file type" : "Fayl turi noto'g'ri",
+          text: this.isChinaStaff
+            ? `${file.name} has an invalid file type. Allowed: ${this.allowedExtensions.join(", ")}`
+            : `${file.name} fayl turi noto'g'ri. Ruxsat etilgan: ${this.allowedExtensions.join(", ")}`,
         });
         continue;
       }
@@ -411,7 +444,7 @@ export class CustomerCreateTicketComponent implements OnInit, AfterViewInit {
       textarea.focus();
       textarea.setSelectionRange(
         start + before.length,
-        start + before.length + selectedText.length
+        start + before.length + selectedText.length,
       );
     }, 0);
 
@@ -453,19 +486,19 @@ export class CustomerCreateTicketComponent implements OnInit, AfterViewInit {
   insertLink(): void {
     swal
       .fire({
-        title: "Havola qo'shish",
+        title: this.isChinaStaff ? "Insert Link" : "Havola qo'shish",
         html:
-          '<input id="linkText" class="swal2-input" placeholder="Havola matni">' +
+          `<input id="linkText" class="swal2-input" placeholder="${this.isChinaStaff ? 'Link text' : 'Havola matni'}">` +
           '<input id="linkUrl" class="swal2-input" placeholder="https://example.com">',
         showCancelButton: true,
-        confirmButtonText: "Qo'shish",
+        confirmButtonText: this.isChinaStaff ? "Insert" : "Qo'shish",
         preConfirm: () => {
           const text = (document.getElementById("linkText") as HTMLInputElement)
             .value;
           const url = (document.getElementById("linkUrl") as HTMLInputElement)
             .value;
           if (!text || !url) {
-            swal.showValidationMessage("Iltimos, matn va URL ni kiriting");
+            swal.showValidationMessage(this.isChinaStaff ? "Please enter text and URL" : "Iltimos, matn va URL ni kiriting");
             return false;
           }
           return { text, url };
@@ -504,10 +537,10 @@ export class CustomerCreateTicketComponent implements OnInit, AfterViewInit {
    */
   showPreview(): void {
     swal.fire({
-      title: "Xabar ko'rinishi",
+      title: this.isChinaStaff ? "Message Preview" : "Xabar ko'rinishi",
       html: `<div style="text-align: left; white-space: pre-wrap;">${this.message}</div>`,
       width: "800px",
-      confirmButtonText: "Yopish",
+      confirmButtonText: this.isChinaStaff ? "Close" : "Yopish",
     });
   }
 
@@ -516,8 +549,20 @@ export class CustomerCreateTicketComponent implements OnInit, AfterViewInit {
    */
   showHelp(): void {
     swal.fire({
-      title: "Formatlash yordami",
-      html: `
+      title: this.isChinaStaff ? "Formatting Help" : "Formatlash yordami",
+      html: this.isChinaStaff
+        ? `
+        <div style="text-align: left;">
+          <p><strong>**bold**</strong> - Bold text</p>
+          <p><em>*italic*</em> - Italic text</p>
+          <p><strong># Heading</strong> - Heading</p>
+          <p><strong>[text](url)</strong> - Link</p>
+          <p><strong>- item</strong> - Bullet list</p>
+          <p><strong>1. item</strong> - Numbered list</p>
+          <p><strong>> quote</strong> - Quote</p>
+        </div>
+      `
+        : `
         <div style="text-align: left;">
           <p><strong>**qalin**</strong> - Qalin matn</p>
           <p><em>*qiyshiq*</em> - Qiyshiq matn</p>
@@ -529,7 +574,7 @@ export class CustomerCreateTicketComponent implements OnInit, AfterViewInit {
         </div>
       `,
       width: "600px",
-      confirmButtonText: "Tushundim",
+      confirmButtonText: this.isChinaStaff ? "Got it" : "Tushundim",
     });
   }
 

@@ -13,7 +13,7 @@
 
                             <!-- Related Service -->
                             <div class="form-group">
-                                <label class="form-label">Tegishli Xizmat</label>
+                                <label class="form-label">{{ isChinaStaff ? 'Related Service' : 'Tegishli Xizmat' }}</label>
                                 <select class="form-control" [(ngModel)]="relatedService" name="relatedService"
                                     [disabled]="isSubmitting">
                                     <option *ngFor="let service of serviceOptions" [value]="service.value">
@@ -24,57 +24,60 @@
 
                             <!-- Assign to Role -->
                             <div class="form-group">
-                                <label class="form-label">Kimga yo'naltirish</label>
+                                <label class="form-label">{{ isChinaStaff ? 'Assign to' : 'Kimga yo\'naltirish' }}</label>
                                 <select class="form-control" [(ngModel)]="selectedRole" name="selectedRole"
                                     [disabled]="isSubmitting">
                                     <option *ngFor="let role of roleOptions" [value]="role.value">
                                         {{ role.label }}
                                     </option>
                                 </select>
-                                <small class="form-text text-muted">
+                                <small class="form-text text-muted" *ngIf="isChinaStaff">
+                                    Choose which staff to assign your ticket to. If "Auto Assign", the system will choose based on category.
+                                </small>
+                                <small class="form-text text-muted" *ngIf="!isChinaStaff">
                                     Murojaatingizni qaysi xodimga yo'naltirishni tanlang. "Avtomatik tanlash" bo'lsa, tizim kategoriya asosida tanlaydi.
                                 </small>
                             </div>
 
                             <!-- Message (Rich Text Editor Style) -->
                             <div class="form-group">
-                                <label class="form-label required">Xabar*</label>
+                                <label class="form-label required">{{ isChinaStaff ? 'Message*' : 'Xabar*' }}</label>
 
                                 <!-- Editor Toolbar -->
                                 <div class="rich-text-toolbar">
-                                    <button type="button" class="toolbar-btn" title="Qalin (Ctrl+B)"
+                                    <button type="button" class="toolbar-btn" [title]="isChinaStaff ? 'Bold (Ctrl+B)' : 'Qalin (Ctrl+B)'"
                                         (click)="formatBold()">
                                         <strong>B</strong>
                                     </button>
-                                    <button type="button" class="toolbar-btn" title="Qiyshiq (Ctrl+I)"
+                                    <button type="button" class="toolbar-btn" [title]="isChinaStaff ? 'Italic (Ctrl+I)' : 'Qiyshiq (Ctrl+I)'"
                                         (click)="formatItalic()">
                                         <em>I</em>
                                     </button>
-                                    <button type="button" class="toolbar-btn" title="Sarlavha" (click)="formatHeading()">
+                                    <button type="button" class="toolbar-btn" [title]="isChinaStaff ? 'Heading' : 'Sarlavha'" (click)="formatHeading()">
                                         <strong>H</strong>
                                     </button>
-                                    <button type="button" class="toolbar-btn" title="Havola" (click)="insertLink()">
+                                    <button type="button" class="toolbar-btn" [title]="isChinaStaff ? 'Link' : 'Havola'" (click)="insertLink()">
                                         <mat-icon>link</mat-icon>
                                     </button>
-                                    <button type="button" class="toolbar-btn" title="Nuqtali ro'yxat"
+                                    <button type="button" class="toolbar-btn" [title]="isChinaStaff ? 'Bullet list' : 'Nuqtali ro\'yxat'"
                                         (click)="insertBulletList()">
                                         <mat-icon>format_list_bulleted</mat-icon>
                                     </button>
-                                    <button type="button" class="toolbar-btn" title="Raqamlangan ro'yxat"
+                                    <button type="button" class="toolbar-btn" [title]="isChinaStaff ? 'Numbered list' : 'Raqamlangan ro\'yxat'"
                                         (click)="insertNumberedList()">
                                         <mat-icon>format_list_numbered</mat-icon>
                                     </button>
-                                    <button type="button" class="toolbar-btn" title="Iqtibos" (click)="insertQuote()">
+                                    <button type="button" class="toolbar-btn" [title]="isChinaStaff ? 'Quote' : 'Iqtibos'" (click)="insertQuote()">
                                         <mat-icon>format_quote</mat-icon>
                                     </button>
-                                    <button type="button" class="toolbar-btn btn-preview" title="Ko'rish"
+                                    <button type="button" class="toolbar-btn btn-preview" [title]="isChinaStaff ? 'Preview' : 'Ko\'rish'"
                                         (click)="showPreview()">
-                                        <mat-icon>visibility</mat-icon> Ko'rish
+                                        <mat-icon>visibility</mat-icon> {{ isChinaStaff ? 'Preview' : 'Ko\'rish' }}
                                     </button>
-                                    <button type="button" class="toolbar-btn" title="Yordam" (click)="showHelp()">
+                                    <button type="button" class="toolbar-btn" [title]="isChinaStaff ? 'Help' : 'Yordam'" (click)="showHelp()">
                                         <mat-icon>help</mat-icon>
                                     </button>
-                                    <button type="button" class="toolbar-btn" title="To'liq ekran"
+                                    <button type="button" class="toolbar-btn" [title]="isChinaStaff ? 'Fullscreen' : 'To\'liq ekran'"
                                         (click)="toggleFullscreen()">
                                         <mat-icon>fullscreen</mat-icon>
                                     </button>
@@ -83,22 +86,22 @@
                                 <!-- Textarea -->
                                 <textarea #messageTextarea class="form-control message-textarea" [(ngModel)]="message"
                                     name="message" (ngModelChange)="onMessageChange()" rows="12"
-                                    [disabled]="isSubmitting" placeholder="Muammoni batafsil tavsiflang..."
+                                    [disabled]="isSubmitting" [placeholder]="isChinaStaff ? 'Describe the issue in detail...' : 'Muammoni batafsil tavsiflang...'"
                                     autofocus></textarea>
 
                                 <!-- Editor Footer Stats -->
                                 <div class="editor-footer">
                                     <span class="editor-stats">
-                                        qatorlar: <strong>{{ getLineCount() }}</strong>
-                                        so'zlar: <strong>{{ getWordCount() }}</strong>
-                                        <span class="save-status">saqlandi</span>
+                                        {{ isChinaStaff ? 'lines' : 'qatorlar' }}: <strong>{{ getLineCount() }}</strong>
+                                        {{ isChinaStaff ? 'words' : 'so\'zlar' }}: <strong>{{ getWordCount() }}</strong>
+                                        <span class="save-status">{{ isChinaStaff ? 'saved' : 'saqlandi' }}</span>
                                     </span>
                                 </div>
                             </div>
 
                             <!-- Attachments -->
                             <div class="form-group">
-                                <label class="form-label">Ilovalar</label>
+                                <label class="form-label">{{ isChinaStaff ? 'Attachments' : 'Ilovalar' }}</label>
 
                                 <!-- Hidden file input -->
                                 <input type="file" id="fileInput" multiple [accept]="allowedExtensions.join(',')"
@@ -114,7 +117,7 @@
                                                 <div *ngIf="isImage(file)" class="file-image-preview">
                                                     <img [src]="getImagePreview(file)" alt="Preview">
                                                     <button type="button" class="btn-remove-file"
-                                                        (click)="removeFile(i)" title="Faylni o'chirish">
+                                                        (click)="removeFile(i)" [title]="isChinaStaff ? 'Remove file' : 'Faylni o\'chirish'">
                                                         <mat-icon>close</mat-icon>
                                                     </button>
                                                 </div>
@@ -127,7 +130,7 @@
                                                         <span class="file-size">{{ getFileSize(file.size) }}</span>
                                                     </div>
                                                     <button type="button" class="btn-remove-file"
-                                                        (click)="removeFile(i)" title="Faylni o'chirish">
+                                                        (click)="removeFile(i)" [title]="isChinaStaff ? 'Remove file' : 'Faylni o\'chirish'">
                                                         <mat-icon>close</mat-icon>
                                                     </button>
                                                 </div>
@@ -139,14 +142,27 @@
                                         <button type="button" class="btn-choose-file" (click)="onChooseFile()"
                                             [disabled]="isSubmitting || selectedFiles.length >= maxFiles">
                                             <mat-icon>folder</mat-icon>
-                                            {{ selectedFiles.length === 0 ? 'Fayl tanlash' : 'Yana fayl qo\'shish' }}
+                                            <ng-container *ngIf="isChinaStaff">
+                                                {{ selectedFiles.length === 0 ? 'Choose file' : 'Add more files' }}
+                                            </ng-container>
+                                            <ng-container *ngIf="!isChinaStaff">
+                                                {{ selectedFiles.length === 0 ? 'Fayl tanlash' : 'Yana fayl qo\'shish' }}
+                                            </ng-container>
                                         </button>
                                         <span class="file-count" *ngIf="selectedFiles.length > 0">
-                                            {{ selectedFiles.length }} / {{ maxFiles }} ta fayl tanlandi
+                                            <ng-container *ngIf="isChinaStaff">
+                                                {{ selectedFiles.length }} / {{ maxFiles }} files selected
+                                            </ng-container>
+                                            <ng-container *ngIf="!isChinaStaff">
+                                                {{ selectedFiles.length }} / {{ maxFiles }} ta fayl tanlandi
+                                            </ng-container>
                                         </span>
                                     </div>
 
-                                    <small class="file-extensions-note">
+                                    <small class="file-extensions-note" *ngIf="isChinaStaff">
+                                        Allowed file types: .jpg, .gif, .jpeg, .png, .zip, .rar, .pdf (Max 5MB each)
+                                    </small>
+                                    <small class="file-extensions-note" *ngIf="!isChinaStaff">
                                         Ruxsat etilgan fayl turlari: .jpg, .gif, .jpeg, .png, .zip, .rar, .pdf (Har bir fayl maks 5MB)
                                     </small>
                                 </div>
@@ -156,11 +172,16 @@
                             <div class="form-actions">
                                 <button mat-raised-button color="primary" type="button" (click)="onSubmit()"
                                     [disabled]="!isFormValid() || isSubmitting" class="btn-submit">
-                                    {{ isSubmitting ? 'Yuborilmoqda...' : 'Yuborish' }}
+                                    <ng-container *ngIf="isChinaStaff">
+                                        {{ isSubmitting ? 'Submitting...' : 'Submit' }}
+                                    </ng-container>
+                                    <ng-container *ngIf="!isChinaStaff">
+                                        {{ isSubmitting ? 'Yuborilmoqda...' : 'Yuborish' }}
+                                    </ng-container>
                                 </button>
                                 <button mat-raised-button type="button" (click)="onCancel()" [disabled]="isSubmitting"
                                     class="btn-cancel">
-                                    Bekor qilish
+                                    {{ isChinaStaff ? 'Cancel' : 'Bekor qilish' }}
                                 </button>
                             </div>
 
