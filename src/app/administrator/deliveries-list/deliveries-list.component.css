@@ -76,6 +76,10 @@
 /* ===================================
    BARCODE AND CUSTOMER ID
    =================================== */
+.barcode-cell {
+  max-width: 260px;
+}
+
 .barcode-text {
   background-color: #e3f2fd;
   color: #1976d2;
@@ -85,6 +89,52 @@
   font-family: "Courier New", monospace;
   font-weight: 600;
   display: inline-block;
+}
+
+.barcode-more-badge {
+  display: inline-block;
+  background: #ff9800;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-left: 4px;
+  vertical-align: middle;
+  transition: background 0.2s;
+}
+
+.barcode-more-badge:hover {
+  background: #f57c00;
+}
+
+.barcode-less-badge {
+  display: inline-block;
+  background: #9e9e9e;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 4px;
+  transition: background 0.2s;
+}
+
+.barcode-less-badge:hover {
+  background: #757575;
+}
+
+.barcode-expanded {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.barcode-expanded .barcode-text {
+  display: block;
+  width: fit-content;
 }
 
 .customer-id {

@@ -431,6 +431,18 @@ export class DeliveriesListComponent {
       return delivery.barcode;
     }
   }
+
+  // Barcode truncation
+  expandedBarcodes: { [key: number]: boolean } = {};
+
+  getBarcodeList(barcode: string): string[] {
+    if (!barcode) return [];
+    return barcode.split(",").map((b) => b.trim());
+  }
+
+  toggleBarcodeExpand(deliveryId: number) {
+    this.expandedBarcodes[deliveryId] = !this.expandedBarcodes[deliveryId];
+  }
   // Update delivery status
   updateDeliveryStatus(delivery: Delivery) {
     this.selectedDelivery = delivery;

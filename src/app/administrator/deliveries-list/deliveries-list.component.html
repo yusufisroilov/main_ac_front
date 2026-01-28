@@ -143,8 +143,29 @@
                                             <td class="text-center">
                                                 <strong>{{currentPage * deliveriesPerPage + i + 1}}</strong>
                                             </td>
-                                            <td>
-                                                <code class="barcode-text">{{delivery.barcode}}</code>
+                                            <td class="barcode-cell">
+                                                <!-- Simple barcode (2 or fewer) -->
+                                                <ng-container *ngIf="getBarcodeList(delivery.barcode).length <= 2">
+                                                    <code class="barcode-text">{{delivery.barcode}}</code>
+                                                </ng-container>
+
+                                                <!-- Long barcode list (more than 2) - collapsed -->
+                                                <ng-container *ngIf="getBarcodeList(delivery.barcode).length > 2 && !expandedBarcodes[delivery.id]">
+                                                    <code class="barcode-text">{{getBarcodeList(delivery.barcode).slice(0, 2).join(', ')}}</code>
+                                                    <span class="barcode-more-badge" (click)="toggleBarcodeExpand(delivery.id)">
+                                                        +{{getBarcodeList(delivery.barcode).length - 2}} ta
+                                                    </span>
+                                                </ng-container>
+
+                                                <!-- Long barcode list (more than 2) - expanded -->
+                                                <ng-container *ngIf="getBarcodeList(delivery.barcode).length > 2 && expandedBarcodes[delivery.id]">
+                                                    <div class="barcode-expanded">
+                                                        <code class="barcode-text" *ngFor="let bc of getBarcodeList(delivery.barcode)">{{bc}}</code>
+                                                    </div>
+                                                    <span class="barcode-less-badge" (click)="toggleBarcodeExpand(delivery.id)">
+                                                        Yopish
+                                                    </span>
+                                                </ng-container>
                                             </td>
                                             <td class="text-center">
                                                 <strong class="customer-id">K{{delivery.owner_id}}</strong>

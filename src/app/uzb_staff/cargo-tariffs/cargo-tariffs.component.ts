@@ -80,7 +80,7 @@ export class CargoTariffsComponent implements OnInit {
         },
         (err) => {
           console.error("Error loading countries:", err);
-        }
+        },
       );
   }
 
@@ -111,7 +111,7 @@ export class CargoTariffsComponent implements OnInit {
         this.isLoading = false;
         console.error("Error loading tariffs:", err);
         swal.fire("Xatolik!", "Tariflarni yuklashda xatolik", "error");
-      }
+      },
     );
   }
 
@@ -175,9 +175,13 @@ export class CargoTariffsComponent implements OnInit {
     if (this.isEditing && this.editingTariffId) {
       // Update existing tariff
       this.http
-        .put<any>(`${GlobalVars.baseUrl}/api/tariffs/${this.editingTariffId}`, payload, {
-          headers: this.getHeaders(),
-        })
+        .put<any>(
+          `${GlobalVars.baseUrl}/api/tariffs/${this.editingTariffId}`,
+          payload,
+          {
+            headers: this.getHeaders(),
+          },
+        )
         .subscribe(
           (res) => {
             if (res.status === "success") {
@@ -189,8 +193,12 @@ export class CargoTariffsComponent implements OnInit {
           },
           (err) => {
             console.error("Error updating tariff:", err);
-            swal.fire("Xatolik!", err.error?.message || "Tarifni yangilashda xatolik", "error");
-          }
+            swal.fire(
+              "Xatolik!",
+              err.error?.message || "Tarifni yangilashda xatolik",
+              "error",
+            );
+          },
         );
     } else {
       // Create new tariff
@@ -209,8 +217,12 @@ export class CargoTariffsComponent implements OnInit {
           },
           (err) => {
             console.error("Error creating tariff:", err);
-            swal.fire("Xatolik!", err.error?.message || "Tarif yaratishda xatolik", "error");
-          }
+            swal.fire(
+              "Xatolik!",
+              err.error?.message || "Tarif yaratishda xatolik",
+              "error",
+            );
+          },
         );
     }
   }
@@ -242,7 +254,7 @@ export class CargoTariffsComponent implements OnInit {
               (err) => {
                 console.error("Error deleting tariff:", err);
                 swal.fire("Xatolik!", "Tarifni o'chirishda xatolik", "error");
-              }
+              },
             );
         }
       });
