@@ -108,7 +108,7 @@ export class AddOrdersComponent implements OnInit {
     public authService: AuthService,
     private http: Http,
     private changeDetectorRef: ChangeDetectorRef,
-    private httpClient: HttpClient
+    private httpClient: HttpClient,
   ) {
     this.headers1 = new Headers({ "Content-Type": "application/json" });
     this.headers1.append("Authorization", localStorage.getItem("token"));
@@ -172,7 +172,7 @@ export class AddOrdersComponent implements OnInit {
                       GlobalVars.baseUrl +
                         "/orders/listByBox?box_number=" +
                         this.boxNumber,
-                      this.options
+                      this.options,
                     )
                     .subscribe((response) => {
                       if (response.json().status == "ok") {
@@ -190,7 +190,7 @@ export class AddOrdersComponent implements OnInit {
           if (error.status == 403) {
             this.authService.logout();
           }
-        }
+        },
       );
   }
 
@@ -306,58 +306,100 @@ export class AddOrdersComponent implements OnInit {
   openPartyFunc() {
     swal
       .fire({
-        title: "Open New Consignment",
+        title: "",
         html: `
-          <div style="text-align: left; margin-bottom: 15px;">
-            <label style="font-weight: bold; display: block; margin-bottom: 5px;">
-              Consignment Type <span style="color: red;">*</span>
+          <div style="text-align: center; margin-bottom: 20px;">
+            <div style="width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: inline-flex; align-items: center; justify-content: center; margin-bottom: 12px;">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                <line x1="12" y1="22.08" x2="12" y2="12"></line>
+              </svg>
+            </div>
+            <h3 style="margin: 0 0 4px 0; font-size: 20px; font-weight: 600; color: #1a1a2e;">New Consignment</h3>
+            <p style="margin: 0; font-size: 13px; color: #6c757d;">Fill in the details below to open a new consignment</p>
+          </div>
+
+          <div style="text-align: left; margin-bottom: 18px;">
+            <label style="font-size: 13px; font-weight: 600; color: #344767; display: block; margin-bottom: 8px;">
+              Consignment Type <span style="color: #e53e3e;">*</span>
             </label>
-            <select id="consignment-type" class="swal2-select" style="width: 100%; padding: 10px; border: 1px solid #d9d9d9; border-radius: 4px;">
-              <option value="" disabled selected>-- Select Type --</option>
-              <option value="AVIA">🛬 AVIA (Air Cargo)</option>
-              <option value="AVTO">🚚 AVTO (Truck/Land)</option>
+            <div style="display: flex; gap: 8px;" id="type-selector">
+              <div id="btn-avia" onclick="document.getElementById('consignment-type').value='AVIA'; document.getElementById('btn-avia').style.borderColor='#667eea'; document.getElementById('btn-avia').style.background='#f0f0ff'; document.getElementById('btn-avto').style.borderColor='#e2e8f0'; document.getElementById('btn-avto').style.background='#fff'; document.getElementById('consignment-type').dispatchEvent(new Event('change'));"
+                style="flex: 1; padding: 8px 8px; border: 2px solid #e2e8f0; border-radius: 8px; cursor: pointer; text-align: center; transition: all 0.2s; background: #fff;">
+                <span style="font-size: 18px; vertical-align: middle;">&#9992;</span>
+                <span style="font-weight: 600; font-size: 13px; color: #344767; vertical-align: middle; margin-left: 4px;">AVIA</span>
+             
+              </div>
+              <div id="btn-avto" onclick="document.getElementById('consignment-type').value='AVTO'; document.getElementById('btn-avto').style.borderColor='#667eea'; document.getElementById('btn-avto').style.background='#f0f0ff'; document.getElementById('btn-avia').style.borderColor='#e2e8f0'; document.getElementById('btn-avia').style.background='#fff'; document.getElementById('consignment-type').dispatchEvent(new Event('change'));"
+                style="flex: 1; padding: 8px 8px; border: 2px solid #e2e8f0; border-radius: 8px; cursor: pointer; text-align: center; transition: all 0.2s; background: #fff;">
+                <span style="font-size: 18px; vertical-align: middle;">&#128666;</span>
+                <span style="font-weight: 600; font-size: 13px; color: #344767; vertical-align: middle; margin-left: 4px;">AVTO</span>
+                
+              </div>
+            </div>
+            <select id="consignment-type" style="display: none;">
+              <option value="" disabled selected></option>
+              <option value="AVIA">AVIA</option>
+              <option value="AVTO">AVTO</option>
             </select>
           </div>
-          <div style="text-align: left; margin-bottom: 10px;">
-            <label id="date-label" style="font-weight: bold; display: block; margin-bottom: 5px;">
-              Departure Date <span style="color: red;">*</span>
+
+          <div style="text-align: left; margin-bottom: 6px;">
+            <label id="date-label" style="font-size: 13px; font-weight: 600; color: #344767; display: block; margin-bottom: 8px;">
+              Departure Date <span style="color: #e53e3e;">*</span>
             </label>
-            <input type="date" id="flight-date" class="swal2-input" style="width: 100%; margin: 0;" required>
-            <small id="date-hint" style="color: #666;">First select consignment type above</small>
+            <input type="date" id="flight-date" style="width: 100%; padding: 10px 12px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 14px; color: #344767; outline: none; transition: border-color 0.2s; box-sizing: border-box;" onfocus="this.style.borderColor='#667eea'" onblur="this.style.borderColor='#e2e8f0'" required>
+            <small id="date-hint" style="display: block; margin-top: 6px; font-size: 11px; color: #a0aec0;">Select consignment type first</small>
           </div>
         `,
         showCancelButton: true,
-        confirmButtonText: "Create Consignment",
+        confirmButtonText:
+          '<span style="display: inline-flex; align-items: center; gap: 6px;">Create Consignment</span>',
         cancelButtonText: "Cancel",
         customClass: {
+          popup: "swal2-popup",
           confirmButton: "btn btn-success",
           cancelButton: "btn btn-danger",
         },
         buttonsStyling: false,
+        width: 420,
         didOpen: () => {
-          const typeSelect = document.getElementById("consignment-type") as HTMLSelectElement;
+          const typeSelect = document.getElementById(
+            "consignment-type",
+          ) as HTMLSelectElement;
           const dateLabel = document.getElementById("date-label");
           const dateHint = document.getElementById("date-hint");
 
           typeSelect.addEventListener("change", () => {
             if (typeSelect.value === "AVTO") {
-              dateLabel.innerHTML = 'Truck Station Departure Date <span style="color: red;">*</span>';
-              dateHint.textContent = "Enter the date when shipment will depart from truck station (~20 days to UZB)";
+              dateLabel.innerHTML =
+                'Truck Departure Date <span style="color: #e53e3e;">*</span>';
+              dateHint.textContent =
+                "Date when shipment departs from truck station (~20 days to UZB)";
+              dateHint.style.color = "#6c757d";
             } else if (typeSelect.value === "AVIA") {
-              dateLabel.innerHTML = 'China Airport Date <span style="color: red;">*</span>';
-              dateHint.textContent = "Enter the expected date when shipment will be sent to China airport (~3 days to UZB)";
+              dateLabel.innerHTML =
+                'China Airport Date <span style="color: #e53e3e;">*</span>';
+              dateHint.textContent =
+                "Expected date shipment arrives at China airport (~3 days to UZB)";
+              dateHint.style.color = "#6c757d";
             }
           });
         },
         preConfirm: () => {
-          const flightDate = (document.getElementById("flight-date") as HTMLInputElement).value;
-          const consignmentType = (document.getElementById("consignment-type") as HTMLSelectElement).value;
+          const flightDate = (
+            document.getElementById("flight-date") as HTMLInputElement
+          ).value;
+          const consignmentType = (
+            document.getElementById("consignment-type") as HTMLSelectElement
+          ).value;
           if (!consignmentType) {
-            swal.showValidationMessage("Please select consignment type");
+            swal.showValidationMessage("Please select a consignment type");
             return false;
           }
           if (!flightDate) {
-            swal.showValidationMessage("Please enter the date");
+            swal.showValidationMessage("Please select the departure date");
             return false;
           }
           return { flightDate, consignmentType };
@@ -369,9 +411,13 @@ export class AddOrdersComponent implements OnInit {
           const consignmentType = result.value.consignmentType;
           this.http
             .post(
-              GlobalVars.baseUrl + "/consignments/open?in_foreign_airport_date=" + flightDate + "&type=" + consignmentType,
+              GlobalVars.baseUrl +
+                "/consignments/open?in_foreign_airport_date=" +
+                flightDate +
+                "&type=" +
+                consignmentType,
               "",
-              this.options
+              this.options,
             )
             .subscribe(
               (response) => {
@@ -381,7 +427,8 @@ export class AddOrdersComponent implements OnInit {
                   this.consignmentMessage = response.json().message;
                   this.consignmentId = response.json().id;
                   this.showPartyLink();
-                  const typeLabel = consignmentType === "AVTO" ? "🚚 AVTO" : "🛬 AVIA";
+                  const typeLabel =
+                    consignmentType === "AVTO" ? "🚚 AVTO" : "🛬 AVIA";
                   swal.fire({
                     icon: "success",
                     title: "Consignment Created",
@@ -397,7 +444,7 @@ export class AddOrdersComponent implements OnInit {
                 if (error.status == 403) {
                   this.authService.logout();
                 }
-              }
+              },
             );
         }
       });
@@ -408,7 +455,7 @@ export class AddOrdersComponent implements OnInit {
       .post(
         GlobalVars.baseUrl + "/consignments/close?id=" + this.consignmentId,
         "",
-        this.options
+        this.options,
       )
       .subscribe(
         (response) => {
@@ -424,7 +471,7 @@ export class AddOrdersComponent implements OnInit {
           if (error.status == 403) {
             this.authService.logout();
           }
-        }
+        },
       );
   }
 
@@ -440,7 +487,7 @@ export class AddOrdersComponent implements OnInit {
             GlobalVars.baseUrl +
               "/orders/listByBox?box_number=" +
               this.boxNumber,
-            this.options
+            this.options,
           )
           .subscribe(
             (response) => {
@@ -453,7 +500,7 @@ export class AddOrdersComponent implements OnInit {
               if (error.status == 403) {
                 this.authService.logout();
               }
-            }
+            },
           );
         this.hideBoxLink();
       });
@@ -472,7 +519,7 @@ export class AddOrdersComponent implements OnInit {
           if (error.status == 403) {
             this.authService.logout();
           }
-        }
+        },
       );
   }
 
@@ -538,7 +585,7 @@ export class AddOrdersComponent implements OnInit {
               .post(
                 GlobalVars.baseUrl + "/boxes/close?weight=" + weight,
                 "",
-                this.options
+                this.options,
               )
               .subscribe(
                 (response) => {
@@ -558,7 +605,7 @@ export class AddOrdersComponent implements OnInit {
                   if (error.status == 403) {
                     this.authService.logout();
                   }
-                }
+                },
               );
           } else {
             swal.fire({
@@ -585,7 +632,7 @@ export class AddOrdersComponent implements OnInit {
       .post(
         GlobalVars.baseUrl + "/boxes/reopen?box_number=" + boxNumer,
         "",
-        this.options
+        this.options,
       )
       .subscribe(
         (response) => {
@@ -606,7 +653,7 @@ export class AddOrdersComponent implements OnInit {
           if (error.status == 403) {
             this.authService.logout();
           }
-        }
+        },
       );
   }
 
@@ -641,7 +688,7 @@ export class AddOrdersComponent implements OnInit {
                 "/orders/deleteFromBox?tracking_number=" +
                 trNum,
               "",
-              this.options
+              this.options,
             )
             .subscribe(
               (response) => {
@@ -649,7 +696,7 @@ export class AddOrdersComponent implements OnInit {
                   .post(
                     GlobalVars.baseUrl + "/boxes/reopen?box_number=" + boxNumer,
                     "",
-                    this.options
+                    this.options,
                   )
                   .subscribe((response) => {
                     if (response.json().status == "ok") {
@@ -670,7 +717,7 @@ export class AddOrdersComponent implements OnInit {
                 if (error.status == 403) {
                   this.authService.logout();
                 }
-              }
+              },
             );
         }
       });
@@ -701,7 +748,7 @@ export class AddOrdersComponent implements OnInit {
             .post(
               GlobalVars.baseUrl + "/orders/scan?tracking_number=" + valueB,
               "",
-              this.options
+              this.options,
             )
             .subscribe(
               (response) => {
@@ -710,7 +757,7 @@ export class AddOrdersComponent implements OnInit {
                     .fire(
                       "Not Added to Box",
                       response.json().message + " First RECORD THE PARCEL",
-                      "error"
+                      "error",
                     )
                     .then((result) => {
                       if (result.isConfirmed) {
@@ -731,7 +778,7 @@ export class AddOrdersComponent implements OnInit {
                       GlobalVars.baseUrl +
                         "/orders/listByBox?box_number=" +
                         this.boxNumber,
-                      this.options
+                      this.options,
                     )
                     .subscribe((response) => {
                       if (response.json().status == "ok") {
@@ -744,7 +791,7 @@ export class AddOrdersComponent implements OnInit {
                 if (error.status == 403) {
                   this.authService.logout();
                 }
-              }
+              },
             );
         },
       })
@@ -782,7 +829,7 @@ export class AddOrdersComponent implements OnInit {
             .post(
               GlobalVars.baseUrl + "/orders/scan?tracking_number=" + valueB,
               "",
-              this.options
+              this.options,
             )
             .subscribe(
               (response) => {
@@ -791,7 +838,7 @@ export class AddOrdersComponent implements OnInit {
                     .fire(
                       "Not Added to Box",
                       response.json().message + " First RECORD THE PARCEL",
-                      "error"
+                      "error",
                     )
                     .then((result) => {
                       if (result.isConfirmed) {
@@ -812,7 +859,7 @@ export class AddOrdersComponent implements OnInit {
                       GlobalVars.baseUrl +
                         "/orders/listByBox?box_number=" +
                         this.boxNumber,
-                      this.options
+                      this.options,
                     )
                     .subscribe((response) => {
                       if (response.json().status == "ok") {
@@ -825,7 +872,7 @@ export class AddOrdersComponent implements OnInit {
                 if (error.status == 403) {
                   this.authService.logout();
                 }
-              }
+              },
             );
         },
       })
@@ -851,7 +898,7 @@ export class AddOrdersComponent implements OnInit {
     this.popupWin = window.open(
       "",
       "_blank",
-      "top=0,left=0,height=100%,width=auto"
+      "top=0,left=0,height=100%,width=auto",
     );
     this.popupWin.document.open();
     this.popupWin.document.write(`
@@ -903,7 +950,7 @@ export class AddOrdersComponent implements OnInit {
                 "&box_number=" +
                 boxNum,
               "",
-              this.options
+              this.options,
             )
             .subscribe(
               (response) => {
@@ -934,7 +981,7 @@ export class AddOrdersComponent implements OnInit {
                 if (error.status == 403) {
                   this.authService.logout();
                 }
-              }
+              },
             );
         } else {
           swal.fire({
@@ -954,7 +1001,7 @@ export class AddOrdersComponent implements OnInit {
     this.http
       .get(
         GlobalVars.baseUrl + "/orders/cn23?box_number=" + searchkey,
-        this.options
+        this.options,
       )
       .subscribe(
         (response) => {
@@ -980,7 +1027,7 @@ export class AddOrdersComponent implements OnInit {
           if (error.status == 403) {
             this.authService.logout();
           }
-        }
+        },
       );
   }
 
@@ -988,7 +1035,7 @@ export class AddOrdersComponent implements OnInit {
     this.http
       .get(
         GlobalVars.baseUrl + "/orders/cn23ForAdmin?box_number=" + searchkey,
-        this.options
+        this.options,
       )
       .subscribe(
         (response) => {
@@ -1016,7 +1063,7 @@ export class AddOrdersComponent implements OnInit {
           if (error.status == 403) {
             this.authService.logout();
           }
-        }
+        },
       );
   }
 
@@ -1026,7 +1073,7 @@ export class AddOrdersComponent implements OnInit {
     this.popupWin2 = window.open(
       "",
       "_blank",
-      "top=0,left=0,height=100%,width=auto"
+      "top=0,left=0,height=100%,width=auto",
     );
     this.popupWin2.document.open();
     this.popupWin2.document.write(`
@@ -1081,7 +1128,7 @@ export class AddOrdersComponent implements OnInit {
     return this.http
       .get(
         GlobalVars.baseUrl + "/boxes/listForStaff?boxNumber=HM138" + boxNum,
-        this.options
+        this.options,
       )
       .subscribe(
         (response) => {
@@ -1095,7 +1142,7 @@ export class AddOrdersComponent implements OnInit {
           if (error.status == 403) {
             this.authService.logout();
           }
-        }
+        },
       );
 
     //this.boxNumberInSearch = boxNum;
@@ -1105,7 +1152,7 @@ export class AddOrdersComponent implements OnInit {
     this.http
       .get(
         GlobalVars.baseUrl + "/orders/cn23ForAdmin?box_number=" + searchkey,
-        this.options
+        this.options,
       )
       .subscribe(
         (response) => {
@@ -1133,7 +1180,7 @@ export class AddOrdersComponent implements OnInit {
           if (error.status == 403) {
             this.authService.logout();
           }
-        }
+        },
       );
   }
 
@@ -1143,7 +1190,7 @@ export class AddOrdersComponent implements OnInit {
     this.popupWin2 = window.open(
       "",
       "_blank",
-      "top=0,left=0,height=100%,width=auto"
+      "top=0,left=0,height=100%,width=auto",
     );
     this.popupWin2.document.open();
     this.popupWin2.document.write(`

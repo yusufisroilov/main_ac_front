@@ -125,7 +125,7 @@ export class ConsignmentCalendarComponent implements OnInit {
           const result = response.json();
           if (result.status === "ok") {
             this.calendarData = result.consignments;
-            console.log("calendar ", this.calendarData);
+            // console.log("calendar ", this.calendarData);
             this.generateCalendarDates();
             this.groupConsignmentsByDate();
           }
@@ -323,9 +323,14 @@ export class ConsignmentCalendarComponent implements OnInit {
       return timelineItem.reached;
     }
     // Fallback: compare status order
-    const currentStatusIndex = this.statusOrder.indexOf(consignment.currentStatus);
+    const currentStatusIndex = this.statusOrder.indexOf(
+      consignment.currentStatus,
+    );
     const stepStatusIndex = this.statusOrder.indexOf(stepStatus);
-    return currentStatusIndex >= stepStatusIndex && this.getStepDate(consignment, stepStatus) !== null;
+    return (
+      currentStatusIndex >= stepStatusIndex &&
+      this.getStepDate(consignment, stepStatus) !== null
+    );
   }
 
   // Check if this is the current step
@@ -355,7 +360,9 @@ export class ConsignmentCalendarComponent implements OnInit {
     }
 
     // Fallback: compare status order - if current status is before this step, date is approximate
-    const currentStatusIndex = this.statusOrder.indexOf(consignment.currentStatus);
+    const currentStatusIndex = this.statusOrder.indexOf(
+      consignment.currentStatus,
+    );
     const stepStatusIndex = this.statusOrder.indexOf(stepStatus);
     return currentStatusIndex < stepStatusIndex;
   }

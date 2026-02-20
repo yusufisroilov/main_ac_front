@@ -109,7 +109,7 @@ export class BigBoxesComponent implements OnInit {
     public authService: AuthService,
     private http: Http,
     private changeDetectorRef: ChangeDetectorRef,
-    private httpClient: HttpClient
+    private httpClient: HttpClient,
   ) {
     this.headers1 = new Headers({ "Content-Type": "application/json" });
     this.headers1.append("Authorization", localStorage.getItem("token"));
@@ -170,14 +170,14 @@ export class BigBoxesComponent implements OnInit {
                       GlobalVars.baseUrl +
                         "/bigbox/bigbox_items?bigbox_number=" +
                         this.boxNumber,
-                      this.options
+                      this.options,
                     )
                     .subscribe((response) => {
                       if (response.json().status == "ok") {
                         this.thingsInBox = response.json().boxes;
 
                         this.total_count = response.json().total_count;
-                        console.log("thing in box ", this.total_count);
+                        // console.log("thing in box ", this.total_count);
                       }
                     });
                 }
@@ -190,7 +190,7 @@ export class BigBoxesComponent implements OnInit {
           if (error.status == 403) {
             this.authService.logout();
           }
-        }
+        },
       );
   }
 
@@ -277,7 +277,7 @@ export class BigBoxesComponent implements OnInit {
         this.http
           .get(
             GlobalVars.baseUrl + "/bigbox/bigbox_items:" + this.boxNumber,
-            this.options
+            this.options,
           )
           .subscribe(
             (response) => {
@@ -290,7 +290,7 @@ export class BigBoxesComponent implements OnInit {
               if (error.status == 403) {
                 this.authService.logout();
               }
-            }
+            },
           );
         this.hideBoxLink();
       });
@@ -309,7 +309,7 @@ export class BigBoxesComponent implements OnInit {
           if (error.status == 403) {
             this.authService.logout();
           }
-        }
+        },
       );
   }
 
@@ -374,7 +374,7 @@ export class BigBoxesComponent implements OnInit {
               .post(
                 GlobalVars.baseUrl + "/bigbox/closebigbox",
                 "",
-                this.options
+                this.options,
               )
               .subscribe(
                 (response) => {
@@ -394,7 +394,7 @@ export class BigBoxesComponent implements OnInit {
                   if (error.status == 403) {
                     this.authService.logout();
                   }
-                }
+                },
               );
           } else {
             swal.fire({
@@ -421,7 +421,7 @@ export class BigBoxesComponent implements OnInit {
       .post(
         GlobalVars.baseUrl + "/bigbox/openbigbox?bigbox_number=" + boxNumer,
         "",
-        this.options
+        this.options,
       )
       .subscribe(
         (response) => {
@@ -439,7 +439,7 @@ export class BigBoxesComponent implements OnInit {
                 GlobalVars.baseUrl +
                   "/bigbox/bigbox_items?bigbox_number=" +
                   boxNumer,
-                this.options
+                this.options,
               )
               .subscribe(
                 (response) => {
@@ -449,7 +449,7 @@ export class BigBoxesComponent implements OnInit {
                   if (error.status == 403) {
                     this.authService.logout();
                   }
-                }
+                },
               );
 
             document.getElementById("listcard").scrollIntoView();
@@ -460,7 +460,7 @@ export class BigBoxesComponent implements OnInit {
           if (error.status == 403) {
             this.authService.logout();
           }
-        }
+        },
       );
   }
 
@@ -495,7 +495,7 @@ export class BigBoxesComponent implements OnInit {
                 "/orders/deleteFromBox?tracking_number=" +
                 trNum,
               "",
-              this.options
+              this.options,
             )
             .subscribe(
               (response) => {
@@ -503,7 +503,7 @@ export class BigBoxesComponent implements OnInit {
                   .post(
                     GlobalVars.baseUrl + "/boxes/reopen?box_number=" + boxNumer,
                     "",
-                    this.options
+                    this.options,
                   )
                   .subscribe((response) => {
                     if (response.json().status == "ok") {
@@ -524,7 +524,7 @@ export class BigBoxesComponent implements OnInit {
                 if (error.status == 403) {
                   this.authService.logout();
                 }
-              }
+              },
             );
         }
       });
@@ -555,7 +555,7 @@ export class BigBoxesComponent implements OnInit {
             .post(
               GlobalVars.baseUrl + "/bigbox/scan?box_number=" + valueB,
               "",
-              this.options
+              this.options,
             )
             .subscribe(
               (response) => {
@@ -566,7 +566,7 @@ export class BigBoxesComponent implements OnInit {
                     .fire(
                       "Not Added to Box",
                       response.json().message + " First RECORD THE PARCEL",
-                      "error"
+                      "error",
                     )
                     .then((result) => {
                       if (result.isConfirmed) {
@@ -587,7 +587,7 @@ export class BigBoxesComponent implements OnInit {
                       GlobalVars.baseUrl +
                         "/bigbox/bigbox_items?bigbox_number=" +
                         this.boxNumber,
-                      this.options
+                      this.options,
                     )
                     .subscribe((response) => {
                       // console.log(
@@ -607,7 +607,7 @@ export class BigBoxesComponent implements OnInit {
                 if (error.status == 403) {
                   this.authService.logout();
                 }
-              }
+              },
             );
         },
       })
@@ -670,7 +670,7 @@ export class BigBoxesComponent implements OnInit {
                 "&real_weight=" +
                 realweightW,
               "",
-              this.options
+              this.options,
             )
             .subscribe(
               (response) => {
@@ -694,7 +694,7 @@ export class BigBoxesComponent implements OnInit {
                     .fire(
                       "Not Added",
                       "BAD REQUEST: WRONG TYPE OF INPUT",
-                      "error"
+                      "error",
                     )
                     .then((result) => {
                       if (result.isConfirmed) {
@@ -706,7 +706,7 @@ export class BigBoxesComponent implements OnInit {
                 if (error.status == 403) {
                   this.authService.logout();
                 }
-              }
+              },
             ); // end of response
         },
       })
@@ -721,7 +721,7 @@ export class BigBoxesComponent implements OnInit {
     return this.http
       .get(
         GlobalVars.baseUrl + "/boxes/listForStaff?boxNumber=HM138" + boxNum,
-        this.options
+        this.options,
       )
       .subscribe(
         (response) => {
@@ -733,7 +733,7 @@ export class BigBoxesComponent implements OnInit {
           if (error.status == 403) {
             this.authService.logout();
           }
-        }
+        },
       );
 
     //this.boxNumberInSearch = boxNum;

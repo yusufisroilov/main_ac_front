@@ -215,7 +215,7 @@ export class InfoeachclientComponent implements OnInit {
             .json()
             .consignments.filter((r) => r.quantity !== 0);
 
-          console.log("all Data Boxes ", this.allDataBoxes);
+          // console.log("all Data Boxes ", this.allDataBoxes);
 
           this.umQarzUSZ = response.json().debt_uzs_total;
           this.umQarzUSD = response.json().debt_usd_total;

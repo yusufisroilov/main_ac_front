@@ -48,7 +48,7 @@ export class AllreceiversComponent implements OnInit {
     private http: Http,
     private httpClient: HttpClient,
     private router: Router,
-    public authService: AuthService
+    public authService: AuthService,
   ) {
     this.headers12 = new Headers({ "Content-Type": "application/json" });
     this.headers12.append("Authorization", localStorage.getItem("token"));
@@ -64,7 +64,7 @@ export class AllreceiversComponent implements OnInit {
         if (error.status == 403) {
           this.authService.logout();
         }
-      }
+      },
     );
 
     this.currentPage = 0;
@@ -105,7 +105,7 @@ export class AllreceiversComponent implements OnInit {
           this.currentPage +
           "&size=" +
           this.pageSize,
-        this.options
+        this.options,
       )
       .subscribe(
         (response) => {
@@ -124,7 +124,7 @@ export class AllreceiversComponent implements OnInit {
           if (error.status == 403) {
             this.authService.logout();
           }
-        }
+        },
       );
   }
 
@@ -141,7 +141,7 @@ export class AllreceiversComponent implements OnInit {
     region_id,
     district_id,
     street,
-    apartment
+    apartment,
   ) {
     localStorage.setItem("recid", id);
     localStorage.setItem("recparent_id", parent_id);
@@ -190,7 +190,7 @@ export class AllreceiversComponent implements OnInit {
           "&size=" +
           this.pageSize +
           filterLink,
-        this.options
+        this.options,
       )
       .subscribe(
         (response) => {
@@ -210,7 +210,7 @@ export class AllreceiversComponent implements OnInit {
           if (error.status == 403) {
             this.authService.logout();
           }
-        }
+        },
       );
   }
 
@@ -262,7 +262,7 @@ export class AllreceiversComponent implements OnInit {
     modRegionw,
     modDistrict,
     modStreet,
-    appartment
+    appartment,
   ) {
     this.modParentID = modParentID;
     this.modId = recidsi;
@@ -291,7 +291,7 @@ export class AllreceiversComponent implements OnInit {
           if (error.status == 403) {
             this.authService.logout();
           }
-        }
+        },
       );
 
     this.modStreet = modStreet + "" + appartment;
@@ -312,7 +312,7 @@ export class AllreceiversComponent implements OnInit {
             .post(
               GlobalVars.baseUrl + "/receivers/changeStatus?receiver_id=" + CId,
               "",
-              this.options
+              this.options,
             )
             .subscribe(
               (response) => {
@@ -328,7 +328,7 @@ export class AllreceiversComponent implements OnInit {
                 if (error.status == 403) {
                   this.authService.logout();
                 }
-              }
+              },
             );
         } else if (result.isDenied) {
           swal.fire("O'zgarmadi", "", "info");
@@ -361,7 +361,7 @@ export class AllreceiversComponent implements OnInit {
                 "&parent_id=" +
                 valueB,
               "",
-              this.options
+              this.options,
             )
             .subscribe(
               (response) => {
@@ -369,14 +369,14 @@ export class AllreceiversComponent implements OnInit {
                   swal.fire(
                     "O'zgarmadi!",
                     "Xato: " + response.json().message,
-                    "error"
+                    "error",
                   );
                   this.getListOfRecs();
                 } else {
                   swal.fire(
                     "O'zgartirildi!",
                     "Bu qabul qiluvchi Asosiy IDsi yangilandi!",
-                    "success"
+                    "success",
                   );
                   this.getListOfRecs();
                 }
@@ -387,7 +387,7 @@ export class AllreceiversComponent implements OnInit {
                 } else if (error.status == 403) {
                   this.getListOfRecs();
                 }
-              }
+              },
             );
         },
       })
@@ -396,7 +396,7 @@ export class AllreceiversComponent implements OnInit {
           swal.fire(
             "O'zgartirildi!",
             "Bu qabul qiluvchi Asosiy IDsi yangilandi!",
-            "success"
+            "success",
           );
           this.getListOfRecs();
         } else {
@@ -428,7 +428,7 @@ export class AllreceiversComponent implements OnInit {
             .post(
               GlobalVars.baseUrl + "/receivers/delete?rid=" + iddd,
               {},
-              this.options
+              this.options,
             )
             .subscribe(
               (response) => {
@@ -436,14 +436,14 @@ export class AllreceiversComponent implements OnInit {
                   swal.fire(
                     "O'chirilmadi!",
                     "Xato: " + response.json().message,
-                    "error"
+                    "error",
                   );
                   this.getListOfRecs();
                 } else {
                   swal.fire(
                     "O'chirilid!",
                     "Bu qabul qiluvchi sistemadan o'chirildi!",
-                    "success"
+                    "success",
                   );
                   this.getListOfRecs();
                 }
@@ -454,7 +454,7 @@ export class AllreceiversComponent implements OnInit {
                 } else if (error.status == 403) {
                   this.getListOfRecs();
                 }
-              }
+              },
             );
         },
       })
@@ -463,7 +463,7 @@ export class AllreceiversComponent implements OnInit {
           swal.fire(
             "O'zgartirildi!",
             "Bu qabul qiluvchi sistemadan o'chirildi!",
-            "success"
+            "success",
           );
           this.getListOfRecs();
         } else {
@@ -508,13 +508,13 @@ export class AllreceiversComponent implements OnInit {
       .subscribe(
         (response) => {
           this.districts = response.json().towns;
-          console.log("222 " + this.districts);
+          // console.log("222 " + this.districts);
         },
         (error) => {
           if (error.status == 403) {
             this.authService.logout();
           }
-        }
+        },
       );
   }
 }
