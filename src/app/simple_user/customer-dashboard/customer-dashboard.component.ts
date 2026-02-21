@@ -89,6 +89,11 @@ export class CustomerDashboardComponent implements OnInit, AfterViewInit {
   loadingStats: boolean = false;
   loadingOrders: boolean = false;
 
+  // Calendar preview data
+  calendarPreviewItems: any[] = [];
+  loadingCalendar: boolean = false;
+  calendarStatusOrder: number[] = [2, 4, 5, 7];
+
   constructor(
     public authService: AuthService,
     private http: Http,
@@ -112,6 +117,7 @@ export class CustomerDashboardComponent implements OnInit, AfterViewInit {
 
     // Load dashboard statistics
     this.loadDashboardStats();
+    this.loadCalendarPreview();
   }
 
   // Load customer dashboard statistics
@@ -275,6 +281,87 @@ export class CustomerDashboardComponent implements OnInit, AfterViewInit {
   // Navigate to order boxes (all consignments)
   goToAllConsignments() {
     this.router.navigate(["/orderboxes"]);
+  }
+
+  // ── Calendar Preview ──────────────────────────────────────
+
+  loadCalendarPreview() {
+    this.loadingCalendar = true;
+    this.http
+      .get(GlobalVars.baseUrl + "/consignments/calendar", this.options)
+      .subscribe(
+        (response) => {
+          const result = response.json();
+          if (result.status === "ok") {
+            this.calendarPreviewItems = (result.consignments || []).slice(0, 5);
+          }
+          this.loadingCalendar = false;
+        },
+        (error) => {
+          this.loadingCalendar = false;
+          if (error.status === 403) {
+            this.authService.logout();
+          }
+        }
+      );
+  }
+
+  getCalendarProgress(item: any): number {
+    const completed = this.calendarStatusOrder.filter((s) =>
+      this.isCalendarStepCompleted(item, s)
+    ).length;
+    return completed / this.calendarStatusOrder.length;
+  }
+
+  getCalendarProgressPercent(item: any): number {
+    return Math.round(this.getCalendarProgress(item) * 100);
+  }
+
+  isCalendarStepCompleted(item: any, stepStatus: number): boolean {
+    if (!item.timeline) return false;
+    const timelineItem = item.timeline.find((t) => t.status === stepStatus);
+    if (timelineItem && timelineItem.reached !== undefined) {
+      return timelineItem.reached;
+    }
+    const currentIdx = this.calendarStatusOrder.indexOf(item.currentStatus);
+    const stepIdx = this.calendarStatusOrder.indexOf(stepStatus);
+    return currentIdx >= stepIdx && this.getCalendarStepDate(item, stepStatus) !== null;
+  }
+
+  isCalendarCurrentStep(item: any, stepStatus: number): boolean {
+    return item.currentStatus === stepStatus;
+  }
+
+  getCalendarStepDate(item: any, stepStatus: number): string | null {
+    if (item.timeline) {
+      const t = item.timeline.find((t) => t.status === stepStatus);
+      if (t && t.date) return t.date;
+    }
+    const fieldMap = { 2: "in_foreign_warehouse_date", 4: "in_foreign_airport_date", 5: "in_uzb_airport_date", 7: "in_uzb_warehouse_date" };
+    if (fieldMap[stepStatus] && item[fieldMap[stepStatus]]) {
+      return item[fieldMap[stepStatus]];
+    }
+    return null;
+  }
+
+  getCalendarStepIcon(stepStatus: number, item: any): string {
+    if (item.isHongKong) {
+      const icons = { 2: "inventory_2", 4: "local_shipping", 5: "location_on", 7: "warehouse" };
+      return icons[stepStatus] || "local_shipping";
+    }
+    const icons = { 2: "inventory_2", 4: "flight_takeoff", 5: "flight_land", 7: "warehouse" };
+    return icons[stepStatus] || "local_shipping";
+  }
+
+  getCalendarStatusLabel(item: any): string {
+    if (item.currentStatusName && item.currentStatusName.uz) {
+      return item.currentStatusName.uz;
+    }
+    return "";
+  }
+
+  goToCalendar() {
+    this.router.navigate(["/consignment-calendar"]);
   }
 
   // Copy Chinese address to clipboard

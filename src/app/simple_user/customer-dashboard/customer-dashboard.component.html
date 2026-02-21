@@ -19,91 +19,113 @@
             </div>
         </div>
 
-        <!-- Summary Statistics Cards -->
-        <div class="row">
-            <!-- Card 1: Customer ID -->
-            <div class="col-lg-3 col-md-6 col-sm-6">
-                <div class="card card-stats">
-                    <div class="card-header card-header-warning card-header-icon">
-                        <div class="card-icon">
-                            <i class="material-icons">person</i>
-                        </div>
-                        <p class="card-category">Mijoz ID</p>
-                        <h3 class="card-title">K{{ customerId }}</h3>
-                    </div>
-                    <div class="card-footer">
-                        <div class="stats">
-                            <i class="material-icons">account_circle</i>
-                            Sizning telefon raqamingiz: {{ customerUsername }}
-                        </div>
-                    </div>
-                </div>
+        <!-- Summary Statistics Cards - 2x2 compact grid -->
+        <div class="stat-grid">
+            <div class="stat-tile">
+                <i class="material-icons stat-tile-icon" style="color: #ff9800;">person</i>
+                <div class="stat-tile-value">K{{ customerId }}</div>
+                <div class="stat-tile-label">Mijoz ID</div>
             </div>
-
-            <!-- Card 2: Total Orders -->
-            <div class="col-lg-3 col-md-6 col-sm-6">
-                <div class="card card-stats">
-                    <div class="card-header card-header-success card-header-icon">
-                        <div class="card-icon">
-                            <i class="material-icons">shopping_cart</i>
-                        </div>
-                        <p class="card-category">Jami Buyurtmalar</p>
-                        <h3 class="card-title">
-                            <span *ngIf="!loadingStats">{{ totalOrders }}</span>
-                            <span *ngIf="loadingStats" class="spinner-border spinner-border-sm"></span>
-                            <small> ta</small>
-                        </h3>
-                    </div>
-                    <div class="card-footer">
-                        <div class="stats">
-                            <i class="material-icons">assignment</i>
-                            Sizning Active Cargoda qilgan barcha buyurtmalaringiz
-                        </div>
-                    </div>
+            <div class="stat-tile">
+                <i class="material-icons stat-tile-icon" style="color: #4caf50;">shopping_cart</i>
+                <div class="stat-tile-value">
+                    <span *ngIf="!loadingStats">{{ totalOrders }}</span>
+                    <span *ngIf="loadingStats" class="spinner-border spinner-border-sm"></span>
+                    <small> ta</small>
                 </div>
+                <div class="stat-tile-label">Jami Buyurtmalar</div>
             </div>
-
-            <!-- Card 3: Total Weight -->
-            <div class="col-lg-3 col-md-6 col-sm-6">
-                <div class="card card-stats">
-                    <div class="card-header card-header-info card-header-icon">
-                        <div class="card-icon">
-                            <i class="material-icons">fitness_center</i>
-                        </div>
-                        <p class="card-category">Jami Og'irlik</p>
-                        <h3 class="card-title">
-                            <span *ngIf="!loadingStats">{{ totalWeight }}</span>
-                            <span *ngIf="loadingStats" class="spinner-border spinner-border-sm"></span>
-                            <small> kg</small>
-                        </h3>
-                    </div>
-                    <div class="card-footer">
-                        <div class="stats">
-                            <i class="material-icons">local_shipping</i>
-                            Sizning Active Cargoda qilgan barcha buyurtmalaringiz og'irligi
-                        </div>
-                    </div>
+            <div class="stat-tile">
+                <i class="material-icons stat-tile-icon" style="color: #2196f3;">fitness_center</i>
+                <div class="stat-tile-value">
+                    <span *ngIf="!loadingStats">{{ totalWeight }}</span>
+                    <span *ngIf="loadingStats" class="spinner-border spinner-border-sm"></span>
+                    <small> kg</small>
                 </div>
+                <div class="stat-tile-label">Jami Og'irlik</div>
             </div>
+            <div class="stat-tile">
+                <i class="material-icons stat-tile-icon" style="color: #e91e63;">scale</i>
+                <div class="stat-tile-value">
+                    <span *ngIf="!loadingStats">{{ lastConsignmentWeight }}</span>
+                    <span *ngIf="loadingStats" class="spinner-border spinner-border-sm"></span>
+                    <small> kg</small>
+                </div>
+                <div class="stat-tile-label">Oxirgi Partiya</div>
+            </div>
+        </div>
 
-            <!-- Card 4: Last Consignment Weight -->
-            <div class="col-lg-3 col-md-6 col-sm-6">
-                <div class="card card-stats">
-                    <div class="card-header card-header-danger card-header-icon">
-                        <div class="card-icon">
-                            <i class="material-icons">scale</i>
-                        </div>
-                        <p class="card-category">Oxirgi Partiya</p>
-                        <h3 class="card-title">
-                            <span *ngIf="!loadingStats">{{ lastConsignmentWeight }}</span>
-                            <span *ngIf="loadingStats" class="spinner-border spinner-border-sm"></span>
-                            <small> kg</small>
-                        </h3>
+        <!-- Calendar Preview Section -->
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <div class="calendar-preview-section">
+                    <div class="calendar-preview-header">
+                        <h5 class="calendar-preview-title">
+                            <i class="material-icons"
+                                style="font-size: 20px; vertical-align: middle; margin-right: 4px;">event</i>
+                            Yuklar Taqvimi
+                        </h5>
+                        <a class="calendar-preview-link" (click)="goToCalendar()">
+                            Barchasi
+                            <i class="material-icons" style="font-size: 16px; vertical-align: middle;">arrow_forward</i>
+                        </a>
                     </div>
-                    <div class="card-footer">
-                        <div class="stats">
-                            <i class="material-icons">inventory</i>
-                            Sizning oxirgi {{ lastConsignmentName }} Partiyada urgan yuklaringiz og'irligi
+
+                    <!-- Loading -->
+                    <div *ngIf="loadingCalendar" class="text-center" style="padding: 30px 0;">
+                        <div class="spinner-border text-primary" role="status"
+                            style="width: 1.5rem; height: 1.5rem; border-width: 0.15em;"></div>
+                    </div>
+
+                    <!-- Empty -->
+                    <div *ngIf="!loadingCalendar && calendarPreviewItems.length === 0" class="calendar-preview-empty">
+                        <i class="material-icons" style="font-size: 32px; color: #ccc;">flight</i>
+                        <p style="margin: 6px 0 0; color: #999; font-size: 13px;">Hozircha reyslar yo'q</p>
+                    </div>
+
+                    <!-- Horizontal scrolling cards -->
+                    <div *ngIf="!loadingCalendar && calendarPreviewItems.length > 0" class="calendar-cards-scroll">
+                        <div class="calendar-card" *ngFor="let item of calendarPreviewItems">
+                            <!-- Row 1: Name + Type badge -->
+                            <div class="calendar-card-top">
+                                <span class="calendar-card-name">{{ item.name }}</span>
+                                <span class="calendar-card-type"
+                                    [style.background]="item.isHongKong ? 'rgba(230,126,34,0.12)' : 'rgba(102,126,234,0.12)'"
+                                    [style.color]="item.isHongKong ? '#E67E22' : '#667eea'">
+                                    <i class="material-icons" style="font-size: 11px; vertical-align: middle;">{{
+                                        item.isHongKong ? 'local_shipping' : 'flight' }}</i>
+                                    {{ item.isHongKong ? 'AVTO' : 'AVIA' }}
+                                </span>
+                            </div>
+
+                            <!-- Row 2: Status + Progress % -->
+                            <div class="calendar-card-status-row">
+                                <span class="calendar-card-status">{{ getCalendarStatusLabel(item) }}</span>
+                                <span class="calendar-card-percent"
+                                    [style.color]="getCalendarProgressPercent(item) === 100 ? '#4CAF50' : '#667eea'">
+                                    {{ getCalendarProgressPercent(item) }}%
+                                </span>
+                            </div>
+
+                            <!-- Progress bar -->
+                            <div class="calendar-card-progress-track">
+                                <div class="calendar-card-progress-fill"
+                                    [style.width.%]="getCalendarProgressPercent(item)"
+                                    [style.background]="getCalendarProgressPercent(item) === 100 ? '#4CAF50' : '#667eea'">
+                                </div>
+                            </div>
+
+                            <!-- Step icons row -->
+                            <div class="calendar-card-steps">
+                                <div *ngFor="let status of calendarStatusOrder" class="calendar-step-icon"
+                                    [class.step-completed]="isCalendarStepCompleted(item, status)"
+                                    [class.step-current]="isCalendarCurrentStep(item, status) && !isCalendarStepCompleted(item, status)">
+                                    <i class="material-icons">{{ getCalendarStepIcon(status, item) }}</i>
+                                    <span *ngIf="isCalendarStepCompleted(item, status)" class="step-check">
+                                        <i class="material-icons">check</i>
+                                    </span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -207,11 +229,14 @@
                                             </span>
                                         </td>
                                         <td class="text-center">
-                                            <span *ngIf="consignment.debt_uzs && consignment.debt_uzs !== '0'"
+                                            <span
+                                                *ngIf="consignment.for_debt_total && consignment.for_debt_total !== '0'"
                                                 class="text-danger font-weight-bold">
-                                                {{ consignment.debt_uzs | currency: ' ' : 'symbol' : '1.0-0' }} so'm
+                                                {{ consignment.for_debt_total | currency: ' ' : 'symbol' : '1.0-0' }}
+                                                so'm
                                             </span>
-                                            <span *ngIf="!consignment.debt_uzs || consignment.debt_uzs === '0'"
+                                            <span
+                                                *ngIf="!consignment.for_debt_total || consignment.for_debt_total === '0'"
                                                 class="text-success">
                                                 To'langan
                                             </span>
@@ -267,13 +292,6 @@
                         </button>
                     </div>
                 </div>
-            </div>
-        </div>
-
-        <!-- Consignment Calendar Section -->
-        <div class="row mt-4">
-            <div class="col-md-12">
-                <app-consignment-calendar></app-consignment-calendar>
             </div>
         </div>
 

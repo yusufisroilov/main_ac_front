@@ -1,19 +1,105 @@
 /* Dashboard Component Custom Styles */
 
-/* Summary Cards Hover Effect */
-.card-stats:hover {
-  transform: translateY(-5px);
-  transition: all 0.3s ease;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+/* ============================================
+   WELCOME BANNER - Small and Simple
+   ============================================ */
+.welcome-banner {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 12px 20px;
+  border-left: 4px solid #9c27b0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-.card-stats {
-  transition: all 0.3s ease;
+.welcome-banner .user-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
-/* Card Icon Animations */
-.card-icon i {
-  font-size: 36px;
+.welcome-banner .user-icon {
+  font-size: 32px;
+  color: #9c27b0;
+}
+
+.welcome-banner .user-details h5 {
+  color: #333;
+  font-weight: 600;
+  margin: 0;
+  font-size: 15px;
+}
+
+.welcome-banner .user-details p {
+  color: #666;
+  margin: 0;
+  font-size: 12px;
+}
+
+.welcome-banner .user-details strong {
+  font-weight: 600;
+  color: #333;
+}
+
+.welcome-banner .welcome-text h3 {
+  color: #333;
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+/* ============================================
+   STAT TILES - Compact 2x2 grid
+   ============================================ */
+.stat-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.stat-tile {
+  background: #fff;
+  border-radius: 12px;
+  padding: 14px;
+  text-align: center;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  transition: box-shadow 0.2s, transform 0.2s;
+  animation: fadeInUp 0.4s ease both;
+}
+
+.stat-tile:nth-child(1) { animation-delay: 0.05s; }
+.stat-tile:nth-child(2) { animation-delay: 0.1s; }
+.stat-tile:nth-child(3) { animation-delay: 0.15s; }
+.stat-tile:nth-child(4) { animation-delay: 0.2s; }
+
+.stat-tile:hover {
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.stat-tile-icon {
+  font-size: 22px;
+  margin-bottom: 6px;
+}
+
+.stat-tile-value {
+  font-size: 18px;
+  font-weight: 700;
+  color: #344767;
+  line-height: 1.2;
+}
+
+.stat-tile-value small {
+  font-size: 12px;
+  font-weight: 500;
+  color: #6c757d;
+}
+
+.stat-tile-label {
+  font-size: 11px;
+  color: #6c757d;
+  margin-top: 4px;
 }
 
 /* Loading Spinner */
@@ -98,26 +184,6 @@ td small.text-muted {
   font-size: 12px;
 }
 
-/* Responsive Adjustments */
-@media (max-width: 768px) {
-  .card-stats h3.card-title {
-    font-size: 24px;
-  }
-
-  .card-stats p.card-category {
-    font-size: 12px;
-  }
-
-  .btn-primary.btn-lg {
-    padding: 10px 30px;
-    font-size: 14px;
-  }
-
-  .table-responsive {
-    font-size: 12px;
-  }
-}
-
 /* Card Footer Stats */
 .card-footer .stats {
   display: flex;
@@ -139,74 +205,6 @@ td small.text-muted {
     opacity: 1;
     transform: translateY(0);
   }
-}
-
-.card-stats {
-  animation: fadeInUp 0.5s ease;
-}
-
-.card-stats:nth-child(1) {
-  animation-delay: 0.1s;
-}
-.card-stats:nth-child(2) {
-  animation-delay: 0.2s;
-}
-.card-stats:nth-child(3) {
-  animation-delay: 0.3s;
-}
-.card-stats:nth-child(4) {
-  animation-delay: 0.4s;
-}
-
-/* Dashboard Component Custom Styles */
-
-/* ============================================
-   WELCOME BANNER - Small and Simple
-   ============================================ */
-.welcome-banner {
-  background: #f8f9fa;
-  border-radius: 8px;
-  padding: 12px 20px;
-  border-left: 4px solid #9c27b0;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.welcome-banner .user-info {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.welcome-banner .user-icon {
-  font-size: 32px;
-  color: #9c27b0;
-}
-
-.welcome-banner .user-details h5 {
-  color: #333;
-  font-weight: 600;
-  margin: 0;
-  font-size: 15px;
-}
-
-.welcome-banner .user-details p {
-  color: #666;
-  margin: 0;
-  font-size: 12px;
-}
-
-.welcome-banner .user-details strong {
-  font-weight: 600;
-  color: #333;
-}
-
-.welcome-banner .welcome-text h3 {
-  color: #333;
-  margin: 0;
-  font-size: 18px;
-  font-weight: 600;
 }
 
 /* ============================================
@@ -271,8 +269,368 @@ td small.text-muted {
   background: #555;
 }
 
-/* For mobile devices - ensure proper scrolling */
+/* ============================================
+   CALENDAR PREVIEW - Horizontal scroll cards
+   ============================================ */
+.calendar-preview-section {
+  padding: 0;
+}
+
+.calendar-preview-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.calendar-preview-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #344767;
+}
+
+.calendar-preview-link {
+  font-size: 13px;
+  font-weight: 600;
+  color: #667eea;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.calendar-preview-link:hover {
+  color: #5a6fd6;
+  text-decoration: none;
+}
+
+.calendar-preview-empty {
+  text-align: center;
+  padding: 24px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+}
+
+.calendar-cards-scroll {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 6px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.calendar-cards-scroll::-webkit-scrollbar {
+  height: 4px;
+}
+
+.calendar-cards-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.calendar-cards-scroll::-webkit-scrollbar-thumb {
+  background: #ddd;
+  border-radius: 2px;
+}
+
+.calendar-card {
+  min-width: 210px;
+  max-width: 210px;
+  padding: 12px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex-shrink: 0;
+  transition: box-shadow 0.2s;
+}
+
+.calendar-card:hover {
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.1);
+}
+
+.calendar-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.calendar-card-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: #344767;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+}
+
+.calendar-card-type {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 5px;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.calendar-card-status-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.calendar-card-status {
+  font-size: 11px;
+  color: #6c757d;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+}
+
+.calendar-card-percent {
+  font-size: 12px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.calendar-card-progress-track {
+  height: 4px;
+  background: rgba(102, 126, 234, 0.1);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.calendar-card-progress-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.4s ease;
+}
+
+.calendar-card-steps {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 4px;
+}
+
+.calendar-step-icon {
+  position: relative;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background: #f5f5f5;
+}
+
+.calendar-step-icon i {
+  font-size: 16px;
+  color: #aaa;
+}
+
+.calendar-step-icon.step-completed {
+  background: rgba(76, 175, 80, 0.1);
+  border: 1.5px solid #4CAF50;
+}
+
+.calendar-step-icon.step-completed > i {
+  color: #4CAF50;
+}
+
+.calendar-step-icon.step-current {
+  background: #667eea;
+}
+
+.calendar-step-icon.step-current > i {
+  color: #fff;
+}
+
+.step-check {
+  position: absolute;
+  bottom: -3px;
+  right: -3px;
+  width: 12px;
+  height: 12px;
+  background: #4CAF50;
+  border-radius: 50%;
+  border: 1.5px solid #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.step-check i {
+  font-size: 7px !important;
+  color: #fff !important;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+/* Tablets and smaller */
+@media (max-width: 991px) {
+  /* Tighter table on tablets */
+  .table th,
+  .table td {
+    padding: 8px 6px;
+    font-size: 13px;
+  }
+
+  .stat-grid {
+    gap: 10px;
+  }
+
+  .stat-tile {
+    padding: 12px;
+  }
+
+  .stat-tile-value {
+    font-size: 16px;
+  }
+}
+
+/* Mobile */
 @media (max-width: 768px) {
+  /* Welcome banner */
+  .welcome-banner {
+    flex-direction: column;
+    gap: 8px;
+    padding: 10px 14px;
+    align-items: flex-start;
+  }
+
+  .welcome-banner .user-icon {
+    font-size: 26px;
+  }
+
+  .welcome-banner .welcome-text h3 {
+    font-size: 15px;
+  }
+
+  .welcome-banner .user-details h5 {
+    font-size: 13px;
+  }
+
+  .welcome-banner .user-details p {
+    font-size: 11px;
+  }
+
+  /* Stat tiles */
+  .stat-grid {
+    gap: 8px;
+  }
+
+  .stat-tile {
+    padding: 10px;
+  }
+
+  .stat-tile-icon {
+    font-size: 20px;
+    margin-bottom: 4px;
+  }
+
+  .stat-tile-value {
+    font-size: 15px;
+  }
+
+  .stat-tile-label {
+    font-size: 10px;
+  }
+
+  .card-footer {
+    padding: 8px 12px;
+  }
+
+  .card-footer .stats {
+    font-size: 11px;
+  }
+
+  .card-footer .stats i {
+    font-size: 14px;
+  }
+
+  /* Calendar preview */
+  .calendar-preview-title {
+    font-size: 14px;
+  }
+
+  .calendar-card {
+    min-width: 175px;
+    max-width: 175px;
+    padding: 10px;
+    gap: 5px;
+  }
+
+  .calendar-card-name {
+    font-size: 12px;
+  }
+
+  .calendar-card-status {
+    font-size: 10px;
+  }
+
+  .calendar-card-percent {
+    font-size: 11px;
+  }
+
+  .calendar-step-icon {
+    width: 26px;
+    height: 26px;
+  }
+
+  .calendar-step-icon i {
+    font-size: 13px;
+  }
+
+  .step-check {
+    width: 10px;
+    height: 10px;
+  }
+
+  .step-check i {
+    font-size: 6px !important;
+  }
+
+  /* Consignment table */
+  .card-header h4.card-title {
+    font-size: 15px;
+  }
+
+  .table th,
+  .table td {
+    padding: 6px 4px;
+    font-size: 12px;
+  }
+
+  td strong {
+    font-size: 13px;
+  }
+
+  .table-responsive {
+    font-size: 12px;
+  }
+
+  .btn-primary.btn-lg {
+    padding: 8px 24px;
+    font-size: 13px;
+    letter-spacing: 0.5px;
+  }
+
+  .btn-sm {
+    padding: 4px 8px;
+    font-size: 11px;
+  }
+
+  /* Modals */
   .modal-dialog {
     margin: 10px;
     max-height: calc(100vh - 20px);
@@ -284,182 +642,85 @@ td small.text-muted {
 
   .modal-body {
     max-height: calc(100vh - 150px);
+    padding: 16px;
+  }
+
+  .modal-header {
+    padding: 14px 16px;
+  }
+
+  /* Chinese address */
+  .form-control[rows="4"] {
+    font-size: 12px !important;
+    rows: 3;
   }
 }
 
-/* Summary Cards Hover Effect */
-.card-stats:hover {
-  transform: translateY(-5px);
-  transition: all 0.3s ease;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-}
-
-.card-stats {
-  transition: all 0.3s ease;
-}
-
-/* Card Icon Animations */
-.card-icon i {
-  font-size: 36px;
-}
-
-/* Loading Spinner */
-.spinner-border-sm {
-  width: 1.5rem;
-  height: 1.5rem;
-  border-width: 0.2em;
-}
-
-/* Consignment Table Styling */
-.table-hover tbody tr:hover {
-  background-color: #f5f5f5;
-  cursor: pointer;
-}
-
-/* Badge Styling for Avia/Avto */
-.badge {
-  font-weight: 600;
-  letter-spacing: 0.5px;
-}
-
-/* "Hamma Partiyalar" Button Styling */
-.btn-primary.btn-lg {
-  border-radius: 25px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  box-shadow: 0 4px 15px rgba(156, 39, 176, 0.3);
-  transition: all 0.3s ease;
-}
-
-.btn-primary.btn-lg:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(156, 39, 176, 0.4);
-}
-
-.btn-primary.btn-lg i {
-  vertical-align: middle;
-  margin-right: 8px;
-}
-
-/* Welcome Card */
-.card-title {
-  margin-bottom: 10px;
-  font-weight: 500;
-}
-
-.card-description {
-  color: #666;
-  font-size: 16px;
-}
-
-/* Empty State */
-.text-center.p-5 i.material-icons {
-  opacity: 0.3;
-}
-
-/* Debt Indicators */
-.text-danger {
-  color: #f44336 !important;
-}
-
-.text-success {
-  color: #4caf50 !important;
-}
-
-/* Table Header */
-thead.text-primary th {
-  font-weight: 600;
-  font-size: 14px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-/* Consignment Name Styling */
-td strong {
-  font-size: 15px;
-  color: #333;
-}
-
-td small.text-muted {
-  font-size: 12px;
-}
-
-/* Responsive Adjustments */
-@media (max-width: 768px) {
+/* Small phones */
+@media (max-width: 480px) {
   .welcome-banner {
-    flex-direction: column;
-    gap: 10px;
-    padding: 12px 16px;
-    align-items: flex-start;
-  }
-
-  .welcome-banner .user-icon {
-    font-size: 28px;
+    padding: 8px 12px;
   }
 
   .welcome-banner .welcome-text h3 {
-    font-size: 16px;
-  }
-
-  .welcome-banner .user-details h5 {
     font-size: 14px;
   }
 
-  .card-stats h3.card-title {
-    font-size: 24px;
+  /* Stat tiles */
+  .stat-grid {
+    gap: 6px;
   }
 
-  .card-stats p.card-category {
-    font-size: 12px;
+  .stat-tile {
+    padding: 8px;
+  }
+
+  .stat-tile-icon {
+    font-size: 18px;
+    margin-bottom: 3px;
+  }
+
+  .stat-tile-value {
+    font-size: 14px;
+  }
+
+  .stat-tile-label {
+    font-size: 9px;
+  }
+
+  .calendar-card {
+    min-width: 160px;
+    max-width: 160px;
+    padding: 8px;
+  }
+
+  .calendar-card-name {
+    font-size: 11px;
+  }
+
+  .calendar-card-type {
+    font-size: 9px;
+    padding: 1px 4px;
+  }
+
+  .calendar-step-icon {
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+  }
+
+  .calendar-step-icon i {
+    font-size: 11px;
   }
 
   .btn-primary.btn-lg {
-    padding: 10px 30px;
-    font-size: 14px;
-  }
-
-  .table-responsive {
+    padding: 8px 20px;
     font-size: 12px;
   }
-}
 
-/* Card Footer Stats */
-.card-footer .stats {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-
-.card-footer .stats i {
-  font-size: 18px;
-}
-
-/* Animation for Cards on Load */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
+  .table th,
+  .table td {
+    padding: 5px 3px;
+    font-size: 11px;
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.card-stats {
-  animation: fadeInUp 0.5s ease;
-}
-
-.card-stats:nth-child(1) {
-  animation-delay: 0.1s;
-}
-.card-stats:nth-child(2) {
-  animation-delay: 0.2s;
-}
-.card-stats:nth-child(3) {
-  animation-delay: 0.3s;
-}
-.card-stats:nth-child(4) {
-  animation-delay: 0.4s;
 }

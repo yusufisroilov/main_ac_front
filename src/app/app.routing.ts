@@ -83,6 +83,13 @@ export const AppRoutes: Routes = [
           ).then((m) => m.customerDashboardModule),
       },
       {
+        path: "consignment-calendar",
+        loadChildren: () =>
+          import(
+            "./simple_user/consignment-calendar/consignment-calendar-page.module"
+          ).then((m) => m.ConsignmentCalendarPageModule),
+      },
+      {
         path: "archive",
         loadChildren: () =>
           import("./simple_user/archive-orders/archive-orders.module").then(
