@@ -68,6 +68,7 @@ export class FinanceComponent implements OnInit {
   hideForManager: boolean = true;
 
   currentParty: any = "";
+  financeVersion: number = 1;
 
   constructor(
     private http: Http,
@@ -120,6 +121,7 @@ export class FinanceComponent implements OnInit {
     };
 
     this.currentParty = localStorage.getItem("current_party");
+    this.financeVersion = parseInt(localStorage.getItem("finance_version") || "1") || 1;
   }
 
   ngAfterViewInit() {
@@ -185,11 +187,13 @@ export class FinanceComponent implements OnInit {
   }
 
   getListOfFinance() {
-    //let filterLink = '&status='+this.orderFilterStatus+"&orderType="+this.orderFilterType+"&ownerID="+this.orderFilterOwnId+"&consignment="+this.orderFilterParty;
+    // Route to V1 or V2 endpoint based on finance_version
+    const endpoint = this.financeVersion === 2 ? "/finance-v2/list" : "/finance/list";
+
     return this.http
       .get(
         GlobalVars.baseUrl +
-          "/finance/list?page=" +
+          endpoint + "?page=" +
           this.currentPage +
           "&size=" +
           this.pageSize,
@@ -197,20 +201,42 @@ export class FinanceComponent implements OnInit {
       )
       .subscribe(
         (response) => {
-          this.allData = response.json().finances;
-          this.totalItems = response.json().totalItems;
-          this.totalWeight = response.json().totalWeight;
-          this.totalUSD = response.json().totalUSD;
-          this.totalUZS = response.json().totalUZS;
-          this.totalPaidUSD = response.json().totalPaidUSD;
-          this.totalPaidUZS = response.json().totalPaidUZS;
-          this.totalPaidPlastic = response.json().totalPaidPlastic;
-          this.totalDebtUSD = response.json().totalDebtUSD;
-          this.totalDebtUZS = response.json().totalDebtUZS;
-          this.activeConsignment = response.json().activeConsignment;
+          const data = response.json();
 
-          this.currentPage = response.json().currentPage;
-          this.totalPages = response.json().totalPages;
+          if (this.financeVersion === 2) {
+            // Transform V2 response to match V1 format for the template
+            this.allData = (data.finances || []).map((f) => ({
+              id: f.id,
+              owner_id: f.customer_id,
+              weight: f.billable_weight_kg,
+              sum_usd: f.amount_usd,
+              sum_uzs: f.amount_uzs_locked,
+              paid_usd_cash: 0,
+              paid_uzs_cash: 0,
+              paid_plastic: 0,
+              paid_bank_account: 0,
+              debt: f.debt_usd,
+              debt_uzs: f.debt_uzs,
+              delivered: f.delivered,
+              consignment: f.consignment,
+            }));
+          } else {
+            this.allData = data.finances;
+          }
+
+          this.totalItems = data.totalItems;
+          this.totalWeight = data.totalWeight;
+          this.totalUSD = data.totalUSD;
+          this.totalUZS = data.totalUZS;
+          this.totalPaidUSD = data.totalPaidUSD || 0;
+          this.totalPaidUZS = data.totalPaidUZS || 0;
+          this.totalPaidPlastic = data.totalPaidPlastic || 0;
+          this.totalDebtUSD = data.totalDebtUSD;
+          this.totalDebtUZS = data.totalDebtUZS;
+          this.activeConsignment = data.activeConsignment;
+
+          this.currentPage = data.currentPage;
+          this.totalPages = data.totalPages;
           if (this.totalPages >= 1) {
             this.needPagination = true;
             this.mypages = [""];
@@ -297,32 +323,53 @@ export class FinanceComponent implements OnInit {
     if (id != "") {
       this.currentFinID = id;
     }
-    // if (deliver != null) {this.currentDeliveredCase = deliver; }
     if (id == "") {
       this.currentFinID = "";
     }
-    // console.log("current id ", this.currentFinID);
+
+    const endpoint = this.financeVersion === 2 ? "/finance-v2/list" : "/finance/list";
 
     return this.http
       .get(
         GlobalVars.baseUrl +
-          `/finance/list?size=${this.pageSize}&ownerId=` +
+          `${endpoint}?size=${this.pageSize}&ownerId=` +
           this.currentFinID,
         this.options
       )
       .subscribe(
         (response) => {
-          this.allData = response.json().finances;
-          this.totalItems = response.json().totalItems;
-          this.totalWeight = response.json().totalWeight;
-          this.totalUSD = response.json().totalUSD;
-          this.totalUZS = response.json().totalUZS;
-          this.totalPaidUSD = response.json().totalPaidUSD;
-          this.totalPaidUZS = response.json().totalPaidUZS;
-          this.totalPaidPlastic = response.json().totalPaidPlastic;
-          this.totalDebtUSD = response.json().totalDebtUSD;
-          this.totalDebtUZS = response.json().totalDebtUZS;
-          this.activeConsignment = response.json().activeConsignment;
+          const data = response.json();
+
+          if (this.financeVersion === 2) {
+            this.allData = (data.finances || []).map((f) => ({
+              id: f.id,
+              owner_id: f.customer_id,
+              weight: f.billable_weight_kg,
+              sum_usd: f.amount_usd,
+              sum_uzs: f.amount_uzs_locked,
+              paid_usd_cash: 0,
+              paid_uzs_cash: 0,
+              paid_plastic: 0,
+              paid_bank_account: 0,
+              debt: f.debt_usd,
+              debt_uzs: f.debt_uzs,
+              delivered: f.delivered,
+              consignment: f.consignment,
+            }));
+          } else {
+            this.allData = data.finances;
+          }
+
+          this.totalItems = data.totalItems;
+          this.totalWeight = data.totalWeight;
+          this.totalUSD = data.totalUSD;
+          this.totalUZS = data.totalUZS;
+          this.totalPaidUSD = data.totalPaidUSD || 0;
+          this.totalPaidUZS = data.totalPaidUZS || 0;
+          this.totalPaidPlastic = data.totalPaidPlastic || 0;
+          this.totalDebtUSD = data.totalDebtUSD;
+          this.totalDebtUZS = data.totalDebtUZS;
+          this.activeConsignment = data.activeConsignment;
         },
         (error) => {
           if (error.status == 403) {
@@ -463,10 +510,11 @@ export class FinanceComponent implements OnInit {
           let weight = $("#input-weight").val();
           this.enteredLast = ownerId + " ID ga " + weight + " kg";
 
+          const finEndpoint = this.financeVersion === 2 ? "/finance-v2/add" : "/finance/add";
           this.http
             .post(
               GlobalVars.baseUrl +
-                "/finance/add?owner_id=" +
+                finEndpoint + "?owner_id=" +
                 ownerId +
                 "&weight=" +
                 weight +
@@ -478,7 +526,7 @@ export class FinanceComponent implements OnInit {
             .subscribe(
               (response) => {
                 if (response.json().status == "error") {
-                  this.registredMessage = response.json().message;
+                  this.registredMessage = response.json().message || response.json().error;
                   swal
                     .fire("Not Added", this.registredMessage, "error")
                     .then((result) => {
@@ -559,6 +607,10 @@ export class FinanceComponent implements OnInit {
                   "current_party",
                   response.json().consignment.name
                 );
+                // Store finance_version for routing V1/V2 API calls
+                const fv = response.json().consignment.finance_version || 1;
+                localStorage.setItem("finance_version", fv.toString());
+                this.financeVersion = fv;
 
                 if (response.json().status == "error") {
                   this.registredMessage = response.json().message;
@@ -633,11 +685,8 @@ export class FinanceComponent implements OnInit {
         title: "Xisob O'zgartirish!",
         html:
           '<div class="form-group">' +
-          '<div class="form-group" style="display: block ruby;"><label for="input-card">Kilosi:</label><input id="input-weight" type="text" class="form-control m-2" placeholder="Kilosi" /> </div>' +
-          '<div class="form-group" style="display: block ruby;"><label for="input-card">USD $:</label><input id="input-usd" type="text" class="form-control m-2" placeholder="DOLLORDA" /> </div>' +
-          '<div class="form-group" style="display: block ruby;"><label for="input-card">Naqd:</label><input  id="input-cash" type="text" class="form-control m-2" placeholder="NAQD" /> </div> ' +
-          '<div class="form-group" style="display: block ruby;"><label for="input-card">Plastik:</label>  <input  id="input-card" type="text" class="form-control m-2" placeholder="PLASTIK" /> </div>' +
-          '<div class="form-group" style="display: block ruby;"><label for="input-card">RATE</label> <input  id="input-rate" type="text" class="form-control m-2" placeholder="RATE" /> </div> ' +
+          '<input id="input-weight" type="text" class="form-control m-2" placeholder="Kilosi" />' +
+          '<input id="input-rate" type="text" class="form-control m-2" placeholder="RATE ($/kg)" />' +
           "</div>",
         showCancelButton: true,
         confirmButtonText: "O'zgartish",
@@ -649,135 +698,39 @@ export class FinanceComponent implements OnInit {
         buttonsStyling: false,
         didOpen: () => {
           $("#input-weight").val(weight);
-          $("#input-usd").val(usd);
-          $("#input-cash").val(cash);
-          $("#input-card").val(card);
-
-          // var options = [];
-          // for (var i = 0; i < GlobalVars.orderTypes.length; i++) {
-          //     options.push('<option value="',
-          //     GlobalVars.orderTypes[i].id, '">',
-          //     GlobalVars.orderTypes[i].descriptionEn, '</option>');
-          // }
-          // $("#types").html(options.join(''));
-
-          // $('#types').val(orderType);
         },
         preConfirm: (result) => {
           let weight2 = $("#input-weight").val();
           if ($("#input-weight").val() == weight) {
             weight2 = "";
           }
-          console.log("wieght ", weight2);
 
-          let usd2 = $("#input-usd").val();
-          let cash2 = $("#input-cash").val();
-          let card2 = $("#input-card").val();
           let rate2 = $("#input-rate").val();
 
-          if (rate2 || weight2) {
-            this.http
-              .post(
-                GlobalVars.baseUrl +
-                  "/finance/changeRK?owner_id=" +
-                  ownerId +
-                  "&id=" +
-                  finId +
-                  "&weight=" +
-                  weight2 +
-                  "&name=" +
-                  localStorage.getItem("current_party") +
-                  "&perKg=" +
-                  rate2,
-                "",
-                this.options
-              )
-              .subscribe(
-                (response) => {
-                  if (response.json().status == "error") {
-                    this.registredMessage = response.json().message;
-                    swal
-                      .fire("Not Added", this.registredMessage, "error")
-                      .then((result) => {
-                        if (result.isConfirmed) {
-                          this.recordFinance();
-                        } else {
-                        }
-                      });
-                  } else {
-                    this.getListOfFinance();
-                    return false;
-                  }
-                },
-                (error) => {
-                  if (error) {
-                    swal
-                      .fire(
-                        "Not Added",
-                        `BAD REQUEST: ${error.json().error}`,
-                        "error"
-                      )
-                      .then((result) => {
-                        if (result.isConfirmed) {
-                          this.getListOfFinance();
-                          this.recordFinance();
-                        } else {
-                        }
-                      });
-                  }
+          const body: any = { finance_id: finId };
+          if (weight2) body.weight = weight2;
+          if (rate2) body.perKg = rate2;
 
-                  if (error.status == 403) {
-                    this.authService.logout();
-                  }
-                }
-              );
-          }
+          if (!weight2 && !rate2) return;
+
           this.http
             .post(
-              GlobalVars.baseUrl +
-                "/finance/edit?plastic=" +
-                card2 +
-                "&cash=" +
-                cash2 +
-                "&usd=" +
-                usd2 +
-                "&id=" +
-                finId +
-                "&rate=" +
-                rate2,
-              "",
+              GlobalVars.baseUrl + "/finance-v2/edit",
+              JSON.stringify(body),
               this.options
             )
             .subscribe(
               (response) => {
                 this.getListOfFinance();
                 if (response.json().status == "error") {
-                  this.registredMessage = response.json().message;
-                  // swal.showValidationMessage('Not Added, check: ' + this.registredMessage);
-                  swal
-                    .fire("Not Added", this.registredMessage, "error")
-                    .then((result) => {
-                      if (result.isConfirmed) {
-                      }
-                    });
-                } else {
-                  return false;
+                  swal.fire("Not Added", response.json().message || response.json().error, "error");
                 }
               },
               (error) => {
                 if (error) {
-                  swal
-                    .fire(
-                      "Not Added",
-                      `BAD REQUEST: ${error.json().error}`,
-                      "error"
-                    )
-                    .then((result) => {
-                      if (result.isConfirmed) {
-                        this.getListOfFinance();
-                      }
-                    });
+                  swal.fire("Not Added", `BAD REQUEST: ${error.json().error}`, "error");
                 }
+                if (error.status == 403) { this.authService.logout(); }
               }
             );
         },
@@ -836,6 +789,39 @@ export class FinanceComponent implements OnInit {
           let card = $("#input-card").val();
           let izoh = $("#input-izoh").val();
 
+          if (this.financeVersion === 2) {
+            // V2: build payments array and send as JSON body
+            const payments = [];
+            if (parseFloat(usd) > 0) payments.push({ method: "USD_CASH", currency: "USD", amount_original: parseFloat(usd) });
+            if (parseFloat(cash) > 0) payments.push({ method: "UZS_CASH", currency: "UZS", amount_original: parseFloat(cash) });
+            if (parseFloat(card) > 0) payments.push({ method: "PLASTIC", currency: "UZS", amount_original: parseFloat(card) });
+
+            if (payments.length === 0) return;
+
+            this.http
+              .post(
+                GlobalVars.baseUrl + "/finance-v2/pay",
+                JSON.stringify({ finance_id: finId, payments, comment: izoh }),
+                this.options
+              )
+              .subscribe(
+                (response) => {
+                  this.getListOfFinance();
+                  if (response.json().status == "error") {
+                    swal.fire("Not Added", response.json().message || response.json().error, "error");
+                  }
+                },
+                (error) => {
+                  if (error) {
+                    swal.fire("Not Added", `BAD REQUEST: ${error.json().error}`, "error")
+                      .then(() => this.getListOfFinance());
+                  }
+                }
+              );
+            return;
+          }
+
+          // V1: original logic
           this.http
             .post(
               GlobalVars.baseUrl +
@@ -856,7 +842,6 @@ export class FinanceComponent implements OnInit {
               (response) => {
                 this.getListOfFinance();
                 if (response.json().status == "error") {
-                  // swal.showValidationMessage('Not Added, check: ' + this.registredMessage);
                   swal
                     .fire("Not Added", response.json().message, "error")
                     .then((result) => {
@@ -916,37 +901,60 @@ export class FinanceComponent implements OnInit {
       })
       .then((result) => {
         if (result.value) {
-          this.http
-            .post(
-              GlobalVars.baseUrl +
-                "/finance/edit?delivered=true" +
-                "&id=" +
-                trNum,
-              "",
-              this.options
-            )
-            .subscribe((response) => {
-              swal.fire({
-                title: "Tasdiqlandi!",
-                text: "Bu yuk yetkazildi.",
-                icon: "success",
-                customClass: {
-                  confirmButton: "btn btn-success",
-                },
-                buttonsStyling: false,
+          if (this.financeVersion === 2) {
+            // V2: use /finance-v2/deliver with JSON body
+            this.http
+              .post(
+                GlobalVars.baseUrl + "/finance-v2/deliver",
+                JSON.stringify({ finance_id: trNum }),
+                this.options
+              )
+              .subscribe((response) => {
+                swal.fire({
+                  title: "Tasdiqlandi!",
+                  text: "Bu yuk yetkazildi.",
+                  icon: "success",
+                  customClass: { confirmButton: "btn btn-success" },
+                  buttonsStyling: false,
+                });
+                this.getListOfFinance();
               });
+          } else {
+            // V1: original logic
+            this.http
+              .post(
+                GlobalVars.baseUrl +
+                  "/finance/edit?delivered=true" +
+                  "&id=" +
+                  trNum,
+                "",
+                this.options
+              )
+              .subscribe((response) => {
+                swal.fire({
+                  title: "Tasdiqlandi!",
+                  text: "Bu yuk yetkazildi.",
+                  icon: "success",
+                  customClass: {
+                    confirmButton: "btn btn-success",
+                  },
+                  buttonsStyling: false,
+                });
 
-              this.getListOfFinance();
-            });
+                this.getListOfFinance();
+              });
+          }
         }
       });
   }
 
   getListwithFiltr(cond) {
+    const endpoint = this.financeVersion === 2 ? "/finance-v2/list" : "/finance/list";
+
     return this.http
       .get(
         GlobalVars.baseUrl +
-          "/finance/list?page=" +
+          endpoint + "?page=" +
           this.currentPage +
           "&size=" +
           this.pageSize,
@@ -954,16 +962,32 @@ export class FinanceComponent implements OnInit {
       )
       .subscribe(
         (response) => {
+          let finances = response.json().finances;
+
+          if (this.financeVersion === 2) {
+            finances = (finances || []).map((f) => ({
+              id: f.id,
+              owner_id: f.customer_id,
+              weight: f.billable_weight_kg,
+              sum_usd: f.amount_usd,
+              sum_uzs: f.amount_uzs_locked,
+              paid_usd_cash: 0,
+              paid_uzs_cash: 0,
+              paid_plastic: 0,
+              paid_bank_account: 0,
+              debt: f.debt_usd,
+              debt_uzs: f.debt_uzs,
+              delivered: f.delivered,
+              consignment: f.consignment,
+            }));
+          }
+
           if (cond == "true") {
-            this.allData = response
-              .json()
-              .finances.filter((r) => r.debt_uzs > 5000);
+            this.allData = finances.filter((r) => r.debt_uzs > 5000);
           } else if (cond == "false") {
-            this.allData = response
-              .json()
-              .finances.filter((r) => r.debt_uzs < 5000);
+            this.allData = finances.filter((r) => r.debt_uzs < 5000);
           } else {
-            this.allData = response.json().finances;
+            this.allData = finances;
           }
         },
         (error) => {

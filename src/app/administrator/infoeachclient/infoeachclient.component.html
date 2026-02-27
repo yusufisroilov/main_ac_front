@@ -182,7 +182,7 @@
                     {{ umQarzUSZ | currency : " " : "symbol" : "1.0-0" }}
                     so'm </b>yoki
                   <b>
-                    {{ umQarzUSD | currency : " " : "symbol" : "1.0-0" }} $</b>
+                    {{ umQarzUSD | number:'1.2-2' }} $</b>
                 </h4>
               </div>
             </div>
@@ -231,7 +231,7 @@
                       {{ row.rate }}
                     </td>
                     <td *ngIf="row.debt; else elseBlock3" class="text-center">
-                      {{ row.debt }}$
+                      {{ row.debt | number:'1.2-2' }}$
                     </td>
                     <ng-template #elseBlock3>
                       <td class="text-center">- -</td>
@@ -249,7 +249,7 @@
                     </td>
                     <td class="td-actions text-right">
                       <button mat-raised-button type="button" class="btn btn-warning"
-                        (click)="addFinance(row.id, row.name)">
+                        (click)="addFinance(row.id, row.name, row.finance_version)">
                         Pul <i class="material-icons">loupe</i>
                       </button>
                       <button mat-raised-button type="button" class="btn btn-info" (click)="getListOfParcels(row.name)">

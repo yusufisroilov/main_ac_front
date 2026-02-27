@@ -52,6 +52,9 @@ export class ForDebtManagementComponent implements OnInit {
   // Loading states
   loadingFinances: boolean = false;
 
+  // Cash accounts (dynamic from FinTrack)
+  cashAccounts: any[] = [];
+
   constructor(
     private http: Http,
     private httpClient: HttpClient,
@@ -64,7 +67,62 @@ export class ForDebtManagementComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.loadCashAccounts();
     this.loadFinancesWithForDebt();
+  }
+
+  loadCashAccounts() {
+    this.http
+      .get(GlobalVars.baseUrl + "/finance-v2/cash-accounts", this.options)
+      .subscribe(
+        (res) => {
+          const data = res.json();
+          this.cashAccounts = data.accounts || [];
+        },
+        (error) => {
+          console.error("Failed to load cash accounts:", error);
+        },
+      );
+  }
+
+  buildPaymentFieldsHtml(): string {
+    let html = '<div class="form-group">';
+    for (const acc of this.cashAccounts) {
+      html +=
+        `<input id="input-acc-${acc.id}" type="number" class="form-control m-2" placeholder="${acc.name} (${acc.currency})" />`;
+    }
+    html +=
+      '<input id="input-izoh" type="text" class="form-control m-2" placeholder="IZOH" />';
+    html += "</div>";
+    return html;
+  }
+
+  getPaymentMethod(type: string, currency: string): string {
+    if (type === "CASH" && currency === "USD") return "USD_CASH";
+    if (type === "CASH" && currency === "UZS") return "UZS_CASH";
+    if (type === "CARD") return "PLASTIC";
+    if (type === "BANK") return "BANK";
+    return "UZS_CASH";
+  }
+
+  buildPaymentsFromDialog(): any[] {
+    const payments = [];
+    for (const acc of this.cashAccounts) {
+      const el = document.getElementById(
+        `input-acc-${acc.id}`,
+      ) as HTMLInputElement;
+      const val = parseFloat(el?.value) || 0;
+      if (val > 0) {
+        payments.push({
+          method: this.getPaymentMethod(acc.type, acc.currency),
+          currency: acc.currency,
+          amount_original: val,
+          cash_account_id: acc.id,
+          cash_account_name: acc.name,
+        });
+      }
+    }
+    return payments;
   }
 
   // Load finances with for_debt > 0
@@ -174,22 +232,16 @@ export class ForDebtManagementComponent implements OnInit {
     return pages;
   }
 
-  // Add payment using SweetAlert (like InfoeachclientComponent)
+  // Add payment using SweetAlert with dynamic cash accounts + /finance-v2/pay
   addPaymentForDebt(finance: Finance) {
     swal
       .fire({
         title: `K${finance.owner_id} - ${finance.consignment}`,
         html:
-          '<div class="form-group">' +
-          `<p style="color: #d32f2f; font-weight: 600; font-size: 16px; margin-bottom: 15px;">Qarz: ${this.formatCurrency(
+          `<p style="color: #d32f2f; font-weight: 600; font-size: 16px; margin-bottom: 15px;">Nasiya: ${this.formatCurrency(
             finance.for_debt
           )} so'm</p>` +
-          '<input id="input-usd" type="text" class="form-control m-2" placeholder="DOLLORda berdi" />' +
-          '<input id="input-cash" type="text" class="form-control m-2" placeholder="NAQD PUL BERDI" />' +
-          '<input id="input-card" type="text" class="form-control m-2" placeholder="PLASTIKDA BERDI" />' +
-          '<input id="input-bank-acc" type="text" class="form-control m-2" placeholder="Terminalda (Uzum/PayMe QR) BERDI" />' +
-          '<input id="input-izoh" type="text" class="form-control m-2" placeholder="IZOH" />' +
-          "</div>",
+          this.buildPaymentFieldsHtml(),
         showCancelButton: true,
         confirmButtonText: "TO'LOV QO'SHISH",
         cancelButtonText: "Bekor qilish",
@@ -199,61 +251,45 @@ export class ForDebtManagementComponent implements OnInit {
         },
         buttonsStyling: false,
         preConfirm: () => {
-          let usd = $("#input-usd").val();
-          let cash = $("#input-cash").val();
-          let card = $("#input-card").val();
-          let bankacc = $("#input-bank-acc").val();
-          let izohh = $("#input-izoh").val();
+          const payments = this.buildPaymentsFromDialog();
+          const izoh = ($("#input-izoh").val() as string) || "";
 
-          this.http
+          if (payments.length === 0) {
+            swal.showValidationMessage("Kamida bitta to'lov kiriting");
+            return false;
+          }
+
+          return this.http
             .post(
-              GlobalVars.baseUrl +
-                "/finance/pay-for-debt?id=" +
-                finance.id +
-                "&name=" +
-                finance.consignment +
-                "&plastic=" +
-                card +
-                "&usd=" +
-                usd +
-                "&cash=" +
-                cash +
-                "&bank_account=" +
-                bankacc +
-                "&comment=" +
-                encodeURIComponent(izohh),
-              "",
-              this.options
+              GlobalVars.baseUrl + "/finance-v2/pay",
+              JSON.stringify({
+                finance_id: finance.id,
+                payments,
+                comment: izoh,
+              }),
+              this.options,
             )
-            .subscribe(
-              (response) => {
-                if (response.json().status == "error") {
-                  swal
-                    .fire("Xatolik", response.json().message, "error")
-                    .then((result) => {
-                      if (result.isConfirmed) {
-                      }
-                    });
-                } else {
-                  this.loadFinancesWithForDebt();
-                  return false;
-                }
-              },
-              (error) => {
-                if (error.status == 400) {
-                  swal
-                    .fire("Xatolik", `${error.json().message}`, "error")
-                    .then((result) => {
-                      if (result.isConfirmed) {
-                      }
-                    });
-                }
+            .toPromise()
+            .then((response) => {
+              const result = response.json();
+              if (result.status === "error") {
+                swal.showValidationMessage(result.message);
+                return false;
               }
-            );
+              this.loadFinancesWithForDebt();
+              return true;
+            })
+            .catch((error) => {
+              const msg = error.json
+                ? error.json().message
+                : "To'lovda xatolik";
+              swal.showValidationMessage(msg);
+              return false;
+            });
         },
       })
       .then((result) => {
-        if (result.isConfirmed) {
+        if (result.isConfirmed && result.value) {
           swal.fire({
             icon: "success",
             html: "TO'LOV MUVAFFAQIYATLI QO'SHILDI!",

@@ -133,6 +133,9 @@ export class InfoeachclientComponent implements OnInit {
   selectedBranchId: number | null = null;
   selectedBranchName: string = "";
 
+  // Cash accounts from FinTrack (for V2 payment form)
+  cashAccounts: any[] = [];
+
   // Delivery creation state
   creatingDelivery: boolean = false;
 
@@ -200,6 +203,61 @@ export class InfoeachclientComponent implements OnInit {
     };
 
     this.loadRegions();
+    this.loadCashAccounts();
+  }
+
+  loadCashAccounts() {
+    this.http
+      .get(GlobalVars.baseUrl + "/finance-v2/cash-accounts", this.options)
+      .subscribe(
+        (res) => {
+          const data = res.json();
+          this.cashAccounts = data.accounts || [];
+        },
+        (error) => {
+          console.error("Failed to load cash accounts:", error);
+        },
+      );
+  }
+
+  buildPaymentFieldsHtml(): string {
+    let html = '<div class="form-group">';
+    for (const acc of this.cashAccounts) {
+      html +=
+        `<input id="input-acc-${acc.id}" type="number" class="form-control m-2" placeholder="${acc.name} (${acc.currency})" />`;
+    }
+    html +=
+      '<input id="input-izoh" type="text" class="form-control m-2" placeholder="IZOH" />';
+    html += "</div>";
+    return html;
+  }
+
+  getPaymentMethod(type: string, currency: string): string {
+    if (type === "CASH" && currency === "USD") return "USD_CASH";
+    if (type === "CASH" && currency === "UZS") return "UZS_CASH";
+    if (type === "CARD") return "PLASTIC";
+    if (type === "BANK") return "BANK";
+    return "UZS_CASH";
+  }
+
+  buildPaymentsFromDialog(): any[] {
+    const payments = [];
+    for (const acc of this.cashAccounts) {
+      const el = document.getElementById(
+        `input-acc-${acc.id}`,
+      ) as HTMLInputElement;
+      const val = parseFloat(el?.value) || 0;
+      if (val > 0) {
+        payments.push({
+          method: this.getPaymentMethod(acc.type, acc.currency),
+          currency: acc.currency,
+          amount_original: val,
+          cash_account_id: acc.id,
+          cash_account_name: acc.name,
+        });
+      }
+    }
+    return payments;
   }
 
   // Original methods (unchanged)
@@ -248,18 +306,11 @@ export class InfoeachclientComponent implements OnInit {
     this.currentParty = partyNum;
   }
 
-  addFinance(finId, partiya) {
+  addFinance(finId, partiya, financeVersion = 1) {
     swal
       .fire({
         title: "Xisob Qo'shish!",
-        html:
-          '<div class="form-group">' +
-          '<input id="input-usd" type="text" class="form-control m-2" placeholder="DOLLORda berdi" />' +
-          '<input id="input-cash" type="text" class="form-control m-2" placeholder="NAQD PUL BERDI" />' +
-          '<input id="input-card" type="text" class="form-control m-2" placeholder="PLASTIKDA BERDI" />' +
-          '<input id="input-bank-acc" type="text" class="form-control m-2" placeholder="Terminalda (Uzum/PayMe QR) BERDI" />' +
-          '<input id="input-izoh" type="text" class="form-control m-2" placeholder="IZOH" />' +
-          "</div>",
+        html: this.buildPaymentFieldsHtml(),
         showCancelButton: true,
         confirmButtonText: "BERDI",
         cancelButtonText: "No",
@@ -269,116 +320,39 @@ export class InfoeachclientComponent implements OnInit {
         },
         buttonsStyling: false,
         preConfirm: (result) => {
-          let usd = $("#input-usd").val();
-          let cash = $("#input-cash").val();
-          let card = $("#input-card").val();
-          let bankacc = $("#input-bank-acc").val();
-          let izohh = $("#input-izoh").val();
+          const payments = this.buildPaymentsFromDialog();
+          const izoh = ($("#input-izoh").val() as string) || "";
+
+          if (payments.length === 0) return;
+
           this.http
             .post(
-              GlobalVars.baseUrl +
-                "/finance/pay?id=" +
-                finId +
-                "&name=" +
-                partiya +
-                "&plastic=" +
-                card +
-                "&usd=" +
-                usd +
-                "&cash=" +
-                cash +
-                "&bank_account=" +
-                bankacc +
-                "&comment=" +
-                izohh,
-              "",
+              GlobalVars.baseUrl + "/finance-v2/pay",
+              JSON.stringify({ finance_id: finId, payments, comment: izoh }),
               this.options,
             )
             .subscribe(
               (response) => {
                 if (response.json().status == "error") {
-                  swal
-                    .fire("Not Added", response.json().message, "error")
-                    .then((result) => {
-                      if (result.isConfirmed) {
-                      }
-                    });
+                  swal.fire(
+                    "Not Added",
+                    response.json().message || response.json().error,
+                    "error",
+                  );
                 } else {
                   this.getListOfPartyBoxes(this.currentID);
-                  return false;
                 }
               },
               (error) => {
                 if (error.status == 400) {
-                  swal
-                    .fire("Not Added", `Xato: ${error.json().message}`, "error")
-                    .then((result) => {
-                      if (result.isConfirmed) {
-                      }
-                    });
+                  swal.fire(
+                    "Not Added",
+                    `Xato: ${error.json().message}`,
+                    "error",
+                  );
                 }
               },
             );
-
-          //start of xisob post request
-          var NewUserId = this.currentID.toString();
-          if (usd == "") usd = 0;
-          if (cash == "") cash = 0;
-          if (card == "") card = 0;
-          if (bankacc == "") bankacc = 0;
-
-          let usd2: number = +usd;
-          const cash2: number = +cash;
-          const card2: number = +card;
-          const bankacc2: number = +bankacc;
-
-          this.http
-            .post(
-              "http://185.196.213.248:3018/api/income",
-              {
-                part_num: partiya,
-                userId: NewUserId,
-                usd_cash: usd2,
-                uzs_cash: cash2,
-                card: card2,
-                account: bankacc2,
-                admin_id: 22,
-                comment: izohh,
-                category_id: "1",
-              },
-              this.options2,
-            )
-            .subscribe(
-              (response) => {
-                if (response.json().status == "error") {
-                  // swal.showValidationMessage('Not Added, check: ' + this.registredMessage);
-                  swal
-                    .fire("Not Added", response.json().message, "error")
-                    .then((result) => {
-                      if (result.isConfirmed) {
-                      }
-                    });
-                } else {
-                  return false;
-                }
-              },
-              (error) => {
-                if (error.status == 400) {
-                  swal
-                    .fire(
-                      "Not Added",
-                      "BAD REQUEST: WRONG TYPE OF INPUT",
-                      "error",
-                    )
-                    .then((result) => {
-                      if (result.isConfirmed) {
-                      }
-                    });
-                }
-              },
-            );
-
-          //end of xisob post request
         },
       })
       .then((result) => {
@@ -1485,38 +1459,57 @@ export class InfoeachclientComponent implements OnInit {
         if (consignmentRow) {
           const debtAmount = consignmentRow.debt_uzs || group.debt_uzs || 0;
           if (debtAmount > 0) {
-            this.http
-              .post(
-                GlobalVars.baseUrl +
-                  "/finance/pay?id=" +
-                  consignmentRow.id +
-                  "&name=" +
-                  consignmentName +
-                  "&plastic=0&usd=0&cash=0&bank_account=0" +
-                  "&for_debt=" +
-                  debtAmount +
-                  "&comment=Nasiya yetkazish",
-                "",
-                this.options,
-              )
-              .subscribe(
-                (response) => {
-                  this.getListOfPartyBoxes(this.currentID);
-                  // console.log("Nasiya payment recorded for " + consignmentName);
-                },
-                (error) => {
-                  console.error(
-                    "Error recording nasiya for " + consignmentName,
-                    error,
-                  );
-                  swal.fire(
-                    "Xatolik",
+            if (consignmentRow.finance_version === 2) {
+              // V2: use /finance-v2/deliver to mark as delivered (nasiya)
+              this.http
+                .post(
+                  GlobalVars.baseUrl + "/finance-v2/deliver",
+                  JSON.stringify({ finance_id: consignmentRow.id }),
+                  this.options,
+                )
+                .subscribe(
+                  (response) => {
+                    this.getListOfPartyBoxes(this.currentID);
+                  },
+                  (error) => {
+                    console.error("Error recording V2 nasiya for " + consignmentName, error);
+                    swal.fire("Xatolik", consignmentName + " uchun nasiya qayd etishda xatolik yuz berdi", "error");
+                  },
+                );
+            } else {
+              // V1: original logic
+              this.http
+                .post(
+                  GlobalVars.baseUrl +
+                    "/finance/pay?id=" +
+                    consignmentRow.id +
+                    "&name=" +
                     consignmentName +
-                      " uchun nasiya qayd etishda xatolik yuz berdi",
-                    "error",
-                  );
-                },
-              );
+                    "&plastic=0&usd=0&cash=0&bank_account=0" +
+                    "&for_debt=" +
+                    debtAmount +
+                    "&comment=Nasiya yetkazish",
+                  "",
+                  this.options,
+                )
+                .subscribe(
+                  (response) => {
+                    this.getListOfPartyBoxes(this.currentID);
+                  },
+                  (error) => {
+                    console.error(
+                      "Error recording nasiya for " + consignmentName,
+                      error,
+                    );
+                    swal.fire(
+                      "Xatolik",
+                      consignmentName +
+                        " uchun nasiya qayd etishda xatolik yuz berdi",
+                      "error",
+                    );
+                  },
+                );
+            }
           }
         }
       });

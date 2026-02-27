@@ -245,7 +245,7 @@
                       <td class="text-center">{{ row.rate }}</td>
 
                       <td *ngIf="row.debt != '0'; else elseBlock3" class="text-center">
-                        {{ row.debt }}$
+                        {{ row.debt | number:'1.2-2' }}$
                       </td>
                       <ng-template #elseBlock3>
                         <td class="text-center">- -</td>
