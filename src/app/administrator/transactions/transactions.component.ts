@@ -1,16 +1,9 @@
 import { Component, OnInit } from "@angular/core";
-import { Router } from "@angular/router";
-import { GlobalVars, StatusOfOrder, TypesOfOrder } from "src/app/global-vars";
+import { GlobalVars } from "src/app/global-vars";
 import swal from "sweetalert2";
-import { HttpClient, HttpHeaders, HttpParams } from "@angular/common/http";
-import { Http, RequestOptions, Headers, Response } from "@angular/http";
+import { Http, RequestOptions, Headers } from "@angular/http";
 import { AuthService } from "src/app/pages/login/auth.service";
 import { DatePipe } from "@angular/common";
-
-declare interface DataTable {
-  headerRow: string[];
-  dataRows: string[][];
-}
 
 declare const $: any;
 
@@ -20,74 +13,209 @@ declare const $: any;
   styleUrls: ["./transactions.component.css"],
 })
 export class TransactionsComponent implements OnInit {
-  public dataTable: DataTable;
-  trackingNum: string;
+  // Tab control: 'v2' (default) or 'v1'
+  activeTab: string = "v2";
+
+  // HTTP options
   headers12: any;
   options: any;
-  allTransactions: any;
-  helloText: string;
-  registredMessage: any;
-  trackingNum2: any;
 
-  currentPage: number;
-  totalPages: number;
+  // ──── V2 Ledger state ────
+  v2Entries: any[] = [];
+  v2Loading: boolean = false;
+  v2CurrentPage: number = 0;
+  v2PageSize: number = 100;
+  v2TotalItems: number = 0;
+  v2TotalPages: number = 0;
+  v2NeedPagination: boolean = false;
+
+  // V2 Filters
+  v2FilterCustomerId: string = "";
+  v2FilterConsignment: string = "";
+  v2FilterType: string = "";
+  v2FilterStartDate: string = "";
+  v2FilterEndDate: string = "";
+
+  // ──── V1 Transactions state ────
+  allTransactions: any[] = [];
+  v1Loading: boolean = false;
+  currentPage: number = 0;
+  totalPages: number = 0;
   pageSize: number = 200;
-  needPagination: boolean;
+  needPagination: boolean = false;
   mypages = [];
-  isPageNumActive: boolean;
 
+  // V1 Filters
   danValue: string;
   gachaValue: string;
+
+  registredMessage: any;
 
   constructor(
     private datePipe: DatePipe,
     private http: Http,
-    private httpClient: HttpClient,
-    private router: Router,
-    public authService: AuthService
+    public authService: AuthService,
   ) {
     this.headers12 = new Headers({ "Content-Type": "application/json" });
     this.headers12.append("Authorization", localStorage.getItem("token"));
     this.options = new RequestOptions({ headers: this.headers12 });
-    var date = new Date();
-
-    this.currentPage = 0;
-    this.helloText = "hello";
-    this.needPagination = false;
-
-    this.isPageNumActive = false;
   }
 
   ngOnInit(): void {
-    this.dataTable = {
-      headerRow: [
-        "User ID",
-        "Rec ID",
-        "Phone number",
-        "Full name",
-        "Pasport num",
-        "Address",
-        "Amallar",
-      ],
-
-      dataRows: [],
-    };
-    this.getListOfTransactions();
+    // V2 loads by default
+    this.loadV2Ledger();
   }
 
-  pagebyNum(ipage) {
-    this.currentPage = ipage;
-    this.isPageNumActive = true;
-    document.getElementById("listcard").scrollIntoView();
-    this.getListOfTransactions();
+  // ═══════════════════════════════════════════════════
+  // TAB SWITCHING
+  // ═══════════════════════════════════════════════════
+
+  switchTab(tab: string) {
+    this.activeTab = tab;
+    if (tab === "v2" && this.v2Entries.length === 0) {
+      this.loadV2Ledger();
+    }
+    if (tab === "v1" && this.allTransactions.length === 0) {
+      this.getListOfTransactions();
+    }
   }
+
+  // ═══════════════════════════════════════════════════
+  // V2 LEDGER
+  // ═══════════════════════════════════════════════════
+
+  loadV2Ledger() {
+    this.v2Loading = true;
+    let url =
+      `${GlobalVars.baseUrl}/finance-v2/ledger-list?page=${this.v2CurrentPage}&size=${this.v2PageSize}`;
+
+    if (this.v2FilterCustomerId) {
+      url += `&customer_id=${this.v2FilterCustomerId}`;
+    }
+    if (this.v2FilterConsignment) {
+      url += `&consignment=${this.v2FilterConsignment}`;
+    }
+    if (this.v2FilterType) {
+      url += `&type=${this.v2FilterType}`;
+    }
+    if (this.v2FilterStartDate) {
+      url += `&start_date=${this.v2FilterStartDate}`;
+    }
+    if (this.v2FilterEndDate) {
+      url += `&end_date=${this.v2FilterEndDate}`;
+    }
+
+    this.http.get(url, this.options).subscribe(
+      (response) => {
+        const result = response.json();
+        if (result.status === "ok") {
+          this.v2Entries = result.entries || [];
+          this.v2TotalItems = result.totalItems || 0;
+          this.v2TotalPages = result.totalPages || 0;
+          this.v2CurrentPage = result.currentPage || 0;
+          this.v2NeedPagination = this.v2TotalPages > 1;
+        }
+        this.v2Loading = false;
+      },
+      (error) => {
+        this.v2Loading = false;
+        if (error.status === 403) {
+          this.authService.logout();
+        }
+      },
+    );
+  }
+
+  applyV2Filters() {
+    this.v2CurrentPage = 0;
+    this.loadV2Ledger();
+  }
+
+  clearV2Filters() {
+    this.v2FilterCustomerId = "";
+    this.v2FilterConsignment = "";
+    this.v2FilterType = "";
+    this.v2FilterStartDate = "";
+    this.v2FilterEndDate = "";
+    this.v2CurrentPage = 0;
+    this.loadV2Ledger();
+  }
+
+  onV2PageChanged(pageIndex: number) {
+    this.v2CurrentPage = pageIndex;
+    document
+      .getElementById("listcard")
+      ?.scrollIntoView({ behavior: "smooth" });
+    this.loadV2Ledger();
+  }
+
+  getTypeBadgeClass(type: string): string {
+    switch (type) {
+      case "CHARGE":
+        return "badge-charge";
+      case "PAYMENT":
+        return "badge-payment";
+      case "BONUS":
+        return "badge-bonus";
+      case "ADJUSTMENT":
+        return "badge-adjustment";
+      default:
+        return "badge-secondary";
+    }
+  }
+
+  getTypeLabel(type: string): string {
+    switch (type) {
+      case "CHARGE":
+        return "Hisob";
+      case "PAYMENT":
+        return "To'lov";
+      case "BONUS":
+        return "Bonus";
+      case "ADJUSTMENT":
+        return "Tuzatish";
+      default:
+        return type;
+    }
+  }
+
+  getMethodLabel(method: string): string {
+    if (!method) return "-";
+    switch (method) {
+      case "UZS_CASH":
+        return "Naqd";
+      case "USD_CASH":
+        return "USD";
+      case "PLASTIC":
+        return "Plastik";
+      case "BANK":
+        return "Bank";
+      default:
+        return method;
+    }
+  }
+
+  formatCurrency(value: number): string {
+    if (value == null) return "0";
+    const intPart = Math.floor(Math.abs(value));
+    const formatted = intPart
+      .toString()
+      .replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+    return value < 0 ? "-" + formatted : formatted;
+  }
+
+  // ═══════════════════════════════════════════════════
+  // V1 TRANSACTIONS (kept as-is)
+  // ═══════════════════════════════════════════════════
 
   /**
    * Handle page change from pagination component
    */
   onPageChanged(pageIndex: number) {
     this.currentPage = pageIndex;
-    document.getElementById("listcard")?.scrollIntoView({ behavior: "smooth" });
+    document
+      .getElementById("listcard")
+      ?.scrollIntoView({ behavior: "smooth" });
     this.getListOfTransactions();
   }
 
@@ -100,34 +228,30 @@ export class TransactionsComponent implements OnInit {
   }
 
   getListOfTransactionsWithDate() {
+    this.v1Loading = true;
     return this.http
       .get(
         GlobalVars.baseUrl +
-          "/transactions/list?" +
-          "from_date=" +
+          "/transactions/list?from_date=" +
           this.danValue +
           "&to_date=" +
           this.gachaValue,
-        this.options
+        this.options,
       )
       .subscribe(
         (response) => {
           this.allTransactions = response.json().transactions;
-
           this.currentPage = response.json().currentPage;
           this.totalPages = response.json().totalPages;
-          if (this.totalPages > 1) {
-            this.needPagination = true;
-            for (let i = 0; i < this.totalPages; i++) {
-              this.mypages[i] = { id: "name" };
-            }
-          }
+          this.needPagination = this.totalPages > 1;
+          this.v1Loading = false;
         },
         (error) => {
+          this.v1Loading = false;
           if (error.status == 403) {
             this.authService.logout();
           }
-        }
+        },
       );
   }
 
@@ -138,9 +262,8 @@ export class TransactionsComponent implements OnInit {
         html:
           '<div class="form-group">' +
           '<input id="input-finid" type="text" class="form-control m-2" readonly placeholder="Tracking Number" />' +
-          '<input id="inputsana" type="date" class="form-control m-2" ' +
+          '<input id="inputsana" type="date" class="form-control m-2" />' +
           "</div>",
-
         showCancelButton: true,
         customClass: {
           confirmButton: "btn btn-success",
@@ -150,12 +273,9 @@ export class TransactionsComponent implements OnInit {
         didOpen: () => {
           $("#input-finid").val(finID);
         },
-
-        preConfirm: (result) => {
+        preConfirm: () => {
           let dateed = $("#inputsana").val();
-          let split = dateed.split("-");
-
-          this.http
+          return this.http
             .post(
               GlobalVars.baseUrl +
                 "/transactions/edit?transaction_id=" +
@@ -163,52 +283,29 @@ export class TransactionsComponent implements OnInit {
                 "&date=" +
                 dateed,
               "",
-              this.options
+              this.options,
             )
-            .subscribe(
-              (response) => {
-                if (response.json().status == "error") {
-                  this.registredMessage = response.json().error;
-                  // swal.showValidationMessage('Not Added, check: ' + this.registredMessage);
-                  swal
-                    .fire("Not Added", this.registredMessage, "error")
-                    .then((result) => {
-                      if (result.isConfirmed) {
-                      }
-                    });
-                } else {
-                  this.getListOfTransactions();
-                  return false;
-                }
-              },
-              (error) => {
-                if (error.status == 400) {
-                  swal
-                    .fire(
-                      "Not Added",
-                      "Not Added " + error.json().error,
-                      "error"
-                    )
-                    .then((result) => {
-                      if (result.isConfirmed) {
-                      }
-                    });
-                }
-                if (error.status == 403) {
-                  this.authService.logout();
-                }
+            .toPromise()
+            .then((response) => {
+              if (response.json().status == "error") {
+                swal.showValidationMessage(response.json().error);
+                return false;
               }
-            );
+              this.getListOfTransactions();
+              return true;
+            })
+            .catch((error) => {
+              swal.showValidationMessage("Xatolik yuz berdi");
+              return false;
+            });
         },
       })
       .then((result) => {
-        if (result.isConfirmed) {
+        if (result.isConfirmed && result.value) {
           swal.fire({
             icon: "success",
-            html: $("#input-trnum").val() + " is SUCCESSFULLY CHANGED!",
-            customClass: {
-              confirmButton: "btn btn-success",
-            },
+            html: "Sana muvaffaqiyatli o'zgartirildi!",
+            customClass: { confirmButton: "btn btn-success" },
             buttonsStyling: false,
           });
         }
@@ -216,6 +313,7 @@ export class TransactionsComponent implements OnInit {
   }
 
   getListOfTransactions() {
+    this.v1Loading = true;
     return this.http
       .get(
         GlobalVars.baseUrl +
@@ -223,36 +321,28 @@ export class TransactionsComponent implements OnInit {
           this.currentPage +
           "&size=" +
           this.pageSize,
-        this.options
+        this.options,
       )
       .subscribe(
         (response) => {
           this.allTransactions = response.json().transactions;
-
           this.currentPage = response.json().currentPage;
           this.totalPages = response.json().totalPages;
-          if (this.totalPages > 1) {
-            this.needPagination = true;
-
-            for (let i = 0; i < this.totalPages; i++) {
-              this.mypages[i] = { id: "name" };
-            }
-          }
+          this.needPagination = this.totalPages > 1;
+          this.v1Loading = false;
         },
         (error) => {
+          this.v1Loading = false;
           if (error.status == 403) {
             this.authService.logout();
           }
-        }
+        },
       );
-  }
-
-  gotoxisobkitob() {
-    this.router.navigate(["/uzm/finance"]);
   }
 
   getListOfTransactionsWithFilter(clientId, partiya) {
     let filterLink = "&ownerID=" + clientId + "&consignment=" + partiya;
+    this.v1Loading = true;
     return this.http
       .get(
         GlobalVars.baseUrl +
@@ -261,331 +351,22 @@ export class TransactionsComponent implements OnInit {
           "&size=" +
           this.pageSize +
           filterLink,
-        this.options
+        this.options,
       )
       .subscribe(
         (response) => {
           this.allTransactions = response.json().transactions;
           this.currentPage = response.json().currentPage;
           this.totalPages = response.json().totalPages;
-          if (this.totalPages > 1) {
-            this.needPagination = true;
-
-            for (let i = 0; i < this.totalPages; i++) {
-              this.mypages[i] = { id: "name" };
-            }
-          }
+          this.needPagination = this.totalPages > 1;
+          this.v1Loading = false;
         },
         (error) => {
+          this.v1Loading = false;
           if (error.status == 403) {
             this.authService.logout();
           }
-        }
+        },
       );
-  }
-
-  /*
-  getListOfParcelsWithSearch(searchkey){
-
-    if(searchkey=="")
-    {
-      this.currentPage=0;
-
-       this.getListOfParcels();
-    }else{
-
-
-      this.http.get(GlobalVars.baseUrl+'/orders/search?tracking_number='+ searchkey, this.options)
-      .subscribe(response => {
-        this.allData = response.json().orders;
-
-        for (let index = 0; index < this.allData.length; index++) {
-          const element = this.allData[index];
-          this.orderTypeText[index] = GlobalVars.getDescriptionWithID(element.orderType, "uz");  
-        }
-
-        for (let index = 0; index < this.allData.length; index++) {
-          const element1 = this.allData[index];
-          this.orderStatusText[index] = GlobalVars.getDesOrderStatusWithID(element1.status, "uz");  
-        }
-
-        this.currentPage = response.json().currentPage;
-        this.totalPages = response.json().totalPages;
-        if (this.totalPages > 1) {
-          this.needPagination = true;
-
-          for(let i=0; i<this.totalPages;i++){
-            this.mypages[i] = {id: "name"};
-
-          }
-        }
-
-      })
-
-    }
-
-  } */
-
-  addExpense() {
-    swal
-      .fire({
-        title: "Qaytarilgan Xarajat qo'shish!",
-        html:
-          '<div class="form-group">' +
-          '<div class="form-group" style="display: block ruby;"><label for="input-card">Mijoz:</label><input id="input-customerid" type="text" class="form-control m-2" placeholder="ID si" /> </div>' +
-          '<div class="form-group" style="display: block ruby;"><label for="input-card">Plastik:</label><input id="input-card" type="text" class="form-control m-2" placeholder="PLASTIK" /> </div>' +
-          '<div class="form-group" style="display: block ruby;"><label for="input-card">Naqd:</label><input  id="input-cash" type="text" class="form-control m-2" placeholder="NAQD" /> </div> ' +
-          '<div class="form-group" style="display: block ruby;"><label for="input-card">USD $:</label>  <input  id="input-usd" type="text" class="form-control m-2" placeholder="DOLLORDA" /> </div>' +
-          '<div class="form-group" style="display: block ruby;"><label for="input-card">Partiya:</label>  <input  id="input-cons" type="text" class="form-control m-2" placeholder="PARTIYA" /> </div>' +
-          '<div class="form-group" style="display: block ruby;"><label for="input-card">Izoh:</label> <input  id="input-comment" type="text" class="form-control m-2" placeholder="Izoh" /> </div> ' +
-          "</div>",
-        showCancelButton: true,
-        confirmButtonText: "Qo'shish",
-        cancelButtonText: "No",
-        customClass: {
-          confirmButton: "btn btn-success",
-          cancelButton: "btn btn-danger",
-        },
-        buttonsStyling: false,
-        didOpen: () => {
-          // var options = [];
-          // for (var i = 0; i < GlobalVars.orderTypes.length; i++) {
-          //     options.push('<option value="',
-          //     GlobalVars.orderTypes[i].id, '">',
-          //     GlobalVars.orderTypes[i].descriptionEn, '</option>');
-          // }
-          // $("#types").html(options.join(''));
-          // $('#types').val(orderType);
-        },
-        preConfirm: (result) => {
-          let userid = $("#input-customerid").val();
-          let usd2 = $("#input-usd").val();
-          let cash2 = $("#input-cash").val();
-          let card2 = $("#input-card").val();
-          let comment = $("#input-comment").val();
-          let consignment = $("#input-cons").val();
-
-          this.http
-            .post(
-              GlobalVars.baseUrl +
-                "/expenses/add?customerID=" +
-                userid +
-                "&plastic=" +
-                card2 +
-                "&cash=" +
-                cash2 +
-                "&usd=" +
-                usd2 +
-                "&consignment=" +
-                consignment +
-                "&comment=" +
-                comment,
-              "",
-              this.options
-            )
-            .subscribe(
-              (response) => {
-                if (response.json().status == "error") {
-                  this.registredMessage = response.json().message;
-                  // swal.showValidationMessage('Not Added, check: ' + this.registredMessage);
-                  swal
-                    .fire("Not Added", this.registredMessage, "error")
-                    .then((result) => {
-                      if (result.isConfirmed) {
-                      }
-                    });
-                } else {
-                  this.getListOfTransactions();
-                  return false;
-                }
-              },
-              (error) => {
-                if (error.status == 400) {
-                  swal
-                    .fire(
-                      "Not Added",
-                      "BAD REQUEST: WRONG TYPE OF INPUT",
-                      "error"
-                    )
-                    .then((result) => {
-                      if (result.isConfirmed) {
-                      }
-                    });
-                }
-              }
-            );
-        },
-      })
-      .then((result) => {
-        if (result.isConfirmed) {
-          swal.fire({
-            icon: "success",
-            html: $("#input-trnum").val() + " is SUCCESSFULLY CHANGED!",
-            customClass: {
-              confirmButton: "btn btn-success",
-            },
-            buttonsStyling: false,
-          });
-        }
-      });
-  }
-
-  editExpense(idd, customerid, card, cash, usd, cons, comment) {
-    swal
-      .fire({
-        title: "Qaytarilgan Xarajat qo'shish!",
-        html:
-          '<div class="form-group">' +
-          '<div class="form-group" style="display: block ruby;"><label for="input-card">Mijoz:</label><input id="input-customerid" type="text" class="form-control m-2" placeholder="ID si" /> </div>' +
-          '<div class="form-group" style="display: block ruby;"><label for="input-card">Plastik:</label><input id="input-card" type="text" class="form-control m-2" placeholder="PLASTIK" /> </div>' +
-          '<div class="form-group" style="display: block ruby;"><label for="input-card">Naqd:</label><input  id="input-cash" type="text" class="form-control m-2" placeholder="NAQD" /> </div> ' +
-          '<div class="form-group" style="display: block ruby;"><label for="input-card">USD $:</label>  <input  id="input-usd" type="text" class="form-control m-2" placeholder="DOLLORDA" /> </div>' +
-          '<div class="form-group" style="display: block ruby;"><label for="input-card">Partiya:</label>  <input  id="input-cons" type="text" class="form-control m-2" placeholder="PARTIYA" /> </div>' +
-          '<div class="form-group" style="display: block ruby;"><label for="input-card">Izoh:</label> <input  id="input-comment" type="text" class="form-control m-2" placeholder="Izoh" /> </div> ' +
-          "</div>",
-        showCancelButton: true,
-        confirmButtonText: "Qo'shish",
-        cancelButtonText: "No",
-        customClass: {
-          confirmButton: "btn btn-success",
-          cancelButton: "btn btn-danger",
-        },
-        buttonsStyling: false,
-        didOpen: () => {
-          $("#input-customerid").val(customerid);
-          $("#input-usd").val(usd);
-          $("#input-cash").val(cash);
-          $("#input-card").val(card);
-          $("#input-cons").val(cons);
-          $("#input-comment").val(comment);
-
-          // var options = [];
-          // for (var i = 0; i < GlobalVars.orderTypes.length; i++) {
-          //     options.push('<option value="',
-          //     GlobalVars.orderTypes[i].id, '">',
-          //     GlobalVars.orderTypes[i].descriptionEn, '</option>');
-          // }
-          // $("#types").html(options.join(''));
-
-          // $('#types').val(orderType);
-        },
-        preConfirm: (result) => {
-          let userid = $("#input-customerid").val();
-          let usd2 = $("#input-usd").val();
-          let cash2 = $("#input-cash").val();
-          let card2 = $("#input-card").val();
-          let comment = $("#input-comment").val();
-          let consignment = $("#input-cons").val();
-
-          this.http
-            .post(
-              GlobalVars.baseUrl +
-                "/expenses/edit?&id=" +
-                idd +
-                "&customerID=" +
-                userid +
-                "&plastic=" +
-                card2 +
-                "&cash=" +
-                cash2 +
-                "&usd=" +
-                usd2 +
-                "&consignment=" +
-                consignment +
-                "&comment=" +
-                comment,
-              "",
-              this.options
-            )
-            .subscribe(
-              (response) => {
-                if (response.json().status == "error") {
-                  this.registredMessage = response.json().message;
-                  // swal.showValidationMessage('Not Added, check: ' + this.registredMessage);
-                  swal
-                    .fire("Not Added", this.registredMessage, "error")
-                    .then((result) => {
-                      if (result.isConfirmed) {
-                      }
-                    });
-                } else {
-                  this.getListOfTransactions();
-                  return false;
-                }
-              },
-              (error) => {
-                if (error.status == 400) {
-                  swal
-                    .fire(
-                      "Not Added",
-                      "BAD REQUEST: WRONG TYPE OF INPUT",
-                      "error"
-                    )
-                    .then((result) => {
-                      if (result.isConfirmed) {
-                      }
-                    });
-                }
-              }
-            );
-        },
-      })
-      .then((result) => {
-        if (result.isConfirmed) {
-          swal.fire({
-            icon: "success",
-            html: $("#input-trnum").val() + " is SUCCESSFULLY CHANGED!",
-            customClass: {
-              confirmButton: "btn btn-success",
-            },
-            buttonsStyling: false,
-          });
-        }
-      });
-  }
-
-  //DELETE READY
-  deletetExpense(rowid) {
-    swal
-      .fire({
-        title: "Bu Xarajat nomer: " + rowid + "ni o'chirishni hohlaysizmi?",
-        showCancelButton: true,
-        confirmButtonText: `Ha, shunday`,
-        denyButtonText: `Yo'q`,
-      })
-      .then((result) => {
-        /* Read more about isConfirmed, isDenied below */
-        if (result.isConfirmed) {
-          this.http
-            .post(
-              GlobalVars.baseUrl + "/expenses/delete?id=" + rowid,
-              "",
-              this.options
-            )
-            .subscribe(
-              (response) => {
-                if (response.json().status == "ok") {
-                  swal.fire("O'chirildi", "", "success");
-                  this.getListOfTransactions();
-                } else {
-                  swal
-                    .fire("Error happaned!", response.json().message, "error")
-                    .then((result) => {});
-                }
-              },
-              (error) => {
-                if (error.status == 403) {
-                  this.authService.logout();
-                }
-              }
-            );
-        } else if (result.isDenied) {
-          swal.fire("O'zgarmadi", "", "info");
-        }
-      });
-  }
-
-  ngAfterViewInit() {
-    return this.getListOfTransactions();
   }
 }
