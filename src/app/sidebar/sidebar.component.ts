@@ -393,6 +393,36 @@ export const managerROUTES: RouteInfo[] = [
     type: "link",
     icontype: "credit_card",
   },
+  {
+    path: "/oa/expenses",
+    title: "Xarajatlar (OA)",
+    type: "link",
+    icontype: "receipt_long",
+  },
+  {
+    path: "/oa/other-incomes",
+    title: "Boshqa Daromadlar",
+    type: "link",
+    icontype: "attach_money",
+  },
+  {
+    path: "/oa/owner-draws",
+    title: "Owner Draws",
+    type: "link",
+    icontype: "account_circle",
+  },
+  {
+    path: "/oa/internal-transfers",
+    title: "Ichki Transferlar",
+    type: "link",
+    icontype: "swap_horiz",
+  },
+  {
+    path: "/oa/settings",
+    title: "Sozlamalar",
+    type: "link",
+    icontype: "settings",
+  },
 ];
 
 export const uzbStaffROUTES: RouteInfo[] = [
@@ -419,6 +449,135 @@ export const uzbStaffROUTES: RouteInfo[] = [
     title: "Reyslar ro'yhati",
     type: "link",
     icontype: "flight_takeoff",
+  },
+];
+
+export const auditorROUTES: RouteInfo[] = [
+  {
+    path: "/dashboard",
+    title: "Dashboard",
+    type: "link",
+    icontype: "dashboard",
+  },
+  {
+    path: "/audit/pending-payments",
+    title: "Kutilayotgan",
+    type: "link",
+    icontype: "hourglass_empty",
+  },
+  {
+    path: "/audit/approved-payments",
+    title: "Tasdiqlangan",
+    type: "link",
+    icontype: "check_circle",
+  },
+  {
+    path: "/audit/suspicious-payments",
+    title: "Shubhali",
+    type: "link",
+    icontype: "report_problem",
+  },
+  {
+    path: "/audit/rejected-payments",
+    title: "Rad Etilgan",
+    type: "link",
+    icontype: "cancel",
+  },
+];
+
+export const accountantROUTES: RouteInfo[] = [
+  {
+    path: "/dashboard",
+    title: "Dashboard",
+    type: "link",
+    icontype: "dashboard",
+  },
+  {
+    path: "/oa/expenses",
+    title: "Xarajatlar",
+    type: "link",
+    icontype: "receipt_long",
+  },
+  {
+    path: "/oa/other-incomes",
+    title: "Boshqa Daromadlar",
+    type: "link",
+    icontype: "attach_money",
+  },
+  {
+    path: "/oa/internal-transfers",
+    title: "Ichki Transferlar",
+    type: "link",
+    icontype: "swap_horiz",
+  },
+  {
+    path: "/oa/top-debtors",
+    title: "Eng Ko'p Qarzdorlar",
+    type: "link",
+    icontype: "people",
+  },
+];
+
+export const ownerROUTES: RouteInfo[] = [
+  {
+    path: "/oa/dashboard",
+    title: "Dashboard",
+    type: "link",
+    icontype: "dashboard",
+  },
+  {
+    path: "/oa/cash-accounts",
+    title: "Hisoblar",
+    type: "link",
+    icontype: "account_balance",
+  },
+  {
+    path: "/oa/expenses",
+    title: "Xarajatlar",
+    type: "link",
+    icontype: "receipt_long",
+  },
+  {
+    path: "/oa/other-incomes",
+    title: "Boshqa Daromadlar",
+    type: "link",
+    icontype: "attach_money",
+  },
+  {
+    path: "/oa/owner-draws",
+    title: "Owner Draws",
+    type: "link",
+    icontype: "account_circle",
+  },
+  {
+    path: "/oa/internal-transfers",
+    title: "Ichki Transferlar",
+    type: "link",
+    icontype: "swap_horiz",
+  },
+  {
+    path: "/oa/weekly-collections",
+    title: "Haftalik Yig'imlar",
+    type: "link",
+    icontype: "bar_chart",
+  },
+  {
+    path: "/oa/top-debtors",
+    title: "Eng Ko'p Qarzdorlar",
+    type: "link",
+    icontype: "people",
+  },
+  {
+    path: "/oa/consignment-summary",
+    title: "Partiya Xulosasi",
+    type: "link",
+    icontype: "flight_takeoff",
+  },
+  {
+    path: "/oa/settings",
+    title: "Sozlamalar",
+    type: "link",
+    icontype: "settings",
   },
 ];
 
@@ -454,6 +613,12 @@ export class SidebarComponent implements OnInit {
       this.menuItems = uzbStaffROUTES.filter((menuItem) => menuItem);
     } else if (this.userRole == "YUKCHI") {
       this.menuItems = EmployeeROUTE.filter((menuItem) => menuItem);
+    } else if (this.userRole == "AUDITOR") {
+      this.menuItems = auditorROUTES.filter((menuItem) => menuItem);
+    } else if (this.userRole == "OWNER") {
+      this.menuItems = ownerROUTES.filter((menuItem) => menuItem);
+    } else if (this.userRole == "ACCOUNTANT") {
+      this.menuItems = accountantROUTES.filter((menuItem) => menuItem);
     } else {
       this.menuItems = ROUTES.filter((menuItem) => menuItem);
     }

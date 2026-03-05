@@ -1,0 +1,2 @@
+.filters-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 15px; }
+.filters-row .form-control { max-width: 180px; }

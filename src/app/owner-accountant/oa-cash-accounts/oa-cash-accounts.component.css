@@ -1,0 +1,52 @@
+.page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
+.page-header h3 { display: flex; align-items: center; gap: 8px; margin: 0; font-weight: 600; color: #333; }
+.header-actions { display: flex; gap: 8px; align-items: center; }
+.summary-row { margin-bottom: 10px; }
+.summary-card { display: flex; align-items: center; gap: 16px; padding: 18px 20px; border-radius: 12px; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-bottom: 15px; border-left: 4px solid transparent; }
+.summary-uzs { border-left-color: #4caf50; }
+.summary-usd { border-left-color: #2196f3; }
+.summary-total { border-left-color: #9c27b0; }
+.summary-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.summary-uzs .summary-icon { background: linear-gradient(135deg, #e8f5e9, #c8e6c9); color: #2e7d32; }
+.summary-usd .summary-icon { background: linear-gradient(135deg, #e3f2fd, #bbdefb); color: #1565c0; }
+.summary-total .summary-icon { background: linear-gradient(135deg, #f3e5f5, #e1bee7); color: #7b1fa2; }
+.summary-icon i { font-size: 24px; }
+.summary-info { display: flex; flex-direction: column; }
+.summary-label { font-size: 12px; color: #888; font-weight: 500; text-transform: uppercase; }
+.summary-value { font-size: 20px; font-weight: 700; color: #333; }
+.summary-count { font-size: 11px; color: #aaa; margin-top: 2px; }
+.account-card { background: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-bottom: 20px; border: 1px solid #f0f0f0; transition: transform 0.2s, box-shadow 0.2s; }
+.account-card:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(0,0,0,0.1); }
+.account-card.inactive { opacity: 0.55; border: 1px dashed #ccc; }
+.account-card-header { display: flex; align-items: flex-start; gap: 12px; padding: 16px 16px 12px; }
+.account-type-icon { width: 42px; height: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.account-type-icon i { font-size: 22px; color: #fff; }
+.type-cash { background: linear-gradient(135deg, #66bb6a, #43a047); }
+.type-card { background: linear-gradient(135deg, #42a5f5, #1e88e5); }
+.type-bank { background: linear-gradient(135deg, #ab47bc, #8e24aa); }
+.account-meta { flex: 1; min-width: 0; }
+.account-name { font-size: 15px; font-weight: 600; color: #333; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.account-tags { display: flex; gap: 5px; margin-top: 6px; flex-wrap: wrap; }
+.tag { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: 600; text-transform: uppercase; }
+.tag-cash { background: #e8f5e9; color: #2e7d32; }
+.tag-card { background: #e3f2fd; color: #1565c0; }
+.tag-bank { background: #f3e5f5; color: #7b1fa2; }
+.tag-company { background: #fff3e0; color: #e65100; }
+.tag-employee { background: #e0f2f1; color: #00695c; }
+.tag-inactive { background: #ffebee; color: #c62828; }
+.account-currency-badge { padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: 700; flex-shrink: 0; }
+.currency-uzs { background: #e8f5e9; color: #2e7d32; }
+.currency-usd { background: #e3f2fd; color: #1565c0; }
+.account-balance-section { padding: 14px 16px; background: #fafbfc; border-top: 1px solid #f0f0f0; border-bottom: 1px solid #f0f0f0; text-align: center; }
+.balance-label { display: block; font-size: 11px; color: #999; text-transform: uppercase; margin-bottom: 4px; }
+.balance-value { display: block; font-size: 22px; font-weight: 700; color: #333; }
+.balance-value.positive { color: #2e7d32; }
+.balance-value.negative { color: #c62828; }
+.balance-value.zero { color: #999; }
+.account-actions { display: flex; justify-content: center; gap: 4px; padding: 10px 16px; background: #fafbfc; }
+.account-actions button { font-size: 12px; padding: 4px 12px; border-radius: 6px; border: none; background: transparent; cursor: pointer; display: flex; align-items: center; gap: 4px; }
+.account-actions button i { font-size: 16px; }
+.action-edit { color: #1976d2; }
+.action-edit:hover { background: #e3f2fd; }
+.action-delete { color: #f44336; }
+.action-delete:hover { background: #ffebee; }

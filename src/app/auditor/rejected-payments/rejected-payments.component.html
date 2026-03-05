@@ -1,0 +1,74 @@
+<div class="main-content">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-header card-header-danger card-header-icon">
+            <div class="card-icon"><i class="material-icons">cancel</i></div>
+            <h4 class="card-title">Rad Etilgan To'lovlar <small class="text-muted">({{ totalItems }} ta)</small></h4>
+          </div>
+          <div class="card-body">
+            <div class="filters-row">
+              <input type="text" class="form-control form-control-sm" [(ngModel)]="filterCustomerId" placeholder="Mijoz ID" (keyup.enter)="applyFilters()">
+              <select class="form-control form-control-sm" [(ngModel)]="filterCashAccountId" (change)="applyFilters()">
+                <option value="">Barcha hisoblar</option>
+                <option *ngFor="let a of cashAccounts" [value]="a.id">{{ a.name }} ({{ a.currency }})</option>
+              </select>
+              <input type="date" class="form-control form-control-sm" [(ngModel)]="filterStartDate" (change)="applyFilters()">
+              <input type="date" class="form-control form-control-sm" [(ngModel)]="filterEndDate" (change)="applyFilters()">
+              <button class="btn btn-sm btn-warning" (click)="clearFilters()"><i class="material-icons" style="font-size: 16px;">clear</i></button>
+              <button class="btn btn-sm btn-info" (click)="loadPayments()" [disabled]="loading"><i class="material-icons" style="font-size: 16px;">refresh</i></button>
+            </div>
+
+            <div *ngIf="loading" class="text-center" style="padding: 40px;"><div class="spinner-border text-primary" role="status"></div></div>
+
+            <div *ngIf="!loading && payments.length > 0" class="table-responsive">
+              <table class="table table-hover table-striped table-sm">
+                <thead>
+                  <tr>
+                    <th class="text-center" style="width: 40px;">#</th>
+                    <th>Mijoz</th>
+                    <th>Partiya</th>
+                    <th>Hisob</th>
+                    <th>Usul</th>
+                    <th class="text-right">Summa</th>
+                    <th class="text-right">USD</th>
+                    <th>Izoh</th>
+                    <th class="text-center">Sana</th>
+                    <th class="text-center">Amallar</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let p of payments; let i = index">
+                    <td class="text-center"><small>{{ currentPage * pageSize + i + 1 }}</small></td>
+                    <td><small><strong>{{ p.customer?.username }}</strong> — {{ p.customer?.first_name || '-' }}</small></td>
+                    <td><small>{{ p.finance?.consignment || '-' }}</small></td>
+                    <td><small>{{ p.cashAccount?.name || '-' }}</small></td>
+                    <td><small>{{ getMethodLabel(p.method) }}</small></td>
+                    <td class="text-right"><strong>{{ formatAmount(p.amount_original) }} {{ p.currency }}</strong></td>
+                    <td class="text-right"><small>{{ formatAmount(p.amount_usd) }} $</small></td>
+                    <td><small>{{ p.comment || '-' }}</small></td>
+                    <td class="text-center"><small>{{ p.paid_at | date:'dd/MM/yyyy' }}</small></td>
+                    <td class="text-center" style="white-space: nowrap;">
+                      <button class="btn btn-sm btn-success status-btn" title="Tasdiqlash" (click)="changeStatus(p.id, 'APPROVED')"><i class="material-icons" style="font-size: 16px;">check</i></button>
+                      <button class="btn btn-sm btn-secondary status-btn" title="Kutishga" (click)="changeStatus(p.id, 'PENDING')"><i class="material-icons" style="font-size: 16px;">undo</i></button>
+                      <button class="btn btn-sm btn-warning status-btn" title="Shubhali" (click)="changeStatus(p.id, 'SUSPICIOUS')"><i class="material-icons" style="font-size: 16px;">warning</i></button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <app-pagination *ngIf="totalPages > 1" [currentPage]="currentPage" [totalPages]="totalPages"
+              (pageChanged)="onPageChanged($event)"></app-pagination>
+
+            <div *ngIf="!loading && payments.length === 0" class="text-center" style="padding: 50px;">
+              <i class="material-icons" style="font-size: 60px; color: #ccc;">cancel</i>
+              <p class="text-muted mt-2">Rad etilgan to'lovlar topilmadi</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

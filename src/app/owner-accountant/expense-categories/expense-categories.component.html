@@ -1,0 +1,68 @@
+<div class="main-content">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-8">
+        <div class="card">
+          <div class="card-header card-header-warning card-header-icon">
+            <div class="card-icon"><i class="material-icons">category</i></div>
+            <h4 class="card-title">Xarajat Kategoriyalari</h4>
+          </div>
+          <div class="card-body">
+            <div style="margin-bottom: 15px;">
+              <button class="btn btn-success btn-sm" (click)="addCategory()">
+                <i class="material-icons" style="font-size: 16px; vertical-align: middle;">add</i> Yangi Kategoriya
+              </button>
+              <button class="btn btn-info btn-sm" (click)="loadCategories()" [disabled]="loading">
+                <i class="material-icons" style="font-size: 16px; vertical-align: middle;">refresh</i>
+              </button>
+            </div>
+
+            <div *ngIf="loading" class="text-center" style="padding: 30px;">
+              <div class="spinner-border text-primary" role="status"></div>
+            </div>
+
+            <div *ngIf="!loading && categories.length > 0" class="table-responsive">
+              <table class="table table-hover table-striped">
+                <thead>
+                  <tr>
+                    <th style="width: 50px;">#</th>
+                    <th>Nomi</th>
+                    <th class="text-center">Holati</th>
+                    <th class="text-center" style="width: 120px;">Amallar</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let cat of categories; let i = index"
+                    [style.opacity]="cat.is_active ? 1 : 0.5">
+                    <td>{{ i + 1 }}</td>
+                    <td><strong>{{ cat.name }}</strong></td>
+                    <td class="text-center">
+                      <span class="badge" [ngClass]="cat.is_active ? 'badge-success' : 'badge-secondary'">
+                        {{ cat.is_active ? 'Faol' : 'Nofaol' }}
+                      </span>
+                    </td>
+                    <td class="text-center">
+                      <button class="btn btn-link btn-sm btn-warning" (click)="editCategory(cat)"
+                        *ngIf="cat.is_active" title="Tahrirlash">
+                        <i class="material-icons">edit</i>
+                      </button>
+                      <button class="btn btn-link btn-sm btn-danger" (click)="deactivateCategory(cat)"
+                        *ngIf="cat.is_active" title="O'chirish">
+                        <i class="material-icons">delete</i>
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div *ngIf="!loading && categories.length === 0" class="text-center" style="padding: 40px;">
+              <i class="material-icons" style="font-size: 60px; color: #ccc;">category</i>
+              <p class="text-muted mt-2">Kategoriyalar topilmadi</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

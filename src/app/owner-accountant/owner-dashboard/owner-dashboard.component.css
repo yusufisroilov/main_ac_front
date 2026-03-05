@@ -1,0 +1,269 @@
+/* ── Summary Cards ── */
+.summary-row {
+  margin-bottom: 8px;
+}
+
+.summary-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px 22px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  border-left: 4px solid transparent;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.summary-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+}
+
+.summary-card.pending {
+  border-left-color: #ff9800;
+}
+
+.summary-card.debt {
+  border-left-color: #e53935;
+}
+
+.summary-card.debt-uzs {
+  border-left-color: #c62828;
+}
+
+.summary-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.summary-card.pending .summary-icon {
+  background: #fff3e0;
+  color: #ff9800;
+}
+
+.summary-card.debt .summary-icon,
+.summary-card.debt-uzs .summary-icon {
+  background: #ffebee;
+  color: #e53935;
+}
+
+.summary-icon i {
+  font-size: 24px;
+}
+
+.summary-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.summary-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: #9e9e9e;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.summary-value {
+  font-size: 24px;
+  font-weight: 700;
+  color: #212121;
+  line-height: 1.2;
+  margin-top: 2px;
+}
+
+.summary-value small {
+  font-size: 14px;
+  font-weight: 500;
+  color: #757575;
+}
+
+.summary-hint {
+  font-size: 11px;
+  color: #bdbdbd;
+  margin-top: 2px;
+}
+
+/* ── Period Toggle ── */
+.period-toggle {
+  display: flex;
+  gap: 0;
+  margin-bottom: 20px;
+  background: #f5f5f5;
+  border-radius: 10px;
+  padding: 4px;
+  width: fit-content;
+}
+
+.period-toggle button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 24px;
+  border: none;
+  background: transparent;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #757575;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.period-toggle button i {
+  font-size: 18px;
+}
+
+.period-toggle button.active {
+  background: #fff;
+  color: #1a73e8;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.period-toggle button:hover:not(.active) {
+  color: #424242;
+}
+
+/* ── Activity Grid ── */
+.activity-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.activity-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.activity-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+}
+
+.activity-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.activity-header i {
+  font-size: 22px;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.activity-card.income .activity-header i {
+  background: #e8f5e9;
+  color: #43a047;
+}
+
+.activity-card.expense .activity-header i {
+  background: #ffebee;
+  color: #e53935;
+}
+
+.activity-card.other-income .activity-header i {
+  background: #fff3e0;
+  color: #ef6c00;
+}
+
+.activity-card.owner-draw .activity-header i {
+  background: #f3e5f5;
+  color: #8e24aa;
+}
+
+.activity-card.transfer .activity-header i {
+  background: #e3f2fd;
+  color: #1e88e5;
+}
+
+.activity-header span {
+  font-size: 15px;
+  font-weight: 600;
+  color: #424242;
+}
+
+.activity-amounts {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.amount-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.currency-badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 20px;
+  letter-spacing: 0.5px;
+}
+
+.currency-badge.usd {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.currency-badge.uzs {
+  background: #e3f2fd;
+  color: #1565c0;
+}
+
+.amount-value {
+  font-size: 16px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.amount-value.green { color: #43a047; }
+.amount-value.red { color: #e53935; }
+.amount-value.orange { color: #ef6c00; }
+.amount-value.purple { color: #8e24aa; }
+.amount-value.blue { color: #1e88e5; }
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .activity-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .summary-card {
+    padding: 16px;
+  }
+
+  .summary-value {
+    font-size: 20px;
+  }
+
+  .period-toggle {
+    width: 100%;
+  }
+
+  .period-toggle button {
+    flex: 1;
+    justify-content: center;
+  }
+}

@@ -1,0 +1,60 @@
+<div class="main-content">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-header card-header-success card-header-icon">
+            <div class="card-icon"><i class="material-icons">bar_chart</i></div>
+            <h4 class="card-title">Haftalik Yig'imlar (Hisob bo'yicha)</h4>
+          </div>
+          <div class="card-body">
+            <div class="filters-row">
+              <select class="form-control form-control-sm" [(ngModel)]="weeks" (change)="loadData()">
+                <option [ngValue]="2">2 hafta</option>
+                <option [ngValue]="4">4 hafta</option>
+                <option [ngValue]="8">8 hafta</option>
+                <option [ngValue]="12">12 hafta</option>
+              </select>
+              <label class="ml-2" style="font-size: 13px; cursor: pointer;">
+                <input type="checkbox" [(ngModel)]="includePending" (change)="loadData()"> Kutilayotganlarni qo'shish
+              </label>
+              <button class="btn btn-sm btn-info" (click)="loadData()" [disabled]="loading"><i class="material-icons" style="font-size: 16px;">refresh</i></button>
+            </div>
+
+            <div *ngIf="loading" class="text-center" style="padding: 40px;"><div class="spinner-border text-primary" role="status"></div></div>
+
+            <div *ngIf="!loading && collections.length > 0" class="table-responsive">
+              <table class="table table-hover table-striped table-sm">
+                <thead>
+                  <tr>
+                    <th>Hisob</th>
+                    <th>Valyuta</th>
+                    <th class="text-center">Hafta</th>
+                    <th class="text-right">Jami (Asl)</th>
+                    <th class="text-right">Jami (USD)</th>
+                    <th class="text-center">Soni</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let c of collections">
+                    <td><strong>{{ c.account_name }}</strong></td>
+                    <td>{{ c.currency }}</td>
+                    <td class="text-center"><small>{{ c.week_start | date:'dd/MM' }} (H{{ c.wk }})</small></td>
+                    <td class="text-right"><strong>{{ fmt(c.total_original) }} {{ c.currency }}</strong></td>
+                    <td class="text-right"><small>{{ fmt(c.total_usd) }} $</small></td>
+                    <td class="text-center"><small>{{ c.payment_count }}</small></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div *ngIf="!loading && collections.length === 0" class="text-center" style="padding: 50px;">
+              <i class="material-icons" style="font-size: 60px; color: #ccc;">bar_chart</i>
+              <p class="text-muted mt-2">Ma'lumot topilmadi</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

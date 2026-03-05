@@ -1,0 +1,54 @@
+<div class="main-content">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-header card-header-danger card-header-icon">
+            <div class="card-icon"><i class="material-icons">people</i></div>
+            <h4 class="card-title">Eng Ko'p Qarzdorlar</h4>
+          </div>
+          <div class="card-body">
+            <div class="filters-row">
+              <select class="form-control form-control-sm" [(ngModel)]="limit" (change)="loadData()">
+                <option [ngValue]="20">Top 20</option>
+                <option [ngValue]="50">Top 50</option>
+                <option [ngValue]="100">Top 100</option>
+              </select>
+              <button class="btn btn-sm btn-info" (click)="loadData()" [disabled]="loading"><i class="material-icons" style="font-size: 16px;">refresh</i></button>
+            </div>
+
+            <div *ngIf="loading" class="text-center" style="padding: 40px;"><div class="spinner-border text-primary" role="status"></div></div>
+
+            <div *ngIf="!loading && debtors.length > 0" class="table-responsive">
+              <table class="table table-hover table-striped table-sm">
+                <thead>
+                  <tr>
+                    <th class="text-center" style="width: 40px;">#</th>
+                    <th>ID</th>
+                    <th>Mijoz</th>
+                    <th class="text-right">Qarz (USD)</th>
+                    <th class="text-right">Qarz (UZS)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let d of debtors; let i = index">
+                    <td class="text-center"><small>{{ i + 1 }}</small></td>
+                    <td><strong>{{ d.username }}</strong></td>
+                    <td>{{ d.first_name }} {{ d.last_name }}</td>
+                    <td class="text-right"><strong style="color: #f44336;">{{ fmt(d.balance_usd) }} $</strong></td>
+                    <td class="text-right"><strong style="color: #e91e63;">{{ fmt(d.balance_uzs) }} so'm</strong></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div *ngIf="!loading && debtors.length === 0" class="text-center" style="padding: 50px;">
+              <i class="material-icons" style="font-size: 60px; color: #ccc;">sentiment_very_satisfied</i>
+              <p class="text-muted mt-2">Qarzdorlar topilmadi</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

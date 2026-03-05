@@ -151,6 +151,20 @@ export const AppRoutes: Routes = [
           ),
       },
       {
+        path: "oa",
+        loadChildren: () =>
+          import("./owner-accountant/owner-accountant.module").then(
+            (m) => m.OwnerAccountantModule
+          ),
+      },
+      {
+        path: "audit",
+        loadChildren: () =>
+          import("./auditor/auditor.module").then(
+            (m) => m.AuditorModule
+          ),
+      },
+      {
         path: "admin",
         loadChildren: () =>
           import("./uzb_staff/uzb-staff.module").then((m) => m.UzbStaffModule),

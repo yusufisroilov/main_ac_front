@@ -1,0 +1,119 @@
+<div class="main-content">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-10 col-lg-8">
+        <div class="card">
+          <div class="card-header card-header-primary card-header-icon">
+            <div class="card-icon"><i class="material-icons">settings</i></div>
+            <h4 class="card-title">Sozlamalar</h4>
+          </div>
+          <div class="card-body">
+
+            <!-- Tabs -->
+            <div class="settings-tabs">
+              <button class="tab-btn" [class.active]="activeTab === 'expense'" (click)="switchTab('expense')">
+                <i class="material-icons">trending_down</i>
+                <span>Xarajat Kategoriyalari</span>
+                <span class="tab-count">{{ activeExpenseCount }}</span>
+              </button>
+              <button class="tab-btn" [class.active]="activeTab === 'income'" (click)="switchTab('income')">
+                <i class="material-icons">trending_up</i>
+                <span>Daromad Kategoriyalari</span>
+                <span class="tab-count">{{ activeIncomeCount }}</span>
+              </button>
+            </div>
+
+            <!-- Expense Categories Tab -->
+            <div class="tab-content" *ngIf="activeTab === 'expense'">
+              <div class="tab-toolbar">
+                <h5 class="tab-title">Xarajat Kategoriyalari</h5>
+                <div class="tab-actions">
+                  <button class="btn btn-sm btn-success" (click)="addExpenseCategory()">
+                    <i class="material-icons">add</i> Yangi
+                  </button>
+                  <button class="btn btn-sm btn-outline-secondary" (click)="loadExpenseCategories()" [disabled]="loadingExpense">
+                    <i class="material-icons">refresh</i>
+                  </button>
+                </div>
+              </div>
+
+              <div *ngIf="loadingExpense" class="loading-state">
+                <div class="spinner-border text-primary" role="status"></div>
+              </div>
+
+              <div *ngIf="!loadingExpense && expenseCategories.length > 0" class="category-list">
+                <div *ngFor="let cat of expenseCategories; let i = index"
+                     class="category-item" [class.inactive]="!cat.is_active">
+                  <div class="category-info">
+                    <span class="category-index">{{ i + 1 }}</span>
+                    <span class="category-name">{{ cat.name }}</span>
+                    <span class="status-dot" [class.active]="cat.is_active" [class.inactive-dot]="!cat.is_active"></span>
+                    <span class="status-label" *ngIf="!cat.is_active">Nofaol</span>
+                  </div>
+                  <div class="category-actions" *ngIf="cat.is_active">
+                    <button class="action-btn edit" (click)="editExpenseCategory(cat)" title="Tahrirlash">
+                      <i class="material-icons">edit</i>
+                    </button>
+                    <button class="action-btn delete" (click)="deactivateExpenseCategory(cat)" title="O'chirish">
+                      <i class="material-icons">delete_outline</i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div *ngIf="!loadingExpense && expenseCategories.length === 0" class="empty-state">
+                <i class="material-icons">category</i>
+                <p>Xarajat kategoriyalari topilmadi</p>
+              </div>
+            </div>
+
+            <!-- Income Categories Tab -->
+            <div class="tab-content" *ngIf="activeTab === 'income'">
+              <div class="tab-toolbar">
+                <h5 class="tab-title">Daromad Kategoriyalari</h5>
+                <div class="tab-actions">
+                  <button class="btn btn-sm btn-success" (click)="addIncomeCategory()">
+                    <i class="material-icons">add</i> Yangi
+                  </button>
+                  <button class="btn btn-sm btn-outline-secondary" (click)="loadIncomeCategories()" [disabled]="loadingIncome">
+                    <i class="material-icons">refresh</i>
+                  </button>
+                </div>
+              </div>
+
+              <div *ngIf="loadingIncome" class="loading-state">
+                <div class="spinner-border text-primary" role="status"></div>
+              </div>
+
+              <div *ngIf="!loadingIncome && incomeCategories.length > 0" class="category-list">
+                <div *ngFor="let cat of incomeCategories; let i = index"
+                     class="category-item" [class.inactive]="!cat.is_active">
+                  <div class="category-info">
+                    <span class="category-index">{{ i + 1 }}</span>
+                    <span class="category-name">{{ cat.name }}</span>
+                    <span class="status-dot" [class.active]="cat.is_active" [class.inactive-dot]="!cat.is_active"></span>
+                    <span class="status-label" *ngIf="!cat.is_active">Nofaol</span>
+                  </div>
+                  <div class="category-actions" *ngIf="cat.is_active">
+                    <button class="action-btn edit" (click)="editIncomeCategory(cat)" title="Tahrirlash">
+                      <i class="material-icons">edit</i>
+                    </button>
+                    <button class="action-btn delete" (click)="deactivateIncomeCategory(cat)" title="O'chirish">
+                      <i class="material-icons">delete_outline</i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div *ngIf="!loadingIncome && incomeCategories.length === 0" class="empty-state">
+                <i class="material-icons">category</i>
+                <p>Daromad kategoriyalari topilmadi</p>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
