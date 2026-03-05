@@ -317,12 +317,30 @@ export const managerROUTES: RouteInfo[] = [
     type: "link",
     icontype: "account_balance_wallet",
   },
+  {
+    path: "/uzm/financev2",
+    title: "Xisob Kitob2",
+    type: "link",
+    icontype: "account_balance",
+  },
 
   {
     path: "/uzm/infoeachclient",
     title: "Har bir mijoz",
     type: "link",
     icontype: "badge",
+  },
+  {
+    path: "/uzm/infoeachclientv2",
+    title: "Har Bir Mijoz2",
+    type: "link",
+    icontype: "person_search",
+  },
+  {
+    path: "/uzm/cash-accounts",
+    title: "Hisoblar",
+    type: "link",
+    icontype: "account_balance_wallet",
   },
   {
     path: "/uzm/warehouse-inventory",

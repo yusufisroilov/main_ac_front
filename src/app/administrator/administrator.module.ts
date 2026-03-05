@@ -32,6 +32,10 @@ import { MessageThreadComponent } from "./message-thread/message-thread.componen
 import { ReplyBoxComponent } from "./reply-box/reply-box.component";
 import { InternalNotesComponent } from "./internal-notes/internal-notes.component";
 import { ActivityLogComponent } from "./activity-log/activity-log.component";
+import { ReferralsBonusesComponent } from "./referrals-bonuses/referrals-bonuses.component";
+import { Financev2Component } from "./financev2/financev2.component";
+import { Infoeachclientv2Component } from "./infoeachclientv2/infoeachclientv2.component";
+import { CashAccountsComponent } from "./cash-accounts/cash-accounts.component";
 
 // import { FlexLayoutModule } from '@angular/flex-layout';
 
@@ -69,6 +73,10 @@ import { ActivityLogComponent } from "./activity-log/activity-log.component";
     InternalNotesComponent,
     ActivityLogComponent,
     ForDebtManagementComponent,
+    ReferralsBonusesComponent,
+    Financev2Component,
+    Infoeachclientv2Component,
+    CashAccountsComponent,
   ],
 })
 export class AdminstratorModule {}

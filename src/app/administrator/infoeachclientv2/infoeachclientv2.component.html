@@ -1,4 +1,4 @@
-<!-- Enhanced infoeachclient.component.html -->
+<!-- InfoEachClient V2 -->
 <div class="main-content">
   <div class="container-fluid">
     <div class="row" *ngIf="showTheList">
@@ -13,9 +13,6 @@
             </div>
           </div>
           <div class="card-body">
-            <div class="toolbar">
-              <!-- Here you can write extra buttons/actions for the toolbar              -->
-            </div>
             <div class="material-datatables">
               <div class="row">
                 <div class="col-auto">
@@ -23,7 +20,6 @@
                     Jadvalni yopish
                   </button>
                 </div>
-
                 <div class="col-sm-6 col-lg-3">
                   <mat-form-field class="example-full-width">
                     <input matInput type="text" style="font-size: large" placeholder="Trek nomer orqali izlash. . ."
@@ -54,7 +50,7 @@
                       <td>{{ orderStatusText[i] }}</td>
                       <td>
                         <button mat-raised-button class="btn btn-link btn-info btn-just-icon visibility"
-                          data-toggle="modal" data-target="#myModal">
+                          data-toggle="modal" data-target="#myModalV2">
                           <i class="material-icons" (click)="getInfoOfParcel(row.tracking_number)">visibility</i>
                         </button>
                       </td>
@@ -65,9 +61,7 @@
                 <ul class="pagination" *ngIf="needPagination">
                   <li class="page-item" [ngClass]="{ active: currentPage == i }"
                     *ngFor="let page of mypages; index as i">
-                    <a mat-button class="page-link" (click)="pagebyNum(i)">{{
-                      i + 1
-                      }}</a>
+                    <a mat-button class="page-link" (click)="pagebyNum(i)">{{ i + 1 }}</a>
                   </li>
                 </ul>
               </div>
@@ -83,8 +77,9 @@
       </div>
     </div>
 
-    <!-- Original Modal -->
-    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <!-- Order Detail Modal -->
+    <div class="modal fade" id="myModalV2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+      aria-hidden="true">
       <div class="modal-dialog">
         <div *ngFor="let row of allData; let i = index">
           <div class="modal-content" *ngIf="row.tracking_number == trackingNum2">
@@ -122,7 +117,7 @@
                 <p>{{ row.in_foreign_warehouse_date | date : "medium" }}</p>
               </div>
               <div *ngIf="row.on_way_to_airport_date" class="row">
-                <b>Xitoy Aeraportga jo'natilgan vaqt vaqt: &nbsp;</b>
+                <b>Xitoy Aeraportga jo'natilgan vaqt: &nbsp;</b>
                 <p>{{ row.on_way_to_airport_date | date : "medium" }}</p>
               </div>
               <div *ngIf="row.in_uzb_airport_date" class="row">
@@ -161,7 +156,7 @@
               <i class="material-icons">assignment</i>
             </div>
             <h4 class="card-title">
-              Har bir reysda mijozga kelayotgan yuklarni ko'rish. Bu jadval
+              Har bir reysda mijozga kelayotgan yuklarni ko'rish (V2). Bu jadval
               <b style="font-size: x-large"> ID: K{{ currentID }} </b>uchun.
             </h4>
           </div>
@@ -175,7 +170,7 @@
                   </mat-form-field>
                 </form>
               </div>
-              <div class="col-md-6">
+              <div class="col-md-5">
                 <h4>
                   Umumiy qarzdorlik:
                   <b>
@@ -184,6 +179,12 @@
                   <b>
                     {{ umQarzUSD | number:'1.2-2' }} $</b>
                 </h4>
+              </div>
+              <div class="col-md-4 text-right" *ngIf="currentID">
+                <button mat-raised-button class="btn btn-info btn-sm" (click)="goToLedger()">
+                  <i class="material-icons" style="vertical-align: middle;">receipt_long</i>
+                  Ledger ko'rish
+                </button>
               </div>
             </div>
 
@@ -255,7 +256,6 @@
                       <button mat-raised-button type="button" class="btn btn-info" (click)="getListOfParcels(row.name)">
                         Ro'yhat<i class="material-icons">preview</i>
                       </button>
-                      <!-- Enhanced Chek Button -->
                       <button mat-raised-button type="button" class="btn btn-success"
                         [disabled]="!row.quantity || row.quantity === 0"
                         (click)="openDeliveryCreationDirectly(row.id, row.name, row.weight, row.quantity)"
@@ -272,13 +272,10 @@
       </div>
     </div>
 
-
-    <!-- Delivery Creation Modal - UPDATED -->
+    <!-- Delivery Creation Modal -->
     <div class="modal fade" id="deliveryCreationModal" tabindex="-1" role="dialog">
       <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
-
-          <!-- Modal Header -->
           <div class="modal-header" style="padding: 10px 15px;">
             <p class="card-category mb-0" style="font-size: 14px;">
               Mijoz: <strong>K{{ currentID }}</strong> | Partiya: <strong>{{ selectedConsignmentName }}</strong>
@@ -288,16 +285,12 @@
             </button>
           </div>
 
-          <!-- Modal Body -->
           <div class="modal-body" style="padding: 15px;">
-
-            <!-- Loading State -->
             <div *ngIf="loadingCustomerPackages" class="text-center" style="padding: 20px 10px;">
               <div class="spinner-border text-primary spinner-border-sm" role="status"></div>
               <p class="mt-2 mb-0" style="font-size: 13px;">Qutillar yuklanmoqda...</p>
             </div>
 
-            <!-- NEW: Debt Warning Banner -->
             <div *ngIf="!loadingCustomerPackages && showDebtWarning" class="alert alert-warning" role="alert"
               style="padding: 8px 12px; margin-bottom: 10px;">
               <p class="mb-1" style="font-size: 13px;">
@@ -308,10 +301,7 @@
               </p>
             </div>
 
-            <!-- Main Content -->
             <div *ngIf="!loadingCustomerPackages && customerPackages.length > 0">
-
-              <!-- Package Selection Table -->
               <div class="row mb-2">
                 <div class="col-md-12">
                   <div class="table-responsive" style="max-height: 250px; overflow-y: auto;">
@@ -319,14 +309,11 @@
                       <thead>
                         <tr>
                           <th width="40" class="text-center" style="padding: 6px 8px;">
-                            <!-- UPDATED: Added Select All checkbox -->
                             <div class="form-check">
                               <label class="form-check-label">
                                 <input class="form-check-input" type="checkbox" [checked]="areAllPackagesSelected()"
                                   (change)="toggleAllPackages($event.target.checked)">
-                                <span class="form-check-sign">
-                                  <span class="check"></span>
-                                </span>
+                                <span class="form-check-sign"><span class="check"></span></span>
                               </label>
                             </div>
                           </th>
@@ -344,25 +331,18 @@
                             <td class="text-center" style="padding: 6px 8px;">
                               <div class="form-check">
                                 <label class="form-check-label">
-                                  <!-- UPDATED: Added onPackageSelectionChange handler -->
                                   <input class="form-check-input" type="checkbox" [(ngModel)]="group.selected"
                                     (change)="onPackageSelectionChange(group)"
                                     [disabled]="group.selectionType === 'partial'">
-                                  <span class="form-check-sign">
-                                    <span class="check"></span>
-                                  </span>
+                                  <span class="form-check-sign"><span class="check"></span></span>
                                 </label>
                               </div>
                             </td>
                             <td style="padding: 6px 8px;">
                               <span *ngIf="group.type === 'tied'" class="badge badge-info"
-                                style="font-size: 11px; padding: 3px 6px;">
-                                Bog'langan
-                              </span>
+                                style="font-size: 11px; padding: 3px 6px;">Bog'langan</span>
                               <span *ngIf="group.type === 'single'" class="badge badge-secondary"
-                                style="font-size: 11px; padding: 3px 6px;">
-                                Alohida
-                              </span>
+                                style="font-size: 11px; padding: 3px 6px;">Alohida</span>
                             </td>
                             <td class="text-center" style="padding: 6px 8px;">
                               <strong>{{ group.total_packages }}</strong> ta
@@ -381,21 +361,13 @@
                             </td>
                             <td style="padding: 6px 8px;">
                               <span *ngIf="group.consignments.includes(selectedConsignmentName)"
-                                class="badge badge-primary" style="font-size: 11px; padding: 3px 6px;">
-                                Joriy
-                              </span>
+                                class="badge badge-primary" style="font-size: 11px; padding: 3px 6px;">Joriy</span>
                               <span *ngIf="!group.consignments.includes(selectedConsignmentName)"
-                                class="badge badge-secondary" style="font-size: 11px; padding: 3px 6px;">
-                                Boshqa
-                              </span>
-                              <span *ngIf="group.selectionType === 'single'" class="badge badge-warning ml-1"
-                                style="font-size: 11px; padding: 3px 6px;">
-                                Qisman
-                              </span>
-                              <!-- Debt Badge -->
+                                class="badge badge-secondary" style="font-size: 11px; padding: 3px 6px;">Boshqa</span>
                               <span *ngIf="group.has_high_debt" class="badge badge-danger ml-1"
                                 style="font-size: 11px; padding: 3px 6px;">
-                                <i class="material-icons" style="font-size: 12px; vertical-align: middle;">error</i>
+                                <i class="material-icons"
+                                  style="font-size: 12px; vertical-align: middle;">error</i>
                                 Qarz: {{ group.debt_uzs | currency : ' ' : 'symbol' : '1.0-0' }} so'm
                               </span>
                             </td>
@@ -403,19 +375,14 @@
                               <div *ngIf="group.has_high_debt && group.selected" class="form-check">
                                 <label class="form-check-label">
                                   <input class="form-check-input" type="checkbox" [(ngModel)]="group.forDebt">
-                                  <span class="form-check-sign">
-                                    <span class="check"></span>
-                                  </span>
+                                  <span class="form-check-sign"><span class="check"></span></span>
                                 </label>
                               </div>
                               <span *ngIf="group.has_high_debt && group.selected && group.forDebt"
-                                class="badge badge-warning" style="font-size: 10px; padding: 2px 5px;">
-                                Nasiya
-                              </span>
+                                class="badge badge-warning" style="font-size: 10px; padding: 2px 5px;">Nasiya</span>
                             </td>
                           </tr>
 
-                          <!-- Partial Selection Options -->
                           <tr *ngIf="hasMultipleConsignments(group)" class="bg-light">
                             <td colspan="7" class="text-center" style="padding: 6px 8px;">
                               <button class="btn btn-sm btn-warning mr-2" (click)="selectFullTiedGroup(group)"
@@ -435,8 +402,6 @@
                     </table>
                   </div>
 
-
-                  <!-- Tied Package Warning -->
                   <div *ngIf="hasTiedPackagesSelected()" class="alert alert-warning mt-2"
                     style="padding: 6px 10px; margin-bottom: 8px;">
                     <small style="font-size: 12px;">
@@ -447,14 +412,11 @@
                 </div>
               </div>
 
-              <!-- Step 2: Delivery Details -->
               <div *ngIf="selectedPackageIdentifiers.length > 0">
-
-
-                <!-- UPDATED: Button-style Delivery Type Selection (replaces dropdown) -->
                 <div class="row" style="margin-bottom: 8px;">
                   <div class="col-md-12">
-                    <label class="bmd-label-floating" style="font-size: 0.75rem; font-weight: 500; margin-bottom: 4px;">
+                    <label class="bmd-label-floating"
+                      style="font-size: 0.75rem; font-weight: 500; margin-bottom: 4px;">
                       Yetkazish Turi
                     </label>
                     <div class="delivery-type-buttons" style="display: flex; gap: 6px;">
@@ -476,8 +438,9 @@
                         <i class="material-icons" style="font-size: 16px;">delivery_dining</i>
                         <span>Kuryer</span>
                       </button>
-                      <button type="button" class="delivery-type-btn btn btn-sm" [class.active]="deliveryType === 'EMU'"
-                        (click)="selectDeliveryType('EMU')" style="flex: 1; padding: 6px 8px; font-size: 12px;">
+                      <button type="button" class="delivery-type-btn btn btn-sm"
+                        [class.active]="deliveryType === 'EMU'" (click)="selectDeliveryType('EMU')"
+                        style="flex: 1; padding: 6px 8px; font-size: 12px;">
                         <i class="material-icons" style="font-size: 16px;">store</i>
                         <span>EMU</span>
                       </button>
@@ -485,7 +448,6 @@
                   </div>
                 </div>
 
-                <!-- UPDATED: Customer Phone and Notes in one row, both optional -->
                 <div class="row" style="margin-top: 8px; margin-bottom: 8px;">
                   <div class="col-md-6">
                     <div class="form-group" style="margin-bottom: 0;">
@@ -501,41 +463,20 @@
                         [style.background-color]="autoFilledFields.phone ? '#e3f2fd' : ''">
                     </div>
                   </div>
-
                   <div class="col-md-6">
                     <div class="form-group" style="margin-bottom: 0;">
                       <label class="bmd-label-floating" style="font-size: 12px;">Izohlar</label>
-                      <input type="text" class="form-control form-control-sm" autocomplete="{{deli}}"
-                        [(ngModel)]="deliveryNotes" placeholder="Qo'shimcha ma'lumotlar"
-                        style="font-size: 13px; padding: 6px 10px;">
+                      <input type="text" class="form-control form-control-sm" [(ngModel)]="deliveryNotes"
+                        placeholder="Qo'shimcha ma'lumotlar" style="font-size: 13px; padding: 6px 10px;">
                     </div>
                   </div>
                 </div>
 
-                <!-- NEW: For Debt Payment Field (only show if there's debt) -->
-                <!-- <div class="row" *ngIf="showDebtWarning">
-                  <div class="col-md-12">
-                    <div class="form-group">
-                      <label class="bmd-label-floating" style="color: #d32f2f; font-weight: 500;">
-                        💰 Qarz uchun to'lov (ixtiyoriy) - Qarzni to'liq qoplash kerak
-                      </label>
-                      <input type="number" class="form-control" [(ngModel)]="forDebtAmount"
-                        placeholder="Qarz summasini kiriting (so'm)"
-                        style="border: 2px solid #f44336;">
-                      <small class="form-text text-muted">
-                        Jami qarz: <strong>{{ totalDebtUzs | currency : ' ' : 'symbol' : '1.0-0' }} so'm</strong>.
-                        Qarzni to'liq qoplash uchun bu miqdorni kiriting.
-                      </small>
-                    </div>
-                  </div>
-                </div> -->
-
-                <!-- UPDATED: EMU Branch Selection - Both fields in one row, both optional -->
                 <div class="row" *ngIf="deliveryType === 'EMU'" style="margin-top: 8px; margin-bottom: 8px;">
                   <div class="col-md-6">
                     <div class="form-group" style="margin-bottom: 0;">
                       <label class="bmd-label-floating" style="font-size: 12px;">
-                        🏛️ Viloyat (ixtiyoriy)
+                        Viloyat (ixtiyoriy)
                         <i class="material-icons" *ngIf="autoFilledFields.regionId"
                           style="font-size: 14px; color: #2196f3; vertical-align: middle;"
                           title="Avtomatik to'ldirilgan">auto_awesome</i>
@@ -554,7 +495,7 @@
                   <div class="col-md-6">
                     <div class="form-group" style="margin-bottom: 0;">
                       <label class="bmd-label-floating" style="font-size: 12px;">
-                        🏣 EMU Filial (ixtiyoriy)
+                        EMU Filial (ixtiyoriy)
                         <i class="material-icons" *ngIf="autoFilledFields.branchId"
                           style="font-size: 14px; color: #2196f3; vertical-align: middle;"
                           title="Avtomatik to'ldirilgan">auto_awesome</i>
@@ -571,53 +512,23 @@
                     </div>
                   </div>
                 </div>
-
-                <!-- UPDATED: Address for Yandex/Courier - Single row, optional -->
-                <!-- <div class="row" *ngIf="deliveryType === 'Yandex' || deliveryType === 'Own-Courier'">
-                  <div class="col-md-12">
-                    <div class="form-group">
-                      <label class="bmd-label-floating">
-                        📍 Yetkazish Manzili (ixtiyoriy)
-                      </label>
-                      <textarea class="form-control" [(ngModel)]="deliveryAddress"
-                        placeholder="To'liq manzilni kiriting" rows="2"></textarea>
-                    </div>
-                  </div>
-                </div> -->
-
-                <!-- Courier Name (if Own-Courier selected) - Optional -->
-                <!-- <div class="row" *ngIf="deliveryType === 'Own-Courier'">
-                  <div class="col-md-6">
-                    <div class="form-group">
-                      <label class="bmd-label-floating">Kuryer Ismi 🚕 (ixtiyoriy)</label>
-                      <input type="text" class="form-control" [(ngModel)]="courierName" placeholder="Kuryer ismi">
-                    </div>
-                  </div>
-                </div> -->
-
               </div>
-
             </div>
 
-            <!-- No packages message -->
             <div *ngIf="!loadingCustomerPackages && customerPackages.length === 0" class="text-center"
               style="padding: 20px 10px;">
               <i class="material-icons" style="font-size: 48px; color: #ccc;">inbox</i>
               <p class="mt-2 mb-1" style="font-size: 14px; font-weight: 500;">Omborda quti yo'q</p>
-              <p class="text-muted mb-0" style="font-size: 12px;">Bu mijozning barcha qutilari allaqachon yuborilgan</p>
+              <p class="text-muted mb-0" style="font-size: 12px;">Bu mijozning barcha qutilari allaqachon yuborilgan
+              </p>
             </div>
-
           </div>
 
-          <!-- Modal Footer -->
           <div class="modal-footer" style="padding: 10px 15px;">
             <button type="button" class="btn btn-secondary btn-sm" (click)="closeDeliveryModal()"
               style="font-size: 13px; padding: 6px 12px;">
               Bekor qilish
             </button>
-
-            <!-- REMOVED: To'lov Cheki button - now prints automatically after delivery creation -->
-
             <button type="button" class="btn btn-success btn-sm" *ngIf="selectedPackageIdentifiers.length > 0"
               (click)="createDelivery()" [disabled]="!canCreateDelivery() || creatingDelivery"
               style="font-size: 13px; padding: 6px 12px;">
@@ -626,18 +537,16 @@
               Yetkazish Yaratish
             </button>
           </div>
-
         </div>
       </div>
     </div>
 
-    <!-- Original Print Section -->
-    <div #printSection3 id="print-section3" *ngIf="printCondition3">
-      --- ⭐ Yuk Z ⭐ ---
+    <!-- Print Section -->
+    <div #printSection3 id="print-section3-v2" *ngIf="printCondition3">
+      --- Yuk Z ---
       <div>
         <span style="font-size: 36px"><strong>K{{ idsChek }}</strong></span>
       </div>
-      <div></div>
       <div>Partiyasi: {{ nameChek }}</div>
       <div style="margin: 2px 2px">
         Soni: <strong>{{ counterChek }} </strong> ta
@@ -654,12 +563,11 @@
     </div>
 
     <!-- Delivery Print Section -->
-    <div #deliveryPrintSection id="delivery-print-section" *ngIf="printConditionDelivery">
-      --- ⭐ YETKAZISH CHEKI ⭐ ---
+    <div #deliveryPrintSection id="delivery-print-section-v2" *ngIf="printConditionDelivery">
+      --- YETKAZISH CHEKI ---
       <div>
         <span style="font-size: 36px"><strong>K{{ currentID }}</strong></span>
       </div>
-      <div></div>
       <div>Yetkazish ID: {{ deliveryBarcode }}</div>
       <div style="margin: 2px 2px">
         Turi: <strong>{{ deliveryTypeText }}</strong>

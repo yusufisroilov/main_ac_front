@@ -65,6 +65,10 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     this.router.navigate(["/uzs/cargo-tariffs"]);
   }
 
+  goToReferralsBonuses() {
+    this.router.navigate(["/uzm/referrals-bonuses"]);
+  }
+
   startAnimationForLineChart(chart: any) {
     let seq: any, delays: any, durations: any;
     seq = 0;

@@ -1,4 +1,5 @@
 import { Component, OnInit } from "@angular/core";
+import { ActivatedRoute } from "@angular/router";
 import { GlobalVars } from "src/app/global-vars";
 import swal from "sweetalert2";
 import { Http, RequestOptions, Headers } from "@angular/http";
@@ -54,6 +55,7 @@ export class TransactionsComponent implements OnInit {
   constructor(
     private datePipe: DatePipe,
     private http: Http,
+    private route: ActivatedRoute,
     public authService: AuthService,
   ) {
     this.headers12 = new Headers({ "Content-Type": "application/json" });
@@ -62,7 +64,12 @@ export class TransactionsComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // V2 loads by default
+    // Pre-fill customer_id filter from query params (e.g. from infoeachclientv2)
+    this.route.queryParams.subscribe((params) => {
+      if (params["customer_id"]) {
+        this.v2FilterCustomerId = params["customer_id"];
+      }
+    });
     this.loadV2Ledger();
   }
 
@@ -177,31 +184,6 @@ export class TransactionsComponent implements OnInit {
       default:
         return type;
     }
-  }
-
-  getMethodLabel(method: string): string {
-    if (!method) return "-";
-    switch (method) {
-      case "UZS_CASH":
-        return "Naqd";
-      case "USD_CASH":
-        return "USD";
-      case "PLASTIC":
-        return "Plastik";
-      case "BANK":
-        return "Bank";
-      default:
-        return method;
-    }
-  }
-
-  formatCurrency(value: number): string {
-    if (value == null) return "0";
-    const intPart = Math.floor(Math.abs(value));
-    const formatted = intPart
-      .toString()
-      .replace(/\B(?=(\d{3})+(?!\d))/g, " ");
-    return value < 0 ? "-" + formatted : formatted;
   }
 
   // ═══════════════════════════════════════════════════

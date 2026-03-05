@@ -1,0 +1,242 @@
+<div class="main-content">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card" id="rb-card">
+
+          <!-- Card Header with Tabs -->
+          <div class="card-header card-header-icon"
+            style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 15px 20px;"
+            [ngClass]="activeTab === 'referrals' ? 'card-header-primary' : 'card-header-info'">
+
+            <div style="display: flex; align-items: center; gap: 15px; flex: 1; min-width: 200px;">
+              <div class="card-icon"
+                style="margin: 0; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;">
+                <i class="material-icons" style="font-size: 28px;">
+                  {{ activeTab === 'referrals' ? 'people' : 'card_giftcard' }}
+                </i>
+              </div>
+              <div>
+                <h4 class="card-title" style="margin: 0; font-size: 18px;">
+                  {{ activeTab === 'referrals' ? 'Referallar' : 'Bonuslar va Qaytarishlar' }}
+                </h4>
+                <p class="card-category" style="margin: 0; font-size: 13px;">
+                  <strong>{{ activeTab === 'referrals' ? referralsTotal : bonusesTotalItems }}</strong> ta yozuv
+                </p>
+              </div>
+            </div>
+
+            <!-- Tab Buttons -->
+            <div style="display: flex; gap: 4px;">
+              <button class="tab-btn" [class.tab-btn-active]="activeTab === 'referrals'"
+                (click)="switchTab('referrals')">
+                Referallar
+              </button>
+              <button class="tab-btn" [class.tab-btn-active]="activeTab === 'bonuses'"
+                (click)="switchTab('bonuses')">
+                Bonuslar
+              </button>
+            </div>
+          </div>
+
+          <div class="card-body" style="padding: 20px;">
+
+            <!-- ═══════════════════════════════════════════ -->
+            <!-- REFERRALS TAB -->
+            <!-- ═══════════════════════════════════════════ -->
+            <div *ngIf="activeTab === 'referrals'">
+
+              <!-- Action Bar -->
+              <div class="action-bar">
+                <button class="btn btn-sm btn-success" (click)="addReferral()"
+                  style="display: flex; align-items: center; gap: 4px; padding: 6px 16px;">
+                  <i class="material-icons" style="font-size: 18px;">person_add</i> Yangi Referal
+                </button>
+                <button class="btn btn-sm btn-info" (click)="loadReferrals()" [disabled]="referralsLoading"
+                  style="display: flex; align-items: center; gap: 4px; padding: 6px 12px;">
+                  <i class="material-icons" style="font-size: 16px;" [class.rotate]="referralsLoading">refresh</i>
+                </button>
+              </div>
+
+              <!-- Loading -->
+              <div *ngIf="referralsLoading" class="text-center" style="padding: 40px 20px;">
+                <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;"></div>
+                <p class="mt-3 text-muted">Referallar yuklanmoqda...</p>
+              </div>
+
+              <!-- Referrals Table -->
+              <div *ngIf="!referralsLoading && referrals.length > 0" class="table-responsive">
+                <table class="table table-hover table-striped" cellspacing="0" width="100%">
+                  <thead>
+                    <tr>
+                      <th class="text-center" style="width: 40px;">#</th>
+                      <th>Taklif qiluvchi</th>
+                      <th>Taklif qilingan</th>
+                      <th class="text-center">Holati</th>
+                      <th class="text-center">Yaratilgan</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let ref of referrals; let i = index">
+                      <td class="text-center"><small>{{ i + 1 }}</small></td>
+                      <td>
+                        <strong class="text-primary">K{{ ref.referrer?.id }}</strong>
+                        <span *ngIf="ref.referrer">
+                          <br>
+                          <small class="text-muted">
+                            {{ ref.referrer.first_name || '' }} {{ ref.referrer.last_name || '' }}
+                          </small>
+                          <br>
+                          <small class="text-muted">{{ ref.referrer.username }}</small>
+                        </span>
+                      </td>
+                      <td>
+                        <strong class="text-info">K{{ ref.invited?.id }}</strong>
+                        <span *ngIf="ref.invited">
+                          <br>
+                          <small class="text-muted">
+                            {{ ref.invited.first_name || '' }} {{ ref.invited.last_name || '' }}
+                          </small>
+                          <br>
+                          <small class="text-muted">{{ ref.invited.username }}</small>
+                        </span>
+                      </td>
+                      <td class="text-center">
+                        <span class="status-badge" [ngClass]="getReferralStatusClass(ref.status)">
+                          {{ ref.status }}
+                        </span>
+                      </td>
+                      <td class="text-center">
+                        <small class="text-muted">{{ ref.created_at | date: 'dd/MM/yyyy' }}</small>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <!-- Empty -->
+              <div *ngIf="!referralsLoading && referrals.length === 0" class="text-center"
+                style="padding: 60px 20px;">
+                <i class="material-icons" style="font-size: 80px; color: #ccc;">people_outline</i>
+                <h5 class="mt-3">Referallar topilmadi</h5>
+                <p class="text-muted">Yangi referal yaratish uchun tugmani bosing</p>
+                <button class="btn btn-success btn-sm mt-2" (click)="addReferral()">
+                  <i class="material-icons" style="font-size: 16px;">person_add</i> Yangi Referal
+                </button>
+              </div>
+            </div>
+
+            <!-- ═══════════════════════════════════════════ -->
+            <!-- BONUSES / REFUNDS TAB -->
+            <!-- ═══════════════════════════════════════════ -->
+            <div *ngIf="activeTab === 'bonuses'">
+
+              <!-- Filters -->
+              <div class="action-bar">
+                <div class="filter-item">
+                  <input type="text" class="form-control form-control-sm" [(ngModel)]="bonusFilterCustomerId"
+                    (keyup.enter)="applyBonusFilter()" placeholder="Mijoz ID...">
+                </div>
+                <button class="btn btn-sm btn-warning" (click)="clearBonusFilter()"
+                  style="display: flex; align-items: center; gap: 4px; padding: 6px 12px;">
+                  <i class="material-icons" style="font-size: 16px;">clear</i> Tozalash
+                </button>
+                <button class="btn btn-sm btn-success" (click)="addBonus()"
+                  style="display: flex; align-items: center; gap: 4px; padding: 6px 16px;">
+                  <i class="material-icons" style="font-size: 18px;">add_circle</i> Bonus / Qaytarish
+                </button>
+                <button class="btn btn-sm btn-info" (click)="loadBonuses()" [disabled]="bonusesLoading"
+                  style="display: flex; align-items: center; gap: 4px; padding: 6px 12px;">
+                  <i class="material-icons" style="font-size: 16px;" [class.rotate]="bonusesLoading">refresh</i>
+                </button>
+              </div>
+
+              <!-- Loading -->
+              <div *ngIf="bonusesLoading" class="text-center" style="padding: 40px 20px;">
+                <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;"></div>
+                <p class="mt-3 text-muted">Bonuslar yuklanmoqda...</p>
+              </div>
+
+              <!-- Bonuses Table -->
+              <div *ngIf="!bonusesLoading && bonuses.length > 0" class="table-responsive">
+                <table class="table table-hover table-striped" cellspacing="0" width="100%">
+                  <thead>
+                    <tr>
+                      <th class="text-center" style="width: 40px;">#</th>
+                      <th>Mijoz</th>
+                      <th>Partiya</th>
+                      <th class="text-right">Summa (USD)</th>
+                      <th>Izoh</th>
+                      <th class="text-center">Sana</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let entry of bonuses; let i = index">
+                      <td class="text-center">
+                        <small>{{ bonusesCurrentPage * bonusesPageSize + i + 1 }}</small>
+                      </td>
+                      <td>
+                        <strong class="text-primary">K{{ entry.customer_id }}</strong>
+                        <span *ngIf="entry.customer">
+                          <br>
+                          <small class="text-muted">{{ entry.customer.username }}</small>
+                        </span>
+                      </td>
+                      <td>
+                        <span *ngIf="entry.consignment" class="badge badge-info"
+                          style="font-size: 12px; padding: 4px 8px;">
+                          {{ entry.consignment }}
+                        </span>
+                        <span *ngIf="!entry.consignment" class="text-muted">-</span>
+                      </td>
+                      <td class="text-right">
+                        <strong style="color: #4caf50;">
+                          {{ absValue(entry.amount_usd) | number:'1.2-2' }}$
+                        </strong>
+                      </td>
+                      <td>
+                        <div *ngIf="entry.comment" class="comment-wrapper">
+                          <small class="comment-short" *ngIf="!entry._expanded"
+                            (click)="entry._expanded = true">
+                            {{ entry.comment.length > 40 ? entry.comment.substring(0, 40) + '...' : entry.comment }}
+                            <i *ngIf="entry.comment.length > 40"
+                              class="material-icons comment-expand-icon">expand_more</i>
+                          </small>
+                          <small class="comment-full" *ngIf="entry._expanded"
+                            (click)="entry._expanded = false">
+                            {{ entry.comment }}
+                            <i class="material-icons comment-expand-icon">expand_less</i>
+                          </small>
+                        </div>
+                        <span *ngIf="!entry.comment" class="text-muted">-</span>
+                      </td>
+                      <td class="text-center">
+                        <small class="text-muted">{{ entry.created_at | date: 'dd/MM/yyyy HH:mm' }}</small>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <!-- Pagination -->
+              <app-pagination *ngIf="bonusesNeedPagination" [currentPage]="bonusesCurrentPage"
+                [totalPages]="bonusesTotalPages" (pageChanged)="onBonusPageChanged($event)"></app-pagination>
+
+              <!-- Empty -->
+              <div *ngIf="!bonusesLoading && bonuses.length === 0" class="text-center"
+                style="padding: 60px 20px;">
+                <i class="material-icons" style="font-size: 80px; color: #ccc;">card_giftcard</i>
+                <h5 class="mt-3">Bonuslar topilmadi</h5>
+                <p class="text-muted">Bonus yoki qaytarish qo'shish uchun tugmani bosing</p>
+                <button class="btn btn-success btn-sm mt-2" (click)="addBonus()">
+                  <i class="material-icons" style="font-size: 16px;">add_circle</i> Bonus / Qaytarish
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

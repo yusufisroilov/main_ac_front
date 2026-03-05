@@ -96,10 +96,6 @@
                       <th>Mijoz</th>
                       <th>Partiya</th>
                       <th class="text-right">Summa (USD)</th>
-                      <th class="text-right">Asl summa</th>
-                      <th class="text-center">Usul</th>
-                      <th>Hisob nomi</th>
-                      <th class="text-center" style="width: 50px;">FT</th>
                       <th>Izoh</th>
                       <th class="text-center">Sana</th>
                     </tr>
@@ -132,32 +128,6 @@
                         <strong [ngStyle]="{'color': entry.amount_usd > 0 ? '#f44336' : '#4caf50'}">
                           {{entry.amount_usd > 0 ? '+' : ''}}{{entry.amount_usd | number:'1.2-2'}}$
                         </strong>
-                      </td>
-                      <td class="text-right">
-                        <span *ngIf="entry.amount_original">
-                          {{formatCurrency(entry.amount_original)}}
-                          <small class="text-muted">{{entry.currency}}</small>
-                        </span>
-                        <span *ngIf="!entry.amount_original" class="text-muted">-</span>
-                      </td>
-                      <td class="text-center">
-                        <span *ngIf="entry.method" class="method-label">
-                          {{getMethodLabel(entry.method)}}
-                        </span>
-                        <span *ngIf="!entry.method" class="text-muted">-</span>
-                      </td>
-                      <td>
-                        <small *ngIf="entry.cash_account_name">{{entry.cash_account_name}}</small>
-                        <span *ngIf="!entry.cash_account_name" class="text-muted">-</span>
-                      </td>
-                      <td class="text-center">
-                        <i *ngIf="entry.fintrack_synced === true" class="material-icons"
-                          style="font-size: 18px; color: #4caf50;" title="FinTrack bilan sinxronlangan">check_circle</i>
-                        <i *ngIf="entry.fintrack_synced === false" class="material-icons"
-                          style="font-size: 18px; color: #ff9800;" title="Sinxronlanmagan">sync_problem</i>
-                        <span
-                          *ngIf="entry.fintrack_synced === null || entry.fintrack_synced === undefined"
-                          class="text-muted">-</span>
                       </td>
                       <td>
                         <div *ngIf="entry.comment; else noComment" class="comment-wrapper">

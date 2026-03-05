@@ -1,0 +1,166 @@
+<div class="main-content">
+  <div class="container-fluid">
+
+    <!-- Page Header -->
+    <div class="row">
+      <div class="col-12">
+        <div class="page-header">
+          <h3 class="page-title">
+            <i class="material-icons">account_balance</i>
+            Hisoblar Boshqaruvi
+          </h3>
+          <div class="header-actions">
+            <button class="btn btn-outline-secondary toggle-btn" (click)="toggleShowInactive()">
+              <i class="material-icons" style="font-size:18px;vertical-align:middle;">
+                {{ showInactive ? 'visibility_off' : 'visibility' }}
+              </i>
+              {{ showInactive ? 'Faqat faollar' : 'Barchasini ko\'rsatish' }}
+            </button>
+            <button class="btn btn-info add-btn" (click)="createAccount()">
+              <i class="material-icons">add</i>
+              Yangi Hisob
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="row summary-row" *ngIf="!isLoading && accounts.length > 0">
+      <div class="col-md-4 col-sm-6">
+        <div class="summary-card summary-uzs">
+          <div class="summary-icon">
+            <i class="material-icons">payments</i>
+          </div>
+          <div class="summary-info">
+            <span class="summary-label">Jami UZS</span>
+            <span class="summary-value">{{ formatAmount(getTotalByCurrency('UZS'), 'UZS') }}</span>
+            <span class="summary-count">{{ getCountByCurrency('UZS') }} ta hisob</span>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4 col-sm-6">
+        <div class="summary-card summary-usd">
+          <div class="summary-icon">
+            <i class="material-icons">attach_money</i>
+          </div>
+          <div class="summary-info">
+            <span class="summary-label">Jami USD</span>
+            <span class="summary-value">{{ formatAmount(getTotalByCurrency('USD'), 'USD') }}</span>
+            <span class="summary-count">{{ getCountByCurrency('USD') }} ta hisob</span>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4 col-sm-12">
+        <div class="summary-card summary-total">
+          <div class="summary-icon">
+            <i class="material-icons">account_balance_wallet</i>
+          </div>
+          <div class="summary-info">
+            <span class="summary-label">Jami Hisoblar</span>
+            <span class="summary-value">{{ accounts.length }}</span>
+            <span class="summary-count">{{ getActiveCount() }} faol / {{ accounts.length - getActiveCount() }} faolsiz</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading -->
+    <div class="row" *ngIf="isLoading">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-body state-container">
+            <div class="spinner-border text-info" role="status">
+              <span class="sr-only">Yuklanmoqda...</span>
+            </div>
+            <p class="state-text">Hisoblar yuklanmoqda...</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Error -->
+    <div class="row" *ngIf="errorMessage && !isLoading">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-body state-container error-state">
+            <i class="material-icons state-icon">error_outline</i>
+            <p class="state-text">{{ errorMessage }}</p>
+            <button class="btn btn-info" (click)="loadAccounts()">
+              <i class="material-icons" style="font-size:18px;vertical-align:middle;">refresh</i> Qayta urinish
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty -->
+    <div class="row" *ngIf="!isLoading && !errorMessage && accounts.length === 0">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-body state-container empty-state">
+            <i class="material-icons state-icon">account_balance_wallet</i>
+            <h4>Hisoblar topilmadi</h4>
+            <p class="state-text">Birinchi hisobingizni yarating</p>
+            <button class="btn btn-info" (click)="createAccount()">
+              <i class="material-icons" style="font-size:18px;vertical-align:middle;">add</i> Hisob Yaratish
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Accounts Grid -->
+    <div class="row accounts-grid" *ngIf="!isLoading && !errorMessage && accounts.length > 0">
+      <div class="col-lg-4 col-md-6 col-sm-12" *ngFor="let account of accounts; let i = index">
+        <div class="account-card" [class.inactive]="!account.is_active">
+
+          <!-- Card Top -->
+          <div class="account-card-header">
+            <div class="account-type-icon" [ngClass]="'type-' + account.type.toLowerCase()">
+              <i class="material-icons">{{ getTypeIcon(account.type) }}</i>
+            </div>
+            <div class="account-meta">
+              <span class="account-name">{{ account.name }}</span>
+              <div class="account-tags">
+                <span class="tag tag-type" [ngClass]="'tag-' + account.type.toLowerCase()">
+                  {{ getTypeLabel(account.type) }}
+                </span>
+                <span class="tag tag-owner" [ngClass]="'tag-' + account.owner_kind.toLowerCase()">
+                  {{ getOwnerKindLabel(account.owner_kind) }}
+                </span>
+                <span class="tag tag-inactive" *ngIf="!account.is_active">Faolsiz</span>
+              </div>
+            </div>
+            <div class="account-currency-badge" [ngClass]="'currency-' + account.currency.toLowerCase()">
+              {{ account.currency }}
+            </div>
+          </div>
+
+          <!-- Amount -->
+          <div class="account-balance-section">
+            <span class="balance-label">Jami Qabul Qilingan</span>
+            <span class="balance-value"
+              [class.positive]="account.total_received > 0"
+              [class.zero]="account.total_received == 0">
+              {{ formatAmount(account.total_received, account.currency) }}
+            </span>
+          </div>
+
+          <!-- Actions -->
+          <div class="account-actions">
+            <button class="btn btn-sm action-edit" (click)="editAccount(account)" title="Tahrirlash">
+              <i class="material-icons">edit</i> Tahrirlash
+            </button>
+            <button class="btn btn-sm action-delete" (click)="deactivateAccount(account)"
+              title="O'chirish" *ngIf="account.is_active">
+              <i class="material-icons">block</i> O'chirish
+            </button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

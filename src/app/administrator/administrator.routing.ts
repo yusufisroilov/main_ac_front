@@ -27,6 +27,10 @@ import { InternalNotesComponent } from "./internal-notes/internal-notes.componen
 import { MessageThreadComponent } from "./message-thread/message-thread.component";
 import { ReplyBoxComponent } from "./reply-box/reply-box.component";
 import { AdminTicketDashboardComponent } from "./ticket-dashboard/admin-ticket-dashboard";
+import { ReferralsBonusesComponent } from "./referrals-bonuses/referrals-bonuses.component";
+import { Financev2Component } from "./financev2/financev2.component";
+import { Infoeachclientv2Component } from "./infoeachclientv2/infoeachclientv2.component";
+import { CashAccountsComponent } from "./cash-accounts/cash-accounts.component";
 
 export const AdminstratorRoutes: Routes = [
   {
@@ -212,6 +216,38 @@ export const AdminstratorRoutes: Routes = [
         component: EmployerDeliveryComponent,
         data: {
           title: "Deliveries List Employer",
+        },
+      },
+      {
+        path: "referrals-bonuses",
+        canActivate: [ManagerAuthGuardService],
+        component: ReferralsBonusesComponent,
+        data: {
+          title: "Referallar va Bonuslar",
+        },
+      },
+      {
+        path: "financev2",
+        canActivate: [ManagerAuthGuardService],
+        component: Financev2Component,
+        data: {
+          title: "Xisob Kitob2",
+        },
+      },
+      {
+        path: "infoeachclientv2",
+        canActivate: [ManagerAuthGuardService],
+        component: Infoeachclientv2Component,
+        data: {
+          title: "Har Bir Mijoz2",
+        },
+      },
+      {
+        path: "cash-accounts",
+        canActivate: [ManagerAuthGuardService],
+        component: CashAccountsComponent,
+        data: {
+          title: "Hisoblar",
         },
       },
     ],

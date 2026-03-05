@@ -23,6 +23,8 @@ interface DashboardStats {
   last_consignment_weight: string;
   last_consignment_name: string;
   last_two_consignments: Consignment[];
+  debt_usd_total: number;
+  debt_uzs_total: number;
 }
 
 interface Consignment {
@@ -79,6 +81,8 @@ export class CustomerDashboardComponent implements OnInit, AfterViewInit {
   lastConsignmentWeight: string = "0.00";
   lastConsignmentName: string = "";
   lastTwoConsignments: Consignment[] = [];
+  debtUsdTotal: number = 0;
+  debtUzsTotal: number = 0;
 
   // Modal data
   selectedConsignmentName: string = "";
@@ -140,6 +144,8 @@ export class CustomerDashboardComponent implements OnInit, AfterViewInit {
           this.lastConsignmentWeight = data.last_consignment_weight;
           this.lastConsignmentName = data.last_consignment_name || "Yo'q";
           this.lastTwoConsignments = data.last_two_consignments || [];
+          this.debtUsdTotal = data.debt_usd_total || 0;
+          this.debtUzsTotal = data.debt_uzs_total || 0;
 
           this.loadingStats = false;
         } else {
@@ -389,6 +395,15 @@ export class CustomerDashboardComponent implements OnInit, AfterViewInit {
 
   isDebtPaid(debt: number): boolean {
     return !debt || debt === 0;
+  }
+
+  formatCurrency(value: number): string {
+    if (value == null) return "0";
+    const intPart = Math.floor(Math.abs(value));
+    const formatted = intPart
+      .toString()
+      .replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+    return value < 0 ? "-" + formatted : formatted;
   }
 
   formatDate(date: Date): string {

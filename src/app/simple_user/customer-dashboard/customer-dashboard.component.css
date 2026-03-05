@@ -78,6 +78,16 @@
   transform: translateY(-2px);
 }
 
+.stat-tile.debt-tile {
+  border: 1.5px solid #ffcdd2;
+  background: #fff5f5;
+}
+
+.stat-tile.paid-tile {
+  border: 1.5px solid #c8e6c9;
+  background: #f1f8e9;
+}
+
 .stat-tile-icon {
   font-size: 22px;
   margin-bottom: 6px;

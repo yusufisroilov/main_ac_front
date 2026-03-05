@@ -124,6 +124,11 @@
             <i class="material-icons" style="vertical-align: middle;">price_change</i>
             Kargo Tariflari
           </button>
+          <!-- Referrals & Bonuses Button - Only for Manager -->
+          <button *ngIf="isManager()" class="btn btn-info btn-lg" (click)="goToReferralsBonuses()" style="border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+            <i class="material-icons" style="vertical-align: middle;">people</i>
+            Referallar va Bonuslar
+          </button>
 
         </div>
       </div>

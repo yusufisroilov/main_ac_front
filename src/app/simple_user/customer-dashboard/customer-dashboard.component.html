@@ -19,7 +19,7 @@
             </div>
         </div>
 
-        <!-- Summary Statistics Cards - 2x2 compact grid -->
+        <!-- Summary Statistics Cards -->
         <div class="stat-grid">
             <div class="stat-tile">
                 <i class="material-icons stat-tile-icon" style="color: #ff9800;">person</i>
@@ -44,14 +44,25 @@
                 </div>
                 <div class="stat-tile-label">Jami Og'irlik</div>
             </div>
-            <div class="stat-tile">
-                <i class="material-icons stat-tile-icon" style="color: #e91e63;">scale</i>
-                <div class="stat-tile-value">
-                    <span *ngIf="!loadingStats">{{ lastConsignmentWeight }}</span>
-                    <span *ngIf="loadingStats" class="spinner-border spinner-border-sm"></span>
-                    <small> kg</small>
+            <div class="stat-tile" [ngClass]="{'debt-tile': debtUsdTotal > 0, 'paid-tile': debtUsdTotal <= 0}">
+                <i class="material-icons stat-tile-icon"
+                    [style.color]="debtUsdTotal > 0 ? '#f44336' : '#4caf50'">
+                    {{ debtUsdTotal > 0 ? 'account_balance_wallet' : 'check_circle' }}
+                </i>
+                <div class="stat-tile-value" *ngIf="!loadingStats">
+                    <span [style.color]="debtUsdTotal > 0 ? '#f44336' : '#4caf50'">
+                        {{ debtUsdTotal | number:'1.2-2' }}$
+                    </span>
+                    <br>
+                    <small [style.color]="debtUsdTotal > 0 ? '#e57373' : '#81c784'"
+                        style="font-size: 11px;">
+                        {{ formatCurrency(debtUzsTotal) }} so'm
+                    </small>
                 </div>
-                <div class="stat-tile-label">Oxirgi Partiya</div>
+                <div class="stat-tile-value" *ngIf="loadingStats">
+                    <span class="spinner-border spinner-border-sm"></span>
+                </div>
+                <div class="stat-tile-label">Umumiy Qarz</div>
             </div>
         </div>
 
