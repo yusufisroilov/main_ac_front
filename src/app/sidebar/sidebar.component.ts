@@ -361,12 +361,12 @@ export const managerROUTES: RouteInfo[] = [
     type: "link",
     icontype: "credit_card",
   },
-  {
-    path: "/uzm/for-debt-management",
-    title: "Qarzlarni Boshqarish",
-    type: "link",
-    icontype: "payments",
-  },
+  // {
+  //   path: "/uzm/for-debt-management",
+  //   title: "Qarzlarni Boshqarish",
+  //   type: "link",
+  //   icontype: "payments",
+  // },
 
   {
     path: "/uzm/tickets-list",
@@ -502,6 +502,12 @@ export const ownerROUTES: RouteInfo[] = [
     icontype: "account_balance",
   },
   {
+    path: "/oa/weekly-collections",
+    title: "Haftalik Yig'imlar",
+    type: "link",
+    icontype: "bar_chart",
+  },
+  {
     path: "/oa/expenses",
     title: "Xarajatlar",
     type: "link",
@@ -526,22 +532,16 @@ export const ownerROUTES: RouteInfo[] = [
     icontype: "swap_horiz",
   },
   {
-    path: "/oa/weekly-collections",
-    title: "Haftalik Yig'imlar",
-    type: "link",
-    icontype: "bar_chart",
-  },
-  {
     path: "/oa/top-debtors",
     title: "Eng Ko'p Qarzdorlar",
     type: "link",
     icontype: "people",
   },
   {
-    path: "/oa/consignment-summary",
-    title: "Partiya Xulosasi",
+    path: "/uzm/transactions",
+    title: "Tranzaksiyalar",
     type: "link",
-    icontype: "flight_takeoff",
+    icontype: "credit_card",
   },
   {
     path: "/oa/settings",

@@ -66,38 +66,66 @@ export class OaInternalTransfersComponent implements OnInit {
   onPageChanged(page: number) { this.currentPage = page; this.loadTransfers(); }
 
   addTransfer() {
-    let html = '<div style="text-align: left;">';
-    html += '<label class="swal-label">Chiqish hisobi (dan)</label>';
-    html += `<select id="tr-from" class="form-control mb-2">${this.cashAccounts.map((a) => `<option value="${a.id}">${a.name} (${a.currency})</option>`).join("")}</select>`;
-    html += '<label class="swal-label">Kirish hisobi (ga)</label>';
-    html += `<select id="tr-to" class="form-control mb-2">${this.cashAccounts.map((a) => `<option value="${a.id}">${a.name} (${a.currency})</option>`).join("")}</select>`;
-    html += '<label class="swal-label">Summa</label>';
-    html += '<input id="tr-amount" type="number" step="0.01" class="form-control mb-2" placeholder="Summa">';
-    html += '<label class="swal-label">Kurs (valyuta ayirboshlash uchun)</label>';
-    html += '<input id="tr-fx" type="number" step="0.01" class="form-control mb-2" placeholder="Masalan: 12800">';
-    html += '<label class="swal-label">Sana</label>';
-    html += `<input id="tr-date" type="date" class="form-control mb-2" value="${new Date().toISOString().split("T")[0]}">`;
-    html += '<label class="swal-label">Izoh</label>';
-    html += '<input id="tr-comment" type="text" class="form-control mb-2" placeholder="Izoh...">';
-    html += "</div>";
+    const today = new Date().toISOString().split("T")[0];
+    const accountOpts = this.cashAccounts.map((a) => `<option value="${a.id}">${a.name} (${a.currency})</option>`).join("");
+
+    const html = `
+      <style>
+        .tr-form { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 16px; text-align: left; }
+        .tr-form .tr-field { display: flex; flex-direction: column; }
+        .tr-form .tr-field.full { grid-column: 1 / -1; }
+        .tr-form .tr-lbl { font-size: 12px; font-weight: 600; color: #555; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.3px; }
+        .tr-form .tr-lbl .req { color: #e53935; margin-left: 2px; }
+        .tr-form .form-control { border-radius: 6px; border: 1.5px solid #ddd; padding: 8px 10px; font-size: 14px; transition: border-color 0.2s; }
+        .tr-form .form-control:focus { border-color: #0288d1; box-shadow: 0 0 0 2px rgba(2,136,209,0.15); outline: none; }
+        @media (max-width: 576px) {
+          .tr-form { grid-template-columns: 1fr; gap: 10px; }
+          .tr-form .form-control { font-size: 16px; padding: 10px 12px; }
+        }
+      </style>
+      <div class="tr-form">
+        <div class="tr-field">
+          <span class="tr-lbl">Chiqish hisobi (dan)<span class="req">*</span></span>
+          <select id="tr-from" class="form-control">${accountOpts}</select>
+        </div>
+        <div class="tr-field">
+          <span class="tr-lbl">Kirish hisobi (ga)<span class="req">*</span></span>
+          <select id="tr-to" class="form-control">${accountOpts}</select>
+        </div>
+        <div class="tr-field">
+          <span class="tr-lbl">Summa<span class="req">*</span></span>
+          <input id="tr-amount" type="number" step="0.01" class="form-control" placeholder="0.00">
+        </div>
+        <div class="tr-field">
+          <span class="tr-lbl">Kurs (valyuta ayirboshlash)</span>
+          <input id="tr-fx" type="number" step="0.01" class="form-control" placeholder="Masalan: 12800">
+        </div>
+        <div class="tr-field">
+          <span class="tr-lbl">Sana<span class="req">*</span></span>
+          <input id="tr-date" type="date" class="form-control" value="${today}">
+        </div>
+        <div class="tr-field">
+          <span class="tr-lbl">Izoh</span>
+          <input id="tr-comment" type="text" class="form-control" placeholder="Izoh...">
+        </div>
+      </div>`;
 
     swal.fire({
       title: "Yangi Transfer",
       html,
+      width: "min(540px, 95vw)",
       showCancelButton: true,
       confirmButtonText: "Qo'shish",
       cancelButtonText: "Bekor",
       customClass: { confirmButton: "btn btn-success", cancelButton: "btn btn-secondary" },
       buttonsStyling: false,
       didOpen: () => {
-        this.http.get<any>(GlobalVars.baseUrl + "/fx-rate").subscribe(
-          (data) => {
-            if (data.rate) {
-              const fxInput = document.getElementById("tr-fx") as HTMLInputElement;
-              if (fxInput && !fxInput.value) fxInput.value = String(data.rate);
-            }
-          },
-        );
+        this.http.get<any>(GlobalVars.baseUrl + "/fx-rate").subscribe((data) => {
+          if (data.rate) {
+            const fxInput = document.getElementById("tr-fx") as HTMLInputElement;
+            if (fxInput && !fxInput.value) fxInput.value = String(data.rate);
+          }
+        });
       },
       preConfirm: () => {
         const fromId = (document.getElementById("tr-from") as HTMLSelectElement).value;

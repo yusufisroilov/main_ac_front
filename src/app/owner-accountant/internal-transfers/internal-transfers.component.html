@@ -2,52 +2,88 @@
   <div class="container-fluid">
     <div class="row">
       <div class="col-md-12">
-        <div class="card">
-          <div class="card-header card-header-info card-header-icon">
-            <div class="card-icon"><i class="material-icons">swap_horiz</i></div>
-            <h4 class="card-title">Ichki Transferlar <small class="text-muted">({{ totalItems }} ta)</small></h4>
+        <div class="card oi-card">
+
+          <!-- Header -->
+          <div class="oi-header">
+            <div class="oi-header-left">
+              <i class="material-icons oi-header-icon it-icon">swap_horiz</i>
+              <div>
+                <h4 class="oi-title">Ichki Transferlar</h4>
+                <span class="oi-subtitle">{{ totalItems }} ta yozuv</span>
+              </div>
+            </div>
+            <div class="oi-header-actions">
+              <button class="btn btn-success oi-btn-add" (click)="addTransfer()">
+                <i class="material-icons">add</i> Yangi
+              </button>
+              <button class="btn oi-btn-refresh" (click)="loadTransfers()" [disabled]="loading">
+                <i class="material-icons" [class.spin]="loading">refresh</i>
+              </button>
+            </div>
           </div>
-          <div class="card-body">
-            <div class="filters-row">
+
+          <!-- Filters -->
+          <div class="oi-filters">
+            <div class="oi-filter-item">
+              <label class="oi-filter-label">Hisob</label>
               <select class="form-control form-control-sm" [(ngModel)]="filterCashAccountId" (change)="applyFilters()">
-                <option value="">Barcha hisoblar</option>
+                <option value="">Barchasi</option>
                 <option *ngFor="let a of cashAccounts" [value]="a.id">{{ a.name }}</option>
               </select>
+            </div>
+            <div class="oi-filter-item">
+              <label class="oi-filter-label">Boshlanish</label>
               <input type="date" class="form-control form-control-sm" [(ngModel)]="filterStartDate" (change)="applyFilters()">
+            </div>
+            <div class="oi-filter-item">
+              <label class="oi-filter-label">Tugash</label>
               <input type="date" class="form-control form-control-sm" [(ngModel)]="filterEndDate" (change)="applyFilters()">
-              <button class="btn btn-sm btn-warning" (click)="clearFilters()"><i class="material-icons" style="font-size: 16px;">clear</i></button>
-              <button class="btn btn-sm btn-success" (click)="addTransfer()"><i class="material-icons" style="font-size: 16px;">add</i> Yangi</button>
-              <button class="btn btn-sm btn-info" (click)="loadTransfers()" [disabled]="loading"><i class="material-icons" style="font-size: 16px;">refresh</i></button>
+            </div>
+            <div class="oi-filter-item oi-filter-clear">
+              <button class="btn btn-sm btn-outline-warning oi-btn-clear" (click)="clearFilters()" title="Filterni tozalash">
+                <i class="material-icons">clear</i>
+              </button>
+            </div>
+          </div>
+
+          <div class="card-body oi-body">
+
+            <!-- Loading -->
+            <div *ngIf="loading" class="oi-loading">
+              <div class="spinner-border text-info" role="status"></div>
             </div>
 
-            <div *ngIf="loading" class="text-center" style="padding: 40px;"><div class="spinner-border text-primary" role="status"></div></div>
-
+            <!-- Table -->
             <div *ngIf="!loading && transfers.length > 0" class="table-responsive">
-              <table class="table table-hover table-striped table-sm">
+              <table class="table oi-table">
                 <thead>
                   <tr>
-                    <th class="text-center" style="width: 40px;">#</th>
+                    <th class="text-center">#</th>
                     <th>Dan</th>
-                    <th class="text-center" style="width: 40px;"></th>
+                    <th class="text-center"></th>
                     <th>Ga</th>
                     <th class="text-right">Summa</th>
                     <th>Izoh</th>
                     <th class="text-center">Sana</th>
-                    <th class="text-center" style="width: 60px;"></th>
+                    <th class="text-center"></th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr *ngFor="let t of transfers; let i = index">
-                    <td class="text-center"><small>{{ currentPage * pageSize + i + 1 }}</small></td>
-                    <td><small class="text-danger"><strong>{{ t.fromAccount?.name || '-' }}</strong></small></td>
-                    <td class="text-center"><i class="material-icons" style="font-size: 18px; color: #999;">arrow_forward</i></td>
-                    <td><small class="text-success"><strong>{{ t.toAccount?.name || '-' }}</strong></small></td>
-                    <td class="text-right"><strong style="color: #2196f3;">{{ formatAmount(t.amount_original) }} {{ t.currency }}</strong></td>
-                    <td><small>{{ t.comment || '-' }}</small></td>
-                    <td class="text-center"><small>{{ t.transfer_at | date:'dd/MM/yyyy' }}</small></td>
+                    <td class="text-center oi-row-num">{{ currentPage * pageSize + i + 1 }}</td>
+                    <td class="it-from">{{ t.fromAccount?.name || '-' }}</td>
+                    <td class="text-center it-arrow"><i class="material-icons">arrow_forward</i></td>
+                    <td class="it-to">{{ t.toAccount?.name || '-' }}</td>
+                    <td class="text-right oi-cell-amount">
+                      {{ formatAmount(t.amount_original) }}
+                      <span class="oi-currency">{{ t.currency }}</span>
+                    </td>
+                    <td class="oi-cell-comment">{{ t.comment || '-' }}</td>
+                    <td class="text-center oi-cell-date">{{ t.transfer_at | date:'dd/MM/yyyy' }}</td>
                     <td class="text-center">
-                      <button class="btn btn-link btn-sm btn-danger p-0" (click)="deleteTransfer(t.id)">
-                        <i class="material-icons" style="font-size: 18px;">delete</i>
+                      <button class="oi-btn-delete" (click)="deleteTransfer(t.id)" title="O'chirish">
+                        <i class="material-icons">delete_outline</i>
                       </button>
                     </td>
                   </tr>
@@ -55,13 +91,19 @@
               </table>
             </div>
 
+            <!-- Pagination -->
             <app-pagination *ngIf="totalPages > 1" [currentPage]="currentPage" [totalPages]="totalPages"
               (pageChanged)="onPageChanged($event)"></app-pagination>
 
-            <div *ngIf="!loading && transfers.length === 0" class="text-center" style="padding: 50px;">
-              <i class="material-icons" style="font-size: 60px; color: #ccc;">swap_horiz</i>
-              <p class="text-muted mt-2">Transferlar topilmadi</p>
+            <!-- Empty -->
+            <div *ngIf="!loading && transfers.length === 0" class="oi-empty">
+              <i class="material-icons">swap_horiz</i>
+              <p>Transferlar topilmadi</p>
+              <button class="btn btn-sm btn-success oi-btn-add" (click)="addTransfer()">
+                <i class="material-icons">add</i> Yangi transfer qo'shish
+              </button>
             </div>
+
           </div>
         </div>
       </div>

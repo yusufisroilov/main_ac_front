@@ -12,7 +12,7 @@ export class ForeignStaffAuthGuard implements CanActivate {
 
     let isAdmin = localStorage.getItem('role');
 
-    if(isAdmin == "CHINASTAFF" || isAdmin == "ADMIN" || isAdmin == "MANAGER"  || isAdmin == "UZBSTAFF" )
+    if(isAdmin == "CHINASTAFF" || isAdmin == "ADMIN" || isAdmin == "MANAGER"  || isAdmin == "UZBSTAFF" || isAdmin == "OWNER" )
      {
 
        return true;

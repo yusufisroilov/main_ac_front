@@ -106,7 +106,7 @@
                 <p>{{menuitem.title}}</p>
             </a>
             <!--If it have a submenu-->
-            <a data-toggle="collapse" href="#{{menuitem.collapse}}" *ngIf="menuitem.type === 'sub'" (click)="updatePS()" class="nav-link">
+            <a data-toggle="collapse" href="#{{menuitem.collapse}}" *ngIf="menuitem.type === 'sub' || menuitem.type === 'sub-abs'" (click)="updatePS()" class="nav-link">
                 <i class="material-icons">{{menuitem.icontype}}</i>
                 <p>{{menuitem.title}}<b class="caret"></b></p>
             </a>
@@ -121,6 +121,18 @@
                         </a>
                     </li>
 
+                </ul>
+            </div>
+
+            <!--Display submenu items with absolute paths-->
+            <div id="{{menuitem.collapse}}" class="collapse" *ngIf="menuitem.type === 'sub-abs'">
+                <ul class="nav">
+                    <li routerLinkActive="active" *ngFor="let childitem of menuitem.children" class="nav-item">
+                        <a [routerLink]="[childitem.path]" class="nav-link">
+                            <span class="sidebar-mini">{{childitem.ab}}</span>
+                            <span class="sidebar-normal">{{childitem.title}}</span>
+                        </a>
+                    </li>
                 </ul>
             </div>
         </li>

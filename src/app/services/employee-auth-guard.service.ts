@@ -10,7 +10,7 @@ export class EmployeeAuthGuardService {
   canActivate() {
     let isAdmin = localStorage.getItem("role");
 
-    if (isAdmin == "YUKCHI" || isAdmin == "UZBSTAFF" || isAdmin === "MANAGER") {
+    if (isAdmin == "YUKCHI" || isAdmin == "UZBSTAFF" || isAdmin === "MANAGER" || isAdmin === "OWNER") {
       return true;
     } else {
       this.router.navigate(["/dashboard"]);

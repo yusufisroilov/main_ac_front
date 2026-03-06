@@ -80,7 +80,7 @@ export class FinanceComponent implements OnInit {
     this.headers12.append("Authorization", localStorage.getItem("token"));
     this.options = new RequestOptions({ headers: this.headers12 });
 
-    if (localStorage.getItem("role") == "MANAGER") {
+    if (localStorage.getItem("role") == "MANAGER" || localStorage.getItem("role") == "OWNER") {
       this.hideForManager = false;
     }
 

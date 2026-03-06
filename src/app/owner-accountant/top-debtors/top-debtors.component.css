@@ -1,2 +1,302 @@
-.filters-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 15px; }
-.filters-row .form-control { max-width: 120px; }
+/* ── Summary Cards ── */
+.summary-row { margin-bottom: 20px; }
+
+.summary-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: #fff;
+  border-radius: 12px;
+  padding: 18px 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  border-left: 4px solid transparent;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.summary-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 14px rgba(0,0,0,0.1);
+}
+.sc-count { border-left-color: #5c6bc0; }
+.sc-usd { border-left-color: #f44336; }
+.sc-uzs { border-left-color: #e91e63; }
+
+.sc-icon {
+  width: 48px; height: 48px;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+}
+.sc-count .sc-icon { background: #e8eaf6; color: #5c6bc0; }
+.sc-usd .sc-icon { background: #ffebee; color: #f44336; }
+.sc-uzs .sc-icon { background: #fce4ec; color: #e91e63; }
+
+.sc-icon i { font-size: 24px; }
+
+.sc-info { display: flex; flex-direction: column; }
+.sc-value { font-size: 20px; font-weight: 700; color: #1a1a2e; }
+.sc-label { font-size: 12px; color: #888; margin-top: 2px; }
+
+/* ── Table Card ── */
+.table-card {
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  border: none;
+  overflow: hidden;
+}
+
+.table-card .card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 16px 20px;
+  background: #fff;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.card-title {
+  font-size: 17px;
+  font-weight: 600;
+  color: #1a1a2e;
+  margin: 0;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.search-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.search-icon {
+  position: absolute;
+  left: 10px;
+  font-size: 18px;
+  color: #aaa;
+  pointer-events: none;
+}
+.search-input {
+  padding: 7px 12px 7px 34px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 13px;
+  width: 180px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.search-input:focus { border-color: #5c6bc0; }
+
+.limit-select {
+  padding: 7px 10px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 13px;
+  outline: none;
+  background: #fff;
+  cursor: pointer;
+}
+
+.btn-refresh {
+  width: 36px; height: 36px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background: #fff;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.btn-refresh:hover { background: #f5f5f5; }
+.btn-refresh i { font-size: 20px; color: #666; }
+.btn-refresh:disabled { opacity: 0.5; cursor: not-allowed; }
+
+@keyframes spin { 100% { transform: rotate(360deg); } }
+.spinning { animation: spin 1s linear infinite; }
+
+/* ── Table ── */
+.card-body { padding: 0; }
+
+.debtor-table {
+  margin: 0;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+.debtor-table thead th {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #888;
+  padding: 12px 16px;
+  border-bottom: 1px solid #f0f0f0;
+  background: #fafafa;
+}
+
+.debtor-row td {
+  padding: 12px 16px;
+  vertical-align: middle;
+  border-bottom: 1px solid #f5f5f5;
+  font-size: 13px;
+}
+.debtor-row:hover { background: #f8f9ff; }
+.debtor-row:last-child td { border-bottom: none; }
+
+.col-rank { width: 50px; text-align: center; }
+.col-id { width: 80px; }
+.col-name { min-width: 160px; }
+.col-debt { min-width: 130px; }
+
+/* Rank badges */
+.rank-badge {
+  display: inline-flex;
+  align-items: center; justify-content: center;
+  width: 28px; height: 28px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  background: #f5f5f5;
+  color: #888;
+}
+.rank-badge.top-1 { background: #fff3e0; color: #e65100; }
+.rank-badge.top-2 { background: #eceff1; color: #546e7a; }
+.rank-badge.top-3 { background: #fff8e1; color: #f57f17; }
+
+/* Customer ID */
+.customer-id {
+  display: inline-block;
+  padding: 3px 8px;
+  background: #e8eaf6;
+  color: #3949ab;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+/* Customer info */
+.customer-info { display: flex; flex-direction: column; gap: 1px; }
+.customer-name { font-weight: 500; color: #1a1a2e; }
+.customer-username { font-size: 11px; color: #999; }
+
+/* Debt amounts */
+.debt-amount { font-weight: 600; }
+.debt-usd { color: #f44336; }
+.debt-uzs { color: #e91e63; }
+.debt-zero { color: #ccc; }
+
+/* ── Loading ── */
+.loading-container {
+  display: flex; align-items: center; justify-content: center;
+  padding: 60px;
+}
+
+/* ── Empty State ── */
+.empty-state {
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 60px 20px;
+}
+.empty-state i { font-size: 56px; color: #ddd; }
+.empty-state p { color: #aaa; font-size: 14px; margin-top: 10px; }
+
+/* ── Responsive ── */
+
+/* Large desktop (1200px+) — default styles apply */
+
+/* Medium desktop / small laptop */
+@media (max-width: 1199px) {
+  .sc-value { font-size: 18px; }
+  .search-input { width: 160px; }
+}
+
+/* Tablet landscape */
+@media (max-width: 991px) {
+  .summary-card { padding: 14px 16px; gap: 10px; }
+  .sc-icon { width: 42px; height: 42px; }
+  .sc-icon i { font-size: 20px; }
+  .sc-value { font-size: 16px; }
+  .sc-label { font-size: 11px; }
+  .card-title { font-size: 15px; }
+  .search-input { width: 140px; font-size: 12px; }
+  .limit-select { font-size: 12px; padding: 6px 8px; }
+  .debtor-table thead th { padding: 10px 12px; font-size: 10px; }
+  .debtor-row td { padding: 10px 12px; font-size: 12px; }
+  .col-rank { width: 40px; }
+  .col-id { width: 65px; }
+  .col-debt { min-width: 110px; }
+}
+
+/* Tablet portrait */
+@media (max-width: 768px) {
+  .summary-col { margin-bottom: 8px; }
+  .summary-card { padding: 12px 14px; }
+  .table-card .card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 12px 14px;
+  }
+  .header-actions {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+  .search-box { flex: 1; min-width: 0; }
+  .search-input { width: 100%; min-width: 0; }
+  .debtor-table thead th { padding: 8px 10px; }
+  .debtor-row td { padding: 8px 10px; }
+  .customer-name { font-size: 12px; }
+  .customer-username { font-size: 10px; }
+  .debt-amount { font-size: 12px; }
+  .rank-badge { width: 24px; height: 24px; font-size: 11px; border-radius: 6px; }
+  .customer-id { font-size: 11px; padding: 2px 6px; }
+}
+
+/* Mobile landscape */
+@media (max-width: 576px) {
+  .summary-row { margin-bottom: 12px; }
+  .summary-card { padding: 10px 12px; gap: 8px; border-left-width: 3px; }
+  .sc-icon { width: 36px; height: 36px; }
+  .sc-icon i { font-size: 18px; }
+  .sc-value { font-size: 14px; }
+  .sc-label { font-size: 10px; }
+  .table-card .card-header { padding: 10px 12px; gap: 8px; }
+  .card-title { font-size: 14px; }
+  .header-actions { gap: 6px; }
+  .search-input { padding: 6px 10px 6px 30px; font-size: 12px; }
+  .search-icon { font-size: 16px; left: 8px; }
+  .limit-select { padding: 6px 6px; font-size: 11px; }
+  .btn-refresh { width: 32px; height: 32px; }
+  .btn-refresh i { font-size: 18px; }
+  .debtor-table thead th { padding: 6px 8px; font-size: 9px; letter-spacing: 0.3px; }
+  .debtor-row td { padding: 8px; font-size: 11px; }
+  .col-rank { width: 32px; }
+  .col-id { width: 55px; }
+  .col-name { min-width: 100px; }
+  .col-debt { min-width: 90px; }
+  .rank-badge { width: 22px; height: 22px; font-size: 10px; border-radius: 5px; }
+  .customer-id { font-size: 10px; padding: 2px 5px; }
+  .customer-name { font-size: 11px; }
+  .customer-username { font-size: 9px; }
+  .debt-amount { font-size: 11px; }
+  .loading-container { padding: 40px; }
+  .empty-state { padding: 40px 16px; }
+  .empty-state i { font-size: 44px; }
+  .empty-state p { font-size: 12px; }
+}
+
+/* Mobile portrait (very small) */
+@media (max-width: 400px) {
+  .summary-card { padding: 8px 10px; }
+  .sc-icon { width: 32px; height: 32px; }
+  .sc-icon i { font-size: 16px; }
+  .sc-value { font-size: 13px; }
+  .debtor-table thead th { padding: 5px 6px; font-size: 8px; }
+  .debtor-row td { padding: 6px; font-size: 10px; }
+  .col-rank { width: 28px; }
+  .rank-badge { width: 20px; height: 20px; font-size: 9px; }
+  .customer-id { font-size: 9px; padding: 1px 4px; }
+  .col-debt { min-width: 75px; }
+  .debt-amount { font-size: 10px; }
+}

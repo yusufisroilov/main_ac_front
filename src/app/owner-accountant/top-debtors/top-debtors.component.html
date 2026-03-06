@@ -1,54 +1,112 @@
 <div class="main-content">
   <div class="container-fluid">
+
+    <!-- Summary Cards -->
+    <div class="row summary-row">
+      <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12 summary-col">
+        <div class="summary-card sc-count">
+          <div class="sc-icon"><i class="material-icons">people</i></div>
+          <div class="sc-info">
+            <span class="sc-value">{{ filteredDebtors.length }}</span>
+            <span class="sc-label">Qarzdorlar soni</span>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12 summary-col">
+        <div class="summary-card sc-usd">
+          <div class="sc-icon"><i class="material-icons">attach_money</i></div>
+          <div class="sc-info">
+            <span class="sc-value">{{ fmt(totalDebtUsd) }} $</span>
+            <span class="sc-label">Jami qarz (USD)</span>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12 summary-col">
+        <div class="summary-card sc-uzs">
+          <div class="sc-icon"><i class="material-icons">account_balance_wallet</i></div>
+          <div class="sc-info">
+            <span class="sc-value">{{ fmt(totalDebtUzs) }}</span>
+            <span class="sc-label">Jami qarz (UZS)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Table Card -->
     <div class="row">
       <div class="col-md-12">
-        <div class="card">
-          <div class="card-header card-header-danger card-header-icon">
-            <div class="card-icon"><i class="material-icons">people</i></div>
+        <div class="card table-card">
+          <div class="card-header">
             <h4 class="card-title">Eng Ko'p Qarzdorlar</h4>
-          </div>
-          <div class="card-body">
-            <div class="filters-row">
-              <select class="form-control form-control-sm" [(ngModel)]="limit" (change)="loadData()">
+            <div class="header-actions">
+              <div class="search-box">
+                <i class="material-icons search-icon">search</i>
+                <input type="text" [(ngModel)]="searchTerm" placeholder="Qidirish..." class="search-input">
+              </div>
+              <select class="limit-select" [(ngModel)]="limit" (change)="loadData()">
                 <option [ngValue]="20">Top 20</option>
                 <option [ngValue]="50">Top 50</option>
                 <option [ngValue]="100">Top 100</option>
               </select>
-              <button class="btn btn-sm btn-info" (click)="loadData()" [disabled]="loading"><i class="material-icons" style="font-size: 16px;">refresh</i></button>
+              <button class="btn-refresh" (click)="loadData()" [disabled]="loading">
+                <i class="material-icons" [class.spinning]="loading">refresh</i>
+              </button>
+            </div>
+          </div>
+
+          <div class="card-body">
+            <!-- Loading -->
+            <div *ngIf="loading" class="loading-container">
+              <div class="spinner-border text-primary" role="status"></div>
             </div>
 
-            <div *ngIf="loading" class="text-center" style="padding: 40px;"><div class="spinner-border text-primary" role="status"></div></div>
-
-            <div *ngIf="!loading && debtors.length > 0" class="table-responsive">
-              <table class="table table-hover table-striped table-sm">
+            <!-- Table -->
+            <div *ngIf="!loading && filteredDebtors.length > 0" class="table-responsive">
+              <table class="table debtor-table">
                 <thead>
                   <tr>
-                    <th class="text-center" style="width: 40px;">#</th>
-                    <th>ID</th>
-                    <th>Mijoz</th>
-                    <th class="text-right">Qarz (USD)</th>
-                    <th class="text-right">Qarz (UZS)</th>
+                    <th class="col-rank">#</th>
+                    <th class="col-id">ID</th>
+                    <th class="col-name">Mijoz</th>
+                    <th class="col-debt text-right">Qarz (USD)</th>
+                    <th class="col-debt text-right">Qarz (UZS)</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr *ngFor="let d of debtors; let i = index">
-                    <td class="text-center"><small>{{ i + 1 }}</small></td>
-                    <td><strong>{{ d.username }}</strong></td>
-                    <td>{{ d.first_name }} {{ d.last_name }}</td>
-                    <td class="text-right"><strong style="color: #f44336;">{{ fmt(d.balance_usd) }} $</strong></td>
-                    <td class="text-right"><strong style="color: #e91e63;">{{ fmt(d.balance_uzs) }} so'm</strong></td>
+                  <tr *ngFor="let d of filteredDebtors; let i = index" class="debtor-row">
+                    <td class="col-rank">
+                      <span class="rank-badge" [ngClass]="{'top-1': i === 0, 'top-2': i === 1, 'top-3': i === 2}">{{ i + 1 }}</span>
+                    </td>
+                    <td class="col-id">
+                      <span class="customer-id">K{{ d.id }}</span>
+                    </td>
+                    <td class="col-name">
+                      <div class="customer-info">
+                        <span class="customer-name">{{ d.first_name }} {{ d.last_name }}</span>
+                        <span class="customer-username">{{ d.username }}</span>
+                      </div>
+                    </td>
+                    <td class="col-debt text-right">
+                      <span class="debt-amount debt-usd">{{ fmt(d.balance_usd) }} $</span>
+                    </td>
+                    <td class="col-debt text-right">
+                      <span class="debt-amount debt-uzs" *ngIf="d.balance_uzs > 0">{{ fmt(d.balance_uzs) }} so'm</span>
+                      <span class="debt-zero" *ngIf="!d.balance_uzs || d.balance_uzs <= 0">-</span>
+                    </td>
                   </tr>
                 </tbody>
               </table>
             </div>
 
-            <div *ngIf="!loading && debtors.length === 0" class="text-center" style="padding: 50px;">
-              <i class="material-icons" style="font-size: 60px; color: #ccc;">sentiment_very_satisfied</i>
-              <p class="text-muted mt-2">Qarzdorlar topilmadi</p>
+            <!-- Empty State -->
+            <div *ngIf="!loading && filteredDebtors.length === 0" class="empty-state">
+              <i class="material-icons">sentiment_very_satisfied</i>
+              <p>Qarzdorlar topilmadi</p>
             </div>
           </div>
         </div>
       </div>
     </div>
+
   </div>
 </div>

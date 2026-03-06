@@ -58,6 +58,23 @@
 .tim-row h3{
     margin-top: 0;
 }
+
+/* FIX: Navbar overlapping content below — clicks pass through empty space */
+app-navbar-cmp {
+    pointer-events: none !important;
+    display: block;
+    position: relative;
+    z-index: 1029;
+}
+.navbar.navbar-absolute {
+    pointer-events: none !important;
+}
+app-navbar-cmp .navbar-wrapper,
+app-navbar-cmp .navbar-toggler,
+app-navbar-cmp .navbar-collapse {
+    pointer-events: auto !important;
+}
+
 @media (min-width: 992px){
 
     .typo-line{

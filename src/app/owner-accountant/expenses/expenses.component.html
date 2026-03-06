@@ -2,60 +2,86 @@
   <div class="container-fluid">
     <div class="row">
       <div class="col-md-12">
-        <div class="card">
-          <div class="card-header card-header-danger card-header-icon">
-            <div class="card-icon"><i class="material-icons">money_off</i></div>
-            <h4 class="card-title">Xarajatlar <small class="text-muted">({{ totalItems }} ta)</small></h4>
+        <div class="card oi-card">
+
+          <!-- Header -->
+          <div class="oi-header">
+            <div class="oi-header-left">
+              <i class="material-icons oi-header-icon exp-icon">money_off</i>
+              <div>
+                <h4 class="oi-title">Xarajatlar</h4>
+                <span class="oi-subtitle">{{ totalItems }} ta yozuv</span>
+              </div>
+            </div>
+            <div class="oi-header-actions">
+              <button class="btn btn-success oi-btn-add" (click)="addExpense()">
+                <i class="material-icons">add</i> Yangi
+              </button>
+              <button class="btn oi-btn-refresh" (click)="loadExpenses()" [disabled]="loading">
+                <i class="material-icons" [class.spin]="loading">refresh</i>
+              </button>
+            </div>
           </div>
-          <div class="card-body">
-            <!-- Filters -->
-            <div class="filters-row">
-              <select class="form-control form-control-sm" [(ngModel)]="filterScopeType"
-                (change)="applyFilters()">
-                <option value="">Barcha turlar</option>
+
+          <!-- Filters -->
+          <div class="oi-filters">
+            <div class="oi-filter-item">
+              <label class="oi-filter-label">Turi</label>
+              <select class="form-control form-control-sm" [(ngModel)]="filterScopeType" (change)="applyFilters()">
+                <option value="">Barchasi</option>
                 <option value="CONSIGNMENT">Partiya</option>
                 <option value="OFFICE">Ofis</option>
                 <option value="OWNER">Egasi</option>
                 <option value="PROJECT">Loyiha</option>
               </select>
-              <select class="form-control form-control-sm" [(ngModel)]="filterCategoryId"
-                (change)="applyFilters()">
-                <option value="">Barcha kategoriyalar</option>
+            </div>
+            <div class="oi-filter-item">
+              <label class="oi-filter-label">Kategoriya</label>
+              <select class="form-control form-control-sm" [(ngModel)]="filterCategoryId" (change)="applyFilters()">
+                <option value="">Barchasi</option>
                 <option *ngFor="let c of categories" [value]="c.id">{{ c.name }}</option>
               </select>
-              <select class="form-control form-control-sm" [(ngModel)]="filterCashAccountId"
-                (change)="applyFilters()">
-                <option value="">Barcha hisoblar</option>
+            </div>
+            <div class="oi-filter-item">
+              <label class="oi-filter-label">Hisob</label>
+              <select class="form-control form-control-sm" [(ngModel)]="filterCashAccountId" (change)="applyFilters()">
+                <option value="">Barchasi</option>
                 <option *ngFor="let a of cashAccounts" [value]="a.id">{{ a.name }}</option>
               </select>
+            </div>
+            <div class="oi-filter-item">
+              <label class="oi-filter-label">Partiya</label>
               <input type="text" class="form-control form-control-sm" [(ngModel)]="filterConsignment"
                 (keyup.enter)="applyFilters()" placeholder="Partiya...">
-              <input type="date" class="form-control form-control-sm" [(ngModel)]="filterStartDate"
-                (change)="applyFilters()">
-              <input type="date" class="form-control form-control-sm" [(ngModel)]="filterEndDate"
-                (change)="applyFilters()">
-              <button class="btn btn-sm btn-warning" (click)="clearFilters()">
-                <i class="material-icons" style="font-size: 16px;">clear</i>
-              </button>
-              <button class="btn btn-sm btn-success" (click)="addExpense()">
-                <i class="material-icons" style="font-size: 16px;">add</i> Yangi
-              </button>
-              <button class="btn btn-sm btn-info" (click)="loadExpenses()" [disabled]="loading">
-                <i class="material-icons" style="font-size: 16px;">refresh</i>
+            </div>
+            <div class="oi-filter-item">
+              <label class="oi-filter-label">Boshlanish</label>
+              <input type="date" class="form-control form-control-sm" [(ngModel)]="filterStartDate" (change)="applyFilters()">
+            </div>
+            <div class="oi-filter-item">
+              <label class="oi-filter-label">Tugash</label>
+              <input type="date" class="form-control form-control-sm" [(ngModel)]="filterEndDate" (change)="applyFilters()">
+            </div>
+            <div class="oi-filter-item oi-filter-clear">
+              <button class="btn btn-sm btn-outline-warning oi-btn-clear" (click)="clearFilters()" title="Filterni tozalash">
+                <i class="material-icons">clear</i>
               </button>
             </div>
+          </div>
+
+          <div class="card-body oi-body">
 
             <!-- Loading -->
-            <div *ngIf="loading" class="text-center" style="padding: 40px;">
-              <div class="spinner-border text-primary" role="status"></div>
+            <div *ngIf="loading" class="oi-loading">
+              <div class="spinner-border text-danger" role="status"></div>
             </div>
 
             <!-- Table -->
             <div *ngIf="!loading && expenses.length > 0" class="table-responsive">
-              <table class="table table-hover table-striped table-sm">
+              <table class="table oi-table">
                 <thead>
                   <tr>
-                    <th class="text-center" style="width: 40px;">#</th>
+                    <th class="text-center">#</th>
                     <th>Turi</th>
                     <th>Kategoriya</th>
                     <th>Hisob</th>
@@ -64,31 +90,40 @@
                     <th>Partiya</th>
                     <th>Izoh</th>
                     <th class="text-center">Sana</th>
-                    <th class="text-center" style="width: 60px;"></th>
+                    <th class="text-center"></th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr *ngFor="let e of expenses; let i = index">
-                    <td class="text-center"><small>{{ currentPage * pageSize + i + 1 }}</small></td>
-                    <td><span class="badge badge-warning" style="font-size: 11px;">{{ getScopeLabel(e.scope_type) }}</span></td>
-                    <td><small>{{ e.category?.name || '-' }}</small></td>
-                    <td><small>{{ e.cashAccount?.name || '-' }}</small></td>
-                    <td class="text-right">
-                      <strong style="color: #f44336;">{{ formatAmount(e.amount_original) }} {{ e.currency }}</strong>
+                    <td class="text-center oi-row-num">{{ currentPage * pageSize + i + 1 }}</td>
+                    <td>
+                      <span class="oi-badge"
+                        [class.oi-badge-cons]="e.scope_type === 'CONSIGNMENT'"
+                        [class.oi-badge-office]="e.scope_type === 'OFFICE'"
+                        [class.oi-badge-owner]="e.scope_type === 'OWNER'"
+                        [class.oi-badge-proj]="e.scope_type === 'PROJECT'">
+                        {{ getScopeLabel(e.scope_type) }}
+                      </span>
                     </td>
-                    <td class="text-right">
-                      <small *ngIf="e.amount_usd">{{ e.amount_usd | number:'1.2-2' }}$</small>
-                      <small *ngIf="!e.amount_usd" class="text-muted">-</small>
+                    <td class="oi-cell-category">{{ e.category?.name || '-' }}</td>
+                    <td class="oi-cell-account">{{ e.cashAccount?.name || '-' }}</td>
+                    <td class="text-right oi-cell-amount">
+                      {{ formatAmount(e.amount_original) }}
+                      <span class="oi-currency">{{ e.currency }}</span>
+                    </td>
+                    <td class="text-right oi-cell-usd">
+                      <span *ngIf="e.amount_usd">{{ e.amount_usd | number:'1.2-2' }}$</span>
+                      <span *ngIf="!e.amount_usd" class="text-muted">-</span>
                     </td>
                     <td>
-                      <span *ngIf="e.consignment" class="badge badge-info" style="font-size: 11px;">{{ e.consignment }}</span>
+                      <span *ngIf="e.consignment" class="oi-badge oi-badge-party">{{ e.consignment }}</span>
                       <span *ngIf="!e.consignment" class="text-muted">-</span>
                     </td>
-                    <td><small>{{ e.comment || '-' }}</small></td>
-                    <td class="text-center"><small>{{ e.expense_at }}</small></td>
+                    <td class="oi-cell-comment">{{ e.comment || '-' }}</td>
+                    <td class="text-center oi-cell-date">{{ e.expense_at }}</td>
                     <td class="text-center">
-                      <button class="btn btn-link btn-sm btn-danger p-0" (click)="deleteExpense(e.id)">
-                        <i class="material-icons" style="font-size: 18px;">delete</i>
+                      <button class="oi-btn-delete" (click)="deleteExpense(e.id)" title="O'chirish">
+                        <i class="material-icons">delete_outline</i>
                       </button>
                     </td>
                   </tr>
@@ -101,10 +136,14 @@
               (pageChanged)="onPageChanged($event)"></app-pagination>
 
             <!-- Empty -->
-            <div *ngIf="!loading && expenses.length === 0" class="text-center" style="padding: 50px;">
-              <i class="material-icons" style="font-size: 60px; color: #ccc;">money_off</i>
-              <p class="text-muted mt-2">Xarajatlar topilmadi</p>
+            <div *ngIf="!loading && expenses.length === 0" class="oi-empty">
+              <i class="material-icons">money_off</i>
+              <p>Xarajatlar topilmadi</p>
+              <button class="btn btn-sm btn-success oi-btn-add" (click)="addExpense()">
+                <i class="material-icons">add</i> Yangi xarajat qo'shish
+              </button>
             </div>
+
           </div>
         </div>
       </div>

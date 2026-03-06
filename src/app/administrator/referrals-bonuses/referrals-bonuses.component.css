@@ -1,69 +1,280 @@
 /* ═══════════════════════════════════════════ */
-/* Tab Buttons                                */
+/* Card                                       */
 /* ═══════════════════════════════════════════ */
 
-.tab-btn {
-  padding: 8px 20px;
-  border: 1px solid #ddd;
-  background: #f5f5f5;
-  color: #666;
+.rb-card {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+/* ═══════════════════════════════════════════ */
+/* Header                                     */
+/* ═══════════════════════════════════════════ */
+
+.rb-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  color: #fff;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.rb-header-referrals {
+  background: linear-gradient(135deg, #7b1fa2, #9c27b0);
+}
+
+.rb-header-bonuses {
+  background: linear-gradient(135deg, #00796b, #009688);
+}
+
+.rb-header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.rb-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rb-icon i {
+  font-size: 24px;
+  color: #fff;
+}
+
+.rb-title {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.rb-subtitle {
+  font-size: 13px;
+  opacity: 0.85;
+}
+
+/* ═══════════════════════════════════════════ */
+/* Tabs                                       */
+/* ═══════════════════════════════════════════ */
+
+.rb-tabs {
+  display: flex;
+  gap: 4px;
+}
+
+.rb-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 7px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  background: transparent;
+  color: rgba(255, 255, 255, 0.8);
   border-radius: 20px;
   cursor: pointer;
   font-size: 13px;
   font-weight: 500;
   transition: all 0.2s ease;
-  outline: none;
 }
 
-.tab-btn:hover {
-  background: #e0e0e0;
-}
-
-.tab-btn-active {
-  background: #9c27b0;
+.rb-tab:hover {
+  background: rgba(255, 255, 255, 0.15);
   color: #fff;
-  border-color: #9c27b0;
-  box-shadow: 0 2px 8px rgba(156, 39, 176, 0.3);
 }
 
-.tab-btn-active:hover {
-  background: #7b1fa2;
+.rb-tab-active {
+  background: #fff;
+  color: #333;
+  border-color: #fff;
+  font-weight: 600;
+}
+
+.rb-tab-active:hover {
+  background: #fff;
+  color: #333;
 }
 
 /* ═══════════════════════════════════════════ */
-/* Action Bar                                 */
+/* Body                                       */
 /* ═══════════════════════════════════════════ */
 
-.action-bar {
+.rb-body {
+  padding: 20px;
+}
+
+/* ═══════════════════════════════════════════ */
+/* Filters                                    */
+/* ═══════════════════════════════════════════ */
+
+.rb-filters {
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   gap: 8px;
   flex-wrap: wrap;
-  margin-bottom: 20px;
-  padding: 12px 15px;
+  margin-bottom: 16px;
+  padding: 12px 14px;
   background: #f8f9fa;
   border-radius: 8px;
   border: 1px solid #e9ecef;
 }
 
-.filter-item {
-  flex: 0 0 auto;
-  min-width: 120px;
-  max-width: 160px;
+.rb-filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 90px;
 }
 
-.filter-item input {
+.rb-filter-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  margin: 0;
+}
+
+.rb-filter-input {
   font-size: 13px;
   border-radius: 6px;
+  border: 1px solid #ced4da;
+  padding: 5px 10px;
+  height: 34px;
+  outline: none;
+  transition: border-color 0.2s;
+  background: #fff;
+}
+
+.rb-filter-input:focus {
+  border-color: #009688;
+  box-shadow: 0 0 0 2px rgba(0, 150, 136, 0.15);
+}
+
+/* ═══════════════════════════════════════════ */
+/* Buttons                                    */
+/* ═══════════════════════════════════════════ */
+
+.rb-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 14px;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.rb-btn i {
+  font-size: 17px;
+}
+
+.rb-btn-add {
+  background: #7b1fa2;
+  color: #fff;
+}
+
+.rb-btn-add:hover {
+  background: #6a1b9a;
+}
+
+.rb-btn-bonus {
+  background: #00796b;
+  color: #fff;
+}
+
+.rb-btn-bonus:hover {
+  background: #00695c;
+}
+
+.rb-btn-refund {
+  background: #e65100;
+  color: #fff;
+}
+
+.rb-btn-refund:hover {
+  background: #bf360c;
+}
+
+.rb-btn-clear {
+  background: #fff;
+  color: #666;
+  border: 1px solid #ced4da;
+}
+
+.rb-btn-clear:hover {
+  background: #f5f5f5;
+}
+
+.rb-btn-refresh {
+  background: #fff;
+  color: #666;
   border: 1px solid #ced4da;
   padding: 6px 10px;
 }
 
+.rb-btn-refresh:hover {
+  background: #f5f5f5;
+}
+
 /* ═══════════════════════════════════════════ */
-/* Status Badges                              */
+/* Table                                      */
 /* ═══════════════════════════════════════════ */
 
-.status-badge {
+.rb-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.rb-table thead th {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: #888;
+  letter-spacing: 0.3px;
+  border-bottom: 2px solid #e0e0e0;
+  padding: 10px 8px;
+}
+
+.rb-table tbody td {
+  padding: 9px 8px;
+  vertical-align: middle;
+  font-size: 13px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.rb-table tbody tr:hover {
+  background: #f9f9f9;
+}
+
+.rb-text-accent {
+  color: #00796b;
+}
+
+.rb-amount {
+  color: #2e7d32;
+  font-size: 14px;
+}
+
+/* ═══════════════════════════════════════════ */
+/* Badges                                     */
+/* ═══════════════════════════════════════════ */
+
+.rb-badge {
   display: inline-block;
   padding: 3px 10px;
   border-radius: 12px;
@@ -85,16 +296,36 @@
   border: 1px solid #ef9a9a;
 }
 
-/* ═══════════════════════════════════════════ */
-/* Comment Cell — Expandable                  */
-/* ═══════════════════════════════════════════ */
-
-.comment-wrapper {
-  max-width: 260px;
+.rb-badge-bonus {
+  background: #e0f2f1;
+  color: #00695c;
+  border: 1px solid #80cbc4;
 }
 
-.comment-short,
-.comment-full {
+.rb-badge-refund {
+  background: #fff3e0;
+  color: #e65100;
+  border: 1px solid #ffcc80;
+}
+
+.rb-badge-consignment {
+  background: #e3f2fd;
+  color: #1565c0;
+  border: 1px solid #90caf9;
+  font-size: 12px;
+  padding: 3px 8px;
+}
+
+/* ═══════════════════════════════════════════ */
+/* Comment                                    */
+/* ═══════════════════════════════════════════ */
+
+.rb-comment {
+  max-width: 240px;
+}
+
+.rb-comment-short,
+.rb-comment-full {
   cursor: pointer;
   display: inline-flex;
   align-items: center;
@@ -102,22 +333,22 @@
   line-height: 1.4;
 }
 
-.comment-short {
+.rb-comment-short {
   color: #555;
 }
 
-.comment-full {
+.rb-comment-full {
   color: #333;
   white-space: pre-wrap;
   word-break: break-word;
 }
 
-.comment-short:hover,
-.comment-full:hover {
-  color: #1565c0;
+.rb-comment-short:hover,
+.rb-comment-full:hover {
+  color: #00796b;
 }
 
-.comment-expand-icon {
+.rb-comment-icon {
   font-size: 16px;
   vertical-align: middle;
   color: #999;
@@ -125,7 +356,41 @@
 }
 
 /* ═══════════════════════════════════════════ */
-/* Spin animation for refresh icon            */
+/* Loading & Empty                            */
+/* ═══════════════════════════════════════════ */
+
+.rb-loading {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.rb-loading p {
+  margin-top: 12px;
+  color: #999;
+}
+
+.rb-empty {
+  text-align: center;
+  padding: 50px 20px;
+}
+
+.rb-empty i {
+  font-size: 70px;
+  color: #ccc;
+}
+
+.rb-empty h5 {
+  margin-top: 12px;
+  color: #666;
+}
+
+.rb-empty p {
+  color: #999;
+  margin-bottom: 14px;
+}
+
+/* ═══════════════════════════════════════════ */
+/* Spin                                       */
 /* ═══════════════════════════════════════════ */
 
 @keyframes spin {
@@ -138,20 +403,55 @@
 }
 
 /* ═══════════════════════════════════════════ */
-/* Table                                      */
+/* Responsive                                 */
 /* ═══════════════════════════════════════════ */
 
-.table thead th {
-  font-size: 12px;
-  font-weight: 600;
-  text-transform: uppercase;
-  color: #666;
-  border-bottom: 2px solid #e0e0e0;
-  padding: 10px 8px;
+@media (max-width: 768px) {
+  .rb-header {
+    padding: 14px 16px;
+  }
+
+  .rb-title {
+    font-size: 15px;
+  }
+
+  .rb-body {
+    padding: 14px;
+  }
+
+  .rb-filters {
+    padding: 10px 12px;
+  }
+
+  .rb-btn {
+    padding: 5px 10px;
+    font-size: 12px;
+  }
 }
 
-.table tbody td {
-  padding: 8px;
-  vertical-align: middle;
-  font-size: 13px;
+@media (max-width: 480px) {
+  .rb-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .rb-tabs {
+    width: 100%;
+  }
+
+  .rb-tab {
+    flex: 1;
+    justify-content: center;
+    font-size: 12px;
+    padding: 6px 10px;
+  }
+
+  .rb-filters {
+    gap: 6px;
+  }
+
+  .rb-filter-group {
+    min-width: 70px;
+    flex: 1;
+  }
 }

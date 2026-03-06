@@ -103,86 +103,135 @@ export class OaExpensesComponent implements OnInit {
   }
 
   addExpense() {
-    let html = '<div style="text-align: left;">';
-    html += '<label class="swal-label">Turi</label>';
-    html += '<select id="exp-scope" class="form-control mb-2"><option value="CONSIGNMENT">Partiya</option><option value="OFFICE">Ofis</option><option value="OWNER">Egasi</option><option value="PROJECT">Loyiha</option></select>';
-    html += '<label class="swal-label">Partiya (ixtiyoriy)</label>';
-    html += '<input id="exp-consignment" type="text" class="form-control mb-2" placeholder="Masalan: 25001">';
-    html += '<label class="swal-label">Kategoriya</label>';
-    html += `<select id="exp-category" class="form-control mb-2">${this.categories.map((c) => `<option value="${c.id}">${c.name}</option>`).join("")}</select>`;
-    html += '<label class="swal-label">Hisob</label>';
-    html += `<select id="exp-account" class="form-control mb-2">${this.cashAccounts.map((a) => `<option value="${a.id}">${a.name} (${a.currency})</option>`).join("")}</select>`;
-    html += '<label class="swal-label">Summa</label>';
-    html += '<input id="exp-amount" type="number" step="0.01" class="form-control mb-2" placeholder="Summa">';
-    html += '<label class="swal-label">Kurs (UZS uchun)</label>';
-    html += '<input id="exp-fx" type="number" step="0.01" class="form-control mb-2" placeholder="Masalan: 12800">';
-    html += '<label class="swal-label">Sana</label>';
-    html += `<input id="exp-date" type="date" class="form-control mb-2" value="${new Date().toISOString().split("T")[0]}">`;
-    html += '<label class="swal-label">Izoh</label>';
-    html += '<input id="exp-comment" type="text" class="form-control mb-2" placeholder="Izoh...">';
-    html += "</div>";
+    const today = new Date().toISOString().split("T")[0];
+    const categoryOpts = this.categories.map((c) => `<option value="${c.id}">${c.name}</option>`).join("");
+    const accountOpts = this.cashAccounts.map((a) => `<option value="${a.id}">${a.name} (${a.currency})</option>`).join("");
 
-    swal
-      .fire({
-        title: "Yangi Xarajat",
-        html,
-        showCancelButton: true,
-        confirmButtonText: "Qo'shish",
-        cancelButtonText: "Bekor",
-        customClass: { confirmButton: "btn btn-success", cancelButton: "btn btn-secondary" },
-        buttonsStyling: false,
-        didOpen: () => {
-          this.http.get<any>(GlobalVars.baseUrl + "/fx-rate").subscribe(
-            (data) => {
-              if (data.rate) {
-                const fxInput = document.getElementById("exp-fx") as HTMLInputElement;
-                if (fxInput && !fxInput.value) fxInput.value = String(data.rate);
-              }
-            },
-          );
-        },
-        preConfirm: () => {
-          const amount = (document.getElementById("exp-amount") as HTMLInputElement).value;
-          const date = (document.getElementById("exp-date") as HTMLInputElement).value;
-          const categoryId = (document.getElementById("exp-category") as HTMLSelectElement).value;
-          const accountId = (document.getElementById("exp-account") as HTMLSelectElement).value;
-          if (!amount || !date || !categoryId || !accountId) {
-            swal.showValidationMessage("Barcha majburiy maydonlarni to'ldiring");
-            return false;
-          }
-          if (parseFloat(amount) <= 0) {
-            swal.showValidationMessage("Summa musbat bo'lishi kerak");
-            return false;
-          }
-          return {
-            scope_type: (document.getElementById("exp-scope") as HTMLSelectElement).value,
-            consignment: (document.getElementById("exp-consignment") as HTMLInputElement).value || null,
-            category_id: parseInt(categoryId),
-            cash_account_id: parseInt(accountId),
-            amount_original: parseFloat(amount),
-            fx_rate_used: parseFloat((document.getElementById("exp-fx") as HTMLInputElement).value) || null,
-            expense_at: date,
-            comment: (document.getElementById("exp-comment") as HTMLInputElement).value || null,
-          };
-        },
-      })
-      .then((result) => {
-        if (result.isConfirmed && result.value) {
-          this.http
-            .post<any>(GlobalVars.baseUrl + "/expenses", result.value, { headers: this.getHeaders() })
-            .subscribe(
-              (data) => {
-                if (data.status === "ok") {
-                  this.loadExpenses();
-                  swal.fire({ icon: "success", title: "Qo'shildi!", timer: 1500, showConfirmButton: false });
-                } else {
-                  swal.fire("Xatolik", data.error, "error");
-                }
-              },
-              (error) => swal.fire("Xatolik", error.error?.error || "Xatolik yuz berdi", "error"),
-            );
+    const html = `
+      <style>
+        .exp-form { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 16px; text-align: left; }
+        .exp-form .exp-field { display: flex; flex-direction: column; }
+        .exp-form .exp-field.full { grid-column: 1 / -1; }
+        .exp-form .exp-lbl { font-size: 12px; font-weight: 600; color: #555; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.3px; }
+        .exp-form .exp-lbl .req { color: #e53935; margin-left: 2px; }
+        .exp-form .form-control { border-radius: 6px; border: 1.5px solid #ddd; padding: 8px 10px; font-size: 14px; transition: border-color 0.2s; }
+        .exp-form .form-control:focus { border-color: #e53935; box-shadow: 0 0 0 2px rgba(229,57,53,0.15); outline: none; }
+        @media (max-width: 576px) {
+          .exp-form { grid-template-columns: 1fr; gap: 10px; }
+          .exp-form .form-control { font-size: 16px; padding: 10px 12px; }
         }
-      });
+      </style>
+      <div class="exp-form">
+        <div class="exp-field">
+          <span class="exp-lbl">Turi<span class="req">*</span></span>
+          <select id="exp-scope" class="form-control">
+            <option value="CONSIGNMENT">Partiya</option>
+            <option value="OFFICE">Ofis</option>
+            <option value="OWNER">Egasi</option>
+            <option value="PROJECT">Loyiha</option>
+          </select>
+        </div>
+        <div class="exp-field" id="exp-consignment-wrap">
+          <span class="exp-lbl">Partiya nomi<span class="req">*</span></span>
+          <input id="exp-consignment" type="text" class="form-control" placeholder="Masalan: 25001">
+        </div>
+        <div class="exp-field">
+          <span class="exp-lbl">Kategoriya<span class="req">*</span></span>
+          <select id="exp-category" class="form-control">${categoryOpts}</select>
+        </div>
+        <div class="exp-field">
+          <span class="exp-lbl">Hisob<span class="req">*</span></span>
+          <select id="exp-account" class="form-control">${accountOpts}</select>
+        </div>
+        <div class="exp-field">
+          <span class="exp-lbl">Summa<span class="req">*</span></span>
+          <input id="exp-amount" type="number" step="0.01" class="form-control" placeholder="0.00">
+        </div>
+        <div class="exp-field">
+          <span class="exp-lbl">Kurs (UZS uchun)</span>
+          <input id="exp-fx" type="number" step="0.01" class="form-control" placeholder="Masalan: 12800">
+        </div>
+        <div class="exp-field">
+          <span class="exp-lbl">Sana<span class="req">*</span></span>
+          <input id="exp-date" type="date" class="form-control" value="${today}">
+        </div>
+        <div class="exp-field">
+          <span class="exp-lbl">Izoh</span>
+          <input id="exp-comment" type="text" class="form-control" placeholder="Izoh...">
+        </div>
+      </div>`;
+
+    swal.fire({
+      title: "Yangi Xarajat",
+      html,
+      width: "min(560px, 95vw)",
+      showCancelButton: true,
+      confirmButtonText: "Qo'shish",
+      cancelButtonText: "Bekor",
+      customClass: { confirmButton: "btn btn-success", cancelButton: "btn btn-secondary" },
+      buttonsStyling: false,
+      didOpen: () => {
+        // Auto-fill fx rate
+        this.http.get<any>(GlobalVars.baseUrl + "/fx-rate").subscribe((data) => {
+          if (data.rate) {
+            const fxInput = document.getElementById("exp-fx") as HTMLInputElement;
+            if (fxInput && !fxInput.value) fxInput.value = String(data.rate);
+          }
+        });
+        // Toggle consignment field visibility based on scope type
+        const scopeEl = document.getElementById("exp-scope") as HTMLSelectElement;
+        const consWrap = document.getElementById("exp-consignment-wrap") as HTMLElement;
+        const toggleConsignment = () => {
+          consWrap.style.display = scopeEl.value === "CONSIGNMENT" ? "" : "none";
+        };
+        scopeEl.addEventListener("change", toggleConsignment);
+        toggleConsignment();
+      },
+      preConfirm: () => {
+        const scopeType = (document.getElementById("exp-scope") as HTMLSelectElement).value;
+        const consignment = (document.getElementById("exp-consignment") as HTMLInputElement).value.trim();
+        const amount = (document.getElementById("exp-amount") as HTMLInputElement).value;
+        const date = (document.getElementById("exp-date") as HTMLInputElement).value;
+        const categoryId = (document.getElementById("exp-category") as HTMLSelectElement).value;
+        const accountId = (document.getElementById("exp-account") as HTMLSelectElement).value;
+        if (!amount || !date || !categoryId || !accountId) {
+          swal.showValidationMessage("Barcha majburiy maydonlarni to'ldiring");
+          return false;
+        }
+        if (scopeType === "CONSIGNMENT" && !consignment) {
+          swal.showValidationMessage("Partiya turi tanlanganda partiya nomi majburiy");
+          return false;
+        }
+        if (parseFloat(amount) <= 0) {
+          swal.showValidationMessage("Summa musbat bo'lishi kerak");
+          return false;
+        }
+        return {
+          scope_type: scopeType,
+          consignment: consignment || null,
+          category_id: parseInt(categoryId),
+          cash_account_id: parseInt(accountId),
+          amount_original: parseFloat(amount),
+          fx_rate_used: parseFloat((document.getElementById("exp-fx") as HTMLInputElement).value) || null,
+          expense_at: date,
+          comment: (document.getElementById("exp-comment") as HTMLInputElement).value || null,
+        };
+      },
+    }).then((result) => {
+      if (result.isConfirmed && result.value) {
+        this.http.post<any>(GlobalVars.baseUrl + "/expenses", result.value, { headers: this.getHeaders() }).subscribe(
+          (data) => {
+            if (data.status === "ok") {
+              this.loadExpenses();
+              swal.fire({ icon: "success", title: "Qo'shildi!", timer: 1500, showConfirmButton: false });
+            } else {
+              swal.fire("Xatolik", data.error, "error");
+            }
+          },
+          (error) => swal.fire("Xatolik", error.error?.error || "Xatolik yuz berdi", "error"),
+        );
+      }
+    });
   }
 
   deleteExpense(id: number) {

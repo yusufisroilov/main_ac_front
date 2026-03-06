@@ -50,7 +50,8 @@ export class ConsignmentListComponent implements OnInit {
   ) {
     if (
       localStorage.getItem("role") == "MANAGER" ||
-      localStorage.getItem("role") == "ADMIN"
+      localStorage.getItem("role") == "ADMIN" ||
+      localStorage.getItem("role") == "OWNER"
     ) {
       this.showOnlyForManagers = true;
     } else if (localStorage.getItem("role") == "UZBSTAFF") {

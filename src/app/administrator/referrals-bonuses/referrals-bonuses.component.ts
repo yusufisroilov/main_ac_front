@@ -35,6 +35,7 @@ export class ReferralsBonusesComponent implements OnInit {
 
   // Bonuses filter
   bonusFilterCustomerId: string = "";
+  bonusFilterType: string = "";
 
   constructor(
     private http: Http,
@@ -49,9 +50,9 @@ export class ReferralsBonusesComponent implements OnInit {
     this.loadReferrals();
   }
 
-  // ═══════════════════════════════════════════════════
+  // ═══════════════════════════════════════════
   // TAB SWITCHING
-  // ═══════════════════════════════════════════════════
+  // ═══════════════════════════════════════════
 
   switchTab(tab: string) {
     this.activeTab = tab;
@@ -63,9 +64,9 @@ export class ReferralsBonusesComponent implements OnInit {
     }
   }
 
-  // ═══════════════════════════════════════════════════
+  // ═══════════════════════════════════════════
   // REFERRALS
-  // ═══════════════════════════════════════════════════
+  // ═══════════════════════════════════════════
 
   loadReferrals() {
     this.referralsLoading = true;
@@ -90,16 +91,33 @@ export class ReferralsBonusesComponent implements OnInit {
   }
 
   addReferral() {
+    const formStyle = `
+      <style>
+        .ref-form { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 16px; text-align: left; }
+        .ref-form .ref-field { display: flex; flex-direction: column; gap: 4px; min-width: 0; overflow: hidden; }
+        .ref-form label { font-size: 12px; font-weight: 600; color: #555; text-transform: uppercase; letter-spacing: 0.3px; }
+        .ref-form input { font-size: 14px; border-radius: 6px; border: 1px solid #ced4da; padding: 8px 12px; outline: none; transition: border-color 0.2s; width: 100%; min-width: 0; box-sizing: border-box; }
+        .ref-form input:focus { border-color: #7b1fa2; box-shadow: 0 0 0 2px rgba(123, 31, 162, 0.15); }
+        @media (max-width: 576px) { .ref-form { grid-template-columns: 1fr; } }
+      </style>
+    `;
+
     swal
       .fire({
         title: "Yangi Referal Yaratish",
         html:
-          '<div style="text-align: left;">' +
-          '<label style="font-size: 13px; font-weight: 500; margin-bottom: 4px; display: block;">Taklif qiluvchi (Referrer) ID</label>' +
-          '<input id="referrer-id" type="number" class="form-control" placeholder="Masalan: 55" style="margin-bottom: 12px;">' +
-          '<label style="font-size: 13px; font-weight: 500; margin-bottom: 4px; display: block;">Taklif qilingan (Invited) ID</label>' +
-          '<input id="invited-id" type="number" class="form-control" placeholder="Masalan: 120">' +
+          formStyle +
+          '<div class="ref-form">' +
+          '<div class="ref-field">' +
+          '<label>Taklif qiluvchi ID</label>' +
+          '<input id="referrer-id" type="number" placeholder="Masalan: 55">' +
+          "</div>" +
+          '<div class="ref-field">' +
+          '<label>Taklif qilingan ID</label>' +
+          '<input id="invited-id" type="number" placeholder="Masalan: 120">' +
+          "</div>" +
           "</div>",
+        width: "min(440px, 95vw)",
         showCancelButton: true,
         confirmButtonText: "Yaratish",
         cancelButtonText: "Bekor qilish",
@@ -161,14 +179,21 @@ export class ReferralsBonusesComponent implements OnInit {
       });
   }
 
-  // ═══════════════════════════════════════════════════
-  // BONUSES / REFUNDS (Ledger BONUS entries)
-  // ═══════════════════════════════════════════════════
+  // ═══════════════════════════════════════════
+  // BONUSES / REFUNDS
+  // ═══════════════════════════════════════════
 
   loadBonuses() {
     this.bonusesLoading = true;
     let url =
-      `${GlobalVars.baseUrl}/finance-v2/ledger-list?page=${this.bonusesCurrentPage}&size=${this.bonusesPageSize}&type=BONUS`;
+      `${GlobalVars.baseUrl}/finance-v2/ledger-list?page=${this.bonusesCurrentPage}&size=${this.bonusesPageSize}`;
+
+    // Type filter: BONUS, REFUND, or both
+    if (this.bonusFilterType) {
+      url += `&type=${this.bonusFilterType}`;
+    } else {
+      url += `&type=BONUS,REFUND`;
+    }
 
     if (this.bonusFilterCustomerId) {
       url += `&customer_id=${this.bonusFilterCustomerId}`;
@@ -202,6 +227,7 @@ export class ReferralsBonusesComponent implements OnInit {
 
   clearBonusFilter() {
     this.bonusFilterCustomerId = "";
+    this.bonusFilterType = "";
     this.bonusesCurrentPage = 0;
     this.loadBonuses();
   }
@@ -212,20 +238,52 @@ export class ReferralsBonusesComponent implements OnInit {
   }
 
   addBonus() {
+    this.showBonusRefundDialog("BONUS");
+  }
+
+  addRefund() {
+    this.showBonusRefundDialog("REFUND");
+  }
+
+  private showBonusRefundDialog(type: "BONUS" | "REFUND") {
+    const isBonus = type === "BONUS";
+    const title = isBonus ? "Bonus qo'shish" : "Qaytarish (Refund)";
+    const accentColor = isBonus ? "#00796b" : "#e65100";
+
+    const formStyle = `
+      <style>
+        .br-form { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 16px; text-align: left; }
+        .br-form .br-field { display: flex; flex-direction: column; gap: 4px; min-width: 0; overflow: hidden; }
+        .br-form .br-field-full { grid-column: 1 / -1; }
+        .br-form label { font-size: 12px; font-weight: 600; color: #555; text-transform: uppercase; letter-spacing: 0.3px; }
+        .br-form input { font-size: 14px; border-radius: 6px; border: 1px solid #ced4da; padding: 8px 12px; outline: none; transition: border-color 0.2s; width: 100%; min-width: 0; box-sizing: border-box; }
+        .br-form input:focus { border-color: ${accentColor}; box-shadow: 0 0 0 2px ${accentColor}26; }
+        @media (max-width: 576px) { .br-form { grid-template-columns: 1fr; } }
+      </style>
+    `;
+
     swal
       .fire({
-        title: "Bonus / Qaytarish (Refund)",
+        title: title,
         html:
-          '<div style="text-align: left;">' +
-          '<label style="font-size: 13px; font-weight: 500; margin-bottom: 4px; display: block;">Mijoz ID</label>' +
-          '<input id="bonus-customer-id" type="number" class="form-control" placeholder="Masalan: 55" style="margin-bottom: 12px;">' +
-          '<label style="font-size: 13px; font-weight: 500; margin-bottom: 4px; display: block;">Summa (USD)</label>' +
-          '<input id="bonus-amount" type="number" step="0.01" class="form-control" placeholder="Masalan: 5.00" style="margin-bottom: 12px;">' +
-          '<label style="font-size: 13px; font-weight: 500; margin-bottom: 4px; display: block;">Izoh</label>' +
-          '<input id="bonus-comment" type="text" class="form-control" placeholder="Sabab...">' +
+          formStyle +
+          '<div class="br-form">' +
+          '<div class="br-field">' +
+          '<label>Mijoz ID</label>' +
+          '<input id="br-customer-id" type="number" placeholder="Masalan: 55">' +
+          "</div>" +
+          '<div class="br-field">' +
+          '<label>Summa (USD)</label>' +
+          '<input id="br-amount" type="number" step="0.01" placeholder="Masalan: 5.00">' +
+          "</div>" +
+          '<div class="br-field br-field-full">' +
+          '<label>Izoh</label>' +
+          '<input id="br-comment" type="text" placeholder="Sabab...">' +
+          "</div>" +
           "</div>",
+        width: "min(480px, 95vw)",
         showCancelButton: true,
-        confirmButtonText: "Qo'shish",
+        confirmButtonText: isBonus ? "Bonus qo'shish" : "Qaytarish",
         cancelButtonText: "Bekor qilish",
         customClass: {
           confirmButton: "btn btn-success",
@@ -234,13 +292,13 @@ export class ReferralsBonusesComponent implements OnInit {
         buttonsStyling: false,
         preConfirm: () => {
           const customerId = (
-            document.getElementById("bonus-customer-id") as HTMLInputElement
+            document.getElementById("br-customer-id") as HTMLInputElement
           ).value;
           const amount = (
-            document.getElementById("bonus-amount") as HTMLInputElement
+            document.getElementById("br-amount") as HTMLInputElement
           ).value;
           const comment = (
-            document.getElementById("bonus-comment") as HTMLInputElement
+            document.getElementById("br-comment") as HTMLInputElement
           ).value;
 
           if (!customerId || !amount) {
@@ -253,13 +311,16 @@ export class ReferralsBonusesComponent implements OnInit {
             return false;
           }
 
+          const endpoint = isBonus ? "/finance-v2/bonus" : "/finance-v2/refund";
+          const defaultComment = isBonus ? "Bonus" : "Qaytarish (Refund)";
+
           return this.http
             .post(
-              GlobalVars.baseUrl + "/finance-v2/bonus",
+              GlobalVars.baseUrl + endpoint,
               JSON.stringify({
                 customer_id: parseInt(customerId),
                 amount_usd: parseFloat(amount),
-                comment: comment || "Bonus / Refund",
+                comment: comment || defaultComment,
               }),
               this.options,
             )
@@ -274,7 +335,7 @@ export class ReferralsBonusesComponent implements OnInit {
             })
             .catch((error) => {
               const msg =
-                error.json()?.error || "Bonus qo'shishda xatolik yuz berdi";
+                error.json()?.error || "Xatolik yuz berdi";
               swal.showValidationMessage(msg);
               return false;
             });
@@ -285,7 +346,9 @@ export class ReferralsBonusesComponent implements OnInit {
           swal.fire({
             icon: "success",
             title: "Muvaffaqiyat!",
-            text: "Bonus muvaffaqiyatli qo'shildi",
+            text: isBonus
+              ? "Bonus muvaffaqiyatli qo'shildi"
+              : "Qaytarish muvaffaqiyatli saqlandi",
             timer: 2000,
             showConfirmButton: false,
           });
@@ -296,15 +359,6 @@ export class ReferralsBonusesComponent implements OnInit {
 
   absValue(value: number): number {
     return Math.abs(Number(value) || 0);
-  }
-
-  formatCurrency(value: number): string {
-    if (value == null) return "0";
-    const intPart = Math.floor(Math.abs(value));
-    const formatted = intPart
-      .toString()
-      .replace(/\B(?=(\d{3})+(?!\d))/g, " ");
-    return value < 0 ? "-" + formatted : formatted;
   }
 
   getReferralStatusClass(status: string): string {

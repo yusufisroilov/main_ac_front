@@ -2,52 +2,95 @@
   <div class="container-fluid">
     <div class="row">
       <div class="col-md-12">
-        <div class="card">
-          <div class="card-header card-header-primary card-header-icon">
-            <div class="card-icon"><i class="material-icons">account_circle</i></div>
-            <h4 class="card-title">Owner Draws <small class="text-muted">({{ totalItems }} ta)</small></h4>
+        <div class="card oi-card">
+
+          <!-- Header -->
+          <div class="oi-header">
+            <div class="oi-header-left">
+              <i class="material-icons oi-header-icon od-icon">account_circle</i>
+              <div>
+                <h4 class="oi-title">Owner Draws</h4>
+                <span class="oi-subtitle">{{ totalItems }} ta yozuv</span>
+              </div>
+            </div>
+            <div class="oi-header-actions">
+              <button class="btn btn-success oi-btn-add" (click)="addDraw()">
+                <i class="material-icons">add</i> Yangi
+              </button>
+              <button class="btn oi-btn-refresh" (click)="loadDraws()" [disabled]="loading">
+                <i class="material-icons" [class.spin]="loading">refresh</i>
+              </button>
+            </div>
           </div>
-          <div class="card-body">
-            <div class="filters-row">
+
+          <!-- Filters -->
+          <div class="oi-filters">
+            <div class="oi-filter-item">
+              <label class="oi-filter-label">Maqsad</label>
               <select class="form-control form-control-sm" [(ngModel)]="filterPurpose" (change)="applyFilters()">
-                <option value="">Barcha maqsadlar</option>
+                <option value="">Barchasi</option>
                 <option value="PERSONAL">Shaxsiy</option>
                 <option value="INVESTMENT">Investitsiya</option>
                 <option value="LOAN_TO_OWNER">Qarz</option>
               </select>
+            </div>
+            <div class="oi-filter-item">
+              <label class="oi-filter-label">Boshlanish</label>
               <input type="date" class="form-control form-control-sm" [(ngModel)]="filterStartDate" (change)="applyFilters()">
+            </div>
+            <div class="oi-filter-item">
+              <label class="oi-filter-label">Tugash</label>
               <input type="date" class="form-control form-control-sm" [(ngModel)]="filterEndDate" (change)="applyFilters()">
-              <button class="btn btn-sm btn-warning" (click)="clearFilters()"><i class="material-icons" style="font-size: 16px;">clear</i></button>
-              <button class="btn btn-sm btn-success" (click)="addDraw()"><i class="material-icons" style="font-size: 16px;">add</i> Yangi</button>
-              <button class="btn btn-sm btn-info" (click)="loadDraws()" [disabled]="loading"><i class="material-icons" style="font-size: 16px;">refresh</i></button>
+            </div>
+            <div class="oi-filter-item oi-filter-clear">
+              <button class="btn btn-sm btn-outline-warning oi-btn-clear" (click)="clearFilters()" title="Filterni tozalash">
+                <i class="material-icons">clear</i>
+              </button>
+            </div>
+          </div>
+
+          <div class="card-body oi-body">
+
+            <!-- Loading -->
+            <div *ngIf="loading" class="oi-loading">
+              <div class="spinner-border text-primary" role="status"></div>
             </div>
 
-            <div *ngIf="loading" class="text-center" style="padding: 40px;"><div class="spinner-border text-primary" role="status"></div></div>
-
+            <!-- Table -->
             <div *ngIf="!loading && draws.length > 0" class="table-responsive">
-              <table class="table table-hover table-striped table-sm">
+              <table class="table oi-table">
                 <thead>
                   <tr>
-                    <th class="text-center" style="width: 40px;">#</th>
+                    <th class="text-center">#</th>
                     <th>Hisob</th>
                     <th class="text-right">Summa</th>
                     <th>Maqsad</th>
                     <th>Izoh</th>
                     <th class="text-center">Sana</th>
-                    <th class="text-center" style="width: 60px;"></th>
+                    <th class="text-center"></th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr *ngFor="let d of draws; let i = index">
-                    <td class="text-center"><small>{{ currentPage * pageSize + i + 1 }}</small></td>
-                    <td><small>{{ d.cashAccount?.name || '-' }}</small></td>
-                    <td class="text-right"><strong style="color: #9c27b0;">{{ formatAmount(d.amount) }} {{ d.currency }}</strong></td>
-                    <td><span class="badge badge-primary" style="font-size: 11px;">{{ getPurposeLabel(d.purpose) }}</span></td>
-                    <td><small>{{ d.comment || '-' }}</small></td>
-                    <td class="text-center"><small>{{ d.draw_at }}</small></td>
+                    <td class="text-center oi-row-num">{{ currentPage * pageSize + i + 1 }}</td>
+                    <td class="oi-cell-account">{{ d.cashAccount?.name || '-' }}</td>
+                    <td class="text-right oi-cell-amount">
+                      {{ formatAmount(d.amount) }}
+                      <span class="oi-currency">{{ d.currency }}</span>
+                    </td>
+                    <td>
+                      <span class="oi-badge"
+                        [class.oi-badge-personal]="d.purpose === 'PERSONAL'"
+                        [class.oi-badge-invest]="d.purpose === 'INVESTMENT'"
+                        [class.oi-badge-loan]="d.purpose === 'LOAN_TO_OWNER'">
+                        {{ getPurposeLabel(d.purpose) }}
+                      </span>
+                    </td>
+                    <td class="oi-cell-comment">{{ d.comment || '-' }}</td>
+                    <td class="text-center oi-cell-date">{{ d.draw_at }}</td>
                     <td class="text-center">
-                      <button class="btn btn-link btn-sm btn-danger p-0" (click)="deleteDraw(d.id)">
-                        <i class="material-icons" style="font-size: 18px;">delete</i>
+                      <button class="oi-btn-delete" (click)="deleteDraw(d.id)" title="O'chirish">
+                        <i class="material-icons">delete_outline</i>
                       </button>
                     </td>
                   </tr>
@@ -55,13 +98,19 @@
               </table>
             </div>
 
+            <!-- Pagination -->
             <app-pagination *ngIf="totalPages > 1" [currentPage]="currentPage" [totalPages]="totalPages"
               (pageChanged)="onPageChanged($event)"></app-pagination>
 
-            <div *ngIf="!loading && draws.length === 0" class="text-center" style="padding: 50px;">
-              <i class="material-icons" style="font-size: 60px; color: #ccc;">account_circle</i>
-              <p class="text-muted mt-2">Owner draws topilmadi</p>
+            <!-- Empty -->
+            <div *ngIf="!loading && draws.length === 0" class="oi-empty">
+              <i class="material-icons">account_circle</i>
+              <p>Owner draws topilmadi</p>
+              <button class="btn btn-sm btn-success oi-btn-add" (click)="addDraw()">
+                <i class="material-icons">add</i> Yangi draw qo'shish
+              </button>
             </div>
+
           </div>
         </div>
       </div>

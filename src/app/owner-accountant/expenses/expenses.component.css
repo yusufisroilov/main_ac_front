@@ -1,9 +1,121 @@
-.filters-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  align-items: center;
-  margin-bottom: 15px;
+/* ===== Card ===== */
+.oi-card { border: none; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); overflow: hidden; }
+
+/* ===== Header ===== */
+.oi-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 20px 24px 12px; flex-wrap: wrap; gap: 12px;
 }
-.filters-row .form-control { max-width: 160px; }
-.swal-label { font-size: 13px; font-weight: 500; margin-bottom: 4px; display: block; }
+.oi-header-left { display: flex; align-items: center; gap: 12px; }
+.exp-icon { font-size: 32px; color: #e53935; background: rgba(229,57,53,0.1); border-radius: 10px; padding: 8px; }
+.oi-title { margin: 0; font-size: 20px; font-weight: 700; color: #1a1a1a; }
+.oi-subtitle { font-size: 13px; color: #888; }
+.oi-header-actions { display: flex; gap: 8px; align-items: center; }
+
+/* ===== Buttons ===== */
+.oi-btn-add {
+  display: inline-flex; align-items: center; gap: 4px;
+  border-radius: 8px; font-weight: 600; font-size: 13px;
+  padding: 7px 16px; white-space: nowrap;
+}
+.oi-btn-add .material-icons { font-size: 18px; }
+.oi-btn-refresh {
+  display: inline-flex; align-items: center; justify-content: center;
+  border-radius: 8px; padding: 7px 10px;
+  background: #f5f5f5; border: 1px solid #e0e0e0; color: #666;
+}
+.oi-btn-refresh:hover { background: #eee; color: #333; }
+.oi-btn-refresh .material-icons { font-size: 18px; }
+.oi-btn-refresh .spin { animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ===== Filters ===== */
+.oi-filters {
+  display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end;
+  padding: 0 24px 16px; border-bottom: 1px solid #f0f0f0;
+}
+.oi-filter-item { display: flex; flex-direction: column; min-width: 120px; flex: 1; max-width: 180px; }
+.oi-filter-label { font-size: 11px; font-weight: 600; color: #999; text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 3px; }
+.oi-filter-item .form-control { border-radius: 6px; border: 1.5px solid #e0e0e0; font-size: 13px; }
+.oi-filter-item .form-control:focus { border-color: #e53935; box-shadow: 0 0 0 2px rgba(229,57,53,0.12); }
+.oi-filter-clear { min-width: auto; flex: 0; align-self: flex-end; }
+.oi-btn-clear {
+  display: inline-flex; align-items: center; justify-content: center;
+  border-radius: 6px; padding: 5px 8px;
+}
+.oi-btn-clear .material-icons { font-size: 18px; }
+
+/* ===== Body ===== */
+.oi-body { padding: 0 24px 20px; }
+
+/* ===== Loading ===== */
+.oi-loading { display: flex; justify-content: center; padding: 60px 0; }
+
+/* ===== Table ===== */
+.oi-table { border-collapse: separate; border-spacing: 0; }
+.oi-table thead th {
+  font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
+  color: #999; border-bottom: 2px solid #f0f0f0; padding: 10px 12px; white-space: nowrap;
+}
+.oi-table tbody td { padding: 11px 12px; vertical-align: middle; border-bottom: 1px solid #f5f5f5; }
+.oi-table tbody tr:hover { background: #fef9f9; }
+.oi-row-num { color: #bbb; font-size: 12px; }
+.oi-cell-amount { font-size: 15px; font-weight: 700; color: #c62828; white-space: nowrap; }
+.oi-currency { font-size: 12px; font-weight: 500; color: #ef9a9a; margin-left: 2px; }
+.oi-cell-usd { font-size: 12px; color: #888; white-space: nowrap; }
+.oi-cell-account { font-size: 13px; color: #555; white-space: nowrap; }
+.oi-cell-category { font-size: 12px; color: #777; white-space: nowrap; }
+.oi-cell-comment { font-size: 12px; color: #999; max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.oi-cell-date { font-size: 12px; color: #888; white-space: nowrap; }
+
+/* Badges */
+.oi-badge {
+  display: inline-block; font-size: 11px; font-weight: 600; padding: 3px 8px;
+  border-radius: 4px; letter-spacing: 0.3px; white-space: nowrap;
+}
+.oi-badge-cons { background: #e3f2fd; color: #1565c0; }
+.oi-badge-office { background: #e8f5e9; color: #2e7d32; }
+.oi-badge-owner { background: #f3e5f5; color: #7b1fa2; }
+.oi-badge-proj { background: #fff3e0; color: #e65100; }
+.oi-badge-party { background: #e8eaf6; color: #283593; }
+
+/* Delete button */
+.oi-btn-delete {
+  background: none; border: none; color: #ccc; cursor: pointer;
+  padding: 6px; border-radius: 6px; transition: all 0.2s;
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.oi-btn-delete:hover { color: #e53935; background: #fde8e8; }
+.oi-btn-delete .material-icons { font-size: 18px; }
+
+/* ===== Empty State ===== */
+.oi-empty { text-align: center; padding: 60px 20px; }
+.oi-empty .material-icons { font-size: 56px; color: #ddd; }
+.oi-empty p { color: #aaa; margin: 8px 0 16px; font-size: 15px; }
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+  .oi-header { padding: 16px 16px 10px; }
+  .oi-title { font-size: 17px; }
+  .exp-icon { font-size: 26px; padding: 6px; border-radius: 8px; }
+  .oi-filters { padding: 0 16px 12px; gap: 8px; }
+  .oi-filter-item { min-width: calc(50% - 8px); max-width: none; }
+  .oi-body { padding: 0 16px 16px; }
+  .oi-table thead th { font-size: 10px; padding: 8px 8px; }
+  .oi-table tbody td { padding: 9px 8px; font-size: 12px; }
+  .oi-cell-amount { font-size: 13px; }
+  .oi-cell-comment { max-width: 100px; }
+}
+
+@media (max-width: 480px) {
+  .oi-header { padding: 12px 12px 8px; }
+  .oi-filters { padding: 0 12px 10px; }
+  .oi-filter-item { min-width: 100%; }
+  .oi-body { padding: 0 8px 12px; }
+  .oi-table thead th { padding: 6px 6px; }
+  .oi-table tbody td { padding: 8px 6px; }
+  .oi-cell-amount { font-size: 12px; }
+  .oi-cell-comment { max-width: 70px; }
+  .oi-btn-delete { padding: 4px; }
+  .oi-btn-delete .material-icons { font-size: 16px; }
+}

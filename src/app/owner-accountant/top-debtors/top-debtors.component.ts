@@ -12,6 +12,7 @@ export class TopDebtorsComponent implements OnInit {
   debtors: any[] = [];
   loading = false;
   limit = 50;
+  searchTerm = "";
 
   constructor(private http: HttpClient, public authService: AuthService) {}
 
@@ -32,8 +33,29 @@ export class TopDebtorsComponent implements OnInit {
     );
   }
 
+  get filteredDebtors(): any[] {
+    if (!this.searchTerm) return this.debtors;
+    const term = this.searchTerm.toLowerCase();
+    return this.debtors.filter(d =>
+      (d.first_name || "").toLowerCase().includes(term) ||
+      (d.last_name || "").toLowerCase().includes(term) ||
+      (d.username || "").toLowerCase().includes(term) ||
+      ("k" + d.id).includes(term)
+    );
+  }
+
+  get totalDebtUsd(): number {
+    return this.filteredDebtors.reduce((sum, d) => sum + (parseFloat(d.balance_usd) || 0), 0);
+  }
+
+  get totalDebtUzs(): number {
+    return this.filteredDebtors.reduce((sum, d) => sum + (parseFloat(d.balance_uzs) || 0), 0);
+  }
+
   fmt(value: number): string {
-    if (value == null) return "0";
-    return Math.floor(Math.abs(value)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+    if (value == null) return "0.00";
+    const abs = Math.abs(value);
+    const [intPart, decPart] = abs.toFixed(2).split(".");
+    return intPart.replace(/\B(?=(\d{3})+(?!\d))/g, " ") + "." + decPart;
   }
 }

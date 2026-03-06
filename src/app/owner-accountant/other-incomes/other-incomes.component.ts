@@ -79,26 +79,66 @@ export class OaOtherIncomesComponent implements OnInit {
   onPageChanged(page: number) { this.currentPage = page; this.loadIncomes(); }
 
   addIncome() {
-    let html = '<div style="text-align: left;">';
-    html += '<label class="swal-label">Turi</label>';
-    html += '<select id="inc-scope" class="form-control mb-2"><option value="OFFICE">Ofis</option><option value="CONSIGNMENT">Partiya</option><option value="PROJECT">Loyiha</option></select>';
-    html += '<label class="swal-label">Hisob</label>';
-    html += `<select id="inc-account" class="form-control mb-2">${this.cashAccounts.map((a) => `<option value="${a.id}">${a.name} (${a.currency})</option>`).join("")}</select>`;
-    html += '<label class="swal-label">Summa</label>';
-    html += '<input id="inc-amount" type="number" step="0.01" class="form-control mb-2" placeholder="Summa">';
-    html += '<label class="swal-label">Kurs (UZS uchun)</label>';
-    html += '<input id="inc-fx" type="number" step="0.01" class="form-control mb-2" placeholder="Masalan: 12800">';
-    html += '<label class="swal-label">Sana</label>';
-    html += `<input id="inc-date" type="date" class="form-control mb-2" value="${new Date().toISOString().split("T")[0]}">`;
-    html += '<label class="swal-label">Kategoriya (ixtiyoriy)</label>';
-    html += `<select id="inc-category" class="form-control mb-2"><option value="">-- Tanlang --</option>${this.incomeCategories.map((c) => `<option value="${c.id}">${c.name}</option>`).join("")}</select>`;
-    html += '<label class="swal-label">Izoh</label>';
-    html += '<input id="inc-comment" type="text" class="form-control mb-2" placeholder="Izoh...">';
-    html += "</div>";
+    const today = new Date().toISOString().split("T")[0];
+    const accountOpts = this.cashAccounts.map((a) => `<option value="${a.id}">${a.name} (${a.currency})</option>`).join("");
+    const categoryOpts = this.incomeCategories.map((c) => `<option value="${c.id}">${c.name}</option>`).join("");
+
+    const html = `
+      <style>
+        .inc-form { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 16px; text-align: left; }
+        .inc-form .inc-field { display: flex; flex-direction: column; }
+        .inc-form .inc-field.full { grid-column: 1 / -1; }
+        .inc-form .inc-lbl { font-size: 12px; font-weight: 600; color: #555; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.3px; }
+        .inc-form .inc-lbl .req { color: #e53935; margin-left: 2px; }
+        .inc-form .form-control { border-radius: 6px; border: 1.5px solid #ddd; padding: 8px 10px; font-size: 14px; transition: border-color 0.2s; }
+        .inc-form .form-control:focus { border-color: #4caf50; box-shadow: 0 0 0 2px rgba(76,175,80,0.15); outline: none; }
+        @media (max-width: 576px) {
+          .inc-form { grid-template-columns: 1fr; gap: 10px; }
+          .inc-form .form-control { font-size: 16px; padding: 10px 12px; }
+        }
+      </style>
+      <div class="inc-form">
+        <div class="inc-field">
+          <span class="inc-lbl">Turi<span class="req">*</span></span>
+          <select id="inc-scope" class="form-control">
+            <option value="OFFICE">Ofis</option>
+            <option value="CONSIGNMENT">Partiya</option>
+            <option value="PROJECT">Loyiha</option>
+          </select>
+        </div>
+        <div class="inc-field">
+          <span class="inc-lbl">Kategoriya</span>
+          <select id="inc-category" class="form-control">
+            <option value="">-- Tanlang --</option>
+            ${categoryOpts}
+          </select>
+        </div>
+        <div class="inc-field full">
+          <span class="inc-lbl">Hisob<span class="req">*</span></span>
+          <select id="inc-account" class="form-control">${accountOpts}</select>
+        </div>
+        <div class="inc-field">
+          <span class="inc-lbl">Summa<span class="req">*</span></span>
+          <input id="inc-amount" type="number" step="0.01" class="form-control" placeholder="0.00">
+        </div>
+        <div class="inc-field">
+          <span class="inc-lbl">Kurs (UZS uchun)</span>
+          <input id="inc-fx" type="number" step="0.01" class="form-control" placeholder="Masalan: 12800">
+        </div>
+        <div class="inc-field">
+          <span class="inc-lbl">Sana<span class="req">*</span></span>
+          <input id="inc-date" type="date" class="form-control" value="${today}">
+        </div>
+        <div class="inc-field">
+          <span class="inc-lbl">Izoh</span>
+          <input id="inc-comment" type="text" class="form-control" placeholder="Izoh...">
+        </div>
+      </div>`;
 
     swal.fire({
       title: "Yangi Daromad",
       html,
+      width: "min(540px, 95vw)",
       showCancelButton: true,
       confirmButtonText: "Qo'shish",
       cancelButtonText: "Bekor",

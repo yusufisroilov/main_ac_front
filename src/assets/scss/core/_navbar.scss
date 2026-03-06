@@ -102,11 +102,21 @@
         width: 100%;
         padding-top: 10px;
         z-index: 1029;
+        pointer-events: none;
     }
 
     .navbar-wrapper{
         display: inline-flex;
         align-items: center;
+        pointer-events: auto;
+    }
+
+    .navbar-toggler{
+        pointer-events: auto;
+    }
+
+    .navbar-collapse{
+        pointer-events: auto;
     }
 
     // give correct size to ripple container

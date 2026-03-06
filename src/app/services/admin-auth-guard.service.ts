@@ -10,7 +10,7 @@ export class AdminAuthGuard implements CanActivate {
   canActivate() {
     let isAdmin = localStorage.getItem("role");
 
-    if (isAdmin == "ADMIN" || isAdmin === "MANAGER") {
+    if (isAdmin == "ADMIN" || isAdmin === "MANAGER" || isAdmin === "OWNER") {
       return true;
     }
 

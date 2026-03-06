@@ -71,33 +71,82 @@ export class OaOwnerDrawsComponent implements OnInit {
   }
 
   addDraw() {
-    const accountsJson = JSON.stringify(this.cashAccounts.map((a) => ({ id: a.id, currency: a.currency })));
-    let html = '<div style="text-align: left;">';
-    html += '<label class="swal-label">Hisob</label>';
-    html += `<select id="od-account" class="form-control mb-2" onchange="(function(el){var accs=${accountsJson};var sel=accs.find(function(a){return a.id==parseInt(el.value)});var rateEl=document.getElementById('od-rate-wrap');if(rateEl)rateEl.style.display=sel&&sel.currency==='UZS'?'block':'none';})(this)">${this.cashAccounts.map((a) => `<option value="${a.id}">${a.name} (${a.currency})</option>`).join("")}</select>`;
-    const firstIsUzs = this.cashAccounts.length > 0 && this.cashAccounts[0].currency === "UZS";
-    html += `<div id="od-rate-wrap" style="display:${firstIsUzs ? "block" : "none"}">`;
-    html += '<label class="swal-label">Kurs (1 USD = ? UZS)</label>';
-    html += '<input id="od-rate" type="number" step="0.01" class="form-control mb-2" placeholder="Masalan: 12800">';
-    html += "</div>";
-    html += '<label class="swal-label">Summa</label>';
-    html += '<input id="od-amount" type="number" step="0.01" class="form-control mb-2" placeholder="Summa">';
-    html += '<label class="swal-label">Maqsad</label>';
-    html += '<select id="od-purpose" class="form-control mb-2"><option value="PERSONAL">Shaxsiy</option><option value="INVESTMENT">Investitsiya</option><option value="LOAN_TO_OWNER">Qarz</option></select>';
-    html += '<label class="swal-label">Sana</label>';
-    html += `<input id="od-date" type="date" class="form-control mb-2" value="${new Date().toISOString().split("T")[0]}">`;
-    html += '<label class="swal-label">Izoh</label>';
-    html += '<input id="od-comment" type="text" class="form-control mb-2" placeholder="Izoh...">';
-    html += "</div>";
+    const today = new Date().toISOString().split("T")[0];
+    const accountOpts = this.cashAccounts.map((a) => `<option value="${a.id}">${a.name} (${a.currency})</option>`).join("");
+    const accountsData = this.cashAccounts.map((a) => ({ id: a.id, currency: a.currency }));
+
+    const html = `
+      <style>
+        .od-form { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 16px; text-align: left; }
+        .od-form .od-field { display: flex; flex-direction: column; }
+        .od-form .od-field.full { grid-column: 1 / -1; }
+        .od-form .od-lbl { font-size: 12px; font-weight: 600; color: #555; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.3px; }
+        .od-form .od-lbl .req { color: #e53935; margin-left: 2px; }
+        .od-form .form-control { border-radius: 6px; border: 1.5px solid #ddd; padding: 8px 10px; font-size: 14px; transition: border-color 0.2s; }
+        .od-form .form-control:focus { border-color: #7b1fa2; box-shadow: 0 0 0 2px rgba(123,31,162,0.15); outline: none; }
+        @media (max-width: 576px) {
+          .od-form { grid-template-columns: 1fr; gap: 10px; }
+          .od-form .form-control { font-size: 16px; padding: 10px 12px; }
+        }
+      </style>
+      <div class="od-form">
+        <div class="od-field full">
+          <span class="od-lbl">Hisob<span class="req">*</span></span>
+          <select id="od-account" class="form-control">${accountOpts}</select>
+        </div>
+        <div class="od-field">
+          <span class="od-lbl">Summa<span class="req">*</span></span>
+          <input id="od-amount" type="number" step="0.01" class="form-control" placeholder="0.00">
+        </div>
+        <div class="od-field" id="od-rate-wrap">
+          <span class="od-lbl">Kurs (1 USD = ? UZS)</span>
+          <input id="od-rate" type="number" step="0.01" class="form-control" placeholder="Masalan: 12800">
+        </div>
+        <div class="od-field">
+          <span class="od-lbl">Maqsad<span class="req">*</span></span>
+          <select id="od-purpose" class="form-control">
+            <option value="PERSONAL">Shaxsiy</option>
+            <option value="INVESTMENT">Investitsiya</option>
+            <option value="LOAN_TO_OWNER">Qarz</option>
+          </select>
+        </div>
+        <div class="od-field">
+          <span class="od-lbl">Sana<span class="req">*</span></span>
+          <input id="od-date" type="date" class="form-control" value="${today}">
+        </div>
+        <div class="od-field full">
+          <span class="od-lbl">Izoh</span>
+          <input id="od-comment" type="text" class="form-control" placeholder="Izoh...">
+        </div>
+      </div>`;
 
     swal.fire({
       title: "Yangi Owner Draw",
       html,
+      width: "min(540px, 95vw)",
       showCancelButton: true,
       confirmButtonText: "Qo'shish",
       cancelButtonText: "Bekor",
       customClass: { confirmButton: "btn btn-success", cancelButton: "btn btn-secondary" },
       buttonsStyling: false,
+      didOpen: () => {
+        // Auto-fill fx rate
+        this.http.get<any>(GlobalVars.baseUrl + "/fx-rate").subscribe((data) => {
+          if (data.rate) {
+            const rateInput = document.getElementById("od-rate") as HTMLInputElement;
+            if (rateInput && !rateInput.value) rateInput.value = String(data.rate);
+          }
+        });
+        // Toggle rate field visibility based on account currency
+        const accountEl = document.getElementById("od-account") as HTMLSelectElement;
+        const rateWrap = document.getElementById("od-rate-wrap") as HTMLElement;
+        const toggleRate = () => {
+          const sel = accountsData.find((a) => a.id === parseInt(accountEl.value));
+          rateWrap.style.display = sel && sel.currency === "UZS" ? "" : "none";
+        };
+        accountEl.addEventListener("change", toggleRate);
+        toggleRate();
+      },
       preConfirm: () => {
         const amount = (document.getElementById("od-amount") as HTMLInputElement).value;
         const date = (document.getElementById("od-date") as HTMLInputElement).value;
@@ -105,7 +154,7 @@ export class OaOwnerDrawsComponent implements OnInit {
         const fxRate = (document.getElementById("od-rate") as HTMLInputElement)?.value;
         if (!amount || !date || !accountId) { swal.showValidationMessage("Barcha majburiy maydonlarni to'ldiring"); return false; }
         if (parseFloat(amount) <= 0) { swal.showValidationMessage("Summa musbat bo'lishi kerak"); return false; }
-        const selectedAcc = this.cashAccounts.find((a) => a.id === parseInt(accountId));
+        const selectedAcc = accountsData.find((a) => a.id === parseInt(accountId));
         if (selectedAcc?.currency === "UZS" && (!fxRate || parseFloat(fxRate) <= 0)) { swal.showValidationMessage("UZS hisob uchun kursni kiriting"); return false; }
         const payload: any = {
           cash_account_id: parseInt(accountId),

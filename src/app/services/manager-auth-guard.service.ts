@@ -10,7 +10,7 @@ export class ManagerAuthGuardService {
   canActivate() {
     let isAdmin = localStorage.getItem("role");
 
-    if (isAdmin == "MANAGER" || isAdmin == "UZBSTAFF") {
+    if (isAdmin == "MANAGER" || isAdmin == "UZBSTAFF" || isAdmin == "OWNER") {
       return true;
     } else {
       this.router.navigate(["/dashboard"]);
