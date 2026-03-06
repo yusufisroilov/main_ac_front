@@ -127,7 +127,6 @@ export class OaExpensesComponent implements OnInit {
           <select id="exp-scope" class="form-control">
             <option value="CONSIGNMENT">Partiya</option>
             <option value="OFFICE">Ofis</option>
-            <option value="OWNER">Egasi</option>
             <option value="PROJECT">Loyiha</option>
           </select>
         </div>
@@ -265,7 +264,7 @@ export class OaExpensesComponent implements OnInit {
   }
 
   getScopeLabel(scope: string): string {
-    const labels = { CONSIGNMENT: "Partiya", OFFICE: "Ofis", OWNER: "Egasi", PROJECT: "Loyiha" };
+    const labels = { CONSIGNMENT: "Partiya", OFFICE: "Ofis", PROJECT: "Loyiha" };
     return labels[scope] || scope;
   }
 }

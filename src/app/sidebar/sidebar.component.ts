@@ -337,11 +337,12 @@ export const managerROUTES: RouteInfo[] = [
     icontype: "person_search",
   },
   {
-    path: "/uzm/warehouse-inventory",
-    title: "Officedagi Yuklar",
+    path: "/uzm/transactions",
+    title: "Tranzaksiyalar ",
     type: "link",
-    icontype: "inventory_2",
+    icontype: "credit_card",
   },
+
   // {
   //   path: "/uzs/deliveries",
   //   title: "Yetkazmalar",
@@ -349,31 +350,24 @@ export const managerROUTES: RouteInfo[] = [
   //   icontype: "local_shipping",
   // },
   {
+    path: "/uzm/warehouse-inventory",
+    title: "Officedagi Yuklar",
+    type: "link",
+    icontype: "inventory_2",
+  },
+  {
     path: "/uzm/deliveries-list",
     title: "Yetkazmalar",
     type: "link",
     icontype: "local_shipping",
   },
 
-  {
-    path: "/uzm/transactions",
-    title: "Tranzaksiyalar ",
-    type: "link",
-    icontype: "credit_card",
-  },
   // {
   //   path: "/uzm/for-debt-management",
   //   title: "Qarzlarni Boshqarish",
   //   type: "link",
   //   icontype: "payments",
   // },
-
-  {
-    path: "/uzm/tickets-list",
-    title: "Murojaatlar Ro'yxati",
-    type: "link",
-    icontype: "credit_card",
-  },
   {
     path: "/uzm/admin-del-requests",
     title: "Yetkazish So'rovlari",
@@ -381,6 +375,12 @@ export const managerROUTES: RouteInfo[] = [
     icontype: "assignment",
   },
 
+  {
+    path: "/uzm/tickets-list",
+    title: "Murojaatlar Ro'yxati",
+    type: "link",
+    icontype: "credit_card",
+  },
   {
     path: "/uzm/ticket-dashboard",
     title: "Murojaatlar Oynasi",
@@ -481,6 +481,18 @@ export const accountantROUTES: RouteInfo[] = [
     icontype: "swap_horiz",
   },
   {
+    path: "/oa/owner-draws",
+    title: "Owner Draws",
+    type: "link",
+    icontype: "account_circle",
+  },
+  {
+    path: "/oa/owner-draws",
+    title: "Owner Draws",
+    type: "link",
+    icontype: "account_circle",
+  },
+  {
     path: "/oa/top-debtors",
     title: "Eng Ko'p Qarzdorlar",
     type: "link",
@@ -519,23 +531,12 @@ export const ownerROUTES: RouteInfo[] = [
     type: "link",
     icontype: "attach_money",
   },
-  {
-    path: "/oa/owner-draws",
-    title: "Owner Draws",
-    type: "link",
-    icontype: "account_circle",
-  },
+
   {
     path: "/oa/internal-transfers",
     title: "Ichki Transferlar",
     type: "link",
     icontype: "swap_horiz",
-  },
-  {
-    path: "/oa/top-debtors",
-    title: "Eng Ko'p Qarzdorlar",
-    type: "link",
-    icontype: "people",
   },
   {
     path: "/uzm/transactions",
@@ -544,22 +545,54 @@ export const ownerROUTES: RouteInfo[] = [
     icontype: "credit_card",
   },
   {
+    path: "/oa/top-debtors",
+    title: "Eng Ko'p Qarzdorlar",
+    type: "link",
+    icontype: "people",
+  },
+
+  {
+    path: "/uzm",
+    title: "Mijozlar",
+    type: "sub-abs",
+    icontype: "people_alt",
+    collapse: "mijozlar",
+    children: [
+      { path: "/uzm/allusers", title: "Hamma Mijozlar", ab: "HM" },
+      { path: "/uzm/allreceivers", title: "Hamma Qabul qilivchilar", ab: "HQ" },
+    ],
+  },
+  {
+    path: "/uzm",
+    title: "Partiya & Yuklar",
+    type: "sub-abs",
+    icontype: "inventory_2",
+    collapse: "partiya-yuklar",
+    children: [
+      {
+        path: "/uzm/warehouse-inventory",
+        title: "Officedagi Yuklar",
+        ab: "OY",
+      },
+      { path: "/fs/consignmentlist", title: "Reyslar ro'yhati", ab: "RR" },
+    ],
+  },
+  {
+    path: "/uzm",
+    title: "Murojaatlar",
+    type: "sub-abs",
+    icontype: "confirmation_number",
+    collapse: "murojaatlar",
+    children: [
+      { path: "/uzm/tickets-list", title: "Murojaatlar Ro'yxati", ab: "MR" },
+      { path: "/uzm/ticket-dashboard", title: "Murojaatlar Oynasi", ab: "MO" },
+    ],
+  },
+  {
     path: "/oa/settings",
     title: "Sozlamalar",
     type: "link",
     icontype: "settings",
-  },
-  {
-    path: "/uzm/tickets-list",
-    title: "Murojaatlar Ro'yxati",
-    type: "link",
-    icontype: "credit_card",
-  },
-  {
-    path: "/uzm/ticket-dashboard",
-    title: "Murojaatlar Oynasi",
-    type: "link",
-    icontype: "credit_card",
   },
 ];
 
