@@ -35,7 +35,9 @@ export class WeeklyCollectionsComponent implements OnInit {
   }
 
   fmt(value: number): string {
-    if (value == null) return "0";
-    return Math.floor(Math.abs(value)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+    if (value == null) return "0.00";
+    const abs = Math.abs(value);
+    const [intPart, decPart] = abs.toFixed(2).split(".");
+    return intPart.replace(/\B(?=(\d{3})+(?!\d))/g, " ") + "." + decPart;
   }
 }

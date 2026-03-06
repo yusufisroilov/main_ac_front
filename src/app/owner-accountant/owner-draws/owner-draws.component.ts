@@ -71,9 +71,15 @@ export class OaOwnerDrawsComponent implements OnInit {
   }
 
   addDraw() {
+    const accountsJson = JSON.stringify(this.cashAccounts.map((a) => ({ id: a.id, currency: a.currency })));
     let html = '<div style="text-align: left;">';
     html += '<label class="swal-label">Hisob</label>';
-    html += `<select id="od-account" class="form-control mb-2">${this.cashAccounts.map((a) => `<option value="${a.id}">${a.name} (${a.currency})</option>`).join("")}</select>`;
+    html += `<select id="od-account" class="form-control mb-2" onchange="(function(el){var accs=${accountsJson};var sel=accs.find(function(a){return a.id==parseInt(el.value)});var rateEl=document.getElementById('od-rate-wrap');if(rateEl)rateEl.style.display=sel&&sel.currency==='UZS'?'block':'none';})(this)">${this.cashAccounts.map((a) => `<option value="${a.id}">${a.name} (${a.currency})</option>`).join("")}</select>`;
+    const firstIsUzs = this.cashAccounts.length > 0 && this.cashAccounts[0].currency === "UZS";
+    html += `<div id="od-rate-wrap" style="display:${firstIsUzs ? "block" : "none"}">`;
+    html += '<label class="swal-label">Kurs (1 USD = ? UZS)</label>';
+    html += '<input id="od-rate" type="number" step="0.01" class="form-control mb-2" placeholder="Masalan: 12800">';
+    html += "</div>";
     html += '<label class="swal-label">Summa</label>';
     html += '<input id="od-amount" type="number" step="0.01" class="form-control mb-2" placeholder="Summa">';
     html += '<label class="swal-label">Maqsad</label>';
@@ -96,15 +102,20 @@ export class OaOwnerDrawsComponent implements OnInit {
         const amount = (document.getElementById("od-amount") as HTMLInputElement).value;
         const date = (document.getElementById("od-date") as HTMLInputElement).value;
         const accountId = (document.getElementById("od-account") as HTMLSelectElement).value;
+        const fxRate = (document.getElementById("od-rate") as HTMLInputElement)?.value;
         if (!amount || !date || !accountId) { swal.showValidationMessage("Barcha majburiy maydonlarni to'ldiring"); return false; }
         if (parseFloat(amount) <= 0) { swal.showValidationMessage("Summa musbat bo'lishi kerak"); return false; }
-        return {
+        const selectedAcc = this.cashAccounts.find((a) => a.id === parseInt(accountId));
+        if (selectedAcc?.currency === "UZS" && (!fxRate || parseFloat(fxRate) <= 0)) { swal.showValidationMessage("UZS hisob uchun kursni kiriting"); return false; }
+        const payload: any = {
           cash_account_id: parseInt(accountId),
           amount: parseFloat(amount),
           draw_at: date,
           purpose: (document.getElementById("od-purpose") as HTMLSelectElement).value,
           comment: (document.getElementById("od-comment") as HTMLInputElement).value || null,
         };
+        if (fxRate && parseFloat(fxRate) > 0) payload.fx_rate_used = parseFloat(fxRate);
+        return payload;
       },
     }).then((result) => {
       if (result.isConfirmed && result.value) {

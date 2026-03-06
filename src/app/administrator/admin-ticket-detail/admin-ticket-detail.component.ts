@@ -144,6 +144,7 @@ export class AdminTicketDetailComponent implements OnInit {
       { value: "YUKCHI", label: "Yukchi" },
       { value: "CHINASTAFF", label: "Xitoylik" },
       { value: "MANAGER", label: "Manager" },
+      { value: "OWNER", label: "Egasi" },
     ];
 
     // Get ticket number from path params (e.g., /uzm/ticket-detail/T-2025-000123)
@@ -593,6 +594,7 @@ export class AdminTicketDetailComponent implements OnInit {
           YUKCHI: "Yukchi",
           CHINASTAFF: "Xitoylik",
           MANAGER: "Manager",
+          OWNER: "Egasi",
         },
         inputPlaceholder: "Yangi Biriktiriluvchini Tanlash",
         showCancelButton: true,
@@ -744,7 +746,7 @@ export class AdminTicketDetailComponent implements OnInit {
    * Check if user can reassign (only managers)
    */
   canReassign(): boolean {
-    return this.currentUserRole === "MANAGER";
+    return this.currentUserRole === "MANAGER" || this.currentUserRole === "OWNER";
   }
 
   /**

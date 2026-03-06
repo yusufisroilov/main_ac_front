@@ -337,12 +337,6 @@ export const managerROUTES: RouteInfo[] = [
     icontype: "person_search",
   },
   {
-    path: "/uzm/cash-accounts",
-    title: "Hisoblar",
-    type: "link",
-    icontype: "account_balance_wallet",
-  },
-  {
     path: "/uzm/warehouse-inventory",
     title: "Officedagi Yuklar",
     type: "link",
@@ -394,34 +388,10 @@ export const managerROUTES: RouteInfo[] = [
     icontype: "credit_card",
   },
   {
-    path: "/oa/expenses",
-    title: "Xarajatlar (OA)",
+    path: "/oa/top-debtors",
+    title: "Eng Ko'p Qarzdorlar",
     type: "link",
-    icontype: "receipt_long",
-  },
-  {
-    path: "/oa/other-incomes",
-    title: "Boshqa Daromadlar",
-    type: "link",
-    icontype: "attach_money",
-  },
-  {
-    path: "/oa/owner-draws",
-    title: "Owner Draws",
-    type: "link",
-    icontype: "account_circle",
-  },
-  {
-    path: "/oa/internal-transfers",
-    title: "Ichki Transferlar",
-    type: "link",
-    icontype: "swap_horiz",
-  },
-  {
-    path: "/oa/settings",
-    title: "Sozlamalar",
-    type: "link",
-    icontype: "settings",
+    icontype: "people",
   },
 ];
 
@@ -578,6 +548,18 @@ export const ownerROUTES: RouteInfo[] = [
     title: "Sozlamalar",
     type: "link",
     icontype: "settings",
+  },
+  {
+    path: "/uzm/tickets-list",
+    title: "Murojaatlar Ro'yxati",
+    type: "link",
+    icontype: "credit_card",
+  },
+  {
+    path: "/uzm/ticket-dashboard",
+    title: "Murojaatlar Oynasi",
+    type: "link",
+    icontype: "credit_card",
   },
 ];
 

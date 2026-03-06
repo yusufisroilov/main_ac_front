@@ -125,6 +125,7 @@ export class AdminTicketListComponent implements OnInit {
       { value: "YUKCHI", label: "Yukchi" },
       { value: "CHINASTAFF", label: "Xitoylik" },
       { value: "MANAGER", label: "Manager" },
+      { value: "OWNER", label: "Egasi" },
       { value: "ADMIN", label: "Admin" },
     ];
 
@@ -367,6 +368,7 @@ export class AdminTicketListComponent implements OnInit {
           YUKCHI: "Yukchi",
           CHINASTAFF: "Xitoylik",
           MANAGER: "Manager",
+          OWNER: "Egasi",
           ADMIN: "Admin",
         },
         inputPlaceholder: "Yangi Biriktiriluvchini Tanlash",

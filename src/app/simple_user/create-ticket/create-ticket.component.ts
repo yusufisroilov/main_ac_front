@@ -86,6 +86,7 @@ export class CustomerCreateTicketComponent implements OnInit, AfterViewInit {
       ];
       this.roleOptions = [
         { value: "", label: "Auto Assign" },
+        { value: "OWNER", label: "Owner" },
         { value: "MANAGER", label: "Manager" },
         { value: "CHINASTAFF", label: "China Staff" },
         { value: "YUKCHI", label: "Loader" },
@@ -107,6 +108,7 @@ export class CustomerCreateTicketComponent implements OnInit, AfterViewInit {
       ];
       this.roleOptions = [
         { value: "", label: "Avtomatik tanlash" },
+        { value: "OWNER", label: "Egasi" },
         { value: "MANAGER", label: "Menejer" },
         { value: "CHINASTAFF", label: "Xitoy xodimi" },
         { value: "YUKCHI", label: "Yukchi" },
