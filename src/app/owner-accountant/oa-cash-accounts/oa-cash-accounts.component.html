@@ -82,9 +82,68 @@
           <div class="account-actions">
             <button class="btn btn-sm action-edit" (click)="editAccount(account)"><i class="material-icons">edit</i> Tahrirlash</button>
             <button class="btn btn-sm action-delete" (click)="deactivateAccount(account)" *ngIf="account.is_active"><i class="material-icons">block</i> O'chirish</button>
+            <button class="btn btn-sm action-history" (click)="viewLedger(account)" [class.active]="selectedAccount?.id === account.id"><i class="material-icons">history</i></button>
           </div>
         </div>
       </div>
     </div>
+
+    <!-- Ledger Panel -->
+    <div class="ledger-panel" *ngIf="selectedAccount">
+      <div class="ledger-panel-header">
+        <div class="ledger-panel-title">
+          <i class="material-icons">history</i>
+          <span>{{ selectedAccount.name }} — Harakatlar Tarixi</span>
+          <span class="ldg-total-badge">{{ ledgerTotalItems }} ta yozuv</span>
+        </div>
+        <button class="ledger-close-btn" (click)="selectedAccount = null; ledgerEntries = []"><i class="material-icons">close</i></button>
+      </div>
+
+      <div class="ledger-loading" *ngIf="ledgerLoading">
+        <div class="spinner-border spinner-border-sm text-info" role="status"></div>
+      </div>
+
+      <div *ngIf="!ledgerLoading">
+        <div *ngIf="ledgerEntries.length === 0" class="ledger-empty">
+          <i class="material-icons">inbox</i>
+          <p>Yozuvlar topilmadi</p>
+        </div>
+
+        <div *ngIf="ledgerEntries.length > 0" class="table-responsive">
+          <table class="table ledger-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Turi</th>
+                <th>Mijoz</th>
+                <th class="text-right">Summa</th>
+                <th>Izoh</th>
+                <th class="text-center">Sana</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let e of ledgerEntries; let i = index">
+                <td class="ldg-num">{{ ledgerPage * ledgerPageSize + i + 1 }}</td>
+                <td><span class="ldg-badge" [ngClass]="getLedgerTypeClass(e.type)">{{ getLedgerTypeLabel(e.type) }}</span></td>
+                <td class="ldg-customer">
+                  <span *ngIf="e.customer" class="ldg-customer-id">K{{ e.customer.id }}</span>
+                  <span *ngIf="!e.customer" class="text-muted">—</span>
+                </td>
+                <td class="text-right ldg-amount" [ngClass]="getLedgerAmountClass(e.type)">
+                  <span class="ldg-usd-main"><span class="ldg-prefix">{{ getLedgerAmountPrefix(e.type) }}</span>${{ absVal(e.amount_usd) | number:'1.0-2' }}</span>
+                  <span *ngIf="e.amount_original" class="ldg-orig-sub">{{ absVal(e.amount_original) | number:'1.0-0' }}</span>
+                </td>
+                <td class="ldg-comment">{{ e.comment || '—' }}</td>
+                <td class="text-center ldg-date">{{ e.created_at | date:'dd/MM/yyyy HH:mm' }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <app-pagination *ngIf="ledgerTotalPages > 1" [currentPage]="ledgerPage" [totalPages]="ledgerTotalPages"
+          (pageChanged)="onLedgerPageChanged($event)"></app-pagination>
+      </div>
+    </div>
+
   </div>
 </div>

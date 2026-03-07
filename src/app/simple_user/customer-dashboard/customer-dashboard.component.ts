@@ -397,6 +397,30 @@ export class CustomerDashboardComponent implements OnInit, AfterViewInit {
     return !debt || debt === 0;
   }
 
+  getBalanceSign(value: number): string {
+    if (value > 0) return '-';
+    if (value < 0) return '+';
+    return '';
+  }
+
+  getBalanceAbsUsd(value: number): number {
+    return Math.abs(value);
+  }
+
+  getBalanceAbsUzs(value: number): number {
+    return Math.abs(value);
+  }
+
+  getBalanceColor(value: number): string {
+    return value > 0 ? '#f44336' : '#4caf50';
+  }
+
+  getBalanceIcon(value: number): string {
+    if (value > 0) return 'account_balance_wallet';
+    if (value < 0) return 'savings';
+    return 'check_circle';
+  }
+
   formatCurrency(value: number): string {
     if (value == null) return "0";
     const intPart = Math.floor(Math.abs(value));

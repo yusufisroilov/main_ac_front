@@ -374,13 +374,13 @@ export class AddOrdersComponent implements OnInit {
           typeSelect.addEventListener("change", () => {
             if (typeSelect.value === "AVTO") {
               dateLabel.innerHTML =
-                'Truck Departure Date <span style="color: #e53e3e;">*</span>';
+                'Sent to Truck Departure Date <span style="color: #e53e3e;">*</span>';
               dateHint.textContent =
                 "Date when shipment departs from truck station (~20 days to UZB)";
               dateHint.style.color = "#6c757d";
             } else if (typeSelect.value === "AVIA") {
               dateLabel.innerHTML =
-                'China Airport Date <span style="color: #e53e3e;">*</span>';
+                'Sent to China Airport Date <span style="color: #e53e3e;">*</span>';
               dateHint.textContent =
                 "Expected date shipment arrives at China airport (~3 days to UZB)";
               dateHint.style.color = "#6c757d";

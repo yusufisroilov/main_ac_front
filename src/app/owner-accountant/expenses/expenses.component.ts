@@ -144,7 +144,7 @@ export class OaExpensesComponent implements OnInit {
         </div>
         <div class="exp-field">
           <span class="exp-lbl">Summa<span class="req">*</span></span>
-          <input id="exp-amount" type="number" step="0.01" class="form-control" placeholder="0.00">
+          <input id="exp-amount" type="text" class="form-control" placeholder="0" autocomplete="off">
         </div>
         <div class="exp-field">
           <span class="exp-lbl">Kurs (UZS uchun)</span>
@@ -185,15 +185,24 @@ export class OaExpensesComponent implements OnInit {
         };
         scopeEl.addEventListener("change", toggleConsignment);
         toggleConsignment();
+        // Live amount formatter
+        const amtEl = document.getElementById("exp-amount") as HTMLInputElement;
+        amtEl.addEventListener("input", () => {
+          const raw = amtEl.value.replace(/[^\d.]/g, "");
+          const parts = raw.split(".");
+          parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+          if (parts.length > 2) parts.length = 2;
+          amtEl.value = parts.join(".");
+        });
       },
       preConfirm: () => {
         const scopeType = (document.getElementById("exp-scope") as HTMLSelectElement).value;
         const consignment = (document.getElementById("exp-consignment") as HTMLInputElement).value.trim();
-        const amount = (document.getElementById("exp-amount") as HTMLInputElement).value;
+        const amountRaw = (document.getElementById("exp-amount") as HTMLInputElement).value.replace(/\s/g, "");
         const date = (document.getElementById("exp-date") as HTMLInputElement).value;
         const categoryId = (document.getElementById("exp-category") as HTMLSelectElement).value;
         const accountId = (document.getElementById("exp-account") as HTMLSelectElement).value;
-        if (!amount || !date || !categoryId || !accountId) {
+        if (!amountRaw || !date || !categoryId || !accountId) {
           swal.showValidationMessage("Barcha majburiy maydonlarni to'ldiring");
           return false;
         }
@@ -201,7 +210,7 @@ export class OaExpensesComponent implements OnInit {
           swal.showValidationMessage("Partiya turi tanlanganda partiya nomi majburiy");
           return false;
         }
-        if (parseFloat(amount) <= 0) {
+        if (parseFloat(amountRaw) <= 0) {
           swal.showValidationMessage("Summa musbat bo'lishi kerak");
           return false;
         }
@@ -210,7 +219,7 @@ export class OaExpensesComponent implements OnInit {
           consignment: consignment || null,
           category_id: parseInt(categoryId),
           cash_account_id: parseInt(accountId),
-          amount_original: parseFloat(amount),
+          amount_original: parseFloat(amountRaw),
           fx_rate_used: parseFloat((document.getElementById("exp-fx") as HTMLInputElement).value) || null,
           expense_at: date,
           comment: (document.getElementById("exp-comment") as HTMLInputElement).value || null,

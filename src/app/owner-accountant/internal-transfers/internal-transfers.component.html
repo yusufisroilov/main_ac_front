@@ -60,10 +60,11 @@
                 <thead>
                   <tr>
                     <th class="text-center">#</th>
-                    <th>Dan</th>
+                    <th>Dan (Chiqdi)</th>
                     <th class="text-center"></th>
-                    <th>Ga</th>
-                    <th class="text-right">Summa</th>
+                    <th>Ga (Kirdi)</th>
+                    <th class="text-right">Chiqdi</th>
+                    <th class="text-right">Kirdi</th>
                     <th>Izoh</th>
                     <th class="text-center">Sana</th>
                     <th class="text-center"></th>
@@ -72,12 +73,25 @@
                 <tbody>
                   <tr *ngFor="let t of transfers; let i = index">
                     <td class="text-center oi-row-num">{{ currentPage * pageSize + i + 1 }}</td>
-                    <td class="it-from">{{ t.fromAccount?.name || '-' }}</td>
-                    <td class="text-center it-arrow"><i class="material-icons">arrow_forward</i></td>
-                    <td class="it-to">{{ t.toAccount?.name || '-' }}</td>
-                    <td class="text-right oi-cell-amount">
-                      {{ formatAmount(t.amount_original) }}
-                      <span class="oi-currency">{{ t.currency }}</span>
+                    <td class="it-from">
+                      <span class="it-account-name">{{ t.fromAccount?.name || '-' }}</span>
+                      <span class="it-account-currency">{{ t.fromAccount?.currency }}</span>
+                    </td>
+                    <td class="text-center it-arrow">
+                      <i class="material-icons">arrow_forward</i>
+                      <div *ngIf="t.fx_rate_used" class="it-fx-badge">{{ t.fx_rate_used | number:'1.0-0' }}</div>
+                    </td>
+                    <td class="it-to">
+                      <span class="it-account-name">{{ t.toAccount?.name || '-' }}</span>
+                      <span class="it-account-currency">{{ t.toAccount?.currency }}</span>
+                    </td>
+                    <td class="text-right oi-cell-amount it-amount-out">
+                      <span class="it-amount-value">{{ formatAmount(t.amount_original) }}</span>
+                      <span class="oi-currency">{{ t.fromAccount?.currency || t.currency }}</span>
+                    </td>
+                    <td class="text-right oi-cell-amount it-amount-in">
+                      <span class="it-amount-value">{{ formatAmount(t.amount_converted || t.amount_original) }}</span>
+                      <span class="oi-currency">{{ t.toAccount?.currency || t.currency }}</span>
                     </td>
                     <td class="oi-cell-comment">{{ t.comment || '-' }}</td>
                     <td class="text-center oi-cell-date">{{ t.transfer_at | date:'dd/MM/yyyy' }}</td>

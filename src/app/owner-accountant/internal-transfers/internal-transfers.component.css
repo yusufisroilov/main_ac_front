@@ -67,9 +67,33 @@
 
 /* Transfer direction */
 .it-from { font-size: 13px; font-weight: 600; color: #c62828; white-space: nowrap; }
-.it-arrow { color: #bbb; }
-.it-arrow .material-icons { font-size: 18px; }
+.it-arrow { color: #bbb; vertical-align: middle; }
+.it-arrow .material-icons { font-size: 18px; display: block; }
 .it-to { font-size: 13px; font-weight: 600; color: #2e7d32; white-space: nowrap; }
+
+/* Account sub-label (currency tag under account name) */
+.it-account-name { display: block; }
+.it-account-currency {
+  display: inline-block; font-size: 10px; font-weight: 700;
+  color: #888; background: #f0f0f0; border-radius: 4px;
+  padding: 1px 5px; margin-top: 2px; letter-spacing: 0.3px;
+}
+
+/* FX rate badge between arrow */
+.it-fx-badge {
+  font-size: 10px; font-weight: 600; color: #0288d1;
+  background: rgba(2,136,209,0.08); border-radius: 4px;
+  padding: 1px 5px; margin-top: 2px; white-space: nowrap;
+}
+
+/* Amount columns */
+.it-amount-out { color: #c62828 !important; }
+.it-amount-out .oi-currency { color: #e57373; }
+.it-amount-out .it-amount-value::before { content: '− '; font-size: 13px; }
+
+.it-amount-in { color: #2e7d32 !important; }
+.it-amount-in .oi-currency { color: #66bb6a; }
+.it-amount-in .it-amount-value::before { content: '+ '; font-size: 13px; }
 
 /* Delete button */
 .oi-btn-delete {

@@ -94,7 +94,7 @@ export class OaInternalTransfersComponent implements OnInit {
         </div>
         <div class="tr-field">
           <span class="tr-lbl">Summa<span class="req">*</span></span>
-          <input id="tr-amount" type="number" step="0.01" class="form-control" placeholder="0.00">
+          <input id="tr-amount" type="text" class="form-control" placeholder="0" autocomplete="off">
         </div>
         <div class="tr-field">
           <span class="tr-lbl">Kurs (valyuta ayirboshlash)</span>
@@ -126,11 +126,20 @@ export class OaInternalTransfersComponent implements OnInit {
             if (fxInput && !fxInput.value) fxInput.value = String(data.rate);
           }
         });
+        // Live amount formatter
+        const amtEl = document.getElementById("tr-amount") as HTMLInputElement;
+        amtEl.addEventListener("input", () => {
+          const raw = amtEl.value.replace(/[^\d.]/g, "");
+          const parts = raw.split(".");
+          parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+          if (parts.length > 2) parts.length = 2;
+          amtEl.value = parts.join(".");
+        });
       },
       preConfirm: () => {
         const fromId = (document.getElementById("tr-from") as HTMLSelectElement).value;
         const toId = (document.getElementById("tr-to") as HTMLSelectElement).value;
-        const amount = (document.getElementById("tr-amount") as HTMLInputElement).value;
+        const amount = (document.getElementById("tr-amount") as HTMLInputElement).value.replace(/\s/g, "");
         const date = (document.getElementById("tr-date") as HTMLInputElement).value;
         if (!fromId || !toId || !amount || !date) { swal.showValidationMessage("Barcha maydonlarni to'ldiring"); return false; }
         if (fromId === toId) { swal.showValidationMessage("Bir xil hisobga transfer qilib bo'lmaydi"); return false; }

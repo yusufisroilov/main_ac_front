@@ -53,7 +53,6 @@ export class Financev2Component implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.currentParty = localStorage.getItem("current_party") || "";
     this.loadCashAccounts();
   }
 
@@ -147,10 +146,9 @@ export class Financev2Component implements OnInit {
           if (!name) return;
 
           this.httpClient
-            .get<any>(
-              GlobalVars.baseUrl + "/consignments/info?name=" + name,
-              { headers: this.getHeaders() },
-            )
+            .get<any>(GlobalVars.baseUrl + "/consignments/info?name=" + name, {
+              headers: this.getHeaders(),
+            })
             .subscribe(
               (data) => {
                 if (data.status === "error") {
@@ -306,9 +304,7 @@ export class Financev2Component implements OnInit {
 
   onPageChanged(pageIndex: number) {
     this.currentPage = pageIndex;
-    document
-      .getElementById("listcard")
-      ?.scrollIntoView({ behavior: "smooth" });
+    document.getElementById("listcard")?.scrollIntoView({ behavior: "smooth" });
     this.getListOfFinance();
   }
 
@@ -412,11 +408,7 @@ export class Financev2Component implements OnInit {
             .subscribe(
               (data) => {
                 if (data.status === "error") {
-                  swal.fire(
-                    "Qo'shilmadi",
-                    data.message || data.error,
-                    "error",
-                  );
+                  swal.fire("Qo'shilmadi", data.message || data.error, "error");
                 } else {
                   this.getListOfFinance();
                 }
@@ -483,11 +475,7 @@ export class Financev2Component implements OnInit {
             .subscribe(
               (data) => {
                 if (data.status === "error") {
-                  swal.fire(
-                    "Xatolik",
-                    data.message || data.error,
-                    "error",
-                  );
+                  swal.fire("Xatolik", data.message || data.error, "error");
                 } else {
                   this.getListOfFinance();
                 }
@@ -568,14 +556,10 @@ export class Financev2Component implements OnInit {
 
   fetchFinancesOfCons() {
     this.httpClient
-      .get(
-        GlobalVars.baseUrl +
-          "/finance-v2/list?size=800&download=excel",
-        {
-          headers: this.getHeaders(),
-          responseType: "blob",
-        },
-      )
+      .get(GlobalVars.baseUrl + "/finance-v2/list?size=800&download=excel", {
+        headers: this.getHeaders(),
+        responseType: "blob",
+      })
       .subscribe(
         (blob: Blob) => {
           const url = window.URL.createObjectURL(blob);

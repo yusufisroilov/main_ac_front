@@ -74,13 +74,16 @@ export class FinanceComponent implements OnInit {
     private http: Http,
     private httpClient: HttpClient,
     private router: Router,
-    public authService: AuthService
+    public authService: AuthService,
   ) {
     this.headers12 = new Headers({ "Content-Type": "application/json" });
     this.headers12.append("Authorization", localStorage.getItem("token"));
     this.options = new RequestOptions({ headers: this.headers12 });
 
-    if (localStorage.getItem("role") == "MANAGER" || localStorage.getItem("role") == "OWNER") {
+    if (
+      localStorage.getItem("role") == "MANAGER" ||
+      localStorage.getItem("role") == "OWNER"
+    ) {
       this.hideForManager = false;
     }
 
@@ -120,8 +123,8 @@ export class FinanceComponent implements OnInit {
       dataRows: [],
     };
 
-    this.currentParty = localStorage.getItem("current_party");
-    this.financeVersion = parseInt(localStorage.getItem("finance_version") || "1") || 1;
+    this.financeVersion =
+      parseInt(localStorage.getItem("finance_version") || "1") || 1;
   }
 
   ngAfterViewInit() {
@@ -155,7 +158,7 @@ export class FinanceComponent implements OnInit {
           data[1] +
           " " +
           data[2] +
-          "'s row."
+          "'s row.",
       );
       e.preventDefault();
     });
@@ -188,16 +191,18 @@ export class FinanceComponent implements OnInit {
 
   getListOfFinance() {
     // Route to V1 or V2 endpoint based on finance_version
-    const endpoint = this.financeVersion === 2 ? "/finance-v2/list" : "/finance/list";
+    const endpoint =
+      this.financeVersion === 2 ? "/finance-v2/list" : "/finance/list";
 
     return this.http
       .get(
         GlobalVars.baseUrl +
-          endpoint + "?page=" +
+          endpoint +
+          "?page=" +
           this.currentPage +
           "&size=" +
           this.pageSize,
-        this.options
+        this.options,
       )
       .subscribe(
         (response) => {
@@ -249,7 +254,7 @@ export class FinanceComponent implements OnInit {
           if (error.status == 403) {
             this.authService.logout();
           }
-        }
+        },
       );
   }
 
@@ -327,14 +332,15 @@ export class FinanceComponent implements OnInit {
       this.currentFinID = "";
     }
 
-    const endpoint = this.financeVersion === 2 ? "/finance-v2/list" : "/finance/list";
+    const endpoint =
+      this.financeVersion === 2 ? "/finance-v2/list" : "/finance/list";
 
     return this.http
       .get(
         GlobalVars.baseUrl +
           `${endpoint}?size=${this.pageSize}&ownerId=` +
           this.currentFinID,
-        this.options
+        this.options,
       )
       .subscribe(
         (response) => {
@@ -375,7 +381,7 @@ export class FinanceComponent implements OnInit {
           if (error.status == 403) {
             this.authService.logout();
           }
-        }
+        },
       );
   }
 
@@ -407,7 +413,7 @@ export class FinanceComponent implements OnInit {
           "&size=" +
           this.pageSize +
           filterLink,
-        this.options
+        this.options,
       )
       .subscribe(
         (response) => {
@@ -438,7 +444,7 @@ export class FinanceComponent implements OnInit {
           if (error.status == 403) {
             this.authService.logout();
           }
-        }
+        },
       );
   }
 
@@ -451,7 +457,7 @@ export class FinanceComponent implements OnInit {
       this.http
         .get(
           GlobalVars.baseUrl + "/orders/search?tracking_number=" + searchkey,
-          this.options
+          this.options,
         )
         .subscribe(
           (response) => {
@@ -481,7 +487,7 @@ export class FinanceComponent implements OnInit {
             if (error.status == 403) {
               this.authService.logout();
             }
-          }
+          },
         );
     }
   }
@@ -510,23 +516,26 @@ export class FinanceComponent implements OnInit {
           let weight = $("#input-weight").val();
           this.enteredLast = ownerId + " ID ga " + weight + " kg";
 
-          const finEndpoint = this.financeVersion === 2 ? "/finance-v2/add" : "/finance/add";
+          const finEndpoint =
+            this.financeVersion === 2 ? "/finance-v2/add" : "/finance/add";
           this.http
             .post(
               GlobalVars.baseUrl +
-                finEndpoint + "?owner_id=" +
+                finEndpoint +
+                "?owner_id=" +
                 ownerId +
                 "&weight=" +
                 weight +
                 "&name=" +
                 localStorage.getItem("current_party"),
               "",
-              this.options
+              this.options,
             )
             .subscribe(
               (response) => {
                 if (response.json().status == "error") {
-                  this.registredMessage = response.json().message || response.json().error;
+                  this.registredMessage =
+                    response.json().message || response.json().error;
                   swal
                     .fire("Not Added", this.registredMessage, "error")
                     .then((result) => {
@@ -547,7 +556,7 @@ export class FinanceComponent implements OnInit {
                     .fire(
                       "Not Added",
                       `BAD REQUEST: ${error.json().error}`,
-                      "error"
+                      "error",
                     )
                     .then((result) => {
                       if (result.isConfirmed) {
@@ -560,7 +569,7 @@ export class FinanceComponent implements OnInit {
                 if (error.status == 403) {
                   this.authService.logout();
                 }
-              }
+              },
             );
         },
       })
@@ -599,13 +608,13 @@ export class FinanceComponent implements OnInit {
           this.http
             .get(
               GlobalVars.baseUrl + "/consignments/info?name=" + name,
-              this.options
+              this.options,
             )
             .subscribe(
               (response) => {
                 localStorage.setItem(
                   "current_party",
-                  response.json().consignment.name
+                  response.json().consignment.name,
                 );
                 // Store finance_version for routing V1/V2 API calls
                 const fv = response.json().consignment.finance_version || 1;
@@ -633,7 +642,7 @@ export class FinanceComponent implements OnInit {
                     .fire(
                       "Not Added",
                       `BAD REQUEST: ${error.json().error}`,
-                      "error"
+                      "error",
                     )
                     .then((result) => {
                       if (result.isConfirmed) {
@@ -650,7 +659,7 @@ export class FinanceComponent implements OnInit {
                 if (error.status == 403) {
                   this.authService.logout();
                 }
-              }
+              },
             );
         },
       })
@@ -717,21 +726,31 @@ export class FinanceComponent implements OnInit {
             .post(
               GlobalVars.baseUrl + "/finance-v2/edit",
               JSON.stringify(body),
-              this.options
+              this.options,
             )
             .subscribe(
               (response) => {
                 this.getListOfFinance();
                 if (response.json().status == "error") {
-                  swal.fire("Not Added", response.json().message || response.json().error, "error");
+                  swal.fire(
+                    "Not Added",
+                    response.json().message || response.json().error,
+                    "error",
+                  );
                 }
               },
               (error) => {
                 if (error) {
-                  swal.fire("Not Added", `BAD REQUEST: ${error.json().error}`, "error");
+                  swal.fire(
+                    "Not Added",
+                    `BAD REQUEST: ${error.json().error}`,
+                    "error",
+                  );
                 }
-                if (error.status == 403) { this.authService.logout(); }
-              }
+                if (error.status == 403) {
+                  this.authService.logout();
+                }
+              },
             );
         },
       })
@@ -792,9 +811,24 @@ export class FinanceComponent implements OnInit {
           if (this.financeVersion === 2) {
             // V2: build payments array and send as JSON body
             const payments = [];
-            if (parseFloat(usd) > 0) payments.push({ method: "USD_CASH", currency: "USD", amount_original: parseFloat(usd) });
-            if (parseFloat(cash) > 0) payments.push({ method: "UZS_CASH", currency: "UZS", amount_original: parseFloat(cash) });
-            if (parseFloat(card) > 0) payments.push({ method: "PLASTIC", currency: "UZS", amount_original: parseFloat(card) });
+            if (parseFloat(usd) > 0)
+              payments.push({
+                method: "USD_CASH",
+                currency: "USD",
+                amount_original: parseFloat(usd),
+              });
+            if (parseFloat(cash) > 0)
+              payments.push({
+                method: "UZS_CASH",
+                currency: "UZS",
+                amount_original: parseFloat(cash),
+              });
+            if (parseFloat(card) > 0)
+              payments.push({
+                method: "PLASTIC",
+                currency: "UZS",
+                amount_original: parseFloat(card),
+              });
 
             if (payments.length === 0) return;
 
@@ -802,21 +836,30 @@ export class FinanceComponent implements OnInit {
               .post(
                 GlobalVars.baseUrl + "/finance-v2/pay",
                 JSON.stringify({ finance_id: finId, payments, comment: izoh }),
-                this.options
+                this.options,
               )
               .subscribe(
                 (response) => {
                   this.getListOfFinance();
                   if (response.json().status == "error") {
-                    swal.fire("Not Added", response.json().message || response.json().error, "error");
+                    swal.fire(
+                      "Not Added",
+                      response.json().message || response.json().error,
+                      "error",
+                    );
                   }
                 },
                 (error) => {
                   if (error) {
-                    swal.fire("Not Added", `BAD REQUEST: ${error.json().error}`, "error")
+                    swal
+                      .fire(
+                        "Not Added",
+                        `BAD REQUEST: ${error.json().error}`,
+                        "error",
+                      )
                       .then(() => this.getListOfFinance());
                   }
-                }
+                },
               );
             return;
           }
@@ -836,7 +879,7 @@ export class FinanceComponent implements OnInit {
                 "&comment=" +
                 izoh,
               "",
-              this.options
+              this.options,
             )
             .subscribe(
               (response) => {
@@ -858,7 +901,7 @@ export class FinanceComponent implements OnInit {
                     .fire(
                       "Not Added",
                       `BAD REQUEST: ${error.json().error}`,
-                      "error"
+                      "error",
                     )
                     .then((result) => {
                       if (result.isConfirmed) {
@@ -866,7 +909,7 @@ export class FinanceComponent implements OnInit {
                       }
                     });
                 }
-              }
+              },
             );
         },
       })
@@ -907,7 +950,7 @@ export class FinanceComponent implements OnInit {
               .post(
                 GlobalVars.baseUrl + "/finance-v2/deliver",
                 JSON.stringify({ finance_id: trNum }),
-                this.options
+                this.options,
               )
               .subscribe((response) => {
                 swal.fire({
@@ -928,7 +971,7 @@ export class FinanceComponent implements OnInit {
                   "&id=" +
                   trNum,
                 "",
-                this.options
+                this.options,
               )
               .subscribe((response) => {
                 swal.fire({
@@ -949,16 +992,18 @@ export class FinanceComponent implements OnInit {
   }
 
   getListwithFiltr(cond) {
-    const endpoint = this.financeVersion === 2 ? "/finance-v2/list" : "/finance/list";
+    const endpoint =
+      this.financeVersion === 2 ? "/finance-v2/list" : "/finance/list";
 
     return this.http
       .get(
         GlobalVars.baseUrl +
-          endpoint + "?page=" +
+          endpoint +
+          "?page=" +
           this.currentPage +
           "&size=" +
           this.pageSize,
-        this.options
+        this.options,
       )
       .subscribe(
         (response) => {
@@ -994,7 +1039,7 @@ export class FinanceComponent implements OnInit {
           if (error.status == 403) {
             this.authService.logout();
           }
-        }
+        },
       );
   }
 

@@ -44,9 +44,65 @@
 
 .welcome-banner .welcome-text h3 {
   color: #333;
-  margin: 0;
+  margin: 0 0 6px 0;
   font-size: 18px;
   font-weight: 600;
+}
+
+/* Welcome banner balance badge */
+.wb-balance {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 12px 5px 8px;
+  border-radius: 20px;
+  border: 1.5px solid transparent;
+}
+
+.wb-balance-debt {
+  background: #fff0f0;
+  border-color: #ef9a9a;
+}
+
+.wb-balance-credit {
+  background: #f0faf0;
+  border-color: #a5d6a7;
+}
+
+.wb-balance-clear {
+  background: #f0faf0;
+  border-color: #c8e6c9;
+}
+
+.wb-balance-icon {
+  font-size: 18px;
+}
+
+.wb-balance-debt .wb-balance-icon {
+  color: #f44336;
+}
+
+.wb-balance-credit .wb-balance-icon,
+.wb-balance-clear .wb-balance-icon {
+  color: #4caf50;
+}
+
+.wb-balance-body {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.wb-balance-amount {
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+}
+
+.wb-balance-hint {
+  font-size: 10px;
+  color: #888;
+  font-weight: 500;
 }
 
 /* ============================================
@@ -79,13 +135,35 @@
 }
 
 .stat-tile.debt-tile {
-  border: 1.5px solid #ffcdd2;
-  background: #fff5f5;
+  border: 1.5px solid #ef9a9a;
+  background: linear-gradient(135deg, #fff5f5 0%, #fce4e4 100%);
 }
 
 .stat-tile.paid-tile {
   border: 1.5px solid #c8e6c9;
   background: #f1f8e9;
+}
+
+.stat-tile.credit-tile {
+  border: 1.5px solid #a5d6a7;
+  background: linear-gradient(135deg, #f1f8e9 0%, #e8f5e9 100%);
+}
+
+.balance-tile .balance-value {
+  line-height: 1.1;
+}
+
+.balance-tile .balance-amount {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+
+.balance-tile .balance-currency {
+  font-size: 14px;
+  font-weight: 600;
+  vertical-align: super;
+  margin-left: 1px;
 }
 
 .stat-tile-icon {

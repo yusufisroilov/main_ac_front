@@ -393,7 +393,6 @@ export class ConsignmentListComponent implements OnInit {
                       this.options,
                     )
                     .subscribe((response) => {
-                      localStorage.setItem("current_party", consignmentName);
                       this.consignments = response.json().consignments;
                     });
                 } else {
@@ -582,5 +581,39 @@ export class ConsignmentListComponent implements OnInit {
   printManifest(partyNum) {
     // console.log("c n " + partyNum);
     this.takeManifestData(partyNum);
+  }
+
+  journeyStatusLabels: { [key: number]: string } = {
+    1: "Omborga kelmadi",
+    2: "Xitoy omborida",
+    3: "XA yo'lida",
+    4: "Xitoy aeroportida",
+    5: "UZB aeroportida",
+    6: "Bojxonada",
+    7: "Toshkent omborida",
+    8: "Mijozga yuborildi",
+    9: "Qabul qilindi",
+    10: "Boshqa manzil",
+  };
+
+  journeyStatusColors: { [key: number]: string } = {
+    1: "#9E9E9E",
+    2: "#4CAF50",
+    3: "#03A9F4",
+    4: "#2196F3",
+    5: "#9C27B0",
+    6: "#FF9800",
+    7: "#E91E63",
+    8: "#00BCD4",
+    9: "#388E3C",
+    10: "#607D8B",
+  };
+
+  getJourneyStatusLabel(status: number): string {
+    return this.journeyStatusLabels[status] || "Noma'lum";
+  }
+
+  getJourneyStatusColor(status: number): string {
+    return this.journeyStatusColors[status] || "#9E9E9E";
   }
 }

@@ -97,9 +97,45 @@
 }
 
 .badge-adjustment {
-  background: #fce4ec;
-  color: #c62828;
+  background: #f3e5f5;
+  color: #7b1fa2;
+  border: 1px solid #ce93d8;
+}
+
+.badge-income {
+  background: #e8f5e9;
+  color: #1b5e20;
+  border: 1px solid #81c784;
+}
+
+.badge-expense {
+  background: #ffebee;
+  color: #b71c1c;
   border: 1px solid #ef9a9a;
+}
+
+.badge-owner-draw {
+  background: #fff8e1;
+  color: #e65100;
+  border: 1px solid #ffcc02;
+}
+
+.badge-transfer-in {
+  background: #e0f7fa;
+  color: #006064;
+  border: 1px solid #80deea;
+}
+
+.badge-transfer-out {
+  background: #fbe9e7;
+  color: #bf360c;
+  border: 1px solid #ffab91;
+}
+
+.badge-refund {
+  background: #ede7f6;
+  color: #4527a0;
+  border: 1px solid #b39ddb;
 }
 
 /* ═══════════════════════════════════════════ */
@@ -184,4 +220,56 @@
   padding: 8px;
   vertical-align: middle;
   font-size: 13px;
+}
+
+/* ═══════════════════════════════════════════ */
+/* Amount Cell                                */
+/* ═══════════════════════════════════════════ */
+
+.amount-cell {
+  font-size: 14px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.amount-prefix {
+  font-size: 13px;
+  margin-right: 1px;
+}
+
+.amount-in      { color: #2e7d32; }
+.amount-out     { color: #c62828; }
+.amount-neutral { color: #333; }
+
+/* ═══════════════════════════════════════════ */
+/* Customer & Account Cells                  */
+/* ═══════════════════════════════════════════ */
+
+.customer-id-badge {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 700;
+  color: #1565c0;
+  background: #e3f2fd;
+  border-radius: 6px;
+  padding: 2px 7px;
+}
+
+.account-name-cell {
+  font-size: 13px;
+  font-weight: 600;
+  color: #333;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.account-currency {
+  font-size: 10px;
+  font-weight: 700;
+  color: #888;
+  background: #f0f0f0;
+  border-radius: 4px;
+  padding: 1px 4px;
+  align-self: flex-start;
 }

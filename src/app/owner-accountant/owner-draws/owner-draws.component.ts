@@ -96,7 +96,7 @@ export class OaOwnerDrawsComponent implements OnInit {
         </div>
         <div class="od-field">
           <span class="od-lbl">Summa<span class="req">*</span></span>
-          <input id="od-amount" type="number" step="0.01" class="form-control" placeholder="0.00">
+          <input id="od-amount" type="text" class="form-control" placeholder="0" autocomplete="off">
         </div>
         <div class="od-field" id="od-rate-wrap">
           <span class="od-lbl">Kurs (1 USD = ? UZS)</span>
@@ -146,9 +146,18 @@ export class OaOwnerDrawsComponent implements OnInit {
         };
         accountEl.addEventListener("change", toggleRate);
         toggleRate();
+        // Live amount formatter
+        const amtEl = document.getElementById("od-amount") as HTMLInputElement;
+        amtEl.addEventListener("input", () => {
+          const raw = amtEl.value.replace(/[^\d.]/g, "");
+          const parts = raw.split(".");
+          parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+          if (parts.length > 2) parts.length = 2;
+          amtEl.value = parts.join(".");
+        });
       },
       preConfirm: () => {
-        const amount = (document.getElementById("od-amount") as HTMLInputElement).value;
+        const amount = (document.getElementById("od-amount") as HTMLInputElement).value.replace(/\s/g, "");
         const date = (document.getElementById("od-date") as HTMLInputElement).value;
         const accountId = (document.getElementById("od-account") as HTMLSelectElement).value;
         const fxRate = (document.getElementById("od-rate") as HTMLInputElement)?.value;

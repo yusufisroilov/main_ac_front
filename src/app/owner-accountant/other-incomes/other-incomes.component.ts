@@ -119,7 +119,7 @@ export class OaOtherIncomesComponent implements OnInit {
         </div>
         <div class="inc-field">
           <span class="inc-lbl">Summa<span class="req">*</span></span>
-          <input id="inc-amount" type="number" step="0.01" class="form-control" placeholder="0.00">
+          <input id="inc-amount" type="text" class="form-control" placeholder="0" autocomplete="off">
         </div>
         <div class="inc-field">
           <span class="inc-lbl">Kurs (UZS uchun)</span>
@@ -153,9 +153,18 @@ export class OaOtherIncomesComponent implements OnInit {
             }
           },
         );
+        // Live amount formatter
+        const amtEl = document.getElementById("inc-amount") as HTMLInputElement;
+        amtEl.addEventListener("input", () => {
+          const raw = amtEl.value.replace(/[^\d.]/g, "");
+          const parts = raw.split(".");
+          parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+          if (parts.length > 2) parts.length = 2;
+          amtEl.value = parts.join(".");
+        });
       },
       preConfirm: () => {
-        const amount = (document.getElementById("inc-amount") as HTMLInputElement).value;
+        const amount = (document.getElementById("inc-amount") as HTMLInputElement).value.replace(/\s/g, "");
         const date = (document.getElementById("inc-date") as HTMLInputElement).value;
         const accountId = (document.getElementById("inc-account") as HTMLSelectElement).value;
         if (!amount || !date || !accountId) {

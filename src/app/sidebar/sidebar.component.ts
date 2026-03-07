@@ -294,18 +294,6 @@ export const managerROUTES: RouteInfo[] = [
     icontype: "list",
   },
   {
-    path: "/uzm/allboxes",
-    title: "Partiya Jo'natmalari",
-    type: "link",
-    icontype: "cases",
-  },
-  {
-    path: "/uzm/eachboxuz",
-    title: "*Partiya Hujjatlari",
-    type: "link",
-    icontype: "file_present",
-  },
-  {
     path: "/fs/consignmentlist",
     title: "Reyslar ro'yhati",
     type: "link",
@@ -392,6 +380,17 @@ export const managerROUTES: RouteInfo[] = [
     title: "Eng Ko'p Qarzdorlar",
     type: "link",
     icontype: "people",
+  },
+  {
+    path: "/uzm",
+    title: "Partiya Huj&Jo'nat",
+    type: "sub-abs",
+    icontype: "inventory_2",
+    collapse: "partiya-huj-jonat",
+    children: [
+      { path: "/uzm/allboxes", title: "Partiya Jo'natmalari", ab: "PJ" },
+      { path: "/uzm/eachboxuz", title: "Partiya Hujjatlari", ab: "PH" },
+    ],
   },
 ];
 
@@ -551,6 +550,19 @@ export const ownerROUTES: RouteInfo[] = [
     icontype: "people",
   },
 
+  {
+    path: "/uzm",
+    title: "Xisob-Kitob",
+    type: "sub-abs",
+    icontype: "account_balance_wallet",
+    collapse: "xisob-kitob",
+    children: [
+      { path: "/uzm/finance", title: "Xisob Kitob", ab: "XK" },
+      { path: "/uzm/financev2", title: "Xisob Kitob2", ab: "XK2" },
+      { path: "/uzm/infoeachclient", title: "Har bir mijoz", ab: "HM" },
+      { path: "/uzm/infoeachclientv2", title: "Har Bir Mijoz2", ab: "HM2" },
+    ],
+  },
   {
     path: "/uzm",
     title: "Mijozlar",

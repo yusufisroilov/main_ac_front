@@ -156,35 +156,56 @@ export class TransactionsComponent implements OnInit {
     this.loadV2Ledger();
   }
 
+  private static readonly TYPE_BADGE: Record<string, string> = {
+    CHARGE:       "badge-charge",
+    PAYMENT:      "badge-payment",
+    BONUS:        "badge-bonus",
+    INCOME:       "badge-income",
+    ADJUSTMENT:   "badge-adjustment",
+    REFUND:       "badge-refund",
+    EXPENSE:      "badge-expense",
+    OWNER_DRAW:   "badge-owner-draw",
+    TRANSFER_IN:  "badge-transfer-in",
+    TRANSFER_OUT: "badge-transfer-out",
+  };
+
+  private static readonly TYPE_LABEL: Record<string, string> = {
+    CHARGE:       "Hisob",
+    PAYMENT:      "To'lov",
+    BONUS:        "Bonus",
+    INCOME:       "Daromad",
+    ADJUSTMENT:   "Tuzatish",
+    REFUND:       "Qaytarish",
+    EXPENSE:      "Xarajat",
+    OWNER_DRAW:   "Olingan",
+    TRANSFER_IN:  "Kirim",
+    TRANSFER_OUT: "Chiqim",
+  };
+
+  private static readonly OUT_TYPES  = new Set(["EXPENSE", "OWNER_DRAW", "TRANSFER_OUT"]);
+  private static readonly IN_TYPES   = new Set(["PAYMENT", "INCOME", "TRANSFER_IN", "BONUS"]);
+
   getTypeBadgeClass(type: string): string {
-    switch (type) {
-      case "CHARGE":
-        return "badge-charge";
-      case "PAYMENT":
-        return "badge-payment";
-      case "BONUS":
-        return "badge-bonus";
-      case "ADJUSTMENT":
-        return "badge-adjustment";
-      default:
-        return "badge-secondary";
-    }
+    return TransactionsComponent.TYPE_BADGE[type] || "badge-secondary";
   }
 
   getTypeLabel(type: string): string {
-    switch (type) {
-      case "CHARGE":
-        return "Hisob";
-      case "PAYMENT":
-        return "To'lov";
-      case "BONUS":
-        return "Bonus";
-      case "ADJUSTMENT":
-        return "Tuzatish";
-      default:
-        return type;
-    }
+    return TransactionsComponent.TYPE_LABEL[type] || type;
   }
+
+  getAmountClass(type: string): string {
+    if (TransactionsComponent.IN_TYPES.has(type))  return "amount-in";
+    if (TransactionsComponent.OUT_TYPES.has(type)) return "amount-out";
+    return "amount-neutral";
+  }
+
+  getAmountPrefix(type: string): string {
+    if (TransactionsComponent.IN_TYPES.has(type))  return "+ ";
+    if (TransactionsComponent.OUT_TYPES.has(type)) return "− ";
+    return "";
+  }
+
+  absVal(n: number): number { return Math.abs(n || 0); }
 
   // ═══════════════════════════════════════════════════
   // V1 TRANSACTIONS (kept as-is)

@@ -7,14 +7,16 @@ import { FormsModule } from '@angular/forms';
 import { AddOrdersComponent } from './add-orders.component';
 
 import { NgxBarcodeModule } from 'ngx-barcode';
+import { MaterialModule } from '../../app.module';
 
 @NgModule({
-  
+
   imports: [
     CommonModule,
     RouterModule.forChild(addOrdersRoutes),
     FormsModule,
-    NgxBarcodeModule
+    NgxBarcodeModule,
+    MaterialModule
   
 
   ], declarations: [AddOrdersComponent]

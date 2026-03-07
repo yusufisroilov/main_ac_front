@@ -13,6 +13,16 @@ interface CashAccount {
   balance: number;
 }
 
+interface LedgerEntry {
+  id: number;
+  type: string;
+  amount_usd: number;
+  amount_original?: number;
+  comment: string;
+  created_at: string;
+  customer?: { id: number; username: string; first_name: string };
+}
+
 @Component({
   selector: "app-oa-cash-accounts",
   templateUrl: "./oa-cash-accounts.component.html",
@@ -23,6 +33,14 @@ export class OaCashAccountsComponent implements OnInit {
   isLoading = false;
   errorMessage = "";
   showInactive = false;
+
+  selectedAccount: CashAccount | null = null;
+  ledgerEntries: LedgerEntry[] = [];
+  ledgerPage = 0;
+  ledgerTotalPages = 0;
+  ledgerTotalItems = 0;
+  ledgerLoading = false;
+  readonly ledgerPageSize = 50;
 
   private baseUrl = GlobalVars.baseUrl;
 
@@ -116,6 +134,75 @@ export class OaCashAccountsComponent implements OnInit {
       );
     }
   }
+
+  viewLedger(account: CashAccount) {
+    if (this.selectedAccount?.id === account.id) {
+      this.selectedAccount = null;
+      this.ledgerEntries = [];
+      return;
+    }
+    this.selectedAccount = account;
+    this.ledgerPage = 0;
+    this.loadLedger();
+  }
+
+  loadLedger() {
+    if (!this.selectedAccount) return;
+    this.ledgerLoading = true;
+    const url = `${this.baseUrl}/finance-v2/ledger-list?cash_account_id=${this.selectedAccount.id}&page=${this.ledgerPage}&size=${this.ledgerPageSize}`;
+    this.http.get<any>(url, { headers: this.getHeaders() }).subscribe(
+      (res) => {
+        this.ledgerEntries = res.entries || [];
+        this.ledgerTotalPages = res.totalPages || 0;
+        this.ledgerTotalItems = res.totalItems || 0;
+        this.ledgerLoading = false;
+      },
+      () => { this.ledgerLoading = false; },
+    );
+  }
+
+  onLedgerPageChanged(page: number) {
+    this.ledgerPage = page;
+    this.loadLedger();
+  }
+
+  private static readonly LDG_LABEL: Record<string, string> = {
+    CHARGE: 'Qarz', PAYMENT: "To'lov", BONUS: 'Bonus', INCOME: 'Daromad',
+    ADJUSTMENT: 'Tuzatish', REFUND: 'Qaytarish', EXPENSE: 'Xarajat',
+    OWNER_DRAW: 'Olingan', TRANSFER_IN: 'Kirim', TRANSFER_OUT: 'Chiqim',
+  };
+
+  private static readonly LDG_BADGE: Record<string, string> = {
+    CHARGE: 'ldg-charge', PAYMENT: 'ldg-payment', BONUS: 'ldg-bonus',
+    INCOME: 'ldg-income', ADJUSTMENT: 'ldg-adjust', REFUND: 'ldg-refund',
+    EXPENSE: 'ldg-expense', OWNER_DRAW: 'ldg-owner-draw',
+    TRANSFER_IN: 'ldg-transfer-in', TRANSFER_OUT: 'ldg-transfer-out',
+  };
+
+  private static readonly LDG_IN  = new Set(['PAYMENT', 'INCOME', 'TRANSFER_IN', 'BONUS']);
+  private static readonly LDG_OUT = new Set(['EXPENSE', 'OWNER_DRAW', 'TRANSFER_OUT']);
+
+  getLedgerTypeLabel(type: string): string {
+    return OaCashAccountsComponent.LDG_LABEL[type] || type;
+  }
+
+  getLedgerTypeClass(type: string): string {
+    return OaCashAccountsComponent.LDG_BADGE[type] || '';
+  }
+
+  getLedgerAmountClass(type: string): string {
+    if (OaCashAccountsComponent.LDG_IN.has(type))  return 'ldg-amount-pos';
+    if (OaCashAccountsComponent.LDG_OUT.has(type)) return 'ldg-amount-neg';
+    return 'ldg-amount-neutral';
+  }
+
+  getLedgerAmountPrefix(type: string): string {
+    if (OaCashAccountsComponent.LDG_IN.has(type))  return '+ ';
+    if (OaCashAccountsComponent.LDG_OUT.has(type)) return '− ';
+    return '';
+  }
+
+  absVal(n: number): number { return Math.abs(n || 0); }
 
   async deactivateAccount(account: CashAccount) {
     const r = await Swal.fire({

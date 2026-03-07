@@ -14,6 +14,16 @@
                     </div>
                     <div class="welcome-text">
                         <h3>Asosiy Sahifa</h3>
+                        <div *ngIf="!loadingStats" class="wb-balance"
+                            [ngClass]="{'wb-balance-debt': debtUsdTotal > 0, 'wb-balance-credit': debtUsdTotal < 0, 'wb-balance-clear': debtUsdTotal === 0}">
+                            <i class="material-icons wb-balance-icon">{{ getBalanceIcon(debtUsdTotal) }}</i>
+                            <div class="wb-balance-body">
+                                <span class="wb-balance-amount" [style.color]="getBalanceColor(debtUsdTotal)">
+                                    {{ getBalanceSign(debtUsdTotal) }}{{ getBalanceAbsUsd(debtUsdTotal) | number:'1.2-2' }}$
+                                </span>
+                                <span class="wb-balance-hint">Balansingiz</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -44,25 +54,25 @@
                 </div>
                 <div class="stat-tile-label">Jami Og'irlik</div>
             </div>
-            <div class="stat-tile" [ngClass]="{'debt-tile': debtUsdTotal > 0, 'paid-tile': debtUsdTotal <= 0}">
+            <div class="stat-tile balance-tile"
+                [ngClass]="{'debt-tile': debtUsdTotal > 0, 'credit-tile': debtUsdTotal < 0, 'paid-tile': debtUsdTotal === 0}">
                 <i class="material-icons stat-tile-icon"
-                    [style.color]="debtUsdTotal > 0 ? '#f44336' : '#4caf50'">
-                    {{ debtUsdTotal > 0 ? 'account_balance_wallet' : 'check_circle' }}
+                    [style.color]="getBalanceColor(debtUsdTotal)">
+                    {{ getBalanceIcon(debtUsdTotal) }}
                 </i>
-                <div class="stat-tile-value" *ngIf="!loadingStats">
-                    <span [style.color]="debtUsdTotal > 0 ? '#f44336' : '#4caf50'">
-                        {{ debtUsdTotal | number:'1.2-2' }}$
+                <div class="stat-tile-value balance-value" *ngIf="!loadingStats">
+                    <span [style.color]="getBalanceColor(debtUsdTotal)" class="balance-amount">
+                        {{ getBalanceSign(debtUsdTotal) }}{{ getBalanceAbsUsd(debtUsdTotal) | number:'1.2-2' }}<span class="balance-currency">$</span>
                     </span>
                     <br>
-                    <small [style.color]="debtUsdTotal > 0 ? '#e57373' : '#81c784'"
-                        style="font-size: 11px;">
-                        {{ formatCurrency(debtUzsTotal) }} so'm
+                    <small [style.color]="getBalanceColor(debtUzsTotal)" style="font-size: 11px;">
+                        {{ getBalanceSign(debtUzsTotal) }}{{ formatCurrency(getBalanceAbsUzs(debtUzsTotal)) }} so'm
                     </small>
                 </div>
                 <div class="stat-tile-value" *ngIf="loadingStats">
                     <span class="spinner-border spinner-border-sm"></span>
                 </div>
-                <div class="stat-tile-label">Umumiy Qarz</div>
+                <div class="stat-tile-label">Balansingiz</div>
             </div>
         </div>
 
