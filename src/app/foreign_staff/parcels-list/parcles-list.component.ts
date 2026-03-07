@@ -45,10 +45,10 @@ export class ParclesListComponent implements OnInit, AfterViewInit {
 
   currentPage: number;
   totalPages: number;
+  pageSize: number = 100;
   needPagination: boolean;
   mypages = [];
   isPageNumActive: boolean;
-
   orderFilterStatus: string;
   orderFilterType: string;
   orderFilterOwnId: string;
@@ -118,7 +118,7 @@ export class ParclesListComponent implements OnInit, AfterViewInit {
     private http: Http,
     private httpClient: HttpClient,
     private router: Router,
-    private changeDetectorRef: ChangeDetectorRef
+    private changeDetectorRef: ChangeDetectorRef,
   ) {
     this.orderTypeText = [];
     this.orderStatusText = [];
@@ -135,7 +135,10 @@ export class ParclesListComponent implements OnInit, AfterViewInit {
     this.options = new RequestOptions({ headers: this.headers12 });
     this.trackingNum2 = "";
 
-    if (localStorage.getItem("role") == "MANAGER" || localStorage.getItem("role") == "OWNER") {
+    if (
+      localStorage.getItem("role") == "MANAGER" ||
+      localStorage.getItem("role") == "OWNER"
+    ) {
       this.hideForManager = false;
     }
 
@@ -160,7 +163,7 @@ export class ParclesListComponent implements OnInit, AfterViewInit {
           } else if (error.status == 404) {
             this.consignmentMessage = "NO ACTIVE CONSIGNMENT";
           }
-        }
+        },
       );
 
     this.currentPage = 0;
@@ -237,7 +240,7 @@ export class ParclesListComponent implements OnInit, AfterViewInit {
           data[1] +
           " " +
           data[2] +
-          "'s row."
+          "'s row.",
       );
       e.preventDefault();
     });
@@ -273,9 +276,10 @@ export class ParclesListComponent implements OnInit, AfterViewInit {
         GlobalVars.baseUrl +
           "/orders/list?page=" +
           this.currentPage +
-          "&size=40" +
+          "&size=" +
+          this.pageSize +
           filterLink,
-        this.options
+        this.options,
       )
       .subscribe(
         (response) => {
@@ -285,7 +289,7 @@ export class ParclesListComponent implements OnInit, AfterViewInit {
             const element = this.allData[index];
             this.orderTypeText[index] = GlobalVars.getDescriptionWithID(
               element.order_type,
-              "en"
+              "en",
             );
           }
 
@@ -293,7 +297,7 @@ export class ParclesListComponent implements OnInit, AfterViewInit {
             const element1 = this.allData[index];
             this.orderStatusText[index] = GlobalVars.getDesOrderStatusWithID(
               element1.status,
-              "en"
+              "en",
             );
           }
 
@@ -311,7 +315,7 @@ export class ParclesListComponent implements OnInit, AfterViewInit {
           if (error.status == 403) {
             this.authService.logout();
           }
-        }
+        },
       );
   }
 
@@ -336,9 +340,10 @@ export class ParclesListComponent implements OnInit, AfterViewInit {
         GlobalVars.baseUrl +
           "/orders/list?page=" +
           this.currentPage +
-          "&size=100" +
+          "&size=" +
+          this.pageSize +
           filterLink,
-        this.options
+        this.options,
       )
       .subscribe(
         (response) => {
@@ -348,7 +353,7 @@ export class ParclesListComponent implements OnInit, AfterViewInit {
             const element = this.allData[index];
             this.orderTypeText[index] = GlobalVars.getDescriptionWithID(
               element.order_type,
-              "en"
+              "en",
             );
           }
 
@@ -356,7 +361,7 @@ export class ParclesListComponent implements OnInit, AfterViewInit {
             const element1 = this.allData[index];
             this.orderStatusText[index] = GlobalVars.getDesOrderStatusWithID(
               element1.status,
-              "en"
+              "en",
             );
           }
 
@@ -374,7 +379,7 @@ export class ParclesListComponent implements OnInit, AfterViewInit {
           if (error.status == 403) {
             this.authService.logout();
           }
-        }
+        },
       );
   }
 
@@ -387,7 +392,7 @@ export class ParclesListComponent implements OnInit, AfterViewInit {
         this.http
           .get(
             GlobalVars.baseUrl + "/orders/search?tracking_number=" + searchkey,
-            this.options
+            this.options,
           )
           .subscribe(
             (response) => {
@@ -397,7 +402,7 @@ export class ParclesListComponent implements OnInit, AfterViewInit {
                 const element = this.allData[index];
                 this.orderTypeText[index] = GlobalVars.getDescriptionWithID(
                   element.order_type,
-                  "en"
+                  "en",
                 );
               }
 
@@ -421,7 +426,7 @@ export class ParclesListComponent implements OnInit, AfterViewInit {
               if (error.status == 403) {
                 this.authService.logout();
               }
-            }
+            },
           );
       }
     }
@@ -462,7 +467,7 @@ export class ParclesListComponent implements OnInit, AfterViewInit {
               GlobalVars.orderTypes[i].id,
               '">',
               GlobalVars.orderTypes[i].description_en,
-              "</option>"
+              "</option>",
             );
           }
 
@@ -492,7 +497,7 @@ export class ParclesListComponent implements OnInit, AfterViewInit {
                 "&weight=" +
                 weightEach,
               "",
-              this.options
+              this.options,
             )
             .subscribe(
               (response) => {
@@ -519,7 +524,7 @@ export class ParclesListComponent implements OnInit, AfterViewInit {
                     .fire(
                       "Not Added",
                       "BAD REQUEST: WRONG TYPE OF INPUT",
-                      "error"
+                      "error",
                     )
                     .then((result) => {
                       if (result.isConfirmed) {
@@ -531,7 +536,7 @@ export class ParclesListComponent implements OnInit, AfterViewInit {
                 if (error.status == 403) {
                   this.authService.logout();
                 }
-              }
+              },
             );
         },
       })
@@ -577,7 +582,7 @@ export class ParclesListComponent implements OnInit, AfterViewInit {
                 GlobalVars.orderTypes[i].id,
                 '">',
                 GlobalVars.orderTypes[i].description_en,
-                "</option>"
+                "</option>",
               );
             }
 
@@ -609,7 +614,7 @@ export class ParclesListComponent implements OnInit, AfterViewInit {
                   "&weight=" +
                   weightEach,
                 "",
-                this.options
+                this.options,
               )
               .subscribe(
                 (response) => {
@@ -672,7 +677,7 @@ export class ParclesListComponent implements OnInit, AfterViewInit {
                     this.labelsDataStorage.push(obj);
                     localStorage.setItem(
                       "labelsTemp1",
-                      JSON.stringify(this.labelsDataStorage)
+                      JSON.stringify(this.labelsDataStorage),
                     );
                     this.countifreadyLabelDoc = this.labelsDataStorage.length;
 
@@ -705,7 +710,7 @@ export class ParclesListComponent implements OnInit, AfterViewInit {
                       .fire(
                         "Not Added",
                         "Not Added:  " + this.registredMessage,
-                        "error"
+                        "error",
                       )
                       .then((result) => {
                         if (result.isConfirmed) {
@@ -723,7 +728,7 @@ export class ParclesListComponent implements OnInit, AfterViewInit {
                           ownerId +
                           " ID</b> can not enter." +
                           registredMessage,
-                        "error"
+                        "error",
                       )
                       .then((result) => {
                         if (result.isConfirmed) {
@@ -739,7 +744,7 @@ export class ParclesListComponent implements OnInit, AfterViewInit {
                         }
                       });
                   }
-                }
+                },
               ); // end of response
           },
         })
@@ -753,7 +758,7 @@ export class ParclesListComponent implements OnInit, AfterViewInit {
         .fire(
           "NO ACTIVE CONSIGNMENT",
           "Reopen exiting party or Open new party!",
-          "error"
+          "error",
         )
         .then((result) => {
           if (result.isConfirmed) {
@@ -769,7 +774,7 @@ export class ParclesListComponent implements OnInit, AfterViewInit {
     this.http
       .get(
         GlobalVars.baseUrl + "/orders/getInfo?tracking_number=" + trekNomerL,
-        this.options
+        this.options,
       )
       .subscribe(
         (response) => {
@@ -827,7 +832,7 @@ export class ParclesListComponent implements OnInit, AfterViewInit {
           if (error.status == 403) {
             this.authService.logout();
           }
-        }
+        },
       ); // end of response
   }
 
@@ -880,7 +885,7 @@ export class ParclesListComponent implements OnInit, AfterViewInit {
       .then((result) => {
         if (result.isConfirmed) {
           this.labelsDataStorageForPrint = JSON.parse(
-            localStorage.getItem("labelsTemp2")
+            localStorage.getItem("labelsTemp2"),
           );
           this.printSeveral2();
         }
@@ -893,7 +898,7 @@ export class ParclesListComponent implements OnInit, AfterViewInit {
     this.popupWin = window.open(
       "",
       "_blank",
-      "top=0,left=0,height=100%,width=auto"
+      "top=0,left=0,height=100%,width=auto",
     );
     this.popupWin.document.open();
     this.popupWin.document.write(`
@@ -1020,12 +1025,12 @@ export class ParclesListComponent implements OnInit, AfterViewInit {
   printSeveral(): void {
     this.changeDetectorRef.detectChanges();
     this.printContents = document.getElementById(
-      "print-sectionSeveral"
+      "print-sectionSeveral",
     ).innerHTML;
     this.popupWin = window.open(
       "",
       "_blank",
-      "top=0,left=0,height=100%,width=auto"
+      "top=0,left=0,height=100%,width=auto",
     );
     this.popupWin.document.open();
     this.popupWin.document.write(`
@@ -1254,6 +1259,12 @@ export class ParclesListComponent implements OnInit, AfterViewInit {
     this.getListOfParcels();
   }
 
+  onPageChanged(pageIndex: number) {
+    this.currentPage = pageIndex;
+    document.getElementById("listcard")?.scrollIntoView({ behavior: "smooth" });
+    this.getListOfParcels();
+  }
+
   editParcel(trackingNumber, ownerID, foreignName, quantity, orderType) {
     swal
       .fire({
@@ -1287,7 +1298,7 @@ export class ParclesListComponent implements OnInit, AfterViewInit {
               GlobalVars.orderTypes[i].id,
               '">',
               GlobalVars.orderTypes[i].description_en,
-              "</option>"
+              "</option>",
             );
           }
           $("#types").html(options.join(""));
@@ -1314,7 +1325,7 @@ export class ParclesListComponent implements OnInit, AfterViewInit {
                 "&type=" +
                 typeOfParcel,
               "",
-              this.options
+              this.options,
             )
             .subscribe(
               (response) => {
@@ -1338,7 +1349,7 @@ export class ParclesListComponent implements OnInit, AfterViewInit {
                     .fire(
                       "Not Added",
                       "BAD REQUEST: WRONG TYPE OF INPUT",
-                      "error"
+                      "error",
                     )
                     .then((result) => {
                       if (result.isConfirmed) {
@@ -1349,7 +1360,7 @@ export class ParclesListComponent implements OnInit, AfterViewInit {
                 if (error.status == 403) {
                   this.authService.logout();
                 }
-              }
+              },
             );
         },
       })
@@ -1399,7 +1410,7 @@ export class ParclesListComponent implements OnInit, AfterViewInit {
                 "&address=" +
                 newAdress,
               "",
-              this.options
+              this.options,
             )
             .subscribe(
               (response) => {
@@ -1423,7 +1434,7 @@ export class ParclesListComponent implements OnInit, AfterViewInit {
                     .fire(
                       "Not Added",
                       "BAD REQUEST: WRONG TYPE OF INPUT",
-                      "error"
+                      "error",
                     )
                     .then((result) => {
                       if (result.isConfirmed) {
@@ -1434,7 +1445,7 @@ export class ParclesListComponent implements OnInit, AfterViewInit {
                 if (error.status == 403) {
                   this.authService.logout();
                 }
-              }
+              },
             );
         },
       })
@@ -1471,7 +1482,7 @@ export class ParclesListComponent implements OnInit, AfterViewInit {
           this.http
             .delete(
               GlobalVars.baseUrl + "/orders/delete?tracking_number=" + trNum,
-              this.options
+              this.options,
             )
             .subscribe(
               (response) => {
@@ -1505,7 +1516,7 @@ export class ParclesListComponent implements OnInit, AfterViewInit {
                     .fire(
                       "Not Deleted",
                       "BAD REQUEST: WRONG TYPE OF INPUT",
-                      "error"
+                      "error",
                     )
                     .then((result) => {
                       if (result.isConfirmed) {
@@ -1526,7 +1537,7 @@ export class ParclesListComponent implements OnInit, AfterViewInit {
                       }
                     });
                 }
-              }
+              },
             );
         }
       });
@@ -1535,12 +1546,12 @@ export class ParclesListComponent implements OnInit, AfterViewInit {
   printSeveral2(): void {
     this.changeDetectorRef.detectChanges();
     this.printContents = document.getElementById(
-      "print-sectionSeveral"
+      "print-sectionSeveral",
     ).innerHTML;
     this.popupWin = window.open(
       "",
       "_blank",
-      "top=0,left=0,height=100%,width=auto"
+      "top=0,left=0,height=100%,width=auto",
     );
 
     this.popupWin.document.open();

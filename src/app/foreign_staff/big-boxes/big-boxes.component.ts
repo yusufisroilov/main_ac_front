@@ -156,7 +156,7 @@ export class BigBoxesComponent implements OnInit {
             this.consignmentMessage = response.json().message;
             this.showPartyLink();
             this.http
-              .get(GlobalVars.baseUrl + "/boxes/check", this.options)
+              .get(GlobalVars.baseUrl + "/bigboxes/check", this.options)
               .subscribe((response) => {
                 if (response.json().status == "ok") {
                   partyStatus = true;
@@ -276,7 +276,9 @@ export class BigBoxesComponent implements OnInit {
 
         this.http
           .get(
-            GlobalVars.baseUrl + "/bigbox/bigbox_items:" + this.boxNumber,
+            GlobalVars.baseUrl +
+              "/bigbox/bigbox_items?bigbox_number=" +
+              this.boxNumber,
             this.options,
           )
           .subscribe(

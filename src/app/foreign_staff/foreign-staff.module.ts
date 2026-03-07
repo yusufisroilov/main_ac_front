@@ -11,6 +11,7 @@ import { ManifestComponent } from './manifest/manifest.component';
 import { ExpressScanComponent } from './express-scan/express-scan.component';
 import { NgxBarcodeModule } from 'ngx-barcode';
 import { BigBoxesComponent } from './big-boxes/big-boxes.component';
+import { PaginationModule } from '../shared/pagination/pagination.module';
 // import { FlexLayoutModule } from '@angular/flex-layout';
 
 
@@ -22,8 +23,9 @@ import { BigBoxesComponent } from './big-boxes/big-boxes.component';
     FormsModule,
     MaterialModule,
     ReactiveFormsModule,
-    NgxBarcodeModule
-  
+    NgxBarcodeModule,
+    PaginationModule
+
   ],
   declarations: [
     ConsignmentListComponent,

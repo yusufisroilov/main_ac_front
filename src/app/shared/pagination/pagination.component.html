@@ -16,7 +16,7 @@
         </div>
 
         <div class="go-to-page">
-            <label for="pageInput">Go to Page</label>
+            <label for="pageInput">Go to Page 1 - {{ totalPages }}</label>
             <input type="number" id="pageInput" [(ngModel)]="inputPageNumber" [min]="1" [max]="totalPages"
                 placeholder="Page #" (keypress)="onKeyPress($event)" />
             <button class="go-btn" (click)="onGoToPage()">Go</button>
