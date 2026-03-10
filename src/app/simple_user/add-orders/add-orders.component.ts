@@ -1127,7 +1127,7 @@ export class AddOrdersComponent implements OnInit {
   assignSerchBox(boxNum) {
     return this.http
       .get(
-        GlobalVars.baseUrl + "/boxes/listForStaff?boxNumber=HM138" + boxNum,
+        GlobalVars.baseUrl + "/boxes/listForStaff?boxNumber=" + boxNum,
         this.options,
       )
       .subscribe(

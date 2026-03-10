@@ -61,7 +61,7 @@ export class AllordersComponent implements OnInit {
     private http: Http,
     private httpClient: HttpClient,
     private router: Router,
-    public authService: AuthService
+    public authService: AuthService,
   ) {
     this.orderTypeText = [];
     this.orderStatusText = [];
@@ -78,7 +78,10 @@ export class AllordersComponent implements OnInit {
     this.headers12.append("Authorization", localStorage.getItem("token"));
     this.options = new RequestOptions({ headers: this.headers12 });
 
-    if (localStorage.getItem("role") == "MANAGER" || localStorage.getItem("role") == "OWNER") {
+    if (
+      localStorage.getItem("role") == "MANAGER" ||
+      localStorage.getItem("role") == "OWNER"
+    ) {
       this.hideForManager = false;
     }
 
@@ -91,6 +94,7 @@ export class AllordersComponent implements OnInit {
     this.orderFilterType = "";
     this.orderFilterOwnId = "";
     this.orderFilterParty = "";
+    this.orderFilterPartys = [""];
   }
 
   ngOnInit() {
@@ -140,7 +144,7 @@ export class AllordersComponent implements OnInit {
           data[1] +
           " " +
           data[2] +
-          "'s row."
+          "'s row.",
       );
       e.preventDefault();
     });
@@ -181,7 +185,7 @@ export class AllordersComponent implements OnInit {
           "&size=" +
           this.pageSize +
           filterLink,
-        this.options
+        this.options,
       )
       .subscribe((response) => {
         this.allData = response.json().orders;
@@ -190,7 +194,7 @@ export class AllordersComponent implements OnInit {
           const element = this.allData[index];
           this.orderTypeText[index] = GlobalVars.getDescriptionWithID(
             element.order_type,
-            "uz"
+            "uz",
           );
         }
 
@@ -198,7 +202,7 @@ export class AllordersComponent implements OnInit {
           const element1 = this.allData[index];
           this.orderStatusText[index] = GlobalVars.getDesOrderStatusWithID(
             element1.status,
-            "uz"
+            "uz",
           );
         }
 
@@ -228,6 +232,8 @@ export class AllordersComponent implements OnInit {
       this.orderFilterOwnId +
       "&consignment=" +
       this.orderFilterParty;
+
+    console.log("filter link " + filterLink);
     return this.http
       .get(
         GlobalVars.baseUrl +
@@ -236,7 +242,7 @@ export class AllordersComponent implements OnInit {
           "&size=" +
           this.pageSize +
           filterLink,
-        this.options
+        this.options,
       )
       .subscribe(
         (response) => {
@@ -246,7 +252,7 @@ export class AllordersComponent implements OnInit {
             const element = this.allData[index];
             this.orderTypeText[index] = GlobalVars.getDescriptionWithID(
               element.order_type,
-              "uz"
+              "uz",
             );
           }
 
@@ -254,7 +260,7 @@ export class AllordersComponent implements OnInit {
             const element1 = this.allData[index];
             this.orderStatusText[index] = GlobalVars.getDesOrderStatusWithID(
               element1.status,
-              "uz"
+              "uz",
             );
           }
 
@@ -266,7 +272,7 @@ export class AllordersComponent implements OnInit {
           if (error.status == 403) {
             this.authService.logout();
           }
-        }
+        },
       );
   }
 
@@ -291,7 +297,7 @@ export class AllordersComponent implements OnInit {
         this.http
           .get(
             GlobalVars.baseUrl + "/orders/search?tracking_number=" + searchkey,
-            this.options
+            this.options,
           )
           .subscribe(
             (response) => {
@@ -301,7 +307,7 @@ export class AllordersComponent implements OnInit {
                 const element = this.allData[index];
                 this.orderTypeText[index] = GlobalVars.getDescriptionWithID(
                   element.order_type,
-                  "uz"
+                  "uz",
                 );
               }
 
@@ -325,7 +331,7 @@ export class AllordersComponent implements OnInit {
               if (error.status == 403) {
                 this.authService.logout();
               }
-            }
+            },
           );
       }
     }
@@ -397,7 +403,7 @@ export class AllordersComponent implements OnInit {
               "",
               "",
               this.currentParty,
-              "partnum"
+              "partnum",
             );
           }
         },
@@ -441,7 +447,7 @@ export class AllordersComponent implements OnInit {
             "&size=" +
             this.pageSize +
             filterLink,
-          this.options
+          this.options,
         )
         .subscribe(
           (response) => {
@@ -460,7 +466,7 @@ export class AllordersComponent implements OnInit {
               const element = this.allData[index];
               this.orderTypeText[index] = GlobalVars.getDescriptionWithID(
                 element.order_type,
-                "uz"
+                "uz",
               );
             }
 
@@ -468,7 +474,7 @@ export class AllordersComponent implements OnInit {
               const element1 = this.allData[index];
               this.orderStatusText[index] = GlobalVars.getDesOrderStatusWithID(
                 element1.status,
-                "uz"
+                "uz",
               );
             }
 
@@ -480,7 +486,7 @@ export class AllordersComponent implements OnInit {
             if (error.status == 403) {
               this.authService.logout();
             }
-          }
+          },
         );
     }
   }
@@ -509,9 +515,11 @@ export class AllordersComponent implements OnInit {
                 valueB +
                 "&ownerID=" +
                 this.currentOwnerID +
-                "&status=7",
+                "&status=7" +
+                "&consignment=" +
+                (this.currentParty || ""),
               "",
-              this.options
+              this.options,
             )
             .subscribe(
               (response) => {
@@ -562,7 +570,7 @@ export class AllordersComponent implements OnInit {
                           "&size=" +
                           this.pageSize +
                           filterLink,
-                        this.options
+                        this.options,
                       )
                       .subscribe(
                         (response) => {
@@ -573,7 +581,7 @@ export class AllordersComponent implements OnInit {
                           if (error.status == 403) {
                             this.authService.logout();
                           }
-                        }
+                        },
                       );
                   }
 
@@ -625,7 +633,7 @@ export class AllordersComponent implements OnInit {
                       }
                     });
                 }
-              }
+              },
             );
         },
       })
@@ -678,7 +686,7 @@ export class AllordersComponent implements OnInit {
               GlobalVars.orderTypes[i].id,
               '">',
               GlobalVars.orderTypes[i].description_en,
-              "</option>"
+              "</option>",
             );
           }
           $("#types").html(options.join(""));
@@ -707,7 +715,7 @@ export class AllordersComponent implements OnInit {
                 "&name_cn=" +
                 cn_name,
               "",
-              this.options
+              this.options,
             )
             .subscribe(
               (response) => {
@@ -731,7 +739,7 @@ export class AllordersComponent implements OnInit {
                     .fire(
                       "Not Added",
                       "BAD REQUEST: WRONG TYPE OF INPUT",
-                      "error"
+                      "error",
                     )
                     .then((result) => {
                       if (result.isConfirmed) {
@@ -741,7 +749,7 @@ export class AllordersComponent implements OnInit {
                 if (error.status == 403) {
                   this.authService.logout();
                 }
-              }
+              },
             );
         },
       })
@@ -778,7 +786,7 @@ export class AllordersComponent implements OnInit {
           this.http
             .delete(
               GlobalVars.baseUrl + "/orders/delete?tracking_number=" + trNum,
-              this.options
+              this.options,
             )
             .subscribe(
               (response) => {
@@ -798,7 +806,7 @@ export class AllordersComponent implements OnInit {
                 if (error.status == 403) {
                   this.authService.logout();
                 }
-              }
+              },
             );
         }
       });

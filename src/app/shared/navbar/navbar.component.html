@@ -88,162 +88,152 @@
       <span class="navbar-toggler-icon icon-bar"></span>
     </button>
 
-    <!-- Right Side: Notifications & Logout -->
-    <div class="collapse navbar-collapse justify-content-end" id="navigation">
-      <ul class="navbar-nav">
+    <!-- Always-visible notification icons -->
+    <ul class="navbar-nav flex-row ml-auto navbar-notifications-always-visible">
 
-        <!-- ========================================= -->
-        <!-- TICKET NOTIFICATIONS                      -->
-        <!-- ========================================= -->
-        <li class="nav-item notification-dropdown-container">
-          <a class="nav-link" href="javascript:void(0)" (click)="toggleTicketNotifications()"
-            style="position: relative;">
-            <i class="material-icons">confirmation_number</i>
-            <span class="notification-badge" *ngIf="notificationCounts.tickets > 0">
-              {{ notificationCounts.tickets }}
-            </span>
-            <p>
-              <span class="d-lg-none d-md-block">Murojaatlar</span>
-            </p>
-          </a>
+      <!-- ========================================= -->
+      <!-- TICKET NOTIFICATIONS                      -->
+      <!-- ========================================= -->
+      <li class="nav-item notification-dropdown-container">
+        <a class="nav-link" href="javascript:void(0)" (click)="$event.stopPropagation(); toggleTicketNotifications()"
+          style="position: relative;">
+          <i class="material-icons">mail</i>
+          <span class="notification-badge" *ngIf="notificationCounts.tickets > 0">
+            {{ notificationCounts.tickets }}
+          </span>
+        </a>
 
-          <!-- TICKET NOTIFICATION DROPDOWN PANEL -->
-          <div class="notification-dropdown" *ngIf="showTicketDropdown">
+        <!-- TICKET NOTIFICATION DROPDOWN PANEL -->
+        <div class="notification-dropdown" *ngIf="showTicketDropdown">
 
-            <!-- Header -->
-            <div class="notification-header">
-              <h6>
-                <i class="material-icons">confirmation_number</i>
-                So'rovlar Bildirishnomalari
-              </h6>
-              <button class="mark-all-btn" (click)="markAllTicketsAsRead()" *ngIf="ticketNotifications.length > 0">
-                Hammasini o'qilgan deb belgilash
-              </button>
+          <!-- Header -->
+          <div class="notification-header">
+            <h6>
+              <i class="material-icons">mail</i>
+              So'rovlar Bildirishnomalari
+            </h6>
+            <button class="mark-all-btn" (click)="markAllTicketsAsRead()" *ngIf="ticketNotifications.length > 0">
+              Hammasini o'qilgan deb belgilash
+            </button>
+          </div>
+
+          <!-- Notification List -->
+          <div class="notification-list">
+
+            <!-- Empty State -->
+            <div class="notification-empty" *ngIf="ticketNotifications.length === 0">
+              <i class="material-icons">inbox</i>
+              <p>Hech qanday Habarlar topilmadi</p>
             </div>
 
-            <!-- Notification List -->
-            <div class="notification-list">
+            <!-- Notification Items -->
+            <div class="notification-item" *ngFor="let notification of ticketNotifications"
+              [class.unread]="!notification.isRead" (click)="onNotificationClick(notification)">
 
-              <!-- Empty State -->
-              <div class="notification-empty" *ngIf="ticketNotifications.length === 0">
-                <i class="material-icons">inbox</i>
-                <p>Hech qanday Habarlar topilmadi</p>
+              <!-- Icon -->
+              <div class="notification-icon" [style.background]="notification.color">
+                <i class="material-icons">{{ notification.icon }}</i>
               </div>
 
-              <!-- Notification Items -->
-              <div class="notification-item" *ngFor="let notification of ticketNotifications"
-                [class.unread]="!notification.isRead" (click)="onNotificationClick(notification)">
-
-                <!-- Icon -->
-                <div class="notification-icon" [style.background]="notification.color">
-                  <i class="material-icons">{{ notification.icon }}</i>
-                </div>
-
-                <!-- Content -->
-                <div class="notification-content">
-                  <div class="notification-title">{{ notification.title }}</div>
-                  <div class="notification-description">{{ notification.description }}</div>
-                  <div class="notification-time">{{ getTimeAgo(notification.timestamp) }}</div>
-                </div>
+              <!-- Content -->
+              <div class="notification-content">
+                <div class="notification-title">{{ notification.title }}</div>
+                <div class="notification-description">{{ notification.description }}</div>
+                <div class="notification-time">{{ getTimeAgo(notification.timestamp) }}</div>
               </div>
-            </div>
-
-            <!-- Footer -->
-            <div class="notification-footer">
-              <a [routerLink]="['/customer-tickets']" (click)="closeTicketDropdown()"
-                *ngIf="authService.getRole() === 'CLIENT'">
-                Barcha So'rovlarni ko'rish
-              </a>
-              <a [routerLink]="['/uzm/tickets-list']" (click)="closeTicketDropdown()"
-                *ngIf="authService.getRole() !== 'CLIENT'">
-                Barcha So'rovlarni Ko'rish
-              </a>
             </div>
           </div>
-        </li>
 
-        <!-- ========================================= -->
-        <!-- DELIVERY NOTIFICATIONS                    -->
-        <!-- ========================================= -->
-        <li class="nav-item notification-dropdown-container" *ngIf="isVisibleToManCus()">
-          <a class="nav-link" href="javascript:void(0)" (click)="toggleDeliveryNotifications()"
-            style="position: relative;">
-            <i class="material-icons">local_shipping</i>
-            <span class="notification-badge" *ngIf="notificationCounts.deliveryRequests > 0">
-              {{ notificationCounts.deliveryRequests }}
-            </span>
-            <p>
-              <span class="d-lg-none d-md-block">Yetkazma So'rovlari</span>
-            </p>
-          </a>
+          <!-- Footer -->
+          <div class="notification-footer">
+            <a [routerLink]="['/customer-tickets']" (click)="closeTicketDropdown()"
+              *ngIf="authService.getRole() === 'CLIENT'">
+              Barcha So'rovlarni ko'rish
+            </a>
+            <a [routerLink]="['/uzm/tickets-list']" (click)="closeTicketDropdown()"
+              *ngIf="authService.getRole() !== 'CLIENT'">
+              Barcha So'rovlarni Ko'rish
+            </a>
+          </div>
+        </div>
+      </li>
 
-          <!-- DELIVERY NOTIFICATION DROPDOWN PANEL -->
-          <div class="notification-dropdown" *ngIf="showDeliveryDropdown">
+      <!-- ========================================= -->
+      <!-- DELIVERY NOTIFICATIONS                    -->
+      <!-- ========================================= -->
+      <li class="nav-item notification-dropdown-container" *ngIf="isVisibleToManCus()">
+        <a class="nav-link" href="javascript:void(0)" (click)="$event.stopPropagation(); toggleDeliveryNotifications()"
+          style="position: relative;">
+          <i class="material-icons">local_shipping</i>
+          <span class="notification-badge" *ngIf="notificationCounts.deliveryRequests > 0">
+            {{ notificationCounts.deliveryRequests }}
+          </span>
+        </a>
 
-            <!-- Header -->
-            <div class="notification-header">
-              <h6>
-                <i class="material-icons">local_shipping</i>
-                Yetkazish So'rovlari Bildirishnomalari
-              </h6>
-              <button class="mark-all-btn" (click)="markAllDeliveriesAsRead()" *ngIf="deliveryNotifications.length > 0">
-                Hammasini o'qildi deb belgilash
-              </button>
+        <!-- DELIVERY NOTIFICATION DROPDOWN PANEL -->
+        <div class="notification-dropdown" *ngIf="showDeliveryDropdown">
+
+          <!-- Header -->
+          <div class="notification-header">
+            <h6>
+              <i class="material-icons">local_shipping</i>
+              Yetkazish So'rovlari Bildirishnomalari
+            </h6>
+            <button class="mark-all-btn" (click)="markAllDeliveriesAsRead()" *ngIf="deliveryNotifications.length > 0">
+              Hammasini o'qildi deb belgilash
+            </button>
+          </div>
+
+          <!-- Notification List -->
+          <div class="notification-list">
+
+            <!-- Empty State -->
+            <div class="notification-empty" *ngIf="deliveryNotifications.length === 0">
+              <i class="material-icons">inbox</i>
+              <p>Hech qanday bildirishNomalar topilmadi</p>
             </div>
 
-            <!-- Notification List -->
-            <div class="notification-list">
+            <!-- Notification Items -->
+            <div class="notification-item" *ngFor="let notification of deliveryNotifications"
+              [class.unread]="!notification.isRead" (click)="onNotificationClick(notification)">
 
-              <!-- Empty State -->
-              <div class="notification-empty" *ngIf="deliveryNotifications.length === 0">
-                <i class="material-icons">inbox</i>
-                <p>Hech qanday bildirishNomalar topilmadi</p>
+              <!-- Icon -->
+              <div class="notification-icon" [style.background]="notification.color">
+                <i class="material-icons">{{ notification.icon }}</i>
               </div>
 
-              <!-- Notification Items -->
-              <div class="notification-item" *ngFor="let notification of deliveryNotifications"
-                [class.unread]="!notification.isRead" (click)="onNotificationClick(notification)">
-
-                <!-- Icon -->
-                <div class="notification-icon" [style.background]="notification.color">
-                  <i class="material-icons">{{ notification.icon }}</i>
-                </div>
-
-                <!-- Content -->
-                <div class="notification-content">
-                  <div class="notification-title">{{ notification.title }}</div>
-                  <div class="notification-description">{{ notification.description }}</div>
-                  <div class="notification-time">{{ getTimeAgo(notification.timestamp) }}</div>
-                </div>
+              <!-- Content -->
+              <div class="notification-content">
+                <div class="notification-title">{{ notification.title }}</div>
+                <div class="notification-description">{{ notification.description }}</div>
+                <div class="notification-time">{{ getTimeAgo(notification.timestamp) }}</div>
               </div>
-            </div>
-
-            <!-- Footer -->
-            <div class="notification-footer">
-              <a [routerLink]="['/uzm/delivery-requests']" (click)="closeDeliveryDropdown()"
-                *ngIf="authService.getRole() === 'CLIENT'">
-                Barcha Bildirishnomalarni Ko'rish
-              </a>
-              <a [routerLink]="['/uzm/admin-del-requests']" (click)="closeDeliveryDropdown()"
-                *ngIf="authService.getRole() !== 'CLIENT'">
-                Barcha Bildirishnomalarni Ko'rish
-              </a>
             </div>
           </div>
-        </li>
 
-        <!-- ========================================= -->
-        <!-- LOGOUT                                    -->
-        <!-- ========================================= -->
-        <li class="nav-item">
-          <a (click)="authService.logout()" class="nav-link" href="/#/pages/login">
-            <i class="material-icons">logout</i>
-            <p>
-              <span class="d-lg-none d-md-block">Chiqish</span>
-            </p>
-          </a>
-        </li>
-      </ul>
-    </div>
+          <!-- Footer -->
+          <div class="notification-footer">
+            <a [routerLink]="['/uzm/delivery-requests']" (click)="closeDeliveryDropdown()"
+              *ngIf="authService.getRole() === 'CLIENT'">
+              Barcha Bildirishnomalarni Ko'rish
+            </a>
+            <a [routerLink]="['/uzm/admin-del-requests']" (click)="closeDeliveryDropdown()"
+              *ngIf="authService.getRole() !== 'CLIENT'">
+              Barcha Bildirishnomalarni Ko'rish
+            </a>
+          </div>
+        </div>
+      </li>
+
+      <!-- ========================================= -->
+      <!-- LOGOUT                                    -->
+      <!-- ========================================= -->
+      <li class="nav-item d-none d-lg-flex">
+        <a (click)="authService.logout()" class="nav-link" href="/#/pages/login">
+          <i class="material-icons">logout</i>
+        </a>
+      </li>
+
+    </ul>
   </div>
 </nav>

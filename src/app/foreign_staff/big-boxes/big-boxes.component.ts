@@ -630,6 +630,10 @@ export class BigBoxesComponent implements OnInit {
   }
 
   editBoxFunc(boxNum) {
+    const existingBox = this.boxes
+      ? this.boxes.find((b) => b.bigbox_number === boxNum)
+      : null;
+
     swal
       .fire({
         title: "Edit the box info",
@@ -650,7 +654,14 @@ export class BigBoxesComponent implements OnInit {
         buttonsStyling: false,
         didOpen: () => {
           localStorage.removeItem("labelsTemp1");
-          var ele = $("input[id=input-trnum]").filter(":visible").focus();
+          if (existingBox) {
+            if (existingBox.real_weight)
+              $("#input-realweight").val(existingBox.real_weight);
+            if (existingBox.length) $("#input-length").val(existingBox.length);
+            if (existingBox.height) $("#input-height").val(existingBox.height);
+            if (existingBox.width) $("#input-width").val(existingBox.width);
+          }
+          $("#input-realweight").focus();
         },
         preConfirm: (result) => {
           let realweightW = $("#input-realweight").val();
@@ -722,14 +733,14 @@ export class BigBoxesComponent implements OnInit {
   assignSerchBox(boxNum) {
     return this.http
       .get(
-        GlobalVars.baseUrl + "/boxes/listForStaff?boxNumber=HM138" + boxNum,
+        GlobalVars.baseUrl + "/bigbox/bigboxes_list?bigbox_number=" + boxNum,
         this.options,
       )
       .subscribe(
         (response) => {
-          this.boxes = response.json().boxes;
-          //this.total_count = response.json().total_count;
-          //this.currentWeight = response.json().total_weight;
+          this.boxes = response.json().bigboxes;
+          this.currentWeight = response.json().totalRealWeight;
+          this.currentVolume = response.json().totalVolumeWeight;
         },
         (error) => {
           if (error.status == 403) {

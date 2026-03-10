@@ -106,6 +106,10 @@ export class FinanceComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.currentParty = localStorage.getItem("current_party") || "";
+    this.financeVersion =
+      parseInt(localStorage.getItem("finance_version") || "1") || 1;
+
     this.dataTable = {
       headerRow: [
         "No",
@@ -122,9 +126,6 @@ export class FinanceComponent implements OnInit {
 
       dataRows: [],
     };
-
-    this.financeVersion =
-      parseInt(localStorage.getItem("finance_version") || "1") || 1;
   }
 
   ngAfterViewInit() {
@@ -616,6 +617,7 @@ export class FinanceComponent implements OnInit {
                   "current_party",
                   response.json().consignment.name,
                 );
+                this.currentParty = response.json().consignment.name;
                 // Store finance_version for routing V1/V2 API calls
                 const fv = response.json().consignment.finance_version || 1;
                 localStorage.setItem("finance_version", fv.toString());

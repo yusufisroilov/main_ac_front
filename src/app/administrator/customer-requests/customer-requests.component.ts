@@ -591,9 +591,11 @@ export class CustomerRequestsComponent implements OnInit {
           const result = response.json();
           if (result.status === "success") {
             this.myDeliveryRequests = result.data.requests || [];
-            // console.log("my delivery requests ", this.myDeliveryRequests);
 
-            // console.log("Loaded delivery requests:", this.myDeliveryRequests);
+            // Auto-fill phone from most recent request if not already set
+            if (!this.customerPhone && this.myDeliveryRequests.length > 0) {
+              this.customerPhone = this.myDeliveryRequests[0].customer_phone || "";
+            }
           }
         },
         (error) => {
@@ -701,7 +703,9 @@ export class CustomerRequestsComponent implements OnInit {
     this.selectedPackages = [];
     this.customerPackages.forEach((group) => (group.selected = false));
     this.deliveryType = "Pick-up";
-    this.customerPhone = "";
+    this.customerPhone = this.myDeliveryRequests.length > 0
+      ? this.myDeliveryRequests[0].customer_phone || ""
+      : "";
     this.deliveryAddress = "";
     this.mapLocationUrl = "";
     this.addressInputType = "text";

@@ -110,6 +110,7 @@ export class AllreceiversComponent implements OnInit {
       .subscribe(
         (response) => {
           this.allRecs = response.json().receivers;
+          console.log("all recs " + this.allRecs);
           this.currentPage = response.json().currentPage;
           this.totalPages = response.json().totalPages;
           if (this.totalPages > 1) {

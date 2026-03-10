@@ -179,8 +179,8 @@
                             <!-- Phone -->
                             <div class="form-section">
                                 <label class="section-label">Telefon Raqam *</label>
-                                <input type="tel" class="form-control" [(ngModel)]="customerPhone" name="customerPhone"
-                                    placeholder="+998 90 123 45 67">
+                                <input type="tel" class="form-control" [(ngModel)]="customerPhone" autocomplete="tel"
+                                    name="customerPhone" placeholder="+998 90 123 45 67">
                             </div>
 
                             <!-- EMU Branch -->
@@ -226,7 +226,8 @@
                                 <!-- Text Address Input -->
                                 <div *ngIf="addressInputType === 'text'" class="address-input-container">
                                     <textarea class="form-control" [(ngModel)]="deliveryAddress" name="deliveryAddress"
-                                        rows="3" placeholder="To'liq manzilni kiriting (masalan: Toshkent sh, Chilonzor tumani, 12-mavze, 5-uy)"></textarea>
+                                        rows="3"
+                                        placeholder="To'liq manzilni kiriting (masalan: Toshkent sh, Chilonzor tumani, 12-mavze, 5-uy)"></textarea>
                                     <small class="form-hint">
                                         <i class="material-icons">info</i>
                                         Manzilni imkon qadar to'liq kiriting
@@ -256,9 +257,9 @@
 
                             <!-- Payment -->
                             <div class="form-section">
-                                <label class="section-label">To'lov Summa</label>
+                                <!-- <label class="section-label">To'lov Summa</label>
                                 <input type="number" class="form-control" [(ngModel)]="paymentAmount"
-                                    name="paymentAmount" placeholder="0 so'm">
+                                    name="paymentAmount" placeholder="0 so'm"> -->
 
                                 <label class="section-label mt-3">To'lov Rasmlari</label>
                                 <div class="upload-box">

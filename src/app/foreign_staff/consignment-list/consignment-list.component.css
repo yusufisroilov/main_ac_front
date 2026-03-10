@@ -1,0 +1,10 @@
+.journey-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 12px;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+  letter-spacing: 0.3px;
+}

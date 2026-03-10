@@ -53,7 +53,11 @@ export class Financev2Component implements OnInit {
   ) {}
 
   ngOnInit() {
+    this.currentParty = localStorage.getItem("current_party") || "";
     this.loadCashAccounts();
+    if (this.currentParty) {
+      this.getListOfFinance();
+    }
   }
 
   private getHeaders(): HttpHeaders {
@@ -155,8 +159,8 @@ export class Financev2Component implements OnInit {
                   swal.fire("Topilmadi", data.message || data.error, "error");
                   return;
                 }
-                localStorage.setItem("current_party", data.consignment.name);
                 this.currentParty = data.consignment.name;
+                localStorage.setItem("current_party", data.consignment.name);
                 this.getListOfFinance();
               },
               (error) => {
@@ -207,6 +211,7 @@ export class Financev2Component implements OnInit {
             delivered: f.delivered,
             consignment: f.consignment,
           }));
+          console.log("all data ", this.allData);
 
           this.totalWeight = data.totalWeight || "0";
           this.totalUSD = data.totalUSD || "0";

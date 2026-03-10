@@ -79,8 +79,8 @@ export class ConsignmentListComponent implements OnInit {
         "Party number",
         "Open date",
         "Air waybill",
-        "Real Weight",
-        "Volume Weight",
+        "R Weight",
+        "V Weight",
       ],
       dataRows: [["CU1001", "2021-01-17", "250-50798182", "158kg", "160kg"]],
     };
@@ -598,12 +598,12 @@ export class ConsignmentListComponent implements OnInit {
 
   journeyStatusColors: { [key: number]: string } = {
     1: "#9E9E9E",
-    2: "#4CAF50",
+    2: "#FF9800",
     3: "#03A9F4",
     4: "#2196F3",
     5: "#9C27B0",
     6: "#FF9800",
-    7: "#E91E63",
+    7: "#388E3C",
     8: "#00BCD4",
     9: "#388E3C",
     10: "#607D8B",

@@ -314,39 +314,9 @@
   }
 }
 
-@media (max-width: 768px) {
-  .notification-dropdown {
-    width: 320px;
-    right: -50px;
-  }
-
-  .notification-dropdown::before {
-    right: 70px;
-  }
-
-  .notification-item {
-    padding: 12px 15px;
-  }
-
-  .notification-icon {
-    width: 36px;
-    height: 36px;
-  }
-
-  .notification-icon .material-icons {
-    font-size: 18px;
-  }
-
-  .notification-title {
-    font-size: 0.813rem;
-  }
-
-  .notification-description {
-    font-size: 0.75rem;
-  }
-}
-
-@media (max-width: 480px) {
+/* On ALL mobile sizes: use position:fixed so the dropdown escapes the
+   stacked absolute-positioning context of the notification ul */
+@media (max-width: 991px) {
   .notification-dropdown {
     position: fixed;
     top: 60px;
@@ -373,8 +343,71 @@
     padding: 3px 6px;
   }
 
+  .notification-item {
+    padding: 12px 15px;
+  }
+
+  .notification-icon {
+    width: 36px;
+    height: 36px;
+  }
+
+  .notification-icon .material-icons {
+    font-size: 18px;
+  }
+
+  .notification-title {
+    font-size: 0.813rem;
+  }
+
+  .notification-description {
+    font-size: 0.75rem;
+  }
+
   .notification-list {
     max-height: calc(100vh - 180px);
+  }
+}
+
+/* ============================================ */
+/* ALWAYS-VISIBLE NOTIFICATION NAV              */
+/* ============================================ */
+
+/* Positioning context for absolute notifications on mobile */
+@media (max-width: 991px) {
+  .navbar .container-fluid {
+    position: relative;
+  }
+}
+
+.navbar-notifications-always-visible {
+  display: flex !important;
+  flex-direction: row;
+  align-items: center;
+  margin-left: auto;
+  margin-right: 5px;
+  position: relative;
+  z-index: 1050;
+}
+
+.navbar-notifications-always-visible .nav-item,
+.navbar-notifications-always-visible .nav-link {
+  pointer-events: auto !important;
+  cursor: pointer;
+}
+
+@media (max-width: 991px) {
+  .navbar-notifications-always-visible {
+    /* Take notifications out of flex flow so toggler stays at top-right.
+       Use top/bottom instead of transform to avoid breaking position:fixed on child dropdowns */
+    position: absolute;
+    right: 55px;
+    top: 0;
+    bottom: 0;
+    margin: 0 !important;
+    z-index: 1060;
+    display: flex !important;
+    align-items: center;
   }
 }
 
