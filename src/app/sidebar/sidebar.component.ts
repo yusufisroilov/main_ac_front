@@ -530,6 +530,12 @@ export const ownerROUTES: RouteInfo[] = [
     type: "link",
     icontype: "attach_money",
   },
+  {
+    path: "/oa/owner-draws",
+    title: "Owner Draws",
+    type: "link",
+    icontype: "account_circle",
+  },
 
   {
     path: "/oa/internal-transfers",

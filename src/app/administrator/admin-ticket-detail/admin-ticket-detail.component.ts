@@ -7,7 +7,8 @@ import { AuthService } from "src/app/pages/login/auth.service";
 
 interface TicketMessage {
   id: number;
-  sender_role: "customer" | "staff"; // ✅ FIXED: Changed from sender_type to sender_role
+  sender_role: "customer" | "staff";
+  sender_user_role?: string;
   sender_name: string;
   message_text: string;
   is_internal: boolean;
@@ -30,8 +31,8 @@ interface TicketDetail {
   category: string;
   priority: string;
   status: string;
-  assigned_to: string;
   assigned_user_id?: number;
+  assigned_user_name?: string;
   customer: {
     id: number;
     username: string;
@@ -586,28 +587,21 @@ export class AdminTicketDetailComponent implements OnInit {
 
     swal
       .fire({
-        title: "Qayta Biriktirish So'rovni",
-        input: "select",
-        inputOptions: {
-          DELIVERER: "Kuryer",
-          ACCOUNTANT: "Bugalter",
-          YUKCHI: "Yukchi",
-          CHINASTAFF: "Xitoylik",
-          MANAGER: "Manager",
-          OWNER: "Egasi",
-        },
-        inputPlaceholder: "Yangi Biriktiriluvchini Tanlash",
+        title: "Qayta Biriktirish",
+        text: "Foydalanuvchi ID raqamini kiriting",
+        input: "text",
+        inputPlaceholder: "Masalan: 22",
         showCancelButton: true,
-        confirmButtonText: "Qayta biriktirish",
+        confirmButtonText: "Biriktirish",
         inputValidator: (value) => {
-          if (!value) {
-            return "Biriktiriluvchini tanlash kerak!";
+          if (!value || isNaN(parseInt(value))) {
+            return "ID raqam bo'lishi kerak!";
           }
         },
       })
       .then((result) => {
         if (result.isConfirmed && this.ticket) {
-          const body = { assigned_to: result.value };
+          const body = { assigned_user_id: parseInt(result.value) };
 
           this.http
             .put(
@@ -620,20 +614,16 @@ export class AdminTicketDetailComponent implements OnInit {
             )
             .subscribe(
               (response) => {
-                if (response.json().status === "success") {
-                  if (this.ticket) {
-                    this.ticket.assigned_to = result.value;
-                  }
-
+                const data = response.json();
+                if (data.status === "success") {
                   swal.fire({
                     icon: "success",
                     title: "Muvaffaqiyatli",
-                    text: "So'rov qayta biriktirildi",
+                    text: data.message || "So'rov qayta biriktirildi",
                     timer: 1500,
                     showConfirmButton: false,
                   });
 
-                  // Reload to get updated activity log
                   this.loadTicketDetail();
                 }
               },
@@ -642,10 +632,11 @@ export class AdminTicketDetailComponent implements OnInit {
                 if (error.status == 403) {
                   this.authService.logout();
                 } else {
+                  const errMsg = error.json?.()?.error || "Qayta biriktirishda xatolik yuz berdi";
                   swal.fire({
                     icon: "error",
                     title: "Xatolik",
-                    text: "Qayta biriktirishda xatolik yuz berdi. Iltimos, qaytadan urinib ko'ring.",
+                    text: errMsg,
                   });
                 }
               }

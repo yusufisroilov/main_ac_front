@@ -265,15 +265,9 @@ export class TicketService {
    */
   reassignTicket(
     id: string | number,
-    assignedTo: string,
-    assignedUserId?: number
+    assignedUserId: number
   ): Observable<any> {
-    const body: any = { assigned_to: assignedTo };
-    if (assignedUserId) {
-      body.assigned_user_id = assignedUserId;
-    }
-
-    return this.http.put(`${this.apiUrl}/tickets/admin/${id}/reassign`, body, {
+    return this.http.put(`${this.apiUrl}/tickets/admin/${id}/reassign`, { assigned_user_id: assignedUserId }, {
       headers: this.getHeaders(),
     });
   }

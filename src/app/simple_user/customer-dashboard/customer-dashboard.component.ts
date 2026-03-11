@@ -102,7 +102,7 @@ export class CustomerDashboardComponent implements OnInit, AfterViewInit {
     public authService: AuthService,
     private http: Http,
     private httpClient: HttpClient,
-    private router: Router
+    private router: Router,
   ) {
     this.headers12 = new Headers({ "Content-Type": "application/json" });
     this.headers12.append("Authorization", localStorage.getItem("token"));
@@ -152,7 +152,7 @@ export class CustomerDashboardComponent implements OnInit, AfterViewInit {
           swal.fire(
             "Xatolik",
             result.message || "Dashboard ma'lumotlarini yuklashda xatolik",
-            "error"
+            "error",
           );
           this.loadingStats = false;
         }
@@ -165,7 +165,7 @@ export class CustomerDashboardComponent implements OnInit, AfterViewInit {
           `Dashboard ma'lumotlarini yuklashda xatolik: ${
             error.json()?.error || error.message
           }`,
-          "error"
+          "error",
         );
 
         this.loadingStats = false;
@@ -173,7 +173,7 @@ export class CustomerDashboardComponent implements OnInit, AfterViewInit {
         if (error.status == 403) {
           this.authService.logout();
         }
-      }
+      },
     );
   }
 
@@ -211,14 +211,14 @@ export class CustomerDashboardComponent implements OnInit, AfterViewInit {
           `Buyurtmalarni yuklashda xatolik: ${
             error.json()?.error || error.message
           }`,
-          "error"
+          "error",
         );
         this.loadingOrders = false;
 
         if (error.status == 403) {
           this.authService.logout();
         }
-      }
+      },
     );
   }
 
@@ -252,7 +252,7 @@ export class CustomerDashboardComponent implements OnInit, AfterViewInit {
                 "/orders/client_received?tracking_number=" +
                 trackingNumber,
               "",
-              this.options
+              this.options,
             )
             .subscribe(
               (response) => {
@@ -273,12 +273,12 @@ export class CustomerDashboardComponent implements OnInit, AfterViewInit {
                 swal.fire(
                   "Xatolik",
                   "Buyurtmani qabul qilishda xatolik",
-                  "error"
+                  "error",
                 );
                 if (error.status == 403) {
                   this.authService.logout();
                 }
-              }
+              },
             );
         }
       });
@@ -308,13 +308,13 @@ export class CustomerDashboardComponent implements OnInit, AfterViewInit {
           if (error.status === 403) {
             this.authService.logout();
           }
-        }
+        },
       );
   }
 
   getCalendarProgress(item: any): number {
     const completed = this.calendarStatusOrder.filter((s) =>
-      this.isCalendarStepCompleted(item, s)
+      this.isCalendarStepCompleted(item, s),
     ).length;
     return completed / this.calendarStatusOrder.length;
   }
@@ -331,7 +331,10 @@ export class CustomerDashboardComponent implements OnInit, AfterViewInit {
     }
     const currentIdx = this.calendarStatusOrder.indexOf(item.currentStatus);
     const stepIdx = this.calendarStatusOrder.indexOf(stepStatus);
-    return currentIdx >= stepIdx && this.getCalendarStepDate(item, stepStatus) !== null;
+    return (
+      currentIdx >= stepIdx &&
+      this.getCalendarStepDate(item, stepStatus) !== null
+    );
   }
 
   isCalendarCurrentStep(item: any, stepStatus: number): boolean {
@@ -343,7 +346,12 @@ export class CustomerDashboardComponent implements OnInit, AfterViewInit {
       const t = item.timeline.find((t) => t.status === stepStatus);
       if (t && t.date) return t.date;
     }
-    const fieldMap = { 2: "in_foreign_warehouse_date", 4: "in_foreign_airport_date", 5: "in_uzb_airport_date", 7: "in_uzb_warehouse_date" };
+    const fieldMap = {
+      2: "in_foreign_warehouse_date",
+      4: "in_foreign_airport_date",
+      5: "in_uzb_airport_date",
+      7: "in_uzb_warehouse_date",
+    };
     if (fieldMap[stepStatus] && item[fieldMap[stepStatus]]) {
       return item[fieldMap[stepStatus]];
     }
@@ -352,10 +360,20 @@ export class CustomerDashboardComponent implements OnInit, AfterViewInit {
 
   getCalendarStepIcon(stepStatus: number, item: any): string {
     if (item.isHongKong) {
-      const icons = { 2: "inventory_2", 4: "local_shipping", 5: "location_on", 7: "warehouse" };
+      const icons = {
+        2: "inventory_2",
+        4: "local_shipping",
+        5: "location_on",
+        7: "warehouse",
+      };
       return icons[stepStatus] || "local_shipping";
     }
-    const icons = { 2: "inventory_2", 4: "flight_takeoff", 5: "flight_land", 7: "warehouse" };
+    const icons = {
+      2: "inventory_2",
+      4: "flight_takeoff",
+      5: "flight_land",
+      7: "warehouse",
+    };
     return icons[stepStatus] || "local_shipping";
   }
 
@@ -398,9 +416,9 @@ export class CustomerDashboardComponent implements OnInit, AfterViewInit {
   }
 
   getBalanceSign(value: number): string {
-    if (value > 0) return '-';
-    if (value < 0) return '+';
-    return '';
+    if (value > 0) return "-";
+    if (value < 0) return "+";
+    return "";
   }
 
   getBalanceAbsUsd(value: number): number {
@@ -412,21 +430,19 @@ export class CustomerDashboardComponent implements OnInit, AfterViewInit {
   }
 
   getBalanceColor(value: number): string {
-    return value > 0 ? '#f44336' : '#4caf50';
+    return value > 0 ? "#f44336" : "#4caf50";
   }
 
   getBalanceIcon(value: number): string {
-    if (value > 0) return 'account_balance_wallet';
-    if (value < 0) return 'savings';
-    return 'check_circle';
+    if (value > 0) return "account_balance_wallet";
+    if (value < 0) return "payments";
+    return "check_circle";
   }
 
   formatCurrency(value: number): string {
     if (value == null) return "0";
     const intPart = Math.floor(Math.abs(value));
-    const formatted = intPart
-      .toString()
-      .replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+    const formatted = intPart.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
     return value < 0 ? "-" + formatted : formatted;
   }
 

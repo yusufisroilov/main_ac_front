@@ -21,7 +21,8 @@ export class CustomerCreateTicketComponent implements OnInit, AfterViewInit {
 
   // Form fields
   relatedService: string = "None";
-  selectedRole: string = ""; // Customer selected role for ticket assignment
+  assignedUserId: string = ""; // Staff can assign to a specific user ID
+  assignedRole: string = ""; // CLIENT selects a role
   message: string = "";
 
   // Form state
@@ -31,6 +32,10 @@ export class CustomerCreateTicketComponent implements OnInit, AfterViewInit {
 
   // Language
   isChinaStaff: boolean = false;
+  isClient: boolean = false;
+
+  // Role options for CLIENT users
+  roleOptions: any[] = [];
 
   // File upload
   selectedFiles: File[] = [];
@@ -53,8 +58,6 @@ export class CustomerCreateTicketComponent implements OnInit, AfterViewInit {
   // Service/Category options
   serviceOptions: any[] = [];
 
-  // Role options for ticket assignment
-  roleOptions: any[] = [];
 
   constructor(
     private http: Http,
@@ -67,7 +70,21 @@ export class CustomerCreateTicketComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
-    this.isChinaStaff = localStorage.getItem("role") === "CHINASTAFF";
+    const role = localStorage.getItem("role");
+    this.isChinaStaff = role === "CHINASTAFF";
+    this.isClient = role === "CLIENT";
+
+    if (this.isClient) {
+      this.roleOptions = [
+        { value: "", label: "Tanlang (ixtiyoriy)" },
+        { value: "MANAGER", label: "Menejer" },
+        { value: "OWNER", label: "Egasi" },
+        { value: "CHINASTAFF", label: "Xitoy xodimi" },
+        { value: "ACCOUNTANT", label: "Bugalter" },
+        { value: "DELIVERER", label: "Kuryer" },
+        { value: "YUKCHI", label: "Yukchi" },
+      ];
+    }
 
     if (this.isChinaStaff) {
       this.serviceOptions = [
@@ -84,13 +101,6 @@ export class CustomerCreateTicketComponent implements OnInit, AfterViewInit {
         { value: "complaint", label: "Complaint" },
         { value: "other", label: "Other" },
       ];
-      this.roleOptions = [
-        { value: "", label: "Auto Assign" },
-        { value: "OWNER", label: "Owner" },
-        { value: "MANAGER", label: "Manager" },
-        { value: "CHINASTAFF", label: "China Staff" },
-        { value: "YUKCHI", label: "Loader" },
-      ];
     } else {
       this.serviceOptions = [
         { value: "None", label: "Yo'q" },
@@ -105,13 +115,6 @@ export class CustomerCreateTicketComponent implements OnInit, AfterViewInit {
         { value: "support", label: "Umumiy yordam" },
         { value: "complaint", label: "Shikoyat" },
         { value: "other", label: "Boshqa" },
-      ];
-      this.roleOptions = [
-        { value: "", label: "Avtomatik tanlash" },
-        { value: "OWNER", label: "Egasi" },
-        { value: "MANAGER", label: "Menejer" },
-        { value: "CHINASTAFF", label: "Xitoy xodimi" },
-        { value: "YUKCHI", label: "Yukchi" },
       ];
     }
   }
@@ -177,9 +180,17 @@ export class CustomerCreateTicketComponent implements OnInit, AfterViewInit {
     formData.append("priority", "Medium");
     formData.append("message_text", this.message.trim());
 
-    // Add selected role if customer chose one
-    if (this.selectedRole) {
-      formData.append("assigned_to", this.selectedRole);
+    // Add assignment info
+    if (this.isClient) {
+      // CLIENT sends role string
+      if (this.assignedRole) {
+        formData.append("assigned_to", this.assignedRole);
+      }
+    } else {
+      // Staff sends user ID
+      if (this.assignedUserId && !isNaN(parseInt(this.assignedUserId))) {
+        formData.append("assigned_user_id", this.assignedUserId);
+      }
     }
 
     // Append files
@@ -210,7 +221,7 @@ export class CustomerCreateTicketComponent implements OnInit, AfterViewInit {
               confirmButtonText: "OK",
             })
             .then(() => {
-              this.router.navigate(["/customer/ticket-list"]);
+              this.router.navigate(["/customer-tickets"]);
             });
         }
       } else {
@@ -254,11 +265,11 @@ export class CustomerCreateTicketComponent implements OnInit, AfterViewInit {
         })
         .then((result) => {
           if (result.isConfirmed) {
-            this.router.navigate(["/customer/ticket-list"]);
+            this.router.navigate(["/customer-tickets"]);
           }
         });
     } else {
-      this.router.navigate(["/customer/ticket-list"]);
+      this.router.navigate(["/customer-tickets"]);
     }
   }
 

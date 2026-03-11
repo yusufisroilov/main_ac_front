@@ -22,20 +22,29 @@
                                 </select>
                             </div>
 
-                            <!-- Assign to Role -->
-                            <div class="form-group">
-                                <label class="form-label">{{ isChinaStaff ? 'Assign to' : 'Kimga yo\'naltirish' }}</label>
-                                <select class="form-control" [(ngModel)]="selectedRole" name="selectedRole"
+                            <!-- Assign to: Role dropdown for CLIENT, User ID input for staff -->
+                            <div class="form-group" *ngIf="isClient">
+                                <label class="form-label">Kimga yo'naltirish</label>
+                                <select class="form-control" [(ngModel)]="assignedRole" name="assignedRole"
                                     [disabled]="isSubmitting">
                                     <option *ngFor="let role of roleOptions" [value]="role.value">
                                         {{ role.label }}
                                     </option>
                                 </select>
+                                <small class="form-text text-muted">
+                                    Murojaatingizni kimga yo'naltirishni tanlang. Bo'sh qoldiring avtomatik uchun.
+                                </small>
+                            </div>
+                            <div class="form-group" *ngIf="!isClient">
+                                <label class="form-label">{{ isChinaStaff ? 'Assign to (User ID)' : 'Kimga yo\'naltirish (ID)' }}</label>
+                                <input type="number" class="form-control" [(ngModel)]="assignedUserId" name="assignedUserId"
+                                    [disabled]="isSubmitting"
+                                    [placeholder]="isChinaStaff ? 'User ID (e.g. 22), leave empty for auto' : 'ID raqami (masalan: 22), bo\'sh qoldiring avtomatik uchun'">
                                 <small class="form-text text-muted" *ngIf="isChinaStaff">
-                                    Choose which staff to assign your ticket to. If "Auto Assign", the system will choose based on category.
+                                    Enter the user ID to assign your ticket to. Leave empty for auto-assignment.
                                 </small>
                                 <small class="form-text text-muted" *ngIf="!isChinaStaff">
-                                    Murojaatingizni qaysi xodimga yo'naltirishni tanlang. "Avtomatik tanlash" bo'lsa, tizim kategoriya asosida tanlaydi.
+                                    Murojaatingizni kimga yo'naltirishni ID raqami bilan kiriting. Bo'sh qoldiring avtomatik uchun.
                                 </small>
                             </div>
 

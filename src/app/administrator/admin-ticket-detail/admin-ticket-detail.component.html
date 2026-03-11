@@ -236,7 +236,7 @@
                                     <h6 class="text-muted mb-2">
                                         <mat-icon class="icon-sm">assignment_ind</mat-icon> -Ga Biriktirilgan
                                     </h6>
-                                    <p class="mb-1"><strong>{{ ticket.assigned_to }}</strong></p>
+                                    <p class="mb-1"><strong>{{ ticket.assigned_user_id ? 'K' + ticket.assigned_user_id : 'Biriktirilmagan' }}</strong></p>
                                     <button mat-button color="primary" (click)="reassignTicket()" *ngIf="canReassign()"
                                         class="p-0">
                                         <mat-icon class="icon-sm">edit</mat-icon> Qayta Biriktirish

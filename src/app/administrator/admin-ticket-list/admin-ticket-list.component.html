@@ -126,22 +126,13 @@
                                     </div>
                                 </div>
 
-                                <!-- Assigned To Dropdown -->
+                                <!-- Assigned To (User ID) -->
                                 <div class="col-sm-6 col-lg-2">
-                                    <div class="dropdown">
-                                        <button mat-raised-button
-                                            class="dropdown-toggle btn btn-primary btn-round btn-block"
-                                            data-toggle="dropdown">
-                                            {{ selectedAssignedTo === 'all' ? 'Barcha Staf' : selectedAssignedTo }}
-                                            <b class="caret"></b>
-                                        </button>
-                                        <ul class="dropdown-menu dropdown-menu-left">
-                                            <li *ngFor="let option of assignedToOptions">
-                                                <a (click)="selectedAssignedTo = option.value; onFilterChange()">{{
-                                                    option.label }}</a>
-                                            </li>
-                                        </ul>
-                                    </div>
+                                    <mat-form-field class="example-full-width">
+                                        <input matInput type="number" placeholder="Ishchi ID bo'yicha"
+                                            [(ngModel)]="selectedAssignedTo"
+                                            (keyup.enter)="onFilterChange()" />
+                                    </mat-form-field>
                                 </div>
 
                                 <!-- Reset Button -->
@@ -223,7 +214,7 @@
                                                 </span>
                                             </td> -->
                                             <td>
-                                                <small>{{ ticket.assigned_to }}</small>
+                                                <small>{{ ticket.assigned_user_id ? 'K' + ticket.assigned_user_id : '-' }}</small>
                                             </td>
                                             <td>
                                                 <i class="material-icons"

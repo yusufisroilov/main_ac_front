@@ -16,6 +16,7 @@ interface TicketMessage {
   sender_id: number;
   sender_name: string;
   sender_role: "customer" | "staff";
+  sender_user_role?: string;
   message_text: string;
   message_type: string;
   is_internal: boolean;

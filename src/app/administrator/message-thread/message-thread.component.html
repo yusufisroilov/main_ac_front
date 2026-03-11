@@ -31,7 +31,10 @@
                         </div>
                     </div>
                     <div class="message-actions">
-                        <span class="badge" [ngClass]="isCustomerMessage(message) ? 'badge-info' : 'badge-purple'">
+                        <span *ngIf="message.sender_user_role === 'CHINASTAFF'" class="badge badge-warning">
+                            Xitoy Hodim
+                        </span>
+                        <span *ngIf="message.sender_user_role !== 'CHINASTAFF'" class="badge" [ngClass]="isCustomerMessage(message) ? 'badge-info' : 'badge-purple'">
                             {{ isCustomerMessage(message) ? 'Customer' : 'Staff' }}
                         </span>
                         <!-- Edit Button (shown on hover, only for staff messages) -->

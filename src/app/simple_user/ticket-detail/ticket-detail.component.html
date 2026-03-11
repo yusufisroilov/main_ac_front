@@ -65,7 +65,10 @@
                                                             }}</span>
                                                     </div>
                                                 </div>
-                                                <span class="badge"
+                                                <span *ngIf="message.sender_user_role === 'CHINASTAFF'" class="badge badge-warning">
+                                                    Xitoy Hodim
+                                                </span>
+                                                <span *ngIf="message.sender_user_role !== 'CHINASTAFF'" class="badge"
                                                     [ngClass]="isCustomerMessage(message) ? 'badge-info' : 'badge-purple'">
                                                     {{ isCustomerMessage(message) ? 'Mijoz' : 'Xodim' }}
                                                 </span>

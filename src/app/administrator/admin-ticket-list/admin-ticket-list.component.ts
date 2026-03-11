@@ -13,7 +13,8 @@ interface Ticket {
   category: string;
   priority: string;
   status: string;
-  assigned_to: string;
+  assigned_user_id: number;
+  assigned_user_name: string;
   customer_name: string;
   unread_messages_count: number;
   messages_count: number;
@@ -44,7 +45,7 @@ export class AdminTicketListComponent implements OnInit {
   selectedStatus: string = "all"; // Changed from "all" to exclude closed tickets by default
   selectedPriority: string = "all";
   selectedCategory: string = "all";
-  selectedAssignedTo: string = "all";
+  selectedAssignedTo: string = "";
 
   // Sort
   sortField: string = "updated_at";
@@ -64,7 +65,6 @@ export class AdminTicketListComponent implements OnInit {
   statusOptions: any = [];
   priorityOptions: any = [];
   categoryOptions: any = [];
-  assignedToOptions: any = [];
 
   // HTTP setup
   headers12: any;
@@ -117,17 +117,6 @@ export class AdminTicketListComponent implements OnInit {
       { value: "other", label: "Boshqa" },
     ];
 
-    // Assigned to options (roles)
-    this.assignedToOptions = [
-      { value: "all", label: "Barcha Ishchilar" },
-      { value: "DELIVERER", label: "Kuryer" },
-      { value: "ACCOUNTANT", label: "Bugalter" },
-      { value: "YUKCHI", label: "Yukchi" },
-      { value: "CHINASTAFF", label: "Xitoylik" },
-      { value: "MANAGER", label: "Manager" },
-      { value: "OWNER", label: "Egasi" },
-      { value: "ADMIN", label: "Admin" },
-    ];
 
     this.startNotificationPolling();
   }
@@ -154,8 +143,8 @@ export class AdminTicketListComponent implements OnInit {
     if (this.selectedCategory !== "all") {
       queryParams += `&category=${this.selectedCategory}`;
     }
-    if (this.selectedAssignedTo !== "all") {
-      queryParams += `&assigned_to=${this.selectedAssignedTo}`;
+    if (this.selectedAssignedTo && this.selectedAssignedTo.trim()) {
+      queryParams += `&assigned_to=${this.selectedAssignedTo.trim()}`;
     }
     if (this.searchQuery.trim()) {
       queryParams += `&search=${encodeURIComponent(this.searchQuery.trim())}`;
@@ -360,23 +349,15 @@ export class AdminTicketListComponent implements OnInit {
   reassignTicket(ticket: Ticket): void {
     swal
       .fire({
-        title: "Qayta Biriktirish So'rovni",
-        input: "select",
-        inputOptions: {
-          DELIVERER: "Kuryer",
-          ACCOUNTANT: "Bugalter",
-          YUKCHI: "Yukchi",
-          CHINASTAFF: "Xitoylik",
-          MANAGER: "Manager",
-          OWNER: "Egasi",
-          ADMIN: "Admin",
-        },
-        inputPlaceholder: "Yangi Biriktiriluvchini Tanlash",
+        title: "Qayta Biriktirish",
+        text: "Foydalanuvchi ID raqamini kiriting",
+        input: "text",
+        inputPlaceholder: "Masalan: 22",
         showCancelButton: true,
-        confirmButtonText: "Qayta Biriktirish",
+        confirmButtonText: "Biriktirish",
         inputValidator: (value) => {
-          if (!value) {
-            return "You need to select someone!";
+          if (!value || isNaN(parseInt(value))) {
+            return "ID raqam bo'lishi kerak!";
           }
         },
       })
@@ -385,17 +366,17 @@ export class AdminTicketListComponent implements OnInit {
           this.http
             .put(
               GlobalVars.baseUrl + "/tickets/admin/" + ticket.id + "/reassign",
-              { assigned_to: result.value },
+              { assigned_user_id: parseInt(result.value) },
               this.options
             )
             .subscribe(
               (response) => {
-                if (response.json().status === "success") {
-                  ticket.assigned_to = result.value;
+                const data = response.json();
+                if (data.status === "success") {
                   swal.fire({
                     icon: "success",
-                    title: "Success",
-                    text: "Ticket reassigned successfully",
+                    title: "Muvaffaqiyatli",
+                    text: data.message || "Qayta biriktirildi",
                     timer: 1500,
                     showConfirmButton: false,
                   });
@@ -407,10 +388,11 @@ export class AdminTicketListComponent implements OnInit {
                 if (error.status == 403) {
                   this.authService.logout();
                 } else {
+                  const errMsg = error.json?.()?.error || "Qayta biriktirishda xatolik";
                   swal.fire({
                     icon: "error",
-                    title: "Error",
-                    text: "Failed to reassign ticket",
+                    title: "Xatolik",
+                    text: errMsg,
                   });
                 }
               }
@@ -541,7 +523,7 @@ export class AdminTicketListComponent implements OnInit {
     this.selectedStatus = "all";
     this.selectedPriority = "all";
     this.selectedCategory = "all";
-    this.selectedAssignedTo = "all";
+    this.selectedAssignedTo = "";
     this.currentPage = 1;
     this.getListOfTickets();
   }
