@@ -63,6 +63,7 @@ export class Infoeachclientv2Component implements OnInit {
   currentParty: string;
   umQarzUSZ: string;
   umQarzUSD: string;
+  unallocatedCredit: number = 0;
 
   // Cash accounts for V2 payments
   cashAccounts: any[] = [];
@@ -210,6 +211,7 @@ export class Infoeachclientv2Component implements OnInit {
           );
           this.umQarzUSZ = data.debt_uzs_total;
           this.umQarzUSD = data.debt_usd_total;
+          this.unallocatedCredit = data.unallocated_credit_usd || 0;
           this.currentID = data.user_id;
         },
         (error) => {
@@ -540,9 +542,310 @@ export class Infoeachclientv2Component implements OnInit {
           (data) => {
             if (data.status === "error") {
               swal.fire("Qo'shilmadi", data.message || data.error, "error");
+              return;
+            }
+            this.getListOfPartyBoxes(this.currentID);
+            if (data.overpayment_usd > 0) {
+              this.handleOverpayment(data.overpayment_usd, data.finance_id);
             } else {
-              this.getListOfPartyBoxes(this.currentID);
               swal.fire({ icon: "success", title: "Muvaffaqiyat!", timer: 1500, showConfirmButton: false });
+            }
+          },
+          (error) => {
+            swal.fire("Xatolik", error.error?.message || error.error?.error || "Xatolik yuz berdi", "error");
+          },
+        );
+    });
+  }
+
+  private handleOverpayment(overpaidUsd: number, financeId?: number) {
+    const accountOptions = this.cashAccounts
+      .map((a) => `<option value="${a.id}" data-currency="${a.currency}" data-name="${a.name}">${a.name} (${a.currency})</option>`)
+      .join("");
+
+    swal.fire({
+      title: "Ortiqcha To\'lov",
+      icon: "warning",
+      html: `
+        <p style="margin-bottom:16px">
+          Mijoz <b>${overpaidUsd.toFixed(2)}$</b> ortiqcha to\'ladi.
+        </p>
+        <p style="margin-bottom:8px">Qanday amalga oshirilsin?</p>
+      `,
+      showDenyButton: true,
+      showCancelButton: false,
+      confirmButtonText: "✅ Kredit sifatida saqlash",
+      denyButtonText: "💵 Naqd qaytarish",
+      customClass: { confirmButton: "btn btn-success", denyButton: "btn btn-warning" },
+      buttonsStyling: false,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Button A: keep as unallocated BONUS credit
+        this.httpClient
+          .post<any>(
+            GlobalVars.baseUrl + "/finance-v2/keep-credit",
+            { customer_id: this.currentID, amount_usd: overpaidUsd, finance_id: financeId, comment: "Ortiqcha to\'lov krediti" },
+            { headers: this.getHeaders() },
+          )
+          .subscribe(
+            () => swal.fire({ icon: "success", title: `${overpaidUsd.toFixed(2)}$ kredit sifatida saqlandi`, timer: 2000, showConfirmButton: false }),
+            (err) => swal.fire("Xatolik", err.error?.message || "Kredit saqlashda xatolik", "error"),
+          );
+      } else if (result.isDenied) {
+        // Button B: return cash — pick which account + fx_rate if UZS
+        swal.fire({
+          title: "Qaytariladigan Hisob",
+          html: `
+            <p style="margin-bottom:12px">Qaysi hisobdan <b>${overpaidUsd.toFixed(2)}$</b> qaytarilsin?</p>
+            <select id="op-account" class="form-control" style="margin-bottom:12px">
+              <option value="">— Hisob tanlang —</option>
+              ${accountOptions}
+            </select>
+            <div id="op-rate-row" style="display:none">
+              <label style="font-size:12px;font-weight:700;color:#888">KURS (1 USD = ? UZS)</label>
+              <input id="op-rate" type="number" class="form-control" placeholder="masalan: 12800">
+            </div>
+          `,
+          confirmButtonText: "Qaytarish",
+          showCancelButton: true,
+          cancelButtonText: "Bekor",
+          customClass: { confirmButton: "btn btn-danger", cancelButton: "btn btn-secondary" },
+          buttonsStyling: false,
+          didOpen: () => {
+            const sel = document.getElementById("op-account") as HTMLSelectElement;
+            const rateRow = document.getElementById("op-rate-row") as HTMLElement;
+            sel.addEventListener("change", () => {
+              const opt = sel.options[sel.selectedIndex];
+              rateRow.style.display = opt.dataset["currency"] === "UZS" ? "block" : "none";
+            });
+          },
+          preConfirm: () => {
+            const sel = document.getElementById("op-account") as HTMLSelectElement;
+            if (!sel.value) { swal.showValidationMessage("Hisob tanlang"); return false; }
+            const opt = sel.options[sel.selectedIndex];
+            const currency = opt.dataset["currency"];
+            let fxRate: number | null = null;
+            if (currency === "UZS") {
+              const rateVal = parseFloat((document.getElementById("op-rate") as HTMLInputElement).value);
+              if (!rateVal || rateVal <= 0) { swal.showValidationMessage("Kurs kiritilmagan"); return false; }
+              fxRate = rateVal;
+            }
+            return { from_account_id: parseInt(sel.value), currency, fxRate };
+          },
+        }).then((r2) => {
+          if (!r2.isConfirmed || !r2.value) return;
+          const { from_account_id, fxRate } = r2.value;
+          this.httpClient
+            .post<any>(
+              GlobalVars.baseUrl + "/finance-v2/return-cash",
+              { customer_id: this.currentID, amount_usd: overpaidUsd, from_account_id, fx_rate: fxRate, finance_id: financeId },
+              { headers: this.getHeaders() },
+            )
+            .subscribe(
+              (res) => swal.fire({ icon: "success", title: res.message || "Qaytarildi", timer: 2000, showConfirmButton: false }),
+              (err) => swal.fire("Xatolik", err.error?.message || "Qaytarishda xatolik", "error"),
+            );
+        });
+      }
+    });
+  }
+
+  // ─── Bulk Payment (single button for all finances) ───
+
+  addBulkPayment() {
+    if (!this.currentID) return;
+
+    const buildAccountChips = (currency: string): string => {
+      const filtered = this.cashAccounts.filter((a) => a.currency === currency);
+      if (!filtered.length) {
+        return `<p class="pd-no-acc">Bu valyuta uchun hisob topilmadi</p>`;
+      }
+      return filtered
+        .map(
+          (a) =>
+            `<button type="button" class="pd-acc-chip" data-id="${a.id}" title="${a.name}">
+               <span class="pd-chip-name">${a.name}</span>
+             </button>`,
+        )
+        .join("");
+    };
+
+    const html = `
+      <style>
+        .pd { text-align: left; font-family: inherit; }
+        .pd-curr-row { display: flex; gap: 8px; margin-bottom: 18px; }
+        .pd-curr-btn {
+          flex: 1; padding: 10px 0; border-radius: 8px;
+          border: 2px solid #ddd; background: #f5f5f5; color: #888;
+          font-size: 14px; font-weight: 700; cursor: pointer; transition: all 0.18s;
+          letter-spacing: 0.5px;
+        }
+        .pd-curr-btn.active {
+          background: #1565c0; color: #fff; border-color: #1565c0;
+          box-shadow: 0 2px 10px rgba(21,101,192,0.28);
+        }
+        .pd-field { margin-bottom: 16px; }
+        .pd-lbl {
+          display: block; font-size: 11px; font-weight: 700; color: #888;
+          text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 8px;
+        }
+        .pd-lbl .req { color: #e53935; margin-left: 2px; }
+        .pd-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+        .pd-acc-chip {
+          display: flex; align-items: center;
+          padding: 8px 14px; border-radius: 20px;
+          border: 2px solid #e0e0e0; background: #f9f9f9; color: #444;
+          font-size: 13px; font-weight: 600; cursor: pointer;
+          transition: all 0.16s; max-width: 160px;
+          white-space: nowrap; overflow: hidden;
+        }
+        .pd-acc-chip .pd-chip-name {
+          overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+        }
+        .pd-acc-chip:hover { border-color: #90caf9; background: #e3f2fd; color: #1565c0; }
+        .pd-acc-chip.selected {
+          border-color: #1565c0; background: #1565c0; color: #fff;
+          box-shadow: 0 2px 8px rgba(21,101,192,0.3);
+        }
+        .pd-no-acc { color: #e53935; font-size: 13px; margin: 0; }
+        .pd-wrap { position: relative; }
+        #pd-amount {
+          padding-right: 56px; font-size: 22px; font-weight: 700;
+          letter-spacing: 0.5px; border-radius: 8px; border: 2px solid #e0e0e0;
+          transition: border-color 0.2s;
+        }
+        #pd-amount:focus { border-color: #1565c0; outline: none; box-shadow: 0 0 0 3px rgba(21,101,192,0.12); }
+        .pd-curr-tag {
+          position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+          font-size: 11px; font-weight: 700; color: #888;
+          background: #efefef; border-radius: 5px; padding: 2px 7px;
+          pointer-events: none;
+        }
+        #pd-comment { border-radius: 8px; font-size: 14px; }
+      </style>
+      <div class="pd">
+        <div class="pd-curr-row">
+          <button id="pd-uzs" type="button" class="pd-curr-btn active">UZS</button>
+          <button id="pd-usd" type="button" class="pd-curr-btn">USD</button>
+        </div>
+        <div class="pd-field">
+          <span class="pd-lbl">Hisob<span class="req">*</span></span>
+          <div id="pd-chips" class="pd-chips">${buildAccountChips("UZS")}</div>
+        </div>
+        <div class="pd-field">
+          <span class="pd-lbl">Summa<span class="req">*</span></span>
+          <div class="pd-wrap">
+            <input id="pd-amount" type="text" class="form-control" placeholder="0" autocomplete="off">
+            <span id="pd-curr-tag" class="pd-curr-tag">UZS</span>
+          </div>
+        </div>
+        <div class="pd-field">
+          <span class="pd-lbl">Izoh</span>
+          <input id="pd-comment" type="text" class="form-control" placeholder="Izoh...">
+        </div>
+      </div>`;
+
+    swal.fire({
+      title: "To'lov (barcha partiyalar uchun)",
+      html,
+      width: "min(440px, 95vw)",
+      showCancelButton: true,
+      confirmButtonText: "Tasdiqlash",
+      cancelButtonText: "Bekor",
+      customClass: { confirmButton: "btn btn-success", cancelButton: "btn btn-secondary" },
+      buttonsStyling: false,
+      didOpen: () => {
+        const btnUzs   = document.getElementById("pd-uzs") as HTMLButtonElement;
+        const btnUsd   = document.getElementById("pd-usd") as HTMLButtonElement;
+        const chipsDiv = document.getElementById("pd-chips") as HTMLElement;
+        const currTag  = document.getElementById("pd-curr-tag") as HTMLElement;
+        const amtInput = document.getElementById("pd-amount") as HTMLInputElement;
+
+        const attachChipListeners = () => {
+          chipsDiv.querySelectorAll<HTMLButtonElement>(".pd-acc-chip").forEach((chip) => {
+            chip.addEventListener("click", () => {
+              chipsDiv.querySelectorAll(".pd-acc-chip").forEach((c) => c.classList.remove("selected"));
+              chip.classList.add("selected");
+            });
+          });
+        };
+
+        const switchCurrency = (currency: string) => {
+          currTag.textContent = currency;
+          amtInput.value = "";
+          chipsDiv.innerHTML = buildAccountChips(currency);
+          attachChipListeners();
+          btnUzs.classList.toggle("active", currency === "UZS");
+          btnUsd.classList.toggle("active", currency === "USD");
+        };
+
+        btnUzs.addEventListener("click", () => switchCurrency("UZS"));
+        btnUsd.addEventListener("click", () => switchCurrency("USD"));
+        attachChipListeners();
+
+        amtInput.addEventListener("input", () => {
+          const raw = amtInput.value.replace(/[^\d.]/g, "");
+          const parts = raw.split(".");
+          parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+          if (parts.length > 2) parts.length = 2;
+          amtInput.value = parts.join(".");
+        });
+      },
+      preConfirm: () => {
+        const chipsDiv  = document.getElementById("pd-chips") as HTMLElement;
+        const amtInput  = document.getElementById("pd-amount") as HTMLInputElement;
+        const comment   = (document.getElementById("pd-comment") as HTMLInputElement).value.trim();
+
+        const selected  = chipsDiv.querySelector<HTMLButtonElement>(".pd-acc-chip.selected");
+        const accountId = selected ? parseInt(selected.dataset["id"]) : NaN;
+        const rawAmount = parseFloat(amtInput.value.replace(/\s/g, ""));
+
+        if (!selected || isNaN(accountId)) {
+          swal.showValidationMessage("Hisob tanlanmagan");
+          return false;
+        }
+        if (!rawAmount || rawAmount <= 0) {
+          swal.showValidationMessage("Summa musbat bo'lishi kerak");
+          return false;
+        }
+
+        const account = this.cashAccounts.find((a) => a.id === accountId);
+        if (!account) {
+          swal.showValidationMessage("Hisob topilmadi");
+          return false;
+        }
+
+        return {
+          payments: [{
+            method: this.getPaymentMethod(account.type, account.currency),
+            currency: account.currency,
+            amount_original: rawAmount,
+            cash_account_id: accountId,
+          }],
+          comment: comment || null,
+        };
+      },
+    }).then((result) => {
+      if (!result.isConfirmed || !result.value) return;
+
+      const { payments, comment } = result.value;
+      this.httpClient
+        .post<any>(
+          GlobalVars.baseUrl + "/finance-v2/pay-bulk",
+          { customer_id: this.currentID, payments, comment },
+          { headers: this.getHeaders() },
+        )
+        .subscribe(
+          (data) => {
+            if (data.status === "error") {
+              swal.fire("Xatolik", data.message || data.error, "error");
+              return;
+            }
+            this.getListOfPartyBoxes(this.currentID);
+            if (data.overpayment_usd > 0) {
+              this.handleOverpayment(data.overpayment_usd);
+            } else {
+              swal.fire({ icon: "success", title: data.message || "Muvaffaqiyat!", timer: 1500, showConfirmButton: false });
             }
           },
           (error) => {

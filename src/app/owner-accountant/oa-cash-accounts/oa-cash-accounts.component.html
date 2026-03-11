@@ -115,7 +115,7 @@
               <tr>
                 <th>#</th>
                 <th>Turi</th>
-                <th>Mijoz</th>
+                <th>Ref</th>
                 <th class="text-right">Summa</th>
                 <th>Izoh</th>
                 <th class="text-center">Sana</th>
@@ -126,12 +126,12 @@
                 <td class="ldg-num">{{ ledgerPage * ledgerPageSize + i + 1 }}</td>
                 <td><span class="ldg-badge" [ngClass]="getLedgerTypeClass(e.type)">{{ getLedgerTypeLabel(e.type) }}</span></td>
                 <td class="ldg-customer">
-                  <span *ngIf="e.customer" class="ldg-customer-id">K{{ e.customer.id }}</span>
-                  <span *ngIf="!e.customer" class="text-muted">—</span>
+                  <span *ngIf="e.reference_type" class="text-muted" style="font-size:11px">{{ e.reference_type }}</span>
+                  <span *ngIf="!e.reference_type" class="text-muted">—</span>
                 </td>
                 <td class="text-right ldg-amount" [ngClass]="getLedgerAmountClass(e.type)">
                   <span class="ldg-usd-main"><span class="ldg-prefix">{{ getLedgerAmountPrefix(e.type) }}</span>${{ absVal(e.amount_usd) | number:'1.0-2' }}</span>
-                  <span *ngIf="e.amount_original" class="ldg-orig-sub">{{ absVal(e.amount_original) | number:'1.0-0' }}</span>
+                  <span *ngIf="e.currency === 'UZS'" class="ldg-orig-sub">{{ absVal(e.amount) | number:'1.0-0' }} so'm</span>
                 </td>
                 <td class="ldg-comment">{{ e.comment || '—' }}</td>
                 <td class="text-center ldg-date">{{ e.created_at | date:'dd/MM/yyyy HH:mm' }}</td>

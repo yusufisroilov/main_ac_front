@@ -16,11 +16,13 @@ interface CashAccount {
 interface LedgerEntry {
   id: number;
   type: string;
+  amount: number;        // native currency (+ IN, - OUT)
+  currency: string;
   amount_usd: number;
-  amount_original?: number;
+  fx_rate?: number;
+  reference_type?: string;
   comment: string;
   created_at: string;
-  customer?: { id: number; username: string; first_name: string };
 }
 
 @Component({
@@ -149,7 +151,7 @@ export class OaCashAccountsComponent implements OnInit {
   loadLedger() {
     if (!this.selectedAccount) return;
     this.ledgerLoading = true;
-    const url = `${this.baseUrl}/finance-v2/ledger-list?cash_account_id=${this.selectedAccount.id}&page=${this.ledgerPage}&size=${this.ledgerPageSize}`;
+    const url = `${this.baseUrl}/cash-accounts/${this.selectedAccount.id}/ledger?page=${this.ledgerPage}&size=${this.ledgerPageSize}`;
     this.http.get<any>(url, { headers: this.getHeaders() }).subscribe(
       (res) => {
         this.ledgerEntries = res.entries || [];
@@ -170,6 +172,7 @@ export class OaCashAccountsComponent implements OnInit {
     CHARGE: 'Qarz', PAYMENT: "To'lov", BONUS: 'Bonus', INCOME: 'Daromad',
     ADJUSTMENT: 'Tuzatish', REFUND: 'Qaytarish', EXPENSE: 'Xarajat',
     OWNER_DRAW: 'Olingan', TRANSFER_IN: 'Kirim', TRANSFER_OUT: 'Chiqim',
+    PAYMENT_IN: 'Daromad',
   };
 
   private static readonly LDG_BADGE: Record<string, string> = {
@@ -177,9 +180,10 @@ export class OaCashAccountsComponent implements OnInit {
     INCOME: 'ldg-income', ADJUSTMENT: 'ldg-adjust', REFUND: 'ldg-refund',
     EXPENSE: 'ldg-expense', OWNER_DRAW: 'ldg-owner-draw',
     TRANSFER_IN: 'ldg-transfer-in', TRANSFER_OUT: 'ldg-transfer-out',
+    PAYMENT_IN: 'ldg-income',
   };
 
-  private static readonly LDG_IN  = new Set(['PAYMENT', 'INCOME', 'TRANSFER_IN', 'BONUS']);
+  private static readonly LDG_IN  = new Set(['PAYMENT', 'INCOME', 'TRANSFER_IN', 'BONUS', 'PAYMENT_IN']);
   private static readonly LDG_OUT = new Set(['EXPENSE', 'OWNER_DRAW', 'TRANSFER_OUT']);
 
   getLedgerTypeLabel(type: string): string {

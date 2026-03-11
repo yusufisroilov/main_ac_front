@@ -100,7 +100,6 @@
                       <th class="text-center" style="width: 40px;">#</th>
                       <th class="text-center">Turi</th>
                       <th>Mijoz</th>
-                      <th>Hisob</th>
                       <th>Partiya</th>
                       <th class="text-right">Summa (USD)</th>
                       <th>Izoh</th>
@@ -120,13 +119,6 @@
                       <td>
                         <span *ngIf="entry.customer_id" class="customer-id-badge">K{{entry.customer_id}}</span>
                         <span *ngIf="!entry.customer_id" class="text-muted">—</span>
-                      </td>
-                      <td>
-                        <span *ngIf="entry.cashAccount" class="account-name-cell">
-                          {{ entry.cashAccount.name }}
-                          <small class="account-currency">{{ entry.cashAccount.currency }}</small>
-                        </span>
-                        <span *ngIf="!entry.cashAccount" class="text-muted">—</span>
                       </td>
                       <td>
                         <span *ngIf="entry.consignment" class="badge badge-info"

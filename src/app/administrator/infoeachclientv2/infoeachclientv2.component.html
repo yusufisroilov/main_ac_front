@@ -178,9 +178,17 @@
                     so'm </b>yoki
                   <b>
                     {{ umQarzUSD | number:'1.2-2' }} $</b>
+                  <span *ngIf="unallocatedCredit > 0" style="color: green; font-size: 14px; margin-left: 8px;">
+                    (kredit: {{ unallocatedCredit | number:'1.2-2' }} $)
+                  </span>
                 </h4>
               </div>
               <div class="col-md-4 text-right" *ngIf="currentID">
+                <button mat-raised-button class="btn btn-warning btn-sm" (click)="addBulkPayment()"
+                  style="margin-right: 8px;">
+                  <i class="material-icons" style="vertical-align: middle;">payments</i>
+                  Pul
+                </button>
                 <button mat-raised-button class="btn btn-info btn-sm" (click)="goToLedger()">
                   <i class="material-icons" style="vertical-align: middle;">receipt_long</i>
                   Ledger ko'rish
@@ -249,10 +257,6 @@
                       </div>
                     </td>
                     <td class="td-actions text-right">
-                      <button mat-raised-button type="button" class="btn btn-warning"
-                        (click)="addFinance(row.id, row.name)">
-                        Pul <i class="material-icons">loupe</i>
-                      </button>
                       <button mat-raised-button type="button" class="btn btn-info" (click)="getListOfParcels(row.name)">
                         Ro'yhat<i class="material-icons">preview</i>
                       </button>

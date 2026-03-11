@@ -157,33 +157,23 @@ export class TransactionsComponent implements OnInit {
   }
 
   private static readonly TYPE_BADGE: Record<string, string> = {
-    CHARGE:       "badge-charge",
-    PAYMENT:      "badge-payment",
-    BONUS:        "badge-bonus",
-    INCOME:       "badge-income",
-    ADJUSTMENT:   "badge-adjustment",
-    REFUND:       "badge-refund",
-    EXPENSE:      "badge-expense",
-    OWNER_DRAW:   "badge-owner-draw",
-    TRANSFER_IN:  "badge-transfer-in",
-    TRANSFER_OUT: "badge-transfer-out",
+    CHARGE:     "badge-charge",
+    PAYMENT:    "badge-payment",
+    BONUS:      "badge-bonus",
+    ADJUSTMENT: "badge-adjustment",
+    REFUND:     "badge-refund",
   };
 
   private static readonly TYPE_LABEL: Record<string, string> = {
-    CHARGE:       "Hisob",
-    PAYMENT:      "To'lov",
-    BONUS:        "Bonus",
-    INCOME:       "Daromad",
-    ADJUSTMENT:   "Tuzatish",
-    REFUND:       "Qaytarish",
-    EXPENSE:      "Xarajat",
-    OWNER_DRAW:   "Olingan",
-    TRANSFER_IN:  "Kirim",
-    TRANSFER_OUT: "Chiqim",
+    CHARGE:     "Hisob",
+    PAYMENT:    "To'lov",
+    BONUS:      "Bonus",
+    ADJUSTMENT: "Tuzatish",
+    REFUND:     "Qaytarish",
   };
 
-  private static readonly OUT_TYPES  = new Set(["EXPENSE", "OWNER_DRAW", "TRANSFER_OUT"]);
-  private static readonly IN_TYPES   = new Set(["PAYMENT", "INCOME", "TRANSFER_IN", "BONUS"]);
+  private static readonly OUT_TYPES = new Set(["CHARGE", "ADJUSTMENT"]);
+  private static readonly IN_TYPES  = new Set(["PAYMENT", "BONUS", "REFUND"]);
 
   getTypeBadgeClass(type: string): string {
     return TransactionsComponent.TYPE_BADGE[type] || "badge-secondary";
