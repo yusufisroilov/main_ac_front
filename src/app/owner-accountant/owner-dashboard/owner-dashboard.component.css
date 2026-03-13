@@ -33,6 +33,10 @@
   border-left-color: #c62828;
 }
 
+.summary-card.payable {
+  border-left-color: #1e88e5;
+}
+
 .summary-icon {
   width: 48px;
   height: 48px;
@@ -52,6 +56,11 @@
 .summary-card.debt-uzs .summary-icon {
   background: #ffebee;
   color: #e53935;
+}
+
+.summary-card.payable .summary-icon {
+  background: #e3f2fd;
+  color: #1e88e5;
 }
 
 .summary-icon i {

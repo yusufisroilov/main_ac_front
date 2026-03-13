@@ -8,7 +8,7 @@
     <div *ngIf="!loading && stats">
       <!-- ── Top Summary Cards ── -->
       <div class="row summary-row">
-        <div class="col-lg-4 col-md-6 col-sm-12">
+        <div class="col-lg-3 col-md-6 col-sm-12">
           <div class="summary-card pending">
             <div class="summary-icon"><i class="material-icons">hourglass_empty</i></div>
             <div class="summary-info">
@@ -18,17 +18,27 @@
             </div>
           </div>
         </div>
-        <div class="col-lg-4 col-md-6 col-sm-12">
+        <div class="col-lg-3 col-md-6 col-sm-12">
           <div class="summary-card debt">
             <div class="summary-icon"><i class="material-icons">trending_up</i></div>
             <div class="summary-info">
-              <span class="summary-label">Jami qarz (USD)</span>
+              <span class="summary-label">Jami olinadigan qarz (USD)</span>
               <span class="summary-value">{{ fmt(stats.receivables?.total_usd) }} <small>$</small></span>
-              <span class="summary-hint">Balans > 0 mijozlar</span>
+              <span class="summary-hint">Mijozlar bizga qarzdor</span>
             </div>
           </div>
         </div>
-        <div class="col-lg-4 col-md-12 col-sm-12">
+        <div class="col-lg-3 col-md-6 col-sm-12">
+          <div class="summary-card payable">
+            <div class="summary-icon"><i class="material-icons">trending_down</i></div>
+            <div class="summary-info">
+              <span class="summary-label">Jami beriladigan qarz (USD)</span>
+              <span class="summary-value">{{ fmt(stats.payables?.total_usd) }} <small>$</small></span>
+              <span class="summary-hint">Biz mijozlarga qarzdormiz</span>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-3 col-md-6 col-sm-12">
           <div class="summary-card debt-uzs">
             <div class="summary-icon"><i class="material-icons">trending_up</i></div>
             <div class="summary-info">

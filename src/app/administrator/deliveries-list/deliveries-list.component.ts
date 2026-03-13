@@ -628,6 +628,11 @@ export class DeliveriesListComponent {
     this.router.navigate(["/uzs/deliveries-list2"]);
   }
 
+  // Navigate to today's Own-Courier deliveries
+  goToCourierToday() {
+    this.router.navigate(["/uzs/courier-deliveries"]);
+  }
+
   // Hidden: Bulk send all "created" deliveries
   sendAllCreatedDeliveries() {
     swal
