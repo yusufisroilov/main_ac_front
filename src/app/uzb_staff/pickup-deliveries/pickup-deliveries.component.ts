@@ -73,7 +73,7 @@ export class PickupDeliveriesComponent implements OnInit {
     private changeDetectorRef: ChangeDetectorRef,
     private http: Http,
     private httpClient: HttpClient,
-    private router: Router
+    private router: Router,
   ) {
     this.headers12 = new Headers({ "Content-Type": "application/json" });
     this.headers12.append("Authorization", localStorage.getItem("token"));
@@ -104,7 +104,7 @@ export class PickupDeliveriesComponent implements OnInit {
     this.http
       .get(
         GlobalVars.baseUrl + "/deliveries/filtered?" + params.toString(),
-        this.options
+        this.options,
       )
       .subscribe(
         (response) => {
@@ -116,7 +116,7 @@ export class PickupDeliveriesComponent implements OnInit {
             swal.fire(
               "Xatolik",
               result.message || "Yetkazishlarni yuklashda xatolik",
-              "error"
+              "error",
             );
           }
           this.loadingDeliveries = false;
@@ -127,7 +127,7 @@ export class PickupDeliveriesComponent implements OnInit {
           if (error.status == 403) {
             this.authService.logout();
           }
-        }
+        },
       );
   }
 
@@ -154,7 +154,7 @@ export class PickupDeliveriesComponent implements OnInit {
       })
       .then((result) => {
         if (result.isConfirmed) {
-          this.updateDeliveryStatus(delivery, "sent");
+          this.updateDeliveryStatus(delivery, "delivered");
         }
       });
   }
@@ -173,7 +173,7 @@ export class PickupDeliveriesComponent implements OnInit {
       .put(
         GlobalVars.baseUrl + "/deliveries/status?delivery_id=" + delivery.id,
         JSON.stringify(updateData),
-        this.options
+        this.options,
       )
       .subscribe(
         (response) => {
@@ -201,7 +201,7 @@ export class PickupDeliveriesComponent implements OnInit {
           if (error.status == 403) {
             this.authService.logout();
           }
-        }
+        },
       );
   }
 
@@ -219,7 +219,7 @@ export class PickupDeliveriesComponent implements OnInit {
       this.http
         .get(
           GlobalVars.baseUrl + "/deliveries/detail?delivery_id=" + deliveryId,
-          this.options
+          this.options,
         )
         .subscribe(
           (response) => {
@@ -235,7 +235,7 @@ export class PickupDeliveriesComponent implements OnInit {
             if (error.status == 403) {
               this.authService.logout();
             }
-          }
+          },
         );
     });
   }
@@ -246,7 +246,7 @@ export class PickupDeliveriesComponent implements OnInit {
       created: "Yaratilgan",
       collected: "Qabul qilingan",
       sent: "Mijoz oldi",
-      delivered: "Tugatildi",
+      delivered: "Mijoz olib ketdi",
       returned: "Qaytarilgan",
       cancelled: "Bekor qilingan",
     };

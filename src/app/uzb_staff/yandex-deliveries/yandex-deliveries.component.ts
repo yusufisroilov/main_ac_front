@@ -78,7 +78,7 @@ export class YandexDeliveriesComponent implements OnInit {
     private changeDetectorRef: ChangeDetectorRef,
     private http: Http,
     private httpClient: HttpClient,
-    private router: Router
+    private router: Router,
   ) {
     this.headers12 = new Headers({ "Content-Type": "application/json" });
     this.headers12.append("Authorization", localStorage.getItem("token"));
@@ -109,7 +109,7 @@ export class YandexDeliveriesComponent implements OnInit {
     this.http
       .get(
         GlobalVars.baseUrl + "/deliveries/filtered?" + params.toString(),
-        this.options
+        this.options,
       )
       .subscribe(
         (response) => {
@@ -121,7 +121,7 @@ export class YandexDeliveriesComponent implements OnInit {
             swal.fire(
               "Xatolik",
               result.message || "Yetkazishlarni yuklashda xatolik",
-              "error"
+              "error",
             );
           }
           this.loadingDeliveries = false;
@@ -132,7 +132,7 @@ export class YandexDeliveriesComponent implements OnInit {
           if (error.status == 403) {
             this.authService.logout();
           }
-        }
+        },
       );
   }
 
@@ -162,7 +162,7 @@ export class YandexDeliveriesComponent implements OnInit {
 
         preConfirm: () => {
           const input = document.getElementById(
-            "note-input"
+            "note-input",
           ) as HTMLInputElement;
           return input?.value?.trim() || "";
         },
@@ -190,7 +190,7 @@ export class YandexDeliveriesComponent implements OnInit {
       .put(
         GlobalVars.baseUrl + "/deliveries/status?delivery_id=" + delivery.id,
         JSON.stringify(updateData),
-        this.options
+        this.options,
       )
       .subscribe(
         (response) => {
@@ -218,7 +218,7 @@ export class YandexDeliveriesComponent implements OnInit {
           if (error.status == 403) {
             this.authService.logout();
           }
-        }
+        },
       );
   }
 
@@ -236,7 +236,7 @@ export class YandexDeliveriesComponent implements OnInit {
       this.http
         .get(
           GlobalVars.baseUrl + "/deliveries/detail?delivery_id=" + deliveryId,
-          this.options
+          this.options,
         )
         .subscribe(
           (response) => {
@@ -252,7 +252,7 @@ export class YandexDeliveriesComponent implements OnInit {
             if (error.status == 403) {
               this.authService.logout();
             }
-          }
+          },
         );
     });
   }

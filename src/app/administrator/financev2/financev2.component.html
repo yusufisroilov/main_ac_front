@@ -82,7 +82,7 @@
                       <th class="text-center">{{ headerRow[4] }}</th>
                       <th class="text-center">{{ headerRow[5] }}</th>
                       <th class="text-center">{{ headerRow[6] }}</th>
-                      <th class="text-center">{{ headerRow[7] }}</th>
+                      <!-- <th class="text-center">{{ headerRow[7] }}</th> -->
                       <th class="text-center">{{ headerRow[8] }}</th>
                     </tr>
                   </thead>
@@ -96,14 +96,14 @@
                       <td>{{ row.amount_uzs | currency : " " : "symbol" : "4.0-0" }}</td>
                       <td>{{ row.debt_usd | number:'1.2-2' }}$</td>
                       <td>{{ row.debt_uzs | currency : " " : "symbol" : "4.0-0" }}</td>
-                      <td>
+                      <!-- <td>
                         <span *ngIf="row.delivered" style="font-weight: bold; color: green">
                           <i class="material-icons">verified</i>
                         </span>
                         <a *ngIf="!row.delivered" class="btn btn-link btn-warning btn-just-icon">
                           <i (click)="deliveredFunc(row.id, row.customer_id)" class="material-icons">local_shipping</i>
                         </a>
-                      </td>
+                      </td> -->
                       <td>
                         <a class="btn btn-link btn-success btn-just-icon">
                           <i (click)="editFinance(row.id, row.weight)" class="material-icons">edit</i>

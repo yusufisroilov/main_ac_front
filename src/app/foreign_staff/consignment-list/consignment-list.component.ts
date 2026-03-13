@@ -394,6 +394,7 @@ export class ConsignmentListComponent implements OnInit {
                     )
                     .subscribe((response) => {
                       this.consignments = response.json().consignments;
+                      localStorage.setItem("current_party", consignmentName);
                     });
                 } else {
                   swal

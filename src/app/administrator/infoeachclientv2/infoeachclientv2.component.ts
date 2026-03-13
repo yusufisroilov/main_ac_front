@@ -1094,16 +1094,6 @@ export class Infoeachclientv2Component implements OnInit {
   selectDeliveryType(type: string) {
     this.deliveryType = type;
 
-    if (type === "EMU" && this.currentID) {
-      this.getLastEmuDeliveryData(this.currentID);
-    }
-
-    if (type !== "EMU") {
-      this.selectedRegionId = null;
-      this.selectedBranchId = null;
-      this.selectedBranchName = "";
-      this.branches = [];
-    }
     if (type !== "Yandex" && type !== "Own-Courier") {
       this.deliveryAddress = "";
       this.courierName = "";
@@ -1308,13 +1298,16 @@ export class Infoeachclientv2Component implements OnInit {
             const consignmentNameDisplay =
               Array.from(consignmentNames).join(", ");
 
-            this.printChekYuborish(
-              this.currentID,
-              consignmentNameDisplay,
-              totalWeight.toFixed(2),
-              totalItems,
-              selectedBarcodes,
-            );
+            // Print receipt only for Pick-up and Yandex deliveries
+            if (this.deliveryType === 'Pick-up' || this.deliveryType === 'Yandex') {
+              this.printChekYuborish(
+                this.currentID,
+                consignmentNameDisplay,
+                totalWeight.toFixed(2),
+                totalItems,
+                selectedBarcodes,
+              );
+            }
 
             // Collect nasiya groups BEFORE closing modal
             const nasiyaGroups = this.customerPackages.filter(

@@ -75,7 +75,7 @@ export class EmuDeliveriesComponent implements OnInit {
     private changeDetectorRef: ChangeDetectorRef,
     private http: Http,
     private httpClient: HttpClient,
-    private router: Router
+    private router: Router,
   ) {
     this.headers12 = new Headers({ "Content-Type": "application/json" });
     this.headers12.append("Authorization", localStorage.getItem("token"));
@@ -106,7 +106,7 @@ export class EmuDeliveriesComponent implements OnInit {
     this.http
       .get(
         GlobalVars.baseUrl + "/deliveries/filtered?" + params.toString(),
-        this.options
+        this.options,
       )
       .subscribe(
         (response) => {
@@ -118,7 +118,7 @@ export class EmuDeliveriesComponent implements OnInit {
             swal.fire(
               "Xatolik",
               result.message || "Yetkazishlarni yuklashda xatolik",
-              "error"
+              "error",
             );
           }
           this.loadingDeliveries = false;
@@ -129,7 +129,7 @@ export class EmuDeliveriesComponent implements OnInit {
           if (error.status == 403) {
             this.authService.logout();
           }
-        }
+        },
       );
   }
 
@@ -140,7 +140,7 @@ export class EmuDeliveriesComponent implements OnInit {
 
   // Check if employee can edit weight
   canEditWeight(delivery: Delivery): boolean {
-    return delivery.weight && delivery.status === "collected";
+    return delivery.weight && delivery.status === "sent";
   }
 
   // Process EMU delivery (requires weight input)
@@ -161,7 +161,7 @@ export class EmuDeliveriesComponent implements OnInit {
     this.processingDelivery = true;
 
     const updateData = {
-      new_status: "collected",
+      new_status: "sent",
       weight: this.enteredWeight,
     };
 
@@ -171,7 +171,7 @@ export class EmuDeliveriesComponent implements OnInit {
           "/deliveries/status?delivery_id=" +
           this.selectedDeliveryForWeight.id,
         JSON.stringify(updateData),
-        this.options
+        this.options,
       )
       .subscribe(
         (response) => {
@@ -200,7 +200,7 @@ export class EmuDeliveriesComponent implements OnInit {
           if (error.status == 403) {
             this.authService.logout();
           }
-        }
+        },
       );
   }
 
@@ -230,7 +230,7 @@ export class EmuDeliveriesComponent implements OnInit {
           "/deliveries/edit?delivery_id=" +
           this.selectedDeliveryForWeight.id,
         JSON.stringify(updateData),
-        this.options
+        this.options,
       )
       .subscribe(
         (response) => {
@@ -259,7 +259,7 @@ export class EmuDeliveriesComponent implements OnInit {
           if (error.status == 403) {
             this.authService.logout();
           }
-        }
+        },
       );
   }
 
@@ -277,7 +277,7 @@ export class EmuDeliveriesComponent implements OnInit {
       this.http
         .get(
           GlobalVars.baseUrl + "/deliveries/detail?delivery_id=" + deliveryId,
-          this.options
+          this.options,
         )
         .subscribe(
           (response) => {
@@ -293,7 +293,7 @@ export class EmuDeliveriesComponent implements OnInit {
             if (error.status == 403) {
               this.authService.logout();
             }
-          }
+          },
         );
     });
   }

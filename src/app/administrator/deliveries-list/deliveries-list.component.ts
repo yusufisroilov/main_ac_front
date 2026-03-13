@@ -561,6 +561,7 @@ export class DeliveriesListComponent {
       created: "Yaratilgan",
       sent: "Yuborilgan",
       collected: "Yig'ilgan",
+      delivered: "Mijoz olib ketdi",
       returned: "Qaytarilgan",
       cancelled: "Bekor qilingan",
     };
@@ -571,6 +572,7 @@ export class DeliveriesListComponent {
     const classes = {
       created: "badge-warning",
       sent: "badge-success",
+      delivered: "badge-success",
       collected: "badge-info",
       returned: "badge-secondary",
       cancelled: "badge-danger",

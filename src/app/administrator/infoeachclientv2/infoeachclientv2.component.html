@@ -162,26 +162,51 @@
           </div>
           <div class="card-body">
             <div class="row">
-              <div class="col-md-3">
-                <form method="#" action="#" style="display: inline-flex">
-                  <mat-form-field class="example-full-width">
-                    <input matInput placeholder="Id kiriting:" type="text"
-                      (keyup.enter)="getListOfPartyBoxes($event.target.value)" />
-                  </mat-form-field>
-                </form>
+              <div class="col-md-3" style="display: flex; align-items: center;">
+                <div
+                  style="display: flex; align-items: center; background: #fff; border: 1.5px solid #00acc1; border-radius: 6px; padding: 2px 10px; box-shadow: 0 1px 4px rgba(0,172,193,0.12); width: 100%;">
+                  <i class="material-icons" style="color: #00acc1; font-size: 18px; margin-right: 6px;">search</i>
+                  <input matInput placeholder="Mijoz ID kiriting..." type="text"
+                    style="border: none; outline: none; font-size: 15px; font-weight: 500; width: 100%; padding: 5px 0; background: transparent;"
+                    (keyup.enter)="getListOfPartyBoxes($event.target.value)" />
+                </div>
               </div>
               <div class="col-md-5">
-                <h4>
-                  Umumiy qarzdorlik:
-                  <b>
-                    {{ umQarzUSZ | currency : " " : "symbol" : "1.0-0" }}
-                    so'm </b>yoki
-                  <b>
-                    {{ umQarzUSD | number:'1.2-2' }} $</b>
-                  <span *ngIf="unallocatedCredit > 0" style="color: green; font-size: 14px; margin-left: 8px;">
-                    (kredit: {{ unallocatedCredit | number:'1.2-2' }} $)
-                  </span>
-                </h4>
+                <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+                  <!-- Debt in UZS -->
+                  <div
+                    style="display: inline-flex; align-items: center; gap: 6px; background: #fff3e0; border-left: 3px solid #ff9800; padding: 6px 12px; border-radius: 4px;">
+                    <i class="material-icons" style="color: #ff9800; font-size: 20px;">account_balance_wallet</i>
+                    <div>
+                      <div style="font-size: 11px; color: #999; line-height: 1;">Qarz (so'm)</div>
+                      <div style="font-size: 16px; font-weight: 600; color: #e65100;">
+                        {{ umQarzUSZ | currency : " " : "symbol" : "1.0-0" }}
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Debt in USD -->
+                  <div
+                    style="display: inline-flex; align-items: center; gap: 6px; background: #fce4ec; border-left: 3px solid #f44336; padding: 6px 12px; border-radius: 4px;">
+                    <i class="material-icons" style="color: #f44336; font-size: 20px;">attach_money</i>
+                    <div>
+                      <div style="font-size: 11px; color: #999; line-height: 1;">Qarz ($)</div>
+                      <div style="font-size: 16px; font-weight: 600; color: #c62828;">
+                        {{ umQarzUSD | number:'1.2-2' }} $
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Unallocated credit -->
+                  <div *ngIf="unallocatedCredit > 0"
+                    style="display: inline-flex; align-items: center; gap: 6px; background: #e8f5e9; border-left: 3px solid #4caf50; padding: 6px 12px; border-radius: 4px;">
+                    <i class="material-icons" style="color: #4caf50; font-size: 20px;">account_balance</i>
+                    <div>
+                      <div style="font-size: 11px; color: #999; line-height: 1;">Bizda mijoz puli</div>
+                      <div style="font-size: 16px; font-weight: 600; color: #2e7d32;">
+                        {{ unallocatedCredit | number:'1.2-2' }} $
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
               <div class="col-md-4 text-right" *ngIf="currentID">
                 <button mat-raised-button class="btn btn-warning btn-sm" (click)="addBulkPayment()"
@@ -370,8 +395,7 @@
                                 class="badge badge-secondary" style="font-size: 11px; padding: 3px 6px;">Boshqa</span>
                               <span *ngIf="group.has_high_debt" class="badge badge-danger ml-1"
                                 style="font-size: 11px; padding: 3px 6px;">
-                                <i class="material-icons"
-                                  style="font-size: 12px; vertical-align: middle;">error</i>
+                                <i class="material-icons" style="font-size: 12px; vertical-align: middle;">error</i>
                                 Qarz: {{ group.debt_uzs | currency : ' ' : 'symbol' : '1.0-0' }} so'm
                               </span>
                             </td>
@@ -419,8 +443,7 @@
               <div *ngIf="selectedPackageIdentifiers.length > 0">
                 <div class="row" style="margin-bottom: 8px;">
                   <div class="col-md-12">
-                    <label class="bmd-label-floating"
-                      style="font-size: 0.75rem; font-weight: 500; margin-bottom: 4px;">
+                    <label class="bmd-label-floating" style="font-size: 0.75rem; font-weight: 500; margin-bottom: 4px;">
                       Yetkazish Turi
                     </label>
                     <div class="delivery-type-buttons" style="display: flex; gap: 6px;">
@@ -442,9 +465,8 @@
                         <i class="material-icons" style="font-size: 16px;">delivery_dining</i>
                         <span>Kuryer</span>
                       </button>
-                      <button type="button" class="delivery-type-btn btn btn-sm"
-                        [class.active]="deliveryType === 'EMU'" (click)="selectDeliveryType('EMU')"
-                        style="flex: 1; padding: 6px 8px; font-size: 12px;">
+                      <button type="button" class="delivery-type-btn btn btn-sm" [class.active]="deliveryType === 'EMU'"
+                        (click)="selectDeliveryType('EMU')" style="flex: 1; padding: 6px 8px; font-size: 12px;">
                         <i class="material-icons" style="font-size: 16px;">store</i>
                         <span>EMU</span>
                       </button>
@@ -476,46 +498,6 @@
                   </div>
                 </div>
 
-                <div class="row" *ngIf="deliveryType === 'EMU'" style="margin-top: 8px; margin-bottom: 8px;">
-                  <div class="col-md-6">
-                    <div class="form-group" style="margin-bottom: 0;">
-                      <label class="bmd-label-floating" style="font-size: 12px;">
-                        Viloyat (ixtiyoriy)
-                        <i class="material-icons" *ngIf="autoFilledFields.regionId"
-                          style="font-size: 14px; color: #2196f3; vertical-align: middle;"
-                          title="Avtomatik to'ldirilgan">auto_awesome</i>
-                      </label>
-                      <select class="form-control form-control-sm" [(ngModel)]="selectedRegionId"
-                        (change)="onRegionSelect($event)"
-                        [style.background-color]="autoFilledFields.regionId ? '#e3f2fd' : ''"
-                        style="font-size: 13px; padding: 6px 10px;">
-                        <option value="">Viloyat tanlang</option>
-                        <option *ngFor="let region of regions" [value]="region.id">
-                          {{ region.name }}
-                        </option>
-                      </select>
-                    </div>
-                  </div>
-                  <div class="col-md-6">
-                    <div class="form-group" style="margin-bottom: 0;">
-                      <label class="bmd-label-floating" style="font-size: 12px;">
-                        EMU Filial (ixtiyoriy)
-                        <i class="material-icons" *ngIf="autoFilledFields.branchId"
-                          style="font-size: 14px; color: #2196f3; vertical-align: middle;"
-                          title="Avtomatik to'ldirilgan">auto_awesome</i>
-                      </label>
-                      <select class="form-control form-control-sm" [(ngModel)]="selectedBranchId"
-                        [disabled]="!selectedRegionId" (change)="onBranchManualChange()"
-                        [style.background-color]="autoFilledFields.branchId ? '#e3f2fd' : ''"
-                        style="font-size: 13px; padding: 6px 10px;">
-                        <option value="">Filial tanlang</option>
-                        <option *ngFor="let branch of branches" [value]="branch.id">
-                          {{ branch.name }}
-                        </option>
-                      </select>
-                    </div>
-                  </div>
-                </div>
               </div>
             </div>
 
@@ -533,11 +515,11 @@
               style="font-size: 13px; padding: 6px 12px;">
               Bekor qilish
             </button>
-            <button type="button" class="btn btn-success btn-sm" *ngIf="selectedPackageIdentifiers.length > 0"
+            <button type="button" class="btn btn-success" *ngIf="selectedPackageIdentifiers.length > 0"
               (click)="createDelivery()" [disabled]="!canCreateDelivery() || creatingDelivery"
-              style="font-size: 13px; padding: 6px 12px;">
+              style="font-size: 16px; padding: 10px 24px; border-radius: 6px;">
               <span *ngIf="creatingDelivery" class="spinner-border spinner-border-sm mr-1"></span>
-              <i class="material-icons" *ngIf="!creatingDelivery" style="font-size: 16px;">send</i>
+              <i class="material-icons" *ngIf="!creatingDelivery" style="font-size: 20px; vertical-align: middle;">send</i>
               Yetkazish Yaratish
             </button>
           </div>
@@ -547,7 +529,7 @@
 
     <!-- Print Section -->
     <div #printSection3 id="print-section3-v2" *ngIf="printCondition3">
-      --- Yuk Z ---
+      --- Yuk K ---
       <div>
         <span style="font-size: 36px"><strong>K{{ idsChek }}</strong></span>
       </div>
@@ -558,7 +540,7 @@
       <div style="margin: 2px 2px">
         Og'irligi: <strong>{{ weightChek }}</strong> kg
       </div>
-      <div>
+      <div *ngIf="izohChek != ''">
         <i>
           Izoh: <span> {{ izohChek }}</span>
         </i>
