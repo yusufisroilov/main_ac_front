@@ -408,18 +408,26 @@ export class AllreceiversComponent implements OnInit {
   }
 
   deleteRec(iddd) {
-    // console.log("RID ", iddd);
+    const row = this.allRecs.find((r) => r.id === iddd);
+    const isDeleted = row && row.deleted_date;
+    const title = isDeleted
+      ? "Ushbu qabul qiluvchini tiklash"
+      : "Ushbu qabul qiluvchini o'chirish";
+    const text = isDeleted
+      ? "Ushbu " + iddd + " RID ni qayta tiklashni hohlaysizmi?"
+      : "Ushbu " + iddd + " RID ni o'chirishni hohlaysizmi?";
+    const confirmText = isDeleted ? "Tiklash" : "O'chirish";
 
     swal
       .fire({
-        title: "Ushbu qabul qiluvchini o'chirish",
-        text: "Ushbu " + iddd + " RID ni o'chirishni hohlaysizmi?",
+        title: title,
+        text: text,
         allowEnterKey: true,
-        confirmButtonText: "O'chirish",
+        confirmButtonText: confirmText,
         showCancelButton: true,
-        cancelButtonText: "No",
+        cancelButtonText: "Bekor qilish",
         customClass: {
-          confirmButton: "btn btn-success",
+          confirmButton: isDeleted ? "btn btn-warning" : "btn btn-danger",
           cancelButton: "btn btn-info",
         },
         buttonsStyling: false,
@@ -435,42 +443,27 @@ export class AllreceiversComponent implements OnInit {
               (response) => {
                 if (response.json().status == "error") {
                   swal.fire(
-                    "O'chirilmadi!",
+                    "Xatolik!",
                     "Xato: " + response.json().message,
                     "error",
                   );
-                  this.getListOfRecs();
                 } else {
                   swal.fire(
-                    "O'chirilid!",
-                    "Bu qabul qiluvchi sistemadan o'chirildi!",
+                    "Muvaffaqiyat!",
+                    response.json().message,
                     "success",
                   );
-                  this.getListOfRecs();
                 }
+                this.getListOfRecs();
               },
               (error) => {
-                if (error.status == 400) {
-                  this.getListOfRecs();
-                } else if (error.status == 403) {
-                  this.getListOfRecs();
+                this.getListOfRecs();
+                if (error.status == 403) {
+                  this.authService.logout();
                 }
               },
             );
         },
-      })
-      .then((result) => {
-        if (result.isConfirmed) {
-          swal.fire(
-            "O'zgartirildi!",
-            "Bu qabul qiluvchi sistemadan o'chirildi!",
-            "success",
-          );
-          this.getListOfRecs();
-        } else {
-          swal.fire("O'zgarmadi!", "Xato!", "error");
-          this.getListOfRecs();
-        }
       });
   }
 

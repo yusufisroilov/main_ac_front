@@ -149,7 +149,9 @@
                               row.apartment
                             )
                           " class="btn btn-link btn-success btn-just-icon"><i class="material-icons">edit</i></a>
-                        <a *ngIf="row.status == false" class="btn btn-link btn-danger btn-just-icon"><i
+                        <a *ngIf="row.status == false" (click)="
+                            changeStatus(row.id, ' qayta yoqishni')
+                          " class="btn btn-link btn-danger btn-just-icon"><i
                             class="material-icons">lock</i></a>
                         <a *ngIf="row.status == true" (click)="
                             changeStatus(row.id, ' vaqtincha toxtatishni')
@@ -157,8 +159,10 @@
 
                         <a (click)="changeParentID(row.id)" class="btn btn-link btn-primary btn-just-icon"><i
                             class="material-icons">manage_accounts</i></a>
-                        <a (click)="deleteRec(row.id)" class="btn btn-link btn-danger btn-just-icon"><i
+                        <a *ngIf="!row.deleted_date" (click)="deleteRec(row.id)" class="btn btn-link btn-danger btn-just-icon"><i
                             class="material-icons">delete</i></a>
+                        <a *ngIf="row.deleted_date" (click)="deleteRec(row.id)" class="btn btn-link btn-warning btn-just-icon"><i
+                            class="material-icons">restore_from_trash</i></a>
                       </td>
                     </tr>
                   </tbody>

@@ -560,8 +560,12 @@ export class Financev2Component implements OnInit {
   // ─── Excel Download ───
 
   fetchFinancesOfCons() {
+    if (!this.currentParty) {
+      swal.fire("Xatolik", "Avval partiyani tanlang", "warning");
+      return;
+    }
     this.httpClient
-      .get(GlobalVars.baseUrl + "/finance-v2/list?size=800&download=excel", {
+      .get(GlobalVars.baseUrl + `/finance-v2/download-excel?consignment=${this.currentParty}`, {
         headers: this.getHeaders(),
         responseType: "blob",
       })
@@ -570,7 +574,7 @@ export class Financev2Component implements OnInit {
           const url = window.URL.createObjectURL(blob);
           const a = document.createElement("a");
           a.href = url;
-          a.download = `finance_v2_${this.currentParty || "all"}.xlsx`;
+          a.download = `Xisob_Kitob_V2_${this.currentParty}.xlsx`;
           a.click();
           window.URL.revokeObjectURL(url);
         },

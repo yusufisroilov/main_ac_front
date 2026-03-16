@@ -330,7 +330,12 @@ export const managerROUTES: RouteInfo[] = [
     type: "link",
     icontype: "credit_card",
   },
-
+  {
+    path: "/oa/other-incomes",
+    title: "Boshqa Daromadlar",
+    type: "link",
+    icontype: "attach_money",
+  },
   // {
   //   path: "/uzs/deliveries",
   //   title: "Yetkazmalar",
@@ -362,7 +367,6 @@ export const managerROUTES: RouteInfo[] = [
     type: "link",
     icontype: "assignment",
   },
-
   {
     path: "/uzm/tickets-list",
     title: "Murojaatlar Ro'yxati",
@@ -485,12 +489,7 @@ export const accountantROUTES: RouteInfo[] = [
     type: "link",
     icontype: "account_circle",
   },
-  {
-    path: "/oa/owner-draws",
-    title: "Owner Draws",
-    type: "link",
-    icontype: "account_circle",
-  },
+
   {
     path: "/oa/top-debtors",
     title: "Eng Ko'p Qarzdorlar",

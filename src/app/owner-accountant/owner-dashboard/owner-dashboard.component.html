@@ -6,7 +6,123 @@
     </div>
 
     <div *ngIf="!loading && stats">
-      <!-- ── Top Summary Cards ── -->
+      <!-- ── Period Toggle ── -->
+      <div class="period-strip">
+        <div class="period-toggle">
+          <button [class.active]="activePeriod === 'this_month'" (click)="setPeriod('this_month')">
+            <i class="material-icons">calendar_today</i> Shu Oy
+          </button>
+          <button [class.active]="activePeriod === 'last_month'" (click)="setPeriod('last_month')">
+            <i class="material-icons">event</i> O'tgan Oy
+          </button>
+          <button [class.active]="activePeriod === 'custom'" (click)="setPeriod('custom')">
+            <i class="material-icons">date_range</i> Sana tanlash
+          </button>
+        </div>
+
+        <div class="custom-range" *ngIf="activePeriod === 'custom'">
+          <input type="date" class="form-control form-control-sm" [(ngModel)]="customFrom" />
+          <span class="range-sep">—</span>
+          <input type="date" class="form-control form-control-sm" [(ngModel)]="customTo" />
+          <button class="btn btn-sm btn-primary" (click)="applyCustomRange()" [disabled]="!customFrom || !customTo">
+            <i class="material-icons" style="font-size:16px;">search</i>
+          </button>
+        </div>
+      </div>
+
+      <div class="period-label" *ngIf="periodLabel">
+        <i class="material-icons">info_outline</i> {{ periodLabel }}
+      </div>
+
+      <!-- ── Activity Grid ── -->
+      <div class="activity-grid">
+        <div class="activity-card income">
+          <div class="activity-header">
+            <i class="material-icons">payments</i>
+            <span>To'lovlar</span>
+          </div>
+          <div class="activity-amounts">
+            <div class="amount-row">
+              <span class="currency-badge usd">USD</span>
+              <span class="amount-value green">{{ fmt(stats.period.payments?.usd) }} $</span>
+            </div>
+            <div class="amount-row">
+              <span class="currency-badge uzs">UZS</span>
+              <span class="amount-value green">{{ fmt(stats.period.payments?.uzs) }} so'm</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="activity-card expense">
+          <div class="activity-header">
+            <i class="material-icons">shopping_cart</i>
+            <span>Xarajatlar</span>
+          </div>
+          <div class="activity-amounts">
+            <div class="amount-row">
+              <span class="currency-badge usd">USD</span>
+              <span class="amount-value red">{{ fmt(stats.period.expenses?.usd) }} $</span>
+            </div>
+            <div class="amount-row">
+              <span class="currency-badge uzs">UZS</span>
+              <span class="amount-value red">{{ fmt(stats.period.expenses?.uzs) }} so'm</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="activity-card other-income">
+          <div class="activity-header">
+            <i class="material-icons">account_balance_wallet</i>
+            <span>Daromadlar</span>
+          </div>
+          <div class="activity-amounts">
+            <div class="amount-row">
+              <span class="currency-badge usd">USD</span>
+              <span class="amount-value orange">{{ fmt(stats.period.incomes?.usd) }} $</span>
+            </div>
+            <div class="amount-row">
+              <span class="currency-badge uzs">UZS</span>
+              <span class="amount-value orange">{{ fmt(stats.period.incomes?.uzs) }} so'm</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="activity-card owner-draw">
+          <div class="activity-header">
+            <i class="material-icons">person_outline</i>
+            <span>Owner Draw</span>
+          </div>
+          <div class="activity-amounts">
+            <div class="amount-row">
+              <span class="currency-badge usd">USD</span>
+              <span class="amount-value purple">{{ fmt(stats.period.ownerDraws?.usd) }} $</span>
+            </div>
+            <div class="amount-row">
+              <span class="currency-badge uzs">UZS</span>
+              <span class="amount-value purple">{{ fmt(stats.period.ownerDraws?.uzs) }} so'm</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="activity-card transfer">
+          <div class="activity-header">
+            <i class="material-icons">swap_horiz</i>
+            <span>Transferlar</span>
+          </div>
+          <div class="activity-amounts">
+            <div class="amount-row">
+              <span class="currency-badge usd">USD</span>
+              <span class="amount-value blue">{{ fmt(stats.period.transfers?.usd) }} $</span>
+            </div>
+            <div class="amount-row">
+              <span class="currency-badge uzs">UZS</span>
+              <span class="amount-value blue">{{ fmt(stats.period.transfers?.uzs) }} so'm</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Summary Cards ── -->
       <div class="row summary-row">
         <div class="col-lg-3 col-md-6 col-sm-12">
           <div class="summary-card pending">
@@ -45,191 +161,6 @@
               <span class="summary-label">Jami qarz (UZS)</span>
               <span class="summary-value">{{ fmt(stats.receivables?.total_uzs) }} <small>so'm</small></span>
               <span class="summary-hint">Balans > 0 mijozlar</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- ── Period Toggle ── -->
-      <div class="period-toggle">
-        <button [class.active]="activePeriod === 'today'" (click)="activePeriod = 'today'">
-          <i class="material-icons">today</i> Bugun
-        </button>
-        <button [class.active]="activePeriod === 'week'" (click)="activePeriod = 'week'">
-          <i class="material-icons">date_range</i> Shu hafta
-        </button>
-      </div>
-
-      <!-- ── Activity Grid ── -->
-      <div class="activity-grid" *ngIf="activePeriod === 'today'">
-        <div class="activity-card income">
-          <div class="activity-header">
-            <i class="material-icons">payments</i>
-            <span>To'lovlar</span>
-          </div>
-          <div class="activity-amounts">
-            <div class="amount-row">
-              <span class="currency-badge usd">USD</span>
-              <span class="amount-value green">{{ fmt(stats.today.payments?.usd) }} $</span>
-            </div>
-            <div class="amount-row">
-              <span class="currency-badge uzs">UZS</span>
-              <span class="amount-value green">{{ fmt(stats.today.payments?.uzs) }} so'm</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="activity-card expense">
-          <div class="activity-header">
-            <i class="material-icons">shopping_cart</i>
-            <span>Xarajatlar</span>
-          </div>
-          <div class="activity-amounts">
-            <div class="amount-row">
-              <span class="currency-badge usd">USD</span>
-              <span class="amount-value red">{{ fmt(stats.today.expenses?.usd) }} $</span>
-            </div>
-            <div class="amount-row">
-              <span class="currency-badge uzs">UZS</span>
-              <span class="amount-value red">{{ fmt(stats.today.expenses?.uzs) }} so'm</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="activity-card other-income">
-          <div class="activity-header">
-            <i class="material-icons">account_balance_wallet</i>
-            <span>Daromadlar</span>
-          </div>
-          <div class="activity-amounts">
-            <div class="amount-row">
-              <span class="currency-badge usd">USD</span>
-              <span class="amount-value orange">{{ fmt(stats.today.incomes?.usd) }} $</span>
-            </div>
-            <div class="amount-row">
-              <span class="currency-badge uzs">UZS</span>
-              <span class="amount-value orange">{{ fmt(stats.today.incomes?.uzs) }} so'm</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="activity-card owner-draw">
-          <div class="activity-header">
-            <i class="material-icons">person_outline</i>
-            <span>Owner Draw</span>
-          </div>
-          <div class="activity-amounts">
-            <div class="amount-row">
-              <span class="currency-badge usd">USD</span>
-              <span class="amount-value purple">{{ fmt(stats.today.ownerDraws?.usd) }} $</span>
-            </div>
-            <div class="amount-row">
-              <span class="currency-badge uzs">UZS</span>
-              <span class="amount-value purple">{{ fmt(stats.today.ownerDraws?.uzs) }} so'm</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="activity-card transfer">
-          <div class="activity-header">
-            <i class="material-icons">swap_horiz</i>
-            <span>Transferlar</span>
-          </div>
-          <div class="activity-amounts">
-            <div class="amount-row">
-              <span class="currency-badge usd">USD</span>
-              <span class="amount-value blue">{{ fmt(stats.today.transfers?.usd) }} $</span>
-            </div>
-            <div class="amount-row">
-              <span class="currency-badge uzs">UZS</span>
-              <span class="amount-value blue">{{ fmt(stats.today.transfers?.uzs) }} so'm</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="activity-grid" *ngIf="activePeriod === 'week'">
-        <div class="activity-card income">
-          <div class="activity-header">
-            <i class="material-icons">payments</i>
-            <span>To'lovlar</span>
-          </div>
-          <div class="activity-amounts">
-            <div class="amount-row">
-              <span class="currency-badge usd">USD</span>
-              <span class="amount-value green">{{ fmt(stats.thisWeek.payments?.usd) }} $</span>
-            </div>
-            <div class="amount-row">
-              <span class="currency-badge uzs">UZS</span>
-              <span class="amount-value green">{{ fmt(stats.thisWeek.payments?.uzs) }} so'm</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="activity-card expense">
-          <div class="activity-header">
-            <i class="material-icons">shopping_cart</i>
-            <span>Xarajatlar</span>
-          </div>
-          <div class="activity-amounts">
-            <div class="amount-row">
-              <span class="currency-badge usd">USD</span>
-              <span class="amount-value red">{{ fmt(stats.thisWeek.expenses?.usd) }} $</span>
-            </div>
-            <div class="amount-row">
-              <span class="currency-badge uzs">UZS</span>
-              <span class="amount-value red">{{ fmt(stats.thisWeek.expenses?.uzs) }} so'm</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="activity-card other-income">
-          <div class="activity-header">
-            <i class="material-icons">account_balance_wallet</i>
-            <span>Daromadlar</span>
-          </div>
-          <div class="activity-amounts">
-            <div class="amount-row">
-              <span class="currency-badge usd">USD</span>
-              <span class="amount-value orange">{{ fmt(stats.thisWeek.incomes?.usd) }} $</span>
-            </div>
-            <div class="amount-row">
-              <span class="currency-badge uzs">UZS</span>
-              <span class="amount-value orange">{{ fmt(stats.thisWeek.incomes?.uzs) }} so'm</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="activity-card owner-draw">
-          <div class="activity-header">
-            <i class="material-icons">person_outline</i>
-            <span>Owner Draw</span>
-          </div>
-          <div class="activity-amounts">
-            <div class="amount-row">
-              <span class="currency-badge usd">USD</span>
-              <span class="amount-value purple">{{ fmt(stats.thisWeek.ownerDraws?.usd) }} $</span>
-            </div>
-            <div class="amount-row">
-              <span class="currency-badge uzs">UZS</span>
-              <span class="amount-value purple">{{ fmt(stats.thisWeek.ownerDraws?.uzs) }} so'm</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="activity-card transfer">
-          <div class="activity-header">
-            <i class="material-icons">swap_horiz</i>
-            <span>Transferlar</span>
-          </div>
-          <div class="activity-amounts">
-            <div class="amount-row">
-              <span class="currency-badge usd">USD</span>
-              <span class="amount-value blue">{{ fmt(stats.thisWeek.transfers?.usd) }} $</span>
-            </div>
-            <div class="amount-row">
-              <span class="currency-badge uzs">UZS</span>
-              <span class="amount-value blue">{{ fmt(stats.thisWeek.transfers?.uzs) }} so'm</span>
             </div>
           </div>
         </div>

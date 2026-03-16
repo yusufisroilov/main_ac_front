@@ -1,5 +1,6 @@
 /* ── Summary Cards ── */
 .summary-row {
+  margin-top: 28px;
   margin-bottom: 8px;
 }
 
@@ -101,11 +102,18 @@
   margin-top: 2px;
 }
 
-/* ── Period Toggle ── */
+/* ── Period Strip ── */
+.period-strip {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
 .period-toggle {
   display: flex;
   gap: 0;
-  margin-bottom: 20px;
   background: #f5f5f5;
   border-radius: 10px;
   padding: 4px;
@@ -140,6 +148,39 @@
 .period-toggle button:hover:not(.active) {
   color: #424242;
 }
+
+/* Custom date range */
+.custom-range {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.custom-range .form-control {
+  max-width: 150px;
+  font-size: 13px;
+}
+
+.range-sep {
+  color: #999;
+  font-weight: 600;
+}
+
+/* Period label */
+.period-label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: #888;
+  margin-bottom: 16px;
+  padding: 4px 8px;
+  background: #f5f5f5;
+  border-radius: 4px;
+  width: fit-content;
+}
+
+.period-label i { font-size: 15px; }
 
 /* ── Activity Grid ── */
 .activity-grid {
@@ -267,6 +308,11 @@
     font-size: 20px;
   }
 
+  .period-strip {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
   .period-toggle {
     width: 100%;
   }
@@ -274,5 +320,16 @@
   .period-toggle button {
     flex: 1;
     justify-content: center;
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+
+  .custom-range {
+    width: 100%;
+  }
+
+  .custom-range .form-control {
+    max-width: none;
+    flex: 1;
   }
 }

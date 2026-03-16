@@ -864,7 +864,23 @@ export class Infoeachclientv2Component implements OnInit {
     });
   }
 
+  // ─── Services ───
+
+  openServices() {
+    // TODO: implement services dialog
+  }
+
   // ─── Delivery ───
+
+  openDeliveryForAll() {
+    if (!this.currentID) return;
+    this.selectedConsignmentId = "";
+    this.selectedConsignmentName = "";
+    this.selectedConsignmentWeight = "";
+    this.selectedConsignmentQuantity = "";
+    this.loadCustomerPackagesForDelivery();
+    $("#deliveryCreationModal").modal("show");
+  }
 
   openDeliveryCreationDirectly(
     id: string,

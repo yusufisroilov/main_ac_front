@@ -603,7 +603,7 @@ export class AllordersComponent implements OnInit {
                   swal
                     .fire({
                       title: "Not Added",
-                      text: "BAD REQUEST: WRONG TYPE OF INPUT",
+                      text: `BAD REQUEST: ${error.json().message}`,
                       backdrop: `
                     rgba(0,0,123,0.4)
                     url("../../../assets/audio/error.gif")
