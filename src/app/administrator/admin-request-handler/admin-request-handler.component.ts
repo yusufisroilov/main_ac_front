@@ -615,42 +615,35 @@ export class AdminRequestHandlerComponent {
   approveDeliveryRequest() {
     if (!this.selectedRequest) return;
 
-    // Validation
-    if (
-      this.selectedRequest.delivery_type === "Own-Courier" &&
-      (!this.courierName.trim() || !this.courierPhone.trim())
-    ) {
-      swal.fire("Xatolik", "Kuryer ma'lumotlarini to'ldiring", "error");
-      return;
-    }
+    // // Check if payment verification is required
+    // if (
+    //   this.selectedRequest.payment_amount &&
+    //   !this.selectedRequest.payment_verified
+    // ) {
+    //   swal
+    //     .fire({
+    //       title: "To'lov tasdiqlanmagan",
+    //       text: "To'lov hali tasdiqlanmagan. So'rovni tasdiqlashni davom ettirasizmi?",
+    //       icon: "warning",
+    //       showCancelButton: true,
+    //       confirmButtonText: "Ha, davom etish",
+    //       cancelButtonText: "Bekor qilish",
+    //       customClass: {
+    //         confirmButton: "btn btn-warning",
+    //         cancelButton: "btn btn-secondary",
+    //       },
+    //       buttonsStyling: false,
+    //     })
+    //     .then((result) => {
+    //       if (result.isConfirmed) {
+    //         this.submitApproval();
+    //       }
+    //     });
+    // } else {
+    //   this.submitApproval();
+    // }
 
-    // Check if payment verification is required
-    if (
-      this.selectedRequest.payment_amount &&
-      !this.selectedRequest.payment_verified
-    ) {
-      swal
-        .fire({
-          title: "To'lov tasdiqlanmagan",
-          text: "To'lov hali tasdiqlanmagan. So'rovni tasdiqlashni davom ettirasizmi?",
-          icon: "warning",
-          showCancelButton: true,
-          confirmButtonText: "Ha, davom etish",
-          cancelButtonText: "Bekor qilish",
-          customClass: {
-            confirmButton: "btn btn-warning",
-            cancelButton: "btn btn-secondary",
-          },
-          buttonsStyling: false,
-        })
-        .then((result) => {
-          if (result.isConfirmed) {
-            this.submitApproval();
-          }
-        });
-    } else {
-      this.submitApproval();
-    }
+    this.submitApproval();
   }
 
   private submitApproval() {

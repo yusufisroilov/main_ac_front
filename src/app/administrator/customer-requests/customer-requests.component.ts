@@ -174,7 +174,7 @@ export class CustomerRequestsComponent implements OnInit {
       ],
       dataRows: [],
     };
-
+    this.customerPhone = localStorage.getItem("username");
     this.currentID = localStorage.getItem("id");
     this.loadCustomerPackages();
     this.loadMyDeliveryRequests();
@@ -591,11 +591,6 @@ export class CustomerRequestsComponent implements OnInit {
           const result = response.json();
           if (result.status === "success") {
             this.myDeliveryRequests = result.data.requests || [];
-
-            // Auto-fill phone from most recent request if not already set
-            if (!this.customerPhone && this.myDeliveryRequests.length > 0) {
-              this.customerPhone = this.myDeliveryRequests[0].customer_phone || "";
-            }
           }
         },
         (error) => {
@@ -703,9 +698,10 @@ export class CustomerRequestsComponent implements OnInit {
     this.selectedPackages = [];
     this.customerPackages.forEach((group) => (group.selected = false));
     this.deliveryType = "Pick-up";
-    this.customerPhone = this.myDeliveryRequests.length > 0
-      ? this.myDeliveryRequests[0].customer_phone || ""
-      : "";
+    this.customerPhone =
+      this.myDeliveryRequests.length > 0
+        ? this.myDeliveryRequests[0].customer_phone || ""
+        : "";
     this.deliveryAddress = "";
     this.mapLocationUrl = "";
     this.addressInputType = "text";

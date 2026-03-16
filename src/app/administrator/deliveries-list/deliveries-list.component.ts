@@ -628,9 +628,36 @@ export class DeliveriesListComponent {
     this.router.navigate(["/uzs/deliveries-list2"]);
   }
 
-  // Navigate to today's Own-Courier deliveries
+  // Download today's Own-Courier deliveries as Excel
   goToCourierToday() {
-    this.router.navigate(["/uzs/courier-deliveries"]);
+    const headers = new HttpHeaders({
+      "Content-Type": "application/json",
+      Authorization: localStorage.getItem("token") || "",
+    });
+    this.httpClient
+      .get(GlobalVars.baseUrl + "/deliveries/courier/export-excel-today", {
+        headers,
+        responseType: "blob",
+      })
+      .subscribe(
+        (blob: Blob) => {
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          const dateStr = new Date().toISOString().slice(0, 10);
+          a.download = `Kuryer_Yetkazishlar_${dateStr}.xlsx`;
+          a.click();
+          window.URL.revokeObjectURL(url);
+        },
+        (error) => {
+          if (error.status === 404) {
+            swal.fire("Ma'lumot yo'q", "Bugun uchun kuryer yetkazishlari topilmadi", "info");
+          } else {
+            swal.fire("Xatolik", "Excel yuklab olishda xatolik", "error");
+          }
+          if (error.status === 403) this.authService.logout();
+        },
+      );
   }
 
   // Hidden: Bulk send all "created" deliveries

@@ -580,36 +580,6 @@
             </div>
             <div class="modal-body">
                 <form>
-                    <!-- Courier Details (if Own-Courier delivery) -->
-                    <div class="row" *ngIf="selectedRequest.delivery_type === 'Own-Courier'">
-                        <div class="col-md-12">
-                            <h6 class="section-title">
-                                <i class="material-icons">delivery_dining</i>
-                                Kuryer Ma'lumotlari
-                            </h6>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label>
-                                    <i class="material-icons">person</i>
-                                    Kuryer Ismi <span class="text-danger">*</span>
-                                </label>
-                                <input type="text" class="form-control" [(ngModel)]="courierName" name="courierName"
-                                    placeholder="Kuryer ismini kiriting" required>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label>
-                                    <i class="material-icons">phone</i>
-                                    Kuryer Telefoni <span class="text-danger">*</span>
-                                </label>
-                                <input type="tel" class="form-control" [(ngModel)]="courierPhone" name="courierPhone"
-                                    placeholder="+998901234567" required>
-                            </div>
-                        </div>
-                    </div>
-
                     <!-- Admin Notes -->
                     <div class="row">
                         <div class="col-md-12">

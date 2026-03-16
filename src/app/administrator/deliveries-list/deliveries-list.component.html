@@ -132,12 +132,13 @@
                                     <thead class="thead-light">
                                         <tr>
                                             <th class="text-center">#</th>
-                                            <th>Barcode</th>
                                             <th class="text-center">Mijoz</th>
                                             <th>Turi</th>
                                             <th class="text-center">Qutillar</th>
                                             <th class="text-center">Og'irligi</th>
-                                            <th (dblclick)="sendAllCreatedDeliveries()" style="cursor: default;">Izoh</th>
+                                            <th>Barcode</th>
+                                            <th (dblclick)="sendAllCreatedDeliveries()" style="cursor: default;">Izoh
+                                            </th>
                                             <th class="text-center">Holat</th>
                                             <th>Sana</th>
                                             <th class="text-center">Amallar</th>
@@ -147,6 +148,26 @@
                                         <tr *ngFor="let delivery of deliveries; let i = index">
                                             <td class="text-center">
                                                 <strong>{{currentPage * deliveriesPerPage + i + 1}}</strong>
+                                            </td>
+
+                                            <td class="text-center">
+                                                <strong class="customer-id">K{{delivery.owner_id}}</strong>
+                                            </td>
+                                            <td>
+                                                <span class="delivery-type-badge">
+                                                    {{getDeliveryTypeText(delivery.delivery_type)}}
+                                                </span>
+                                            </td>
+                                            <td class="text-center">
+                                                <strong>{{delivery.total_packages}}</strong>
+                                                <small class="text-muted d-block">ta</small>
+                                            </td>
+                                            <td class="text-center">
+                                                <span *ngIf="delivery.weight">
+                                                    <strong>{{delivery.weight}}</strong>
+                                                    <small class="text-muted d-block">kg</small>
+                                                </span>
+                                                <span *ngIf="!delivery.weight" class="text-muted">-</span>
                                             </td>
                                             <td class="barcode-cell">
                                                 <!-- Simple barcode (2 or fewer) -->
@@ -177,25 +198,6 @@
                                                         Yopish
                                                     </span>
                                                 </ng-container>
-                                            </td>
-                                            <td class="text-center">
-                                                <strong class="customer-id">K{{delivery.owner_id}}</strong>
-                                            </td>
-                                            <td>
-                                                <span class="delivery-type-badge">
-                                                    {{getDeliveryTypeText(delivery.delivery_type)}}
-                                                </span>
-                                            </td>
-                                            <td class="text-center">
-                                                <strong>{{delivery.total_packages}}</strong>
-                                                <small class="text-muted d-block">ta</small>
-                                            </td>
-                                            <td class="text-center">
-                                                <span *ngIf="delivery.weight">
-                                                    <strong>{{delivery.weight}}</strong>
-                                                    <small class="text-muted d-block">kg</small>
-                                                </span>
-                                                <span *ngIf="!delivery.weight" class="text-muted">-</span>
                                             </td>
                                             <td>
                                                 <small>{{delivery.notes}}</small>
