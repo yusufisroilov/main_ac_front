@@ -1,0 +1,148 @@
+<div class="main-content">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-header card-header-info">
+            <div class="d-flex justify-content-between align-items-center">
+              <h4 class="card-title mb-0">
+                <i class="material-icons align-middle">receipt_long</i>
+                Acc Transaksiyalar
+                <span class="badge badge-light ml-2" *ngIf="totalItems > 0">{{ totalItems }}</span>
+              </h4>
+              <div>
+                <button mat-icon-button (click)="toggleFilters()" [class.text-warning]="hasFilters"
+                  matTooltip="Filtrlar">
+                  <i class="material-icons">{{ showFilters ? 'filter_list_off' : 'filter_list' }}</i>
+                </button>
+                <button mat-icon-button (click)="loadData()" matTooltip="Yangilash">
+                  <i class="material-icons">refresh</i>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-body">
+
+            <!-- Filters -->
+            <div class="filters-panel" *ngIf="showFilters">
+              <div class="row mb-2">
+                <div class="col-md-3">
+                  <label class="filter-label">Turi</label>
+                  <select class="form-control form-control-sm" [(ngModel)]="filterType"
+                    (change)="onFilterChange()">
+                    <option *ngFor="let opt of typeOptions" [value]="opt.value">{{ opt.label }}</option>
+                  </select>
+                </div>
+                <div class="col-md-3">
+                  <label class="filter-label">Hisob</label>
+                  <select class="form-control form-control-sm" [(ngModel)]="filterAccountId"
+                    (change)="onFilterChange()">
+                    <option [ngValue]="null">Barchasi</option>
+                    <option *ngFor="let acc of accounts" [ngValue]="acc.id">{{ acc.name }} ({{ acc.currency }})</option>
+                  </select>
+                </div>
+                <div class="col-md-2">
+                  <label class="filter-label">Dan</label>
+                  <input type="date" class="form-control form-control-sm" [(ngModel)]="filterStartDate"
+                    (change)="onFilterChange()">
+                </div>
+                <div class="col-md-2">
+                  <label class="filter-label">Gacha</label>
+                  <input type="date" class="form-control form-control-sm" [(ngModel)]="filterEndDate"
+                    (change)="onFilterChange()">
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                  <button class="btn btn-sm btn-outline-secondary" (click)="clearFilters()">
+                    <i class="material-icons" style="font-size:14px">clear</i> Tozalash
+                  </button>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6">
+                  <label class="filter-label">Izoh</label>
+                  <input type="text" class="form-control form-control-sm" placeholder="Qidirish..."
+                    [value]="filterComment" (input)="onCommentInput($event.target.value)">
+                </div>
+              </div>
+            </div>
+
+            <!-- Filter active indicator -->
+            <div class="filter-active-bar" *ngIf="!showFilters && hasFilters" (click)="toggleFilters()">
+              <i class="material-icons">filter_list</i>
+              <span>Filtrlar faol</span>
+              <i class="material-icons clear-icon" (click)="clearFilters(); $event.stopPropagation()">clear</i>
+            </div>
+
+            <!-- Loading -->
+            <div *ngIf="loading" class="text-center py-5">
+              <mat-spinner class="mx-auto" diameter="40"></mat-spinner>
+            </div>
+
+            <!-- Table -->
+            <div class="table-responsive" *ngIf="!loading">
+              <table class="table table-hover table-sm" *ngIf="entries.length > 0">
+                <thead>
+                  <tr class="text-muted">
+                    <th>#</th>
+                    <th>Turi</th>
+                    <th>Hisob</th>
+                    <th class="text-right">Summa</th>
+                    <th>Izoh</th>
+                    <th>Sana</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let entry of entries; let i = index">
+                    <td class="text-muted">{{ (currentPage * pageSize) + i + 1 }}</td>
+                    <td>
+                      <span class="badge" [ngClass]="getTypeClass(entry.type)">
+                        {{ getTypeLabel(entry.type) }}
+                      </span>
+                    </td>
+                    <td>
+                      <span class="account-chip" *ngIf="entry.accountName">
+                        {{ entry.accountName }}
+                        <small class="text-muted">({{ entry.accountCurrency }})</small>
+                      </span>
+                    </td>
+                    <td class="text-right">
+                      <div class="amount-cell" [class.text-success]="isIncoming(entry.type)"
+                        [class.text-danger]="!isIncoming(entry.type)">
+                        <span *ngIf="formatUsdEquiv(entry) as usdEquiv" class="amount-usd">
+                          {{ usdEquiv }}
+                        </span>
+                        <span [class.amount-secondary]="formatUsdEquiv(entry)">
+                          {{ formatAmount(entry) }}
+                        </span>
+                      </div>
+                    </td>
+                    <td class="comment-cell">{{ entry.comment || '—' }}</td>
+                    <td class="date-cell">{{ entry.created_at | date:'dd.MM.yy HH:mm' }}</td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <!-- Empty state -->
+              <div class="text-center py-5" *ngIf="entries.length === 0">
+                <i class="material-icons empty-icon">receipt_long</i>
+                <p class="text-muted mt-2">Ma'lumot topilmadi</p>
+              </div>
+
+              <!-- Pagination -->
+              <div class="d-flex justify-content-between align-items-center mt-3" *ngIf="totalPages > 1">
+                <small class="text-muted">
+                  {{ (currentPage * pageSize) + 1 }}–{{ (currentPage * pageSize) + entries.length }} / {{ totalItems }}
+                </small>
+                <app-pagination [currentPage]="currentPage + 1" [totalPages]="totalPages"
+                  (pageChange)="onPageChange($event - 1)">
+                </app-pagination>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

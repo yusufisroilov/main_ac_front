@@ -104,7 +104,7 @@ export class CustomerTicketDetailComponent implements OnInit, AfterViewChecked {
     private route: ActivatedRoute,
     public router: Router,
     private http: Http,
-    public authService: AuthService
+    public authService: AuthService,
   ) {
     this.headers12 = new Headers({ "Content-Type": "application/json" });
     this.headers12.append("Authorization", localStorage.getItem("token"));
@@ -160,6 +160,7 @@ export class CustomerTicketDetailComponent implements OnInit, AfterViewChecked {
           const data = response.json();
           if (data.status === "success") {
             this.ticket = data.ticket;
+            // console.log("ticket detail ", this.ticket);
 
             // Sort messages by created_at (oldest first, newest last - Telegram style)
             this.displayMessages = [...this.ticket.messages].sort((a, b) => {
@@ -212,7 +213,7 @@ export class CustomerTicketDetailComponent implements OnInit, AfterViewChecked {
               text: "Murojaat ma'lumotlarini yuklab bo'lmadi. Qayta urinib ko'ring.",
             });
           }
-        }
+        },
       );
   }
 
@@ -252,7 +253,7 @@ export class CustomerTicketDetailComponent implements OnInit, AfterViewChecked {
           text: `${
             file.name
           } juda katta hajmda. Maksimal fayl hajmi ${this.formatFileSize(
-            this.maxFileSize
+            this.maxFileSize,
           )}`,
         });
         continue;
@@ -383,7 +384,7 @@ export class CustomerTicketDetailComponent implements OnInit, AfterViewChecked {
       .post(
         GlobalVars.baseUrl + "/tickets/" + this.ticket.id + "/reply",
         formData,
-        options
+        options,
       )
       .subscribe(
         (response) => {
@@ -426,7 +427,7 @@ export class CustomerTicketDetailComponent implements OnInit, AfterViewChecked {
               text: "Javobni yuborib bo'lmadi. Qayta urinib ko'ring.",
             });
           }
-        }
+        },
       );
   }
 
@@ -594,7 +595,11 @@ export class CustomerTicketDetailComponent implements OnInit, AfterViewChecked {
    */
   private focusReplyTextarea(): void {
     setTimeout(() => {
-      if (this.replyTextarea && this.replyTextarea.nativeElement && !this.isTicketClosed()) {
+      if (
+        this.replyTextarea &&
+        this.replyTextarea.nativeElement &&
+        !this.isTicketClosed()
+      ) {
         this.replyTextarea.nativeElement.focus();
       }
     }, 300);
@@ -653,10 +658,10 @@ export class CustomerTicketDetailComponent implements OnInit, AfterViewChecked {
    */
   getPriorityLabel(priority: string): string {
     const labels = {
-      "Urgent": "Shoshilinch",
-      "High": "Yuqori",
-      "Medium": "O'rta",
-      "Low": "Past"
+      Urgent: "Shoshilinch",
+      High: "Yuqori",
+      Medium: "O'rta",
+      Low: "Past",
     };
     return labels[priority] || "O'rta";
   }

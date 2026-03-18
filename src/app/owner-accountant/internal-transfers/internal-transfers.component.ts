@@ -135,6 +135,16 @@ export class OaInternalTransfersComponent implements OnInit {
           if (parts.length > 2) parts.length = 2;
           amtEl.value = parts.join(".");
         });
+        // Mutual exclusion: disable selected account in the other dropdown
+        const fromSel = document.getElementById("tr-from") as HTMLSelectElement;
+        const toSel = document.getElementById("tr-to") as HTMLSelectElement;
+        const syncDisabled = () => {
+          Array.from(toSel.options).forEach((o) => (o.disabled = o.value === fromSel.value));
+          Array.from(fromSel.options).forEach((o) => (o.disabled = o.value === toSel.value));
+        };
+        fromSel.addEventListener("change", syncDisabled);
+        toSel.addEventListener("change", syncDisabled);
+        syncDisabled();
       },
       preConfirm: () => {
         const fromId = (document.getElementById("tr-from") as HTMLSelectElement).value;
@@ -143,7 +153,6 @@ export class OaInternalTransfersComponent implements OnInit {
         const date = (document.getElementById("tr-date") as HTMLInputElement).value;
         if (!fromId || !toId || !amount || !date) { swal.showValidationMessage("Barcha maydonlarni to'ldiring"); return false; }
         if (fromId === toId) { swal.showValidationMessage("Bir xil hisobga transfer qilib bo'lmaydi"); return false; }
-        if (parseFloat(amount) <= 0) { swal.showValidationMessage("Summa musbat bo'lishi kerak"); return false; }
         return {
           from_cash_account_id: parseInt(fromId),
           to_cash_account_id: parseInt(toId),

@@ -147,9 +147,10 @@ export class YandexDeliveriesComponent implements OnInit {
       .fire({
         title: "Tasdiqlash",
         html: `
-        <p>${delivery.barcode} Yandex kuryerga topshirildimi?</p>
-        <input id="note-input" class="swal2-input" placeholder="Izoh kiriting..." />
-      `,
+          <p>${delivery.barcode} Yandex kuryerga topshirildimi?</p>
+          <input id="weight-input" class="swal2-input" type="number" step="0.01" min="0" placeholder="Og'irlik (kg)" />
+          <input id="note-input" class="swal2-input" placeholder="Izoh kiriting..." />
+        `,
         icon: "question",
         showCancelButton: true,
         confirmButtonText: "Ha",
@@ -159,32 +160,35 @@ export class YandexDeliveriesComponent implements OnInit {
           cancelButton: "btn btn-secondary",
         },
         buttonsStyling: false,
-
         preConfirm: () => {
-          const input = document.getElementById(
-            "note-input",
-          ) as HTMLInputElement;
-          return input?.value?.trim() || "";
+          const weightEl = document.getElementById("weight-input") as HTMLInputElement;
+          const weight = parseFloat(weightEl?.value);
+          if (!weightEl?.value || isNaN(weight) || weight <= 0) {
+            swal.showValidationMessage("Og'irlikni kiriting");
+            return false;
+          }
+          const note = (document.getElementById("note-input") as HTMLInputElement)?.value?.trim() || "";
+          return { weight, note };
         },
       })
       .then((result) => {
-        if (result.isConfirmed) {
-          const note = result.value;
-          this.updateDeliveryStatus(delivery, "sent", note);
+        if (result.isConfirmed && result.value) {
+          this.updateDeliveryStatus(delivery, "sent", result.value.note, result.value.weight);
         }
       });
   }
 
   // Update delivery status
-  updateDeliveryStatus(delivery: Delivery, newStatus: string, notes?: string) {
+  updateDeliveryStatus(delivery: Delivery, newStatus: string, notes?: string, weight?: number) {
     this.processingDelivery = true;
 
-    const updateData = {
+    const updateData: any = {
       new_status: newStatus,
       processed_by_employee: this.currentEmployee,
       sent_date: new Date().toISOString(),
       notes: notes,
     };
+    if (weight != null) updateData.weight = weight;
 
     this.http
       .put(

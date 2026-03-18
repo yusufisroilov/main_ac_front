@@ -11,6 +11,7 @@ import { TopDebtorsComponent } from "./top-debtors/top-debtors.component";
 import { ConsignmentSummaryComponent } from "./consignment-summary/consignment-summary.component";
 import { OaCashAccountsComponent } from "./oa-cash-accounts/oa-cash-accounts.component";
 import { OaSettingsComponent } from "./settings/settings.component";
+import { AccLedgerListComponent } from "./acc-ledger-list/acc-ledger-list.component";
 
 export const OwnerAccountantRoutes: Routes = [
   {
@@ -81,6 +82,12 @@ export const OwnerAccountantRoutes: Routes = [
         canActivate: [OwnerAuthGuardService],
         component: ConsignmentSummaryComponent,
         data: { title: "Partiya Xulosasi" },
+      },
+      {
+        path: "acc-ledger",
+        canActivate: [OwnerAuthGuardService],
+        component: AccLedgerListComponent,
+        data: { title: "Acc Transaksiyalar" },
       },
     ],
   },

@@ -34,6 +34,7 @@
 .tag-company { background: #fff3e0; color: #e65100; }
 .tag-employee { background: #e0f2f1; color: #00695c; }
 .tag-inactive { background: #ffebee; color: #c62828; }
+.tag-visibility { background: #e8eaf6; color: #3949ab; }
 .account-currency-badge { padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: 700; flex-shrink: 0; }
 .currency-uzs { background: #e8f5e9; color: #2e7d32; }
 .currency-usd { background: #e3f2fd; color: #1565c0; }

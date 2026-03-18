@@ -183,6 +183,35 @@
                         </div>
                     </div>
 
+                    <!-- Reassign Card - OWNER/MANAGER only -->
+                    <div class="card mt-4" *ngIf="canReassign()">
+                        <div class="card-header card-header-primary">
+                            <h5 class="card-title mb-0">
+                                <mat-icon class="align-middle">person_add</mat-icon>
+                                Qayta Biriktirish
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="reassign-current mb-3">
+                                <span class="text-muted">Hozirda:</span>
+                                <strong class="ml-2" [ngClass]="ticket.assigned_user_id ? 'text-primary' : 'text-danger'">
+                                    {{ ticket.assigned_user_id ? 'K' + ticket.assigned_user_id : 'Biriktirilmagan' }}
+                                </strong>
+                            </div>
+                            <div class="d-flex align-items-center gap-2">
+                                <input type="number" class="form-control reassign-input"
+                                    placeholder="Yangi ID (masalan: 22)"
+                                    [(ngModel)]="reassignUserId"
+                                    (keyup.enter)="reassignTicketDirect()">
+                                <button mat-raised-button color="primary" class="ml-2 reassign-btn"
+                                    [disabled]="!reassignUserId"
+                                    (click)="reassignTicketDirect()">
+                                    <mat-icon>send</mat-icon> Biriktirish
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
 

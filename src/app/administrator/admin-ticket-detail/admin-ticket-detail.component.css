@@ -340,3 +340,28 @@ app-message-thread {
   display: block;
   width: 100%;
 }
+
+/* ── Reassign Card ── */
+.reassign-current {
+  font-size: 14px;
+  padding: 8px 12px;
+  background: #f8f9fa;
+  border-radius: 6px;
+  border-left: 3px solid #9c27b0;
+}
+
+.reassign-input {
+  flex: 1;
+  border-radius: 6px;
+  font-size: 14px;
+  padding: 8px 12px;
+}
+
+.reassign-input:focus {
+  border-color: #9c27b0;
+  box-shadow: 0 0 0 0.2rem rgba(156, 39, 176, 0.15);
+}
+
+.reassign-btn {
+  white-space: nowrap;
+}

@@ -6,10 +6,12 @@
           <h3 class="page-title"><i class="material-icons">account_balance</i> Hisoblar Boshqaruvi</h3>
           <div class="header-actions">
             <button class="btn btn-outline-secondary btn-sm" (click)="toggleShowInactive()">
-              <i class="material-icons" style="font-size:18px;vertical-align:middle;">{{ showInactive ? 'visibility_off' : 'visibility' }}</i>
+              <i class="material-icons" style="font-size:18px;vertical-align:middle;">{{ showInactive ? 'visibility_off'
+                : 'visibility' }}</i>
               {{ showInactive ? 'Faqat faollar' : 'Barchasini' }}
             </button>
-            <button class="btn btn-info btn-sm" (click)="createAccount()"><i class="material-icons" style="font-size:18px;vertical-align:middle;">add</i> Yangi</button>
+            <button class="btn btn-info btn-sm" (click)="createAccount()"><i class="material-icons"
+                style="font-size:18px;vertical-align:middle;">add</i> Yangi</button>
           </div>
         </div>
       </div>
@@ -42,18 +44,22 @@
           <div class="summary-info">
             <span class="summary-label">Jami Hisoblar</span>
             <span class="summary-value">{{ accounts.length }}</span>
-            <span class="summary-count">{{ getActiveCount() }} faol / {{ accounts.length - getActiveCount() }} faolsiz</span>
+            <span class="summary-count">{{ getActiveCount() }} faol / {{ accounts.length - getActiveCount() }}
+              faolsiz</span>
           </div>
         </div>
       </div>
     </div>
 
-    <div *ngIf="isLoading" class="text-center" style="padding: 60px;"><div class="spinner-border text-info" role="status"></div></div>
+    <div *ngIf="isLoading" class="text-center" style="padding: 60px;">
+      <div class="spinner-border text-info" role="status"></div>
+    </div>
 
     <div *ngIf="!isLoading && !errorMessage && accounts.length === 0" class="text-center" style="padding: 60px;">
       <i class="material-icons" style="font-size: 60px; color: #ccc;">account_balance_wallet</i>
       <p class="text-muted mt-2">Hisoblar topilmadi</p>
-      <button class="btn btn-info btn-sm" (click)="createAccount()"><i class="material-icons" style="font-size:18px;vertical-align:middle;">add</i> Hisob Yaratish</button>
+      <button class="btn btn-info btn-sm" (click)="createAccount()"><i class="material-icons"
+          style="font-size:18px;vertical-align:middle;">add</i> Hisob Yaratish</button>
     </div>
 
     <div class="row" *ngIf="!isLoading && !errorMessage && accounts.length > 0">
@@ -66,23 +72,31 @@
             <div class="account-meta">
               <span class="account-name">{{ account.name }}</span>
               <div class="account-tags">
-                <span class="tag" [ngClass]="'tag-' + account.type.toLowerCase()">{{ getTypeLabel(account.type) }}</span>
-                <span class="tag" [ngClass]="'tag-' + account.owner_kind.toLowerCase()">{{ getOwnerKindLabel(account.owner_kind) }}</span>
+                <span class="tag" [ngClass]="'tag-' + account.type.toLowerCase()">{{ getTypeLabel(account.type)
+                  }}</span>
+                <span class="tag" [ngClass]="'tag-' + account.owner_kind.toLowerCase()">{{
+                  getOwnerKindLabel(account.owner_kind) }}</span>
+                <span class="tag tag-visibility">{{ getVisibilityLabel(account.visibility) }}</span>
                 <span class="tag tag-inactive" *ngIf="!account.is_active">Faolsiz</span>
               </div>
             </div>
-            <div class="account-currency-badge" [ngClass]="'currency-' + account.currency.toLowerCase()">{{ account.currency }}</div>
+            <div class="account-currency-badge" [ngClass]="'currency-' + account.currency.toLowerCase()">{{
+              account.currency }}</div>
           </div>
           <div class="account-balance-section">
             <span class="balance-label">Balans</span>
-            <span class="balance-value" [class.positive]="account.balance > 0" [class.negative]="account.balance < 0" [class.zero]="account.balance == 0">
+            <span class="balance-value" [class.positive]="account.balance > 0" [class.negative]="account.balance < 0"
+              [class.zero]="account.balance == 0">
               {{ formatAmount(account.balance, account.currency) }}
             </span>
           </div>
           <div class="account-actions">
-            <button class="btn btn-sm action-edit" (click)="editAccount(account)"><i class="material-icons">edit</i> Tahrirlash</button>
-            <button class="btn btn-sm action-delete" (click)="deactivateAccount(account)" *ngIf="account.is_active"><i class="material-icons">block</i> O'chirish</button>
-            <button class="btn btn-sm action-history" (click)="viewLedger(account)" [class.active]="selectedAccount?.id === account.id"><i class="material-icons">history</i></button>
+            <button class="btn btn-sm action-edit" (click)="editAccount(account)"><i class="material-icons">edit</i>
+              Tahrirlash</button>
+            <button class="btn btn-sm action-delete" (click)="deactivateAccount(account)" *ngIf="account.is_active"><i
+                class="material-icons">block</i> O'chirish</button>
+            <button class="btn btn-sm action-history" (click)="viewLedger(account)"
+              [class.active]="selectedAccount?.id === account.id"><i class="material-icons">history</i></button>
           </div>
         </div>
       </div>
@@ -96,7 +110,8 @@
           <span>{{ selectedAccount.name }} — Harakatlar Tarixi</span>
           <span class="ldg-total-badge">{{ ledgerTotalItems }} ta yozuv</span>
         </div>
-        <button class="ledger-close-btn" (click)="selectedAccount = null; ledgerEntries = []"><i class="material-icons">close</i></button>
+        <button class="ledger-close-btn" (click)="selectedAccount = null; ledgerEntries = []"><i
+            class="material-icons">close</i></button>
       </div>
 
       <div class="ledger-loading" *ngIf="ledgerLoading">
@@ -124,14 +139,17 @@
             <tbody>
               <tr *ngFor="let e of ledgerEntries; let i = index">
                 <td class="ldg-num">{{ ledgerPage * ledgerPageSize + i + 1 }}</td>
-                <td><span class="ldg-badge" [ngClass]="getLedgerTypeClass(e.type)">{{ getLedgerTypeLabel(e.type) }}</span></td>
+                <td><span class="ldg-badge" [ngClass]="getLedgerTypeClass(e.type)">{{ getLedgerTypeLabel(e.type)
+                    }}</span></td>
                 <td class="ldg-customer">
                   <span *ngIf="e.reference_type" class="text-muted" style="font-size:11px">{{ e.reference_type }}</span>
                   <span *ngIf="!e.reference_type" class="text-muted">—</span>
                 </td>
                 <td class="text-right ldg-amount" [ngClass]="getLedgerAmountClass(e.type)">
-                  <span class="ldg-usd-main"><span class="ldg-prefix">{{ getLedgerAmountPrefix(e.type) }}</span>${{ absVal(e.amount_usd) | number:'1.0-2' }}</span>
-                  <span *ngIf="e.currency === 'UZS'" class="ldg-orig-sub">{{ absVal(e.amount) | number:'1.0-0' }} so'm</span>
+                  <span class="ldg-usd-main"><span class="ldg-prefix">{{ getLedgerAmountPrefix(e.type) }}</span>${{
+                    absVal(e.amount_usd) | number:'1.0-2' }}</span>
+                  <span *ngIf="e.currency === 'UZS'" class="ldg-orig-sub">{{ absVal(e.amount) | number:'1.0-0' }}
+                    so'm</span>
                 </td>
                 <td class="ldg-comment">{{ e.comment || '—' }}</td>
                 <td class="text-center ldg-date">{{ e.created_at | date:'dd/MM/yyyy HH:mm' }}</td>

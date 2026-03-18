@@ -1,0 +1,129 @@
+/* ── Filters ── */
+.filters-panel {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+  border: 1px solid #e9ecef;
+}
+
+.filter-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: #999;
+  margin-bottom: 4px;
+  display: block;
+}
+
+.filter-active-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #fff3e0;
+  border: 1px solid #ffe0b2;
+  border-radius: 8px;
+  padding: 6px 12px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  font-size: 12px;
+  color: #e65100;
+  font-weight: 500;
+}
+
+.filter-active-bar .clear-icon {
+  margin-left: auto;
+  font-size: 16px;
+  color: #ffab91;
+}
+
+.filter-active-bar .clear-icon:hover {
+  color: #e65100;
+}
+
+/* ── Table ── */
+.table th {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-top: none;
+  padding: 8px 12px;
+}
+
+.table td {
+  vertical-align: middle;
+  padding: 10px 12px;
+  font-size: 13px;
+}
+
+.table tbody tr:hover {
+  background: #f8f9fa;
+}
+
+/* ── Type badges ── */
+.badge-purple {
+  background: linear-gradient(60deg, #ab47bc, #8e24aa);
+  color: white;
+}
+
+/* ── Account chip ── */
+.account-chip {
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* ── Amount cell ── */
+.amount-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.amount-usd {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.amount-secondary {
+  font-size: 11px;
+  color: #999 !important;
+  font-weight: 500;
+}
+
+/* ── Comment ── */
+.comment-cell {
+  max-width: 280px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #666;
+}
+
+/* ── Date ── */
+.date-cell {
+  font-size: 12px;
+  color: #999;
+  white-space: nowrap;
+}
+
+/* ── Empty state ── */
+.empty-icon {
+  font-size: 48px;
+  color: #ccc;
+}
+
+/* ── Header button colors ── */
+.text-warning {
+  color: #ff9800 !important;
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .filters-panel .row > div {
+    margin-bottom: 8px;
+  }
+
+  .comment-cell {
+    max-width: 150px;
+  }
+}

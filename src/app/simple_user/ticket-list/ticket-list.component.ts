@@ -71,7 +71,7 @@ export class CustomerTicketListComponent implements OnInit, AfterViewInit {
   constructor(
     private http: Http,
     private router: Router,
-    public authService: AuthService
+    public authService: AuthService,
   ) {
     this.headers12 = new Headers({ "Content-Type": "application/json" });
     this.headers12.append("Authorization", localStorage.getItem("token"));
@@ -189,7 +189,7 @@ export class CustomerTicketListComponent implements OnInit, AfterViewInit {
     return this.http
       .get(
         GlobalVars.baseUrl + "/tickets/my-tickets" + queryParams,
-        this.options
+        this.options,
       )
       .subscribe(
         (response) => {
@@ -232,7 +232,7 @@ export class CustomerTicketListComponent implements OnInit, AfterViewInit {
                 : "Murojaatlarni yuklab bo'lmadi. Qayta urinib ko'ring.",
             });
           }
-        }
+        },
       );
   }
 
@@ -269,7 +269,10 @@ export class CustomerTicketListComponent implements OnInit, AfterViewInit {
    * @param page - Target page number
    * @param scrollType - Scroll behavior: 'top' | 'listcard' | 'none'
    */
-  changePage(page: number, scrollType: "top" | "listcard" | "none" = "top"): void {
+  changePage(
+    page: number,
+    scrollType: "top" | "listcard" | "none" = "top",
+  ): void {
     // Validate page number
     if (page < 1 || page > this.totalPages) {
       return;
@@ -282,7 +285,9 @@ export class CustomerTicketListComponent implements OnInit, AfterViewInit {
     if (scrollType === "top") {
       window.scrollTo({ top: 0, behavior: "smooth" });
     } else if (scrollType === "listcard") {
-      document.getElementById("listcard")?.scrollIntoView({ behavior: "smooth" });
+      document
+        .getElementById("listcard")
+        ?.scrollIntoView({ behavior: "smooth" });
     }
     // scrollType === 'none' does nothing
 

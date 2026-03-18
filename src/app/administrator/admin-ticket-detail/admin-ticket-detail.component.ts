@@ -77,6 +77,9 @@ export class AdminTicketDetailComponent implements OnInit {
   isInternalNotesExpanded: boolean = false;
   isActivityLogExpanded: boolean = false;
 
+  // Reassign inline
+  reassignUserId: number | null = null;
+
   // ✅ NEW: ViewChild for reply box component
   @ViewChild("replyBoxComponent") replyBoxComponent: any;
   @ViewChild("internalNoteBox") internalNoteBox: any;
@@ -643,6 +646,51 @@ export class AdminTicketDetailComponent implements OnInit {
             );
         }
       });
+  }
+
+  /**
+   * Reassign ticket directly from inline form
+   */
+  reassignTicketDirect(): void {
+    if (!this.ticket || !this.reassignUserId) return;
+
+    const body = { assigned_user_id: this.reassignUserId };
+
+    this.http
+      .put(
+        GlobalVars.baseUrl + "/tickets/admin/" + this.ticket.id + "/reassign",
+        body,
+        this.options
+      )
+      .subscribe(
+        (response) => {
+          const data = response.json();
+          if (data.status === "success") {
+            swal.fire({
+              icon: "success",
+              title: "Muvaffaqiyatli",
+              text: data.message || "So'rov qayta biriktirildi",
+              timer: 1500,
+              showConfirmButton: false,
+            });
+            this.reassignUserId = null;
+            this.loadTicketDetail();
+          }
+        },
+        (error) => {
+          console.error("Error reassigning ticket:", error);
+          if (error.status == 403) {
+            this.authService.logout();
+          } else {
+            const errMsg = error.json?.()?.error || "Qayta biriktirishda xatolik yuz berdi";
+            swal.fire({
+              icon: "error",
+              title: "Xatolik",
+              text: errMsg,
+            });
+          }
+        }
+      );
   }
 
   /**

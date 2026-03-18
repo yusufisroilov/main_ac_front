@@ -58,7 +58,6 @@ export class CustomerCreateTicketComponent implements OnInit, AfterViewInit {
   // Service/Category options
   serviceOptions: any[] = [];
 
-
   constructor(
     private http: Http,
     private router: Router,
@@ -78,7 +77,7 @@ export class CustomerCreateTicketComponent implements OnInit, AfterViewInit {
       this.roleOptions = [
         { value: "", label: "Tanlang (ixtiyoriy)" },
         { value: "MANAGER", label: "Menejer" },
-        { value: "OWNER", label: "Egasi" },
+        // { value: "OWNER", label: "Egasi" },
         { value: "CHINASTAFF", label: "Xitoy xodimi" },
         { value: "ACCOUNTANT", label: "Bugalter" },
         { value: "DELIVERER", label: "Kuryer" },
@@ -162,7 +161,9 @@ export class CustomerCreateTicketComponent implements OnInit, AfterViewInit {
       swal.fire({
         icon: "warning",
         title: this.isChinaStaff ? "Incomplete form" : "To'ldirilmagan forma",
-        text: this.isChinaStaff ? "Please fill in the message field" : "Iltimos, xabar maydonini to'ldiring",
+        text: this.isChinaStaff
+          ? "Please fill in the message field"
+          : "Iltimos, xabar maydonini to'ldiring",
       });
       return;
     }
@@ -214,7 +215,9 @@ export class CustomerCreateTicketComponent implements OnInit, AfterViewInit {
           swal
             .fire({
               icon: "success",
-              title: this.isChinaStaff ? "Ticket Created!" : "Murojaat yaratildi!",
+              title: this.isChinaStaff
+                ? "Ticket Created!"
+                : "Murojaat yaratildi!",
               html: this.isChinaStaff
                 ? `Your ticket <strong>#${data.ticket.ticket_number}</strong> has been created successfully.`
                 : `Sizning <strong>#${data.ticket.ticket_number}</strong> raqamli murojaatingiz muvaffaqiyatli yaratildi.`,
@@ -231,7 +234,9 @@ export class CustomerCreateTicketComponent implements OnInit, AfterViewInit {
           title: this.isChinaStaff ? "Error" : "Xatolik",
           text:
             errorData.error ||
-            (this.isChinaStaff ? "Failed to create ticket. Please try again." : "Murojaatni yaratib bo'lmadi. Qayta urinib ko'ring."),
+            (this.isChinaStaff
+              ? "Failed to create ticket. Please try again."
+              : "Murojaatni yaratib bo'lmadi. Qayta urinib ko'ring."),
         });
       }
     };
@@ -241,7 +246,9 @@ export class CustomerCreateTicketComponent implements OnInit, AfterViewInit {
       swal.fire({
         icon: "error",
         title: this.isChinaStaff ? "Error" : "Xatolik",
-        text: this.isChinaStaff ? "Failed to create ticket. Please try again." : "Murojaatni yaratib bo'lmadi. Qayta urinib ko'ring.",
+        text: this.isChinaStaff
+          ? "Failed to create ticket. Please try again."
+          : "Murojaatni yaratib bo'lmadi. Qayta urinib ko'ring.",
       });
     };
 
@@ -255,11 +262,17 @@ export class CustomerCreateTicketComponent implements OnInit, AfterViewInit {
     if (this.hasUnsavedChanges()) {
       swal
         .fire({
-          title: this.isChinaStaff ? "Discard changes?" : "O'zgarishlarni bekor qilasizmi?",
-          text: this.isChinaStaff ? "You have unsaved changes. Are you sure you want to leave?" : "Saqlanmagan o'zgarishlar bor. Haqiqatan chiqmoqchimisiz?",
+          title: this.isChinaStaff
+            ? "Discard changes?"
+            : "O'zgarishlarni bekor qilasizmi?",
+          text: this.isChinaStaff
+            ? "You have unsaved changes. Are you sure you want to leave?"
+            : "Saqlanmagan o'zgarishlar bor. Haqiqatan chiqmoqchimisiz?",
           icon: "warning",
           showCancelButton: true,
-          confirmButtonText: this.isChinaStaff ? "Yes, discard" : "Ha, bekor qilish",
+          confirmButtonText: this.isChinaStaff
+            ? "Yes, discard"
+            : "Ha, bekor qilish",
           cancelButtonText: this.isChinaStaff ? "No, stay" : "Yo'q, qolish",
           confirmButtonColor: "#f44336",
         })
@@ -370,7 +383,9 @@ export class CustomerCreateTicketComponent implements OnInit, AfterViewInit {
       if (!this.allowedExtensions.includes(fileExt)) {
         swal.fire({
           icon: "warning",
-          title: this.isChinaStaff ? "Invalid file type" : "Fayl turi noto'g'ri",
+          title: this.isChinaStaff
+            ? "Invalid file type"
+            : "Fayl turi noto'g'ri",
           text: this.isChinaStaff
             ? `${file.name} has an invalid file type. Allowed: ${this.allowedExtensions.join(", ")}`
             : `${file.name} fayl turi noto'g'ri. Ruxsat etilgan: ${this.allowedExtensions.join(", ")}`,
@@ -501,7 +516,7 @@ export class CustomerCreateTicketComponent implements OnInit, AfterViewInit {
       .fire({
         title: this.isChinaStaff ? "Insert Link" : "Havola qo'shish",
         html:
-          `<input id="linkText" class="swal2-input" placeholder="${this.isChinaStaff ? 'Link text' : 'Havola matni'}">` +
+          `<input id="linkText" class="swal2-input" placeholder="${this.isChinaStaff ? "Link text" : "Havola matni"}">` +
           '<input id="linkUrl" class="swal2-input" placeholder="https://example.com">',
         showCancelButton: true,
         confirmButtonText: this.isChinaStaff ? "Insert" : "Qo'shish",
@@ -511,7 +526,11 @@ export class CustomerCreateTicketComponent implements OnInit, AfterViewInit {
           const url = (document.getElementById("linkUrl") as HTMLInputElement)
             .value;
           if (!text || !url) {
-            swal.showValidationMessage(this.isChinaStaff ? "Please enter text and URL" : "Iltimos, matn va URL ni kiriting");
+            swal.showValidationMessage(
+              this.isChinaStaff
+                ? "Please enter text and URL"
+                : "Iltimos, matn va URL ni kiriting",
+            );
             return false;
           }
           return { text, url };

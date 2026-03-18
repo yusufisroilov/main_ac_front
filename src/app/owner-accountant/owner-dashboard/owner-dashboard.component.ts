@@ -11,6 +11,7 @@ import { AuthService } from "src/app/pages/login/auth.service";
 export class OwnerDashboardComponent implements OnInit {
   stats: any = null;
   loading = false;
+  cashAccounts: any[] = [];
 
   activePeriod: "this_month" | "last_month" | "custom" = "this_month";
   customFrom = "";
@@ -25,7 +26,20 @@ export class OwnerDashboardComponent implements OnInit {
     });
   }
 
-  ngOnInit() { this.loadStats(); }
+  get negativeAccounts(): any[] {
+    return this.cashAccounts.filter((a) => a.is_active && Number(a.balance) < 0);
+  }
+
+  ngOnInit() {
+    this.loadStats();
+    this.loadCashAccounts();
+  }
+
+  loadCashAccounts() {
+    this.http.get<any>(`${GlobalVars.baseUrl}/cash-accounts?active=true`, { headers: this.getHeaders() }).subscribe(
+      (res) => { this.cashAccounts = res.accounts || []; },
+    );
+  }
 
   setPeriod(p: "this_month" | "last_month" | "custom") {
     this.activePeriod = p;

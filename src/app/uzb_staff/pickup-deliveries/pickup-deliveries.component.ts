@@ -141,7 +141,10 @@ export class PickupDeliveriesComponent implements OnInit {
     swal
       .fire({
         title: "Tasdiqlash",
-        text: `${delivery.barcode} qutini mijoz oldi qildingizmi?`,
+        html: `
+          <p>${delivery.barcode} qutini mijoz oldi qildingizmi?</p>
+          <input id="weight-input" class="swal2-input" type="number" step="0.01" min="0" placeholder="Og'irlik (kg)" />
+        `,
         icon: "question",
         showCancelButton: true,
         confirmButtonText: "Ha, mijoz oldi",
@@ -151,23 +154,33 @@ export class PickupDeliveriesComponent implements OnInit {
           cancelButton: "btn btn-secondary",
         },
         buttonsStyling: false,
+        preConfirm: () => {
+          const weightEl = document.getElementById("weight-input") as HTMLInputElement;
+          const weight = parseFloat(weightEl?.value);
+          if (!weightEl?.value || isNaN(weight) || weight <= 0) {
+            swal.showValidationMessage("Og'irlikni kiriting");
+            return false;
+          }
+          return { weight };
+        },
       })
       .then((result) => {
-        if (result.isConfirmed) {
-          this.updateDeliveryStatus(delivery, "delivered");
+        if (result.isConfirmed && result.value) {
+          this.updateDeliveryStatus(delivery, "delivered", result.value.weight);
         }
       });
   }
 
   // Update delivery status
-  updateDeliveryStatus(delivery: Delivery, newStatus: string) {
+  updateDeliveryStatus(delivery: Delivery, newStatus: string, weight?: number) {
     this.processingDelivery = true;
 
-    const updateData = {
+    const updateData: any = {
       new_status: newStatus,
       processed_by_employee: this.currentEmployee,
       sent_date: new Date().toISOString(),
     };
+    if (weight != null) updateData.weight = weight;
 
     this.http
       .put(

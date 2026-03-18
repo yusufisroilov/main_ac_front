@@ -1,7 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "Bash(ng generate:*)"
+      "Bash(ng generate:*)",
+      "Bash(grep -E \"\\\\.\\(ts|html|css\\)$\")"
     ]
   }
 }

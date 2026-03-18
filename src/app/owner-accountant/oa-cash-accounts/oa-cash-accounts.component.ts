@@ -11,6 +11,7 @@ interface CashAccount {
   owner_kind: string;
   is_active: boolean;
   balance: number;
+  visibility: number;
 }
 
 interface LedgerEntry {
@@ -59,7 +60,18 @@ export class OaCashAccountsComponent implements OnInit {
     this.errorMessage = "";
     const activeParam = this.showInactive ? "" : "?active=true";
     this.http.get<any>(`${this.baseUrl}/cash-accounts${activeParam}`, { headers: this.getHeaders() }).subscribe(
-      (res) => { this.accounts = res.accounts || []; this.isLoading = false; },
+      (res) => {
+        const role = localStorage.getItem("role");
+        let all: CashAccount[] = res.accounts || [];
+        if (role === "ACCOUNTANT") {
+          all = all.filter((a) => a.visibility === 2);
+        } else if (role === "MANAGER") {
+          all = all.filter((a) => a.visibility === 3);
+        }
+        // OWNER sees all
+        this.accounts = all;
+        this.isLoading = false;
+      },
       (err) => { this.isLoading = false; this.errorMessage = err.error?.error || "Hisoblarni yuklashda xatolik"; },
     );
   }
@@ -68,6 +80,9 @@ export class OaCashAccountsComponent implements OnInit {
   getTypeLabel(type: string): string { return { CASH: "Naqd", CARD: "Karta", BANK: "Bank" }[type] || type; }
   getTypeIcon(type: string): string { return { CASH: "payments", CARD: "credit_card", BANK: "account_balance" }[type] || "account_balance_wallet"; }
   getOwnerKindLabel(kind: string): string { return kind === "COMPANY" ? "Kompaniya" : "Xodim"; }
+  getVisibilityLabel(visibility: number): string {
+    return { 1: "Faqat OWNER", 2: "OWNER + ACCOUNTANT", 3: "OWNER + MANAGER" }[visibility] || `V${visibility}`;
+  }
   getCountByCurrency(currency: string): number { return this.accounts.filter((a) => a.currency === currency && a.is_active).length; }
   getActiveCount(): number { return this.accounts.filter((a) => a.is_active).length; }
   getTotalByCurrency(currency: string): number { return this.accounts.filter((a) => a.currency === currency && a.is_active).reduce((s, a) => s + (Number(a.balance) || 0), 0); }
@@ -87,6 +102,7 @@ export class OaCashAccountsComponent implements OnInit {
         <div class="form-group mb-3"><label>Turi *</label><select id="input-type" class="form-control"><option value="" disabled selected>Tanlang</option><option value="CASH">Naqd</option><option value="CARD">Karta</option><option value="BANK">Bank</option></select></div>
         <div class="form-group mb-3"><label>Valyuta *</label><select id="input-currency" class="form-control"><option value="" disabled selected>Tanlang</option><option value="UZS">UZS</option><option value="USD">USD</option></select></div>
         <div class="form-group mb-3"><label>Egasi *</label><select id="input-owner" class="form-control"><option value="" disabled selected>Tanlang</option><option value="COMPANY">Kompaniya</option><option value="EMPLOYEE">Xodim</option></select></div>
+        <div class="form-group mb-3"><label>Ko'rinish *</label><select id="input-visibility" class="form-control"><option value="1">1 — Faqat OWNER</option><option value="2">2 — OWNER + ACCOUNTANT</option><option value="3">3 — OWNER + MANAGER</option></select></div>
       </div>`,
       width: "550px", showCancelButton: true, confirmButtonText: "Yaratish", cancelButtonText: "Bekor",
       customClass: { confirmButton: "btn btn-success", cancelButton: "btn btn-danger" }, buttonsStyling: false,
@@ -95,11 +111,12 @@ export class OaCashAccountsComponent implements OnInit {
         const type = (document.getElementById("input-type") as HTMLSelectElement).value;
         const currency = (document.getElementById("input-currency") as HTMLSelectElement).value;
         const owner_kind = (document.getElementById("input-owner") as HTMLSelectElement).value;
+        const visibility = parseInt((document.getElementById("input-visibility") as HTMLSelectElement).value);
         if (!name) { Swal.showValidationMessage("Hisob nomi kiritilishi kerak!"); return false; }
         if (!type) { Swal.showValidationMessage("Turi tanlanishi kerak!"); return false; }
         if (!currency) { Swal.showValidationMessage("Valyuta tanlanishi kerak!"); return false; }
         if (!owner_kind) { Swal.showValidationMessage("Egasi tanlanishi kerak!"); return false; }
-        return { name, type, currency, owner_kind };
+        return { name, type, currency, owner_kind, visibility };
       },
     });
     if (result.isConfirmed && result.value) {
@@ -118,6 +135,7 @@ export class OaCashAccountsComponent implements OnInit {
         <div class="form-group mb-3"><label>Turi *</label><select id="input-type" class="form-control"><option value="CASH" ${account.type === "CASH" ? "selected" : ""}>Naqd</option><option value="CARD" ${account.type === "CARD" ? "selected" : ""}>Karta</option><option value="BANK" ${account.type === "BANK" ? "selected" : ""}>Bank</option></select></div>
         <div class="form-group mb-3"><label>Valyuta</label><input type="text" class="form-control" value="${account.currency}" disabled /><small class="text-muted">O'zgartirib bo'lmaydi</small></div>
         <div class="form-group mb-3"><label>Egasi *</label><select id="input-owner" class="form-control"><option value="COMPANY" ${account.owner_kind === "COMPANY" ? "selected" : ""}>Kompaniya</option><option value="EMPLOYEE" ${account.owner_kind === "EMPLOYEE" ? "selected" : ""}>Xodim</option></select></div>
+        <div class="form-group mb-3"><label>Ko'rinish *</label><select id="input-visibility" class="form-control"><option value="1" ${account.visibility === 1 ? "selected" : ""}>1 — Faqat OWNER</option><option value="2" ${account.visibility === 2 ? "selected" : ""}>2 — OWNER + ACCOUNTANT</option><option value="3" ${account.visibility === 3 ? "selected" : ""}>3 — OWNER + MANAGER</option></select></div>
       </div>`,
       width: "550px", showCancelButton: true, confirmButtonText: "Saqlash", cancelButtonText: "Bekor",
       customClass: { confirmButton: "btn btn-success", cancelButton: "btn btn-danger" }, buttonsStyling: false,
@@ -125,8 +143,9 @@ export class OaCashAccountsComponent implements OnInit {
         const name = (document.getElementById("input-name") as HTMLInputElement).value.trim();
         const type = (document.getElementById("input-type") as HTMLSelectElement).value;
         const owner_kind = (document.getElementById("input-owner") as HTMLSelectElement).value;
+        const visibility = parseInt((document.getElementById("input-visibility") as HTMLSelectElement).value);
         if (!name) { Swal.showValidationMessage("Hisob nomi kiritilishi kerak!"); return false; }
-        return { name, type, owner_kind };
+        return { name, type, owner_kind, visibility };
       },
     });
     if (result.isConfirmed && result.value) {

@@ -175,7 +175,7 @@ export class Infoeachclientv2Component implements OnInit {
 
   loadCashAccounts() {
     this.httpClient
-      .get<any>(GlobalVars.baseUrl + "/finance-v2/cash-accounts?active=true", {
+      .get<any>(GlobalVars.baseUrl + "/finance-v2/cash-accounts?active=true&visibility=3", {
         headers: this.getHeaders(),
       })
       .subscribe(

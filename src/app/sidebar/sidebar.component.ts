@@ -466,6 +466,12 @@ export const accountantROUTES: RouteInfo[] = [
     icontype: "dashboard",
   },
   {
+    path: "/oa/cash-accounts",
+    title: "Hisoblar",
+    type: "link",
+    icontype: "account_balance",
+  },
+  {
     path: "/oa/expenses",
     title: "Xarajatlar",
     type: "link",
@@ -510,6 +516,12 @@ export const ownerROUTES: RouteInfo[] = [
     title: "Hisoblar",
     type: "link",
     icontype: "account_balance",
+  },
+  {
+    path: "/oa/acc-ledger",
+    title: "Acc Transaksiyalar",
+    type: "link",
+    icontype: "receipt_long",
   },
   {
     path: "/oa/weekly-collections",

@@ -1,3 +1,36 @@
+/* ── Negative Balance Warning ── */
+.negative-warning-banner {
+  background: #fff3e0;
+  border: 1.5px solid #ffb300;
+  border-radius: 10px;
+  padding: 14px 18px;
+  margin-bottom: 20px;
+}
+.negative-warning-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  font-size: 14px;
+  color: #e65100;
+  margin-bottom: 10px;
+}
+.negative-warning-header .material-icons { font-size: 20px; color: #ffb300; }
+.negative-warning-list { display: flex; flex-direction: column; gap: 6px; }
+.negative-warning-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #fff8e1;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 13px;
+}
+.negative-warning-item .material-icons { font-size: 16px; color: #fb8c00; }
+.neg-name { flex: 1; font-weight: 600; color: #333; }
+.neg-currency { font-size: 11px; color: #888; background: #ffe0b2; border-radius: 4px; padding: 1px 6px; }
+.neg-balance { font-weight: 700; color: #c62828; }
+
 /* ── Summary Cards ── */
 .summary-row {
   margin-top: 28px;

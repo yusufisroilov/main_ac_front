@@ -5,6 +5,22 @@
       <div class="spinner-border text-primary" role="status"></div>
     </div>
 
+    <!-- ── Negative Balance Warning ── -->
+    <div *ngIf="negativeAccounts.length > 0" class="negative-warning-banner">
+      <div class="negative-warning-header">
+        <i class="material-icons">warning</i>
+        <span>Manfiy balansdagi hisoblar ({{ negativeAccounts.length }} ta)</span>
+      </div>
+      <div class="negative-warning-list">
+        <div *ngFor="let a of negativeAccounts" class="negative-warning-item">
+          <i class="material-icons">account_balance_wallet</i>
+          <span class="neg-name">{{ a.name }}</span>
+          <span class="neg-currency">{{ a.currency }}</span>
+          <span class="neg-balance">{{ a.currency === 'USD' ? ('$' + fmt(a.balance)) : (fmt(a.balance) + " so'm") }}</span>
+        </div>
+      </div>
+    </div>
+
     <div *ngIf="!loading && stats">
       <!-- ── Period Toggle ── -->
       <div class="period-strip">

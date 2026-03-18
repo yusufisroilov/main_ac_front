@@ -104,6 +104,7 @@ export class NotificationService {
 
     const role = localStorage.getItem("role");
     const isStaff = [
+      "OWNER",
       "MANAGER",
       "CHINASTAFF",
       "YUKCHI",
@@ -375,6 +376,7 @@ export class NotificationService {
     // Determine if staff or customer based on role
     const role = localStorage.getItem("role");
     const isStaff = [
+      "OWNER",
       "MANAGER",
       "CHINASTAFF",
       "YUKCHI",
