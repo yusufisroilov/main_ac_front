@@ -79,6 +79,12 @@ export const ROUTES: RouteInfo[] = [
     type: "link",
     icontype: "archive",
   },
+  {
+    path: "/uzm/video-lessons",
+    title: "Video Darsliklar",
+    type: "link",
+    icontype: "play_circle_outline",
+  },
 ];
 
 //Menu Items
@@ -394,7 +400,14 @@ export const managerROUTES: RouteInfo[] = [
     children: [
       { path: "/uzm/allboxes", title: "Partiya Jo'natmalari", ab: "PJ" },
       { path: "/uzm/eachboxuz", title: "Partiya Hujjatlari", ab: "PH" },
+      { path: "/uzm/customer-services", title: "Mijoz Xizmatlari", ab: "MX" },
     ],
+  },
+  {
+    path: "/uzm/video-lessons",
+    title: "Video Darsliklar",
+    type: "link",
+    icontype: "play_circle_outline",
   },
 ];
 
@@ -616,6 +629,12 @@ export const ownerROUTES: RouteInfo[] = [
       { path: "/uzm/tickets-list", title: "Murojaatlar Ro'yxati", ab: "MR" },
       { path: "/uzm/ticket-dashboard", title: "Murojaatlar Oynasi", ab: "MO" },
     ],
+  },
+  {
+    path: "/uzm/video-lessons",
+    title: "Video Darsliklar",
+    type: "link",
+    icontype: "play_circle_outline",
   },
   {
     path: "/oa/settings",

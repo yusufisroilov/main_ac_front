@@ -1,0 +1,179 @@
+<div class="main-content">
+  <div class="container-fluid">
+
+    <!-- Page Header -->
+    <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
+      <h4 class="mb-0" style="font-weight:700;">Mijoz Xizmatlari</h4>
+      <!-- Tab buttons -->
+      <div class="btn-group">
+        <button class="btn btn-sm" [class.btn-primary]="activeTab==='services'" [class.btn-outline-primary]="activeTab!=='services'"
+          (click)="activeTab='services'">Xizmatlar</button>
+        <button *ngIf="isOwnerOrManager" class="btn btn-sm" [class.btn-primary]="activeTab==='types'" [class.btn-outline-primary]="activeTab!=='types'"
+          (click)="activeTab='types'; loadServiceTypes()">Xizmat Turlari</button>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════ -->
+    <!-- TAB: Customer Services                                 -->
+    <!-- ══════════════════════════════════════════════════════ -->
+    <ng-container *ngIf="activeTab==='services'">
+
+      <!-- Search bar -->
+      <div class="card shadow-sm mb-3">
+        <div class="card-body py-2">
+          <div class="d-flex gap-2 flex-wrap align-items-center">
+            <input type="number" [(ngModel)]="customerId" class="form-control"
+              style="max-width:180px;" placeholder="Mijoz ID" (keyup.enter)="searchCustomer()">
+            <button class="btn btn-primary btn-sm" (click)="searchCustomer()">Qidirish</button>
+
+            <ng-container *ngIf="customer">
+              <span class="ms-2 text-muted" style="font-size:13px;">
+                Mijoz #{{ customer.id }}
+                <span *ngIf="totalDebtUsd > 0" class="badge badge-danger ms-2">
+                  Qarz: ${{ totalDebtUsd | number:'1.2-2' }}
+                </span>
+                <span *ngIf="totalDebtUsd === 0 && services.length > 0" class="badge badge-success ms-2">Qarz yo'q</span>
+              </span>
+              <div class="ms-auto d-flex gap-2">
+                <button class="btn btn-success btn-sm" (click)="chargeService()">
+                  <i class="material-icons" style="font-size:16px;vertical-align:middle;">add</i> Xizmat Qo'shish
+                </button>
+                <button class="btn btn-info btn-sm" (click)="payServices()" [disabled]="totalDebtUsd===0">
+                  <i class="material-icons" style="font-size:16px;vertical-align:middle;">payments</i> To'lash
+                </button>
+              </div>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+
+      <!-- Loading -->
+      <div *ngIf="loadingServices" class="text-center py-4">
+        <div class="spinner-border text-primary"></div>
+      </div>
+
+      <!-- Services table -->
+      <div *ngIf="!loadingServices && services.length > 0" class="card shadow-sm">
+        <div class="table-responsive">
+          <table class="table table-hover mb-0">
+            <thead class="thead-light">
+              <tr>
+                <th>#</th>
+                <th>Xizmat</th>
+                <th>Kategoriya</th>
+                <th>Summa</th>
+                <th>Kurs</th>
+                <th>To'langan</th>
+                <th>Qarz ($)</th>
+                <th>Status</th>
+                <th>Sana</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let s of services; let i=index">
+                <td>{{ i + 1 }}</td>
+                <td>
+                  <span style="font-weight:600;">{{ s.serviceType?.name || '—' }}</span>
+                  <br *ngIf="s.notes">
+                  <small *ngIf="s.notes" class="text-muted">{{ s.notes }}</small>
+                </td>
+                <td>
+                  <span class="badge badge-light">{{ categoryLabels[s.serviceType?.category] || '—' }}</span>
+                </td>
+                <td>{{ formatAmount(s.amount) }} {{ s.currency }}</td>
+                <td>{{ s.fx_rate ? (s.fx_rate | number:'1.0-0') : '—' }}</td>
+                <td>{{ formatAmount(s.currency === 'UZS' ? s.amount_paid * (s.fx_rate || 1) : s.amount_paid) }} {{ s.currency }}</td>
+                <td>
+                  <span [class.text-danger]="(s.amount_usd - s.amount_paid) > 0"
+                        [class.text-success]="(s.amount_usd - s.amount_paid) <= 0">
+                    ${{ (s.amount_usd - (s.amount_paid || 0)) | number:'1.2-2' }}
+                  </span>
+                </td>
+                <td>
+                  <span class="badge" [ngClass]="statusClass(s.status)">{{ statusLabel(s.status) }}</span>
+                </td>
+                <td style="white-space:nowrap;font-size:12px;">{{ s.created_at | date:'dd.MM.yy' }}</td>
+                <td>
+                  <button *ngIf="s.status==='PENDING'" class="btn btn-sm btn-outline-danger"
+                    (click)="cancelService(s.id)" title="Bekor qilish">
+                    <i class="material-icons" style="font-size:16px;">cancel</i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Empty state -->
+      <div *ngIf="!loadingServices && customer && services.length === 0"
+        class="text-center text-muted py-5">
+        <i class="material-icons" style="font-size:48px;">inbox</i>
+        <p class="mt-2">Bu mijoz uchun xizmatlar yo'q</p>
+        <button class="btn btn-success btn-sm" (click)="chargeService()">Xizmat Qo'shish</button>
+      </div>
+
+    </ng-container>
+
+    <!-- ══════════════════════════════════════════════════════ -->
+    <!-- TAB: Service Types (OWNER / MANAGER only)             -->
+    <!-- ══════════════════════════════════════════════════════ -->
+    <ng-container *ngIf="activeTab==='types' && isOwnerOrManager">
+
+      <div class="d-flex justify-content-end mb-3">
+        <button class="btn btn-success btn-sm" (click)="addServiceType()">
+          <i class="material-icons" style="font-size:16px;vertical-align:middle;">add</i> Yangi Xizmat Turi
+        </button>
+      </div>
+
+      <div *ngIf="loadingTypes" class="text-center py-4">
+        <div class="spinner-border text-primary"></div>
+      </div>
+
+      <div *ngIf="!loadingTypes" class="card shadow-sm">
+        <div class="table-responsive">
+          <table class="table table-hover mb-0">
+            <thead class="thead-light">
+              <tr>
+                <th>#</th>
+                <th>Nomi</th>
+                <th>Kategoriya</th>
+                <th>Narxi</th>
+                <th>Status</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let t of serviceTypes; let i=index">
+                <td>{{ i + 1 }}</td>
+                <td style="font-weight:600;">{{ t.name }}</td>
+                <td><span class="badge badge-light">{{ categoryLabels[t.category] || t.category }}</span></td>
+                <td>{{ formatAmount(t.default_price) }} {{ t.currency }}</td>
+                <td>
+                  <span class="badge" [class.badge-success]="t.is_active" [class.badge-secondary]="!t.is_active">
+                    {{ t.is_active ? 'Faol' : 'Nofaol' }}
+                  </span>
+                </td>
+                <td class="d-flex gap-1">
+                  <button class="btn btn-sm btn-outline-primary" (click)="editServiceType(t)" title="Tahrirlash">
+                    <i class="material-icons" style="font-size:16px;">edit</i>
+                  </button>
+                  <button class="btn btn-sm" [class.btn-outline-secondary]="t.is_active" [class.btn-outline-success]="!t.is_active"
+                    (click)="toggleServiceTypeActive(t)" [title]="t.is_active ? 'O\'chirish' : 'Yoqish'">
+                    <i class="material-icons" style="font-size:16px;">{{ t.is_active ? 'toggle_on' : 'toggle_off' }}</i>
+                  </button>
+                </td>
+              </tr>
+              <tr *ngIf="serviceTypes.length === 0">
+                <td colspan="6" class="text-center text-muted py-4">Xizmat turlari yo'q</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </ng-container>
+
+  </div>
+</div>

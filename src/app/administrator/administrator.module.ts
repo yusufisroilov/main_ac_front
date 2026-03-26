@@ -36,6 +36,8 @@ import { ReferralsBonusesComponent } from "./referrals-bonuses/referrals-bonuses
 import { Financev2Component } from "./financev2/financev2.component";
 import { Infoeachclientv2Component } from "./infoeachclientv2/infoeachclientv2.component";
 import { CashAccountsComponent } from "./cash-accounts/cash-accounts.component";
+import { CustomerServicesComponent } from "../uzb_staff/customer-services/customer-services.component";
+import { VideoLessonsComponent } from "./video-lessons/video-lessons.component";
 
 // import { FlexLayoutModule } from '@angular/flex-layout';
 
@@ -77,6 +79,8 @@ import { CashAccountsComponent } from "./cash-accounts/cash-accounts.component";
     Financev2Component,
     Infoeachclientv2Component,
     CashAccountsComponent,
+    CustomerServicesComponent,
+    VideoLessonsComponent,
   ],
 })
 export class AdminstratorModule {}

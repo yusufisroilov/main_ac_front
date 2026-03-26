@@ -299,13 +299,26 @@
                         <h4 class="card-title">Xitoy Manzilim</h4>
                     </div>
                     <div class="card-body">
+                        <!-- Avia / Avto Toggle -->
+                        <div class="btn-group mb-3" style="width:100%;max-width:300px;">
+                            <button class="btn" [class.btn-info]="addressMode==='avia'" [class.btn-outline-info]="addressMode!=='avia'" (click)="addressMode='avia'" style="flex:1;">
+                                <i class="material-icons" style="font-size:16px;vertical-align:middle;">flight</i> Avia
+                            </button>
+                            <button class="btn" [class.btn-warning]="addressMode==='avto'" [class.btn-outline-warning]="addressMode!=='avto'" (click)="addressMode='avto'" style="flex:1;">
+                                <i class="material-icons" style="font-size:16px;vertical-align:middle;">local_shipping</i> Avto
+                            </button>
+                        </div>
+
                         <div class="form-group">
                             <label>Buyurtma qilishda quyidagi manzilni kiriting:</label>
                             <textarea #txtConfigFile class="form-control" rows="4" readonly
-                                style="font-size: 14px; font-weight: 500;">国际仓K{{ customerId }}
+                                style="font-size: 14px; font-weight: 500;" *ngIf="addressMode==='avia'">易洋K{{ customerId }}
 18028594657
-广东省广州市白云区太和镇南村三委南街43号1楼档口(原好客源超市)K{{ customerId }}
-510440</textarea>
+广州市白云区太和镇龙归南村三姓南街43号1楼原好客源超市K{{ customerId }}</textarea>
+                            <textarea #txtConfigFileAvto class="form-control" rows="4" readonly
+                                style="font-size: 14px; font-weight: 500;" *ngIf="addressMode==='avto'">陆运W{{ customerId }}
+18028594657
+广东省广州市白云区龙归街道南村三姓南街43号1楼原好客源超市 陆运W{{ customerId }}</textarea>
                         </div>
                         <button mat-raised-button class="btn btn-success" (click)="copyToCB()">
                             <i class="material-icons">content_copy</i>

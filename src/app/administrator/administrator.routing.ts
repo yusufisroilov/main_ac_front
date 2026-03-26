@@ -31,6 +31,8 @@ import { ReferralsBonusesComponent } from "./referrals-bonuses/referrals-bonuses
 import { Financev2Component } from "./financev2/financev2.component";
 import { Infoeachclientv2Component } from "./infoeachclientv2/infoeachclientv2.component";
 import { CashAccountsComponent } from "./cash-accounts/cash-accounts.component";
+import { CustomerServicesComponent } from "../uzb_staff/customer-services/customer-services.component";
+import { VideoLessonsComponent } from "./video-lessons/video-lessons.component";
 
 export const AdminstratorRoutes: Routes = [
   {
@@ -248,6 +250,21 @@ export const AdminstratorRoutes: Routes = [
         component: CashAccountsComponent,
         data: {
           title: "Hisoblar",
+        },
+      },
+      {
+        path: "customer-services",
+        canActivate: [ManagerAuthGuardService],
+        component: CustomerServicesComponent,
+        data: {
+          title: "Mijoz Xizmatlari",
+        },
+      },
+      {
+        path: "video-lessons",
+        component: VideoLessonsComponent,
+        data: {
+          title: "Video Darsliklar",
         },
       },
     ],

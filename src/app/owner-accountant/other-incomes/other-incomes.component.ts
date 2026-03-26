@@ -25,7 +25,10 @@ export class OaOtherIncomesComponent implements OnInit {
   cashAccounts: any[] = [];
   incomeCategories: any[] = [];
 
-  constructor(private http: HttpClient, public authService: AuthService) {}
+  constructor(
+    private http: HttpClient,
+    public authService: AuthService,
+  ) {}
 
   private getHeaders(): HttpHeaders {
     return new HttpHeaders({
@@ -35,11 +38,21 @@ export class OaOtherIncomesComponent implements OnInit {
   }
 
   ngOnInit() {
+    const role = localStorage.getItem("role") || "";
     this.http
-      .get<any>(GlobalVars.baseUrl + "/cash-accounts?active=true", { headers: this.getHeaders() })
-      .subscribe((data) => (this.cashAccounts = data.accounts || []));
+      .get<any>(GlobalVars.baseUrl + "/cash-accounts?active=true", {
+        headers: this.getHeaders(),
+      })
+      .subscribe((data) => {
+        const all: any[] = data.accounts || [];
+        if (role === "MANAGER")
+          this.cashAccounts = all.filter((a) => a.visibility == 3);
+        else this.cashAccounts = all;
+      });
     this.http
-      .get<any>(GlobalVars.baseUrl + "/income-categories?active=true", { headers: this.getHeaders() })
+      .get<any>(GlobalVars.baseUrl + "/income-categories?active=true", {
+        headers: this.getHeaders(),
+      })
       .subscribe((data) => (this.incomeCategories = data.categories || []));
     this.loadIncomes();
   }
@@ -48,7 +61,8 @@ export class OaOtherIncomesComponent implements OnInit {
     this.loading = true;
     let url = `${GlobalVars.baseUrl}/other-incomes?page=${this.currentPage}&size=${this.pageSize}`;
     if (this.filterScopeType) url += `&scope_type=${this.filterScopeType}`;
-    if (this.filterCashAccountId) url += `&cash_account_id=${this.filterCashAccountId}`;
+    if (this.filterCashAccountId)
+      url += `&cash_account_id=${this.filterCashAccountId}`;
     if (this.filterStartDate) url += `&start_date=${this.filterStartDate}`;
     if (this.filterEndDate) url += `&end_date=${this.filterEndDate}`;
 
@@ -67,7 +81,10 @@ export class OaOtherIncomesComponent implements OnInit {
     );
   }
 
-  applyFilters() { this.currentPage = 0; this.loadIncomes(); }
+  applyFilters() {
+    this.currentPage = 0;
+    this.loadIncomes();
+  }
   clearFilters() {
     this.filterScopeType = "";
     this.filterCashAccountId = "";
@@ -76,12 +93,19 @@ export class OaOtherIncomesComponent implements OnInit {
     this.currentPage = 0;
     this.loadIncomes();
   }
-  onPageChanged(page: number) { this.currentPage = page; this.loadIncomes(); }
+  onPageChanged(page: number) {
+    this.currentPage = page;
+    this.loadIncomes();
+  }
 
   addIncome() {
     const today = new Date().toISOString().split("T")[0];
-    const accountOpts = this.cashAccounts.map((a) => `<option value="${a.id}">${a.name} (${a.currency})</option>`).join("");
-    const categoryOpts = this.incomeCategories.map((c) => `<option value="${c.id}">${c.name}</option>`).join("");
+    const accountOpts = this.cashAccounts
+      .map((a) => `<option value="${a.id}">${a.name} (${a.currency})</option>`)
+      .join("");
+    const categoryOpts = this.incomeCategories
+      .map((c) => `<option value="${c.id}">${c.name}</option>`)
+      .join("");
 
     const html = `
       <style>
@@ -135,89 +159,152 @@ export class OaOtherIncomesComponent implements OnInit {
         </div>
       </div>`;
 
-    swal.fire({
-      title: "Yangi Daromad",
-      html,
-      width: "min(540px, 95vw)",
-      showCancelButton: true,
-      confirmButtonText: "Qo'shish",
-      cancelButtonText: "Bekor",
-      customClass: { confirmButton: "btn btn-success", cancelButton: "btn btn-secondary" },
-      buttonsStyling: false,
-      didOpen: () => {
-        this.http.get<any>(GlobalVars.baseUrl + "/fx-rate").subscribe(
-          (data) => {
-            if (data.rate) {
-              const fxInput = document.getElementById("inc-fx") as HTMLInputElement;
-              if (fxInput && !fxInput.value) fxInput.value = String(data.rate);
-            }
-          },
-        );
-        // Live amount formatter
-        const amtEl = document.getElementById("inc-amount") as HTMLInputElement;
-        amtEl.addEventListener("input", () => {
-          const raw = amtEl.value.replace(/[^\d.]/g, "");
-          const parts = raw.split(".");
-          parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, " ");
-          if (parts.length > 2) parts.length = 2;
-          amtEl.value = parts.join(".");
-        });
-      },
-      preConfirm: () => {
-        const amount = (document.getElementById("inc-amount") as HTMLInputElement).value.replace(/\s/g, "");
-        const date = (document.getElementById("inc-date") as HTMLInputElement).value;
-        const accountId = (document.getElementById("inc-account") as HTMLSelectElement).value;
-        if (!amount || !date || !accountId) {
-          swal.showValidationMessage("Barcha majburiy maydonlarni to'ldiring");
-          return false;
+    swal
+      .fire({
+        title: "Yangi Daromad",
+        html,
+        width: "min(540px, 95vw)",
+        showCancelButton: true,
+        confirmButtonText: "Qo'shish",
+        cancelButtonText: "Bekor",
+        customClass: {
+          confirmButton: "btn btn-success",
+          cancelButton: "btn btn-secondary",
+        },
+        buttonsStyling: false,
+        didOpen: () => {
+          this.http
+            .get<any>(GlobalVars.baseUrl + "/fx-rate")
+            .subscribe((data) => {
+              if (data.rate) {
+                const fxInput = document.getElementById(
+                  "inc-fx",
+                ) as HTMLInputElement;
+                if (fxInput && !fxInput.value)
+                  fxInput.value = String(data.rate);
+              }
+            });
+          // Live amount formatter
+          const amtEl = document.getElementById(
+            "inc-amount",
+          ) as HTMLInputElement;
+          amtEl.addEventListener("input", () => {
+            const raw = amtEl.value.replace(/[^\d.]/g, "");
+            const parts = raw.split(".");
+            parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+            if (parts.length > 2) parts.length = 2;
+            amtEl.value = parts.join(".");
+          });
+        },
+        preConfirm: () => {
+          const amount = (
+            document.getElementById("inc-amount") as HTMLInputElement
+          ).value.replace(/\s/g, "");
+          const date = (document.getElementById("inc-date") as HTMLInputElement)
+            .value;
+          const accountId = (
+            document.getElementById("inc-account") as HTMLSelectElement
+          ).value;
+          if (!amount || !date || !accountId) {
+            swal.showValidationMessage(
+              "Barcha majburiy maydonlarni to'ldiring",
+            );
+            return false;
+          }
+          if (parseFloat(amount) <= 0) {
+            swal.showValidationMessage("Summa musbat bo'lishi kerak");
+            return false;
+          }
+          return {
+            scope_type: (
+              document.getElementById("inc-scope") as HTMLSelectElement
+            ).value,
+            cash_account_id: parseInt(accountId),
+            amount_original: parseFloat(amount),
+            fx_rate_used:
+              parseFloat(
+                (document.getElementById("inc-fx") as HTMLInputElement).value,
+              ) || null,
+            income_at: date,
+            category_id:
+              parseInt(
+                (document.getElementById("inc-category") as HTMLSelectElement)
+                  .value,
+              ) || null,
+            comment:
+              (document.getElementById("inc-comment") as HTMLInputElement)
+                .value || null,
+          };
+        },
+      })
+      .then((result) => {
+        if (result.isConfirmed && result.value) {
+          this.http
+            .post<any>(GlobalVars.baseUrl + "/other-incomes", result.value, {
+              headers: this.getHeaders(),
+            })
+            .subscribe(
+              (data) => {
+                if (data.status === "ok") {
+                  this.loadIncomes();
+                  swal.fire({
+                    icon: "success",
+                    title: "Qo'shildi!",
+                    timer: 1500,
+                    showConfirmButton: false,
+                  });
+                } else {
+                  swal.fire("Xatolik", data.error, "error");
+                }
+              },
+              (error) =>
+                swal.fire(
+                  "Xatolik",
+                  error.error?.error || "Xatolik yuz berdi",
+                  "error",
+                ),
+            );
         }
-        if (parseFloat(amount) <= 0) { swal.showValidationMessage("Summa musbat bo'lishi kerak"); return false; }
-        return {
-          scope_type: (document.getElementById("inc-scope") as HTMLSelectElement).value,
-          cash_account_id: parseInt(accountId),
-          amount_original: parseFloat(amount),
-          fx_rate_used: parseFloat((document.getElementById("inc-fx") as HTMLInputElement).value) || null,
-          income_at: date,
-          category_id: parseInt((document.getElementById("inc-category") as HTMLSelectElement).value) || null,
-          comment: (document.getElementById("inc-comment") as HTMLInputElement).value || null,
-        };
-      },
-    }).then((result) => {
-      if (result.isConfirmed && result.value) {
-        this.http.post<any>(GlobalVars.baseUrl + "/other-incomes", result.value, { headers: this.getHeaders() }).subscribe(
-          (data) => {
-            if (data.status === "ok") {
-              this.loadIncomes();
-              swal.fire({ icon: "success", title: "Qo'shildi!", timer: 1500, showConfirmButton: false });
-            } else { swal.fire("Xatolik", data.error, "error"); }
-          },
-          (error) => swal.fire("Xatolik", error.error?.error || "Xatolik yuz berdi", "error"),
-        );
-      }
-    });
+      });
   }
 
   deleteIncome(id: number) {
-    swal.fire({
-      title: "O'chirishni tasdiqlang",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "O'chirish",
-      cancelButtonText: "Bekor",
-      customClass: { confirmButton: "btn btn-danger", cancelButton: "btn btn-secondary" },
-      buttonsStyling: false,
-    }).then((result) => {
-      if (result.isConfirmed) {
-        this.http.delete<any>(GlobalVars.baseUrl + "/other-incomes/" + id, { headers: this.getHeaders() }).subscribe(
-          () => this.loadIncomes(),
-          (error) => swal.fire("Xatolik", error.error?.error || "Xatolik yuz berdi", "error"),
-        );
-      }
-    });
+    swal
+      .fire({
+        title: "O'chirishni tasdiqlang",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "O'chirish",
+        cancelButtonText: "Bekor",
+        customClass: {
+          confirmButton: "btn btn-danger",
+          cancelButton: "btn btn-secondary",
+        },
+        buttonsStyling: false,
+      })
+      .then((result) => {
+        if (result.isConfirmed) {
+          this.http
+            .delete<any>(GlobalVars.baseUrl + "/other-incomes/" + id, {
+              headers: this.getHeaders(),
+            })
+            .subscribe(
+              () => this.loadIncomes(),
+              (error) =>
+                swal.fire(
+                  "Xatolik",
+                  error.error?.error || "Xatolik yuz berdi",
+                  "error",
+                ),
+            );
+        }
+      });
   }
 
   formatAmount(value: number): string {
     if (value == null) return "0";
-    return Math.floor(Math.abs(value)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+    return Math.floor(Math.abs(value))
+      .toString()
+      .replace(/\B(?=(\d{3})+(?!\d))/g, " ");
   }
 }

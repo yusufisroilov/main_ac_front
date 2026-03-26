@@ -1,0 +1,112 @@
+<div class="main-content">
+  <div class="container-fluid">
+
+    <!-- Header -->
+    <div class="row mb-3">
+      <div class="col-12 d-flex justify-content-between align-items-center">
+        <h4 class="m-0" style="font-weight:700;">
+          <i class="material-icons" style="vertical-align:middle;margin-right:6px;color:#e53935;">play_circle_outline</i>
+          Video Darsliklar
+        </h4>
+        <button *ngIf="canManage" mat-raised-button class="btn btn-success" (click)="addLesson()">
+          <i class="material-icons">add</i> Yangi Video
+        </button>
+      </div>
+    </div>
+
+    <!-- Search -->
+    <div class="row mb-3" *ngIf="lessons.length > 0">
+      <div class="col-12 col-md-6 col-lg-4">
+        <div class="input-group" style="border-radius:10px;overflow:hidden;border:1.5px solid #ddd;">
+          <span class="input-group-text" style="background:#f8f9fa;border:none;">
+            <i class="material-icons" style="font-size:20px;color:#999;">search</i>
+          </span>
+          <input type="text" class="form-control" placeholder="Qidirish..."
+            [(ngModel)]="searchQuery" (ngModelChange)="applyFilter()"
+            style="border:none;box-shadow:none;font-size:14px;">
+          <button *ngIf="searchQuery" class="btn btn-link" (click)="searchQuery=''; applyFilter()"
+            style="border:none;color:#999;">
+            <i class="material-icons" style="font-size:18px;">clear</i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading -->
+    <div *ngIf="loading" class="text-center py-5">
+      <i class="material-icons spin" style="font-size:36px;color:#999;">autorenew</i>
+      <p class="text-muted mt-2">Yuklanmoqda...</p>
+    </div>
+
+    <!-- Empty -->
+    <div *ngIf="!loading && lessons.length === 0" class="text-center py-5">
+      <i class="material-icons" style="font-size:64px;color:#ccc;">videocam_off</i>
+      <p class="text-muted mt-2">Hozircha video darsliklar yo'q</p>
+    </div>
+
+    <!-- No results -->
+    <div *ngIf="!loading && lessons.length > 0 && filtered.length === 0" class="text-center py-4">
+      <i class="material-icons" style="font-size:48px;color:#ccc;">search_off</i>
+      <p class="text-muted mt-2">Natija topilmadi</p>
+    </div>
+
+    <!-- Video Grid -->
+    <div *ngIf="!loading && filtered.length > 0" class="row">
+      <div *ngFor="let lesson of filtered" class="col-12 col-md-6 col-lg-4 mb-4">
+        <div class="card video-card" [class.inactive-card]="!lesson.is_active">
+
+          <!-- Embedded YouTube Player -->
+          <div class="video-embed" *ngIf="lesson.embedUrl">
+            <iframe [src]="lesson.embedUrl"
+              frameborder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowfullscreen>
+            </iframe>
+          </div>
+
+          <div class="card-body">
+            <ng-container *ngIf="canManage">
+              <!-- Order badge -->
+              <span class="badge badge-pill order-badge">#{{ lesson.display_order }}</span>
+
+              <!-- Active/Inactive badge -->
+              <span class="badge ml-1" [class.badge-success]="lesson.is_active" [class.badge-secondary]="!lesson.is_active">
+                {{ lesson.is_active ? 'Faol' : 'Nofaol' }}
+              </span>
+            </ng-container>
+
+            <h6 class="card-title mt-2 mb-1" style="font-weight:700;">{{ lesson.title }}</h6>
+            <p class="card-text text-muted small mb-2" *ngIf="lesson.description">
+              {{ lesson.description }}
+            </p>
+
+            <!-- Actions -->
+            <div class="d-flex gap-2 mt-auto">
+              <a [href]="lesson.youtube_url" target="_blank" rel="noopener"
+                class="btn btn-sm btn-outline-danger flex-fill">
+                <i class="material-icons" style="font-size:16px;vertical-align:middle;">open_in_new</i>
+                YouTube
+              </a>
+              <ng-container *ngIf="canManage">
+                <button class="btn btn-sm btn-outline-primary" (click)="editLesson(lesson)" title="Tahrirlash">
+                  <i class="material-icons" style="font-size:16px;vertical-align:middle;">edit</i>
+                </button>
+                <button class="btn btn-sm" [class.btn-outline-secondary]="lesson.is_active"
+                  [class.btn-outline-success]="!lesson.is_active"
+                  (click)="toggleActive(lesson)" [title]="lesson.is_active ? 'Nofaol qilish' : 'Faol qilish'">
+                  <i class="material-icons" style="font-size:16px;vertical-align:middle;">
+                    {{ lesson.is_active ? 'visibility_off' : 'visibility' }}
+                  </i>
+                </button>
+                <button class="btn btn-sm btn-outline-danger" (click)="deleteLesson(lesson)" title="O'chirish">
+                  <i class="material-icons" style="font-size:16px;vertical-align:middle;">delete</i>
+                </button>
+              </ng-container>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

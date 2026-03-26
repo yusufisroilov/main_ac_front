@@ -63,6 +63,8 @@ interface Order {
 })
 export class CustomerDashboardComponent implements OnInit, AfterViewInit {
   @ViewChild("txtConfigFile") txtConfigFile: ElementRef;
+  @ViewChild("txtConfigFileAvto") txtConfigFileAvto: ElementRef;
+  addressMode: 'avia' | 'avto' = 'avia';
 
   headers12: any;
   options: any;
@@ -390,16 +392,16 @@ export class CustomerDashboardComponent implements OnInit, AfterViewInit {
 
   // Copy Chinese address to clipboard
   copyToCB() {
-    if (this.txtConfigFile) {
-      this.txtConfigFile.nativeElement.select();
+    const el = this.addressMode === 'avto' ? this.txtConfigFileAvto : this.txtConfigFile;
+    if (el) {
+      el.nativeElement.select();
       document.execCommand("copy");
-      this.txtConfigFile.nativeElement.setSelectionRange(0, 0);
+      el.nativeElement.setSelectionRange(0, 0);
 
-      // Show success message
       swal.fire({
         icon: "success",
         title: "Nusxa olindi!",
-        text: "Manzil nusxalandi",
+        text: `${this.addressMode === 'avia' ? 'Avia' : 'Avto'} manzil nusxalandi`,
         timer: 1500,
         showConfirmButton: false,
       });

@@ -1,0 +1,11 @@
+.gap-2 { gap: 8px; }
+
+.badge-warning  { background: #ff9800; color: #fff; }
+.badge-success  { background: #4caf50; color: #fff; }
+.badge-danger   { background: #f44336; color: #fff; }
+.badge-secondary{ background: #9e9e9e; color: #fff; }
+.badge-light    { background: #f0f0f0; color: #555; }
+
+.btn-group .btn { border-radius: 0; }
+.btn-group .btn:first-child { border-radius: 6px 0 0 6px; }
+.btn-group .btn:last-child  { border-radius: 0 6px 6px 0; }
