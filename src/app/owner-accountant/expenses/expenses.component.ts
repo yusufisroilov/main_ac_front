@@ -104,7 +104,16 @@ export class OaExpensesComponent implements OnInit {
 
   addExpense() {
     const today = new Date().toISOString().split("T")[0];
-    const categoryOpts = this.categories.map((c) => `<option value="${c.id}">${c.name}</option>`).join("");
+    const priorityNames = ["Ofis xarajatlari", "Maosh"];
+    const sortedCategories = [...this.categories].sort((a, b) => {
+      const aIdx = priorityNames.indexOf(a.name);
+      const bIdx = priorityNames.indexOf(b.name);
+      if (aIdx !== -1 && bIdx !== -1) return aIdx - bIdx;
+      if (aIdx !== -1) return -1;
+      if (bIdx !== -1) return 1;
+      return 0;
+    });
+    const categoryOpts = sortedCategories.map((c) => `<option value="${c.id}">${c.name}</option>`).join("");
     const accountOpts = this.cashAccounts.map((a) => `<option value="${a.id}">${a.name} (${a.currency})</option>`).join("");
 
     const html = `
@@ -125,8 +134,8 @@ export class OaExpensesComponent implements OnInit {
         <div class="exp-field">
           <span class="exp-lbl">Turi<span class="req">*</span></span>
           <select id="exp-scope" class="form-control">
-            <option value="CONSIGNMENT">Partiya</option>
             <option value="OFFICE">Ofis</option>
+            <option value="CONSIGNMENT">Partiya</option>
             <option value="PROJECT">Loyiha</option>
           </select>
         </div>

@@ -342,12 +342,17 @@ export const managerROUTES: RouteInfo[] = [
     type: "link",
     icontype: "attach_money",
   },
-  // {
-  //   path: "/uzs/deliveries",
-  //   title: "Yetkazmalar",
-  //   type: "link",
-  //   icontype: "local_shipping",
-  // },
+  {
+    path: "/oa",
+    title: "Hisoblar&Trans",
+    type: "sub-abs",
+    icontype: "account_balance",
+    collapse: "hisoblar-trans",
+    children: [
+      { path: "/oa/cash-accounts", title: "Kassa Hisoblar", ab: "KH" },
+      { path: "/oa/acc-ledger", title: "Kassa Tarixi", ab: "KT" },
+    ],
+  },
   {
     path: "/uzm/warehouse-inventory",
     title: "Officedagi Yuklar",

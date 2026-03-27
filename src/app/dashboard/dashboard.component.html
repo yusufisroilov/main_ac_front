@@ -129,6 +129,15 @@
             <i class="material-icons" style="vertical-align: middle;">people</i>
             Referallar va Bonuslar
           </button>
+          <!-- Cash Accounts & Ledger - Only for Manager -->
+          <button *ngIf="role === 'MANAGER'" class="btn btn-warning btn-lg" (click)="goToCashAccounts()" style="border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+            <i class="material-icons" style="vertical-align: middle;">account_balance</i>
+            Kassa Hisoblar
+          </button>
+          <button *ngIf="role === 'MANAGER'" class="btn btn-default btn-lg" (click)="goToAccLedger()" style="border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+            <i class="material-icons" style="vertical-align: middle;">receipt_long</i>
+            Kassa Tarixi
+          </button>
 
         </div>
       </div>

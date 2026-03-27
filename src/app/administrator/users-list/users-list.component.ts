@@ -38,6 +38,7 @@ export class UsersListComponent implements OnInit {
   isPageNumActive: boolean;
 
   newAdvalue: string;
+  templatesExpanded: boolean = false;
 
   constructor(
     private http: Http,

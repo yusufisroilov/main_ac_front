@@ -1,0 +1,164 @@
+/* ===== Templates Section ===== */
+.templates-section {
+  margin-bottom: 20px;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+.templates-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  cursor: pointer;
+  user-select: none;
+  background: linear-gradient(135deg, #43a047, #66bb6a);
+  color: #fff;
+  transition: background 0.2s;
+}
+
+.templates-header:hover {
+  background: linear-gradient(135deg, #388e3c, #43a047);
+}
+
+.templates-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.templates-badge {
+  background: rgba(255, 255, 255, 0.25);
+  padding: 2px 9px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.templates-toggle {
+  font-size: 28px;
+  transition: transform 0.3s;
+}
+
+.templates-toggle.rotated {
+  transform: rotate(180deg);
+}
+
+/* Grid */
+.templates-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+  padding: 20px;
+  background: #f8f9fa;
+}
+
+/* Card */
+.template-card {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+  overflow: hidden;
+  transition: box-shadow 0.2s, transform 0.2s;
+  display: flex;
+  flex-direction: column;
+}
+
+.template-card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.13);
+  transform: translateY(-2px);
+}
+
+/* Card header */
+.template-card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.template-icon-wrapper {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.template-icon-wrapper i {
+  font-size: 18px;
+  color: #fff;
+}
+
+.template-icon-wrapper.green  { background: #43a047; }
+.template-icon-wrapper.blue   { background: #1e88e5; }
+.template-icon-wrapper.red    { background: #e53935; }
+.template-icon-wrapper.orange { background: #fb8c00; }
+.template-icon-wrapper.yellow { background: #f9a825; }
+
+.template-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Copy button */
+.template-copy-btn {
+  width: 34px;
+  height: 34px;
+  border: none;
+  border-radius: 8px;
+  background: #f0f0f0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, color 0.2s;
+  flex-shrink: 0;
+}
+
+.template-copy-btn i {
+  font-size: 18px;
+  color: #666;
+}
+
+.template-copy-btn:hover {
+  background: #43a047;
+}
+
+.template-copy-btn:hover i {
+  color: #fff;
+}
+
+/* Preview text */
+.template-preview {
+  padding: 10px 14px;
+  font-size: 12.5px;
+  color: #555;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  max-height: 120px;
+  overflow-y: auto;
+  word-break: break-word;
+  flex: 1;
+}
+
+/* Hidden textarea (needed for copy functionality) */
+.template-textarea {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}

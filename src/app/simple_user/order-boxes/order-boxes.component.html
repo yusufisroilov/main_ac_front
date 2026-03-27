@@ -190,8 +190,20 @@
             <div class="card-icon">
               <i class="material-icons">assignment</i>
             </div>
-            <h4 class="card-title">
+            <h4 class="card-title" style="display: flex; align-items: center; flex-wrap: wrap; gap: 12px;">
               Har bir reysda sizga kelayotgan yuklarni ko'rish
+              <span style="display: inline-flex; align-items: center; gap: 7px; margin-left: auto; padding: 5px 12px 5px 8px; border-radius: 20px; border: 1.5px solid"
+                [style.background]="debtUsd > 0 ? '#fff0f0' : '#f0faf0'"
+                [style.borderColor]="debtUsd > 0 ? '#ef9a9a' : '#a5d6a7'">
+                <i class="material-icons" [style.color]="getBalanceColor()" style="font-size: 18px;">{{ getBalanceIcon() }}</i>
+                <span style="display: flex; flex-direction: column; line-height: 1.2;">
+                  <span [style.color]="getBalanceColor()" style="font-size: 14px; font-weight: 800; letter-spacing: -0.3px;">
+                    <span *ngIf="debtUsd !== 0">{{ debtUsd > 0 ? '' : '+' }}{{ debtUsd | number:'1.2-2' }}$ / {{ debtUzs | number:'1.0-0' }} so'm</span>
+                    <span *ngIf="debtUsd === 0">0.00$</span>
+                  </span>
+                  <span style="font-size: 10px; color: #888; font-weight: 500;">{{ getBalanceLabel() }}</span>
+                </span>
+              </span>
             </h4>
           </div>
           <div class="card-body">
@@ -202,6 +214,7 @@
                     <th class="text-center">{{ tableData1.headerRow[0] }}</th>
                     <th>{{ tableData1.headerRow[2] }}</th>
                     <th>Avia/Avto</th>
+                    <th class="text-center">Status</th>
                     <th class="text-center">{{ tableData1.headerRow[3] }}</th>
 
                     <th class="text-center">Yuk og'irligi</th>
@@ -226,6 +239,11 @@
                       <ng-template #elseBlockAvia>
                         <td style=" font-weight: 600; color: rgb(0, 229, 255)">Avia 🛬</td>
                       </ng-template>
+                      <td class="text-center">
+                        <span class="badge" [ngClass]="getConsignmentStatusClass(row.status)">
+                          {{ getConsignmentStatusText(row.status) }}
+                        </span>
+                      </td>
                       <td class="text-center">{{ row.quantity }} ta</td>
 
                       <td *ngIf="row.weight != '0'; else elseBlock" class="text-center">

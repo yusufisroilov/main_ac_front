@@ -69,6 +69,14 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     this.router.navigate(["/uzm/referrals-bonuses"]);
   }
 
+  goToCashAccounts() {
+    this.router.navigate(["/oa/cash-accounts"]);
+  }
+
+  goToAccLedger() {
+    this.router.navigate(["/oa/acc-ledger"]);
+  }
+
   startAnimationForLineChart(chart: any) {
     let seq: any, delays: any, durations: any;
     seq = 0;

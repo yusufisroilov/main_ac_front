@@ -11,43 +11,73 @@
             class="mat-button-focus-overlay"></span>
         </button>
 
-        <textarea id="clipboard-example-textarea" #userinput cols="12"
-          rows="5">Assalomu alaykum Hurmatli mijoz!
+        <!-- Quick Templates Section -->
+        <div class="templates-section">
+          <div class="templates-header" (click)="templatesExpanded = !templatesExpanded">
+            <div class="templates-title">
+              <i class="material-icons">content_paste</i>
+              <span>Tayyor Shablonlar</span>
+              <span class="templates-badge">5</span>
+            </div>
+            <i class="material-icons templates-toggle" [class.rotated]="templatesExpanded">expand_more</i>
+          </div>
 
-            Bizni tanlaganingiz uchun tashakkur, Biz siz bilan ishlashdan ma'mnunmiz. 
+          <div class="templates-grid" *ngIf="templatesExpanded">
 
-            Agar biz bilan ishlamoqchi bo'lsangiz: 
-          
-            ➡️ Ism Sharfingiz, 
-            ➡️ Tel raqamingiz,
-            ➡️Passport yoki ID kartangiz rasmi,
-            ➡️To'liq Manzilingiz uy adresigacha
-            
-            Shularni bizga yuboring! Biz sizga yangi kod, manzil va sistema linklarini beramiz, hozircha @activecargo kanalimizga azo bo'ling. Agar 10tdan ko'p yuklar buyurtma qilib shu yerda eslatsangiz sizga o'rgatish uchun yopiq bo'lgan kanalimizni taqdim qilamiz! U yerda siz kargo sohasida juda ko'p yangi bilimlarni va sirlarni bilib olasiz!</textarea>
-        <button class="mat-focus-indicator btn btn-info mat-raised-button mat-button-base"
-          (click)="copyInputMessage(userinput)" value="click to copy">Yangi Mijoz</button>
+            <!-- 1. Yangi Mijoz -->
+            <div class="template-card template-green">
+              <div class="template-card-header">
+                <div class="template-icon-wrapper green">
+                  <i class="material-icons">person_add</i>
+                </div>
+                <span class="template-label">Yangi Mijoz</span>
+                <button class="template-copy-btn" (click)="copyInputMessage(userinput)" title="Nusxa olish">
+                  <i class="material-icons">content_copy</i>
+                </button>
+              </div>
+              <div class="template-preview">Assalomu alaykum Hurmatli mijoz!
+                Bizni tanlaganingiz uchun tashakkur.
+                ➡️ Ism Sharfingiz
+                ➡️ Tel raqamingiz
+                ➡️ Passport yoki ID kartangiz rasmi
+                ➡️ To'liq Manzilingiz uy adresigacha</div>
+              <textarea class="template-textarea"
+                #userinput>Assalomu alaykum Hurmatli mijoz!
 
-        <!-- <textarea id="clipboard-example-textarea" #userinput2 cols="12" rows="5" >💳 Yangi ID uchun To'lovni: 30 ming sum
-              Payme dan ActiveCargo deb izlang
-              
-              Yoki:
-              9860 1201 0551 3077
-              Isroilov Yusuf
-              
-              Raqamiga o'tkazing.
-              Bizga screenshot yuboring. </textarea> -->
+Bizni tanlaganingiz uchun tashakkur, Biz siz bilan ishlashdan ma'mnunmiz.
 
-        <!-- <button class="mat-focus-indicator btn btn-info mat-raised-button mat-button-base" (click)="copyInputMessage(userinput2)" value="click to copy" >Mijoz Karta</button> 
-              -->
+Agar biz bilan ishlamoqchi bo'lsangiz:
 
+➡️ Ism Sharfingiz,
+➡️ Tel raqamingiz,
+➡️Passport yoki ID kartangiz rasmi,
+➡️To'liq Manzilingiz uy adresigacha
 
-        <textarea id="clipboard-example-textarea" #userinput3 cols="12" rows="5">
-ActiveCargo Narxlar bilan tanishing!
+Shularni bizga yuboring! Biz sizga yangi kod, manzil va sistema linklarini beramiz, hozircha @activecargo kanalimizga azo bo'ling. Agar 10tdan ko'p yuklar buyurtma qilib shu yerda eslatsangiz sizga o'rgatish uchun yopiq bo'lgan kanalimizni taqdim qilamiz! U yerda siz kargo sohasida juda ko'p yangi bilimlarni va sirlarni bilib olasiz!</textarea>
+            </div>
+
+            <!-- 2. Narxlar -->
+            <div class="template-card template-blue">
+              <div class="template-card-header">
+                <div class="template-icon-wrapper blue">
+                  <i class="material-icons">local_offer</i>
+                </div>
+                <span class="template-label">Narxlar</span>
+                <button class="template-copy-btn" (click)="copyInputMessage(userinput3)" title="Nusxa olish">
+                  <i class="material-icons">content_copy</i>
+                </button>
+              </div>
+              <div class="template-preview">🛬 AVIA: 9.5$ / 9$ / 8.5$ (kg)
+                🛩 Kelish: 4-9 Kun
+                🛬 BREND/BATAREYKA: 12$ (kg)
+                🚗 AVTO: 7$ / 6.5$ (kg)
+                🚚 Kelish: 14-19 Kun</div>
+              <textarea class="template-textarea" #userinput3>ActiveCargo Narxlar bilan tanishing!
 
 🛬AVIA - Oddiy buyurtmalar (Bolalar va Kattalar Kiyimlar, Oyoq kiyimlar, Sumkalar, o'yinchoqlar, oshxona anjomlari, uy buyumlari)
 🥇 Bir partiyada 0.2kg dan 20kg gacha xar kilosi 9.5$  dan,
 🥈  Bir partiyada 20kg dan 60kg gacha xar kilosiga 9$ dan,
-🥉 Bir partiyada 60 kg dan ko'proq bo'lsa xar kilosi 8.5$ dan! 
+🥉 Bir partiyada 60 kg dan ko'proq bo'lsa xar kilosi 8.5$ dan!
 🛩 Kelish muddati: 4-9 Kun. Xaftada ikkita reys!
        ➖➖➖➖➖
 🛬 AVIA - BREND, BATAREYKALI va SUYUQLIK jo'natmalar: kilosiga 12$ dan
@@ -61,55 +91,102 @@ ActiveCargo Narxlar bilan tanishing!
 🚚 Kelish muddati: 14-19 Kun
 
 O'zbekiston bo'ylab 140 ta filialaga bepul yetkazamiz, Viloyat markazlari qolaversa juda ko'plab tuman markazlarigacha tekin yetkaziladi.'
-                
-                ♾ AVTO dan buyurtma berish uchun Admin (@activecargo_admin) ga bog'lanib albatta Boshqa manzil oling!</textarea>
-        <button class="mat-focus-indicator btn btn-info mat-raised-button mat-button-base"
-          (click)="copyInputMessage(userinput3)" value="click to copy">Narx Copy</button>
 
+♾ AVTO dan buyurtma berish uchun Admin (@activecargo_admin) ga bog'lanib albatta Boshqa manzil oling!</textarea>
+            </div>
 
-        <textarea id="clipboard-example-textarea" #userinput4 cols="12" rows="5">
-Hurmatli Mijozlar,
+            <!-- 3. Taqiqlangan yuklar -->
+            <div class="template-card template-red">
+              <div class="template-card-header">
+                <div class="template-icon-wrapper red">
+                  <i class="material-icons">block</i>
+                </div>
+                <span class="template-label">Taqiqlangan yuklar</span>
+                <button class="template-copy-btn" (click)="copyInputMessage(userinput4)" title="Nusxa olish">
+                  <i class="material-icons">content_copy</i>
+                </button>
+              </div>
+              <div class="template-preview">📦 Abyomli yuklar — abyom vazni bo'yicha
+                ❌ Mumkin emas: atirlar, suyuqliklar, dronlar, lazer, dorilar, spreylar, Power Banklar, intim, tibbiyot,
+                yeguliklar, harbiy buyumlar</div>
+              <textarea class="template-textarea" #userinput4>Hurmatli Mijozlar,
 
 Quydagilarni diqqat bilan o'qib chiqishingizni so'raymiz:
-                  
-📦Abyomli yuklar bo'lganda bu abyom vazni bo'yicha o'lchanadi. 
-                  
+
+📦 Abyomli yuklar bo'lganda bu abyom vazni bo'yicha o'lchanadi.
+
 Seriya yani bir turdagi maxsulotdan 3 donadan ko'p bo'lsa to'g'ridan to'g'ri AVTO orqali yuborilishi mumkin va bir donasi narxi 200$ dan qimmat (masalan texnikalar yoki donasi juda qimmat buyumlar) yuk yuborishdan oldin biz bilan maslahatlashing!
-                  
-❌Bazi umuman mumkin bo'lmagan jo'natmalar: atirlar(chunki tarkibi yonuvchan), suyuqliklar (Vaqtincha mumkin emas, Shampun, kasmetikalar), juda katta magnitga ega qurilmalar, yog'lar, dorilar, yonuvchan spreylar, dronlar, lazer uskunalar, katta qismi batareykali buyumlar(Power Banklar), har qanday intim maxsulotlar, har qanday tibbiyot (meditsinaga) ga oid jo'natmalar, har qanday tirik (jonli) hayvon va o'simliklar, har qanday yeguliklar, har qanday Harbiy maqsaddagi buyumlar, Katta tig'li pichoqlar, qimmatbaxo kumush yoki tilla taqinchoqlar va O'z.R qonunlarida taqiqlangan har qanday buyurtmalar yetkazib berilmaydi. Bunday buyurtmalar qilinganida javobgarlik ActiveCargo zimmasida emas. Sinishi mumkin deb o'ylagan har qanday yukingizni buyurtma qilishdan oldin biz bilan maslahatlashing. Maslahatlashmasdan qilingan va sinib qolgan buyurtmalarga ActiveCargo javob bermaydi. E'tiboringiz uchun raxmat.
-                  </textarea>
-        <button class="mat-focus-indicator btn btn-primary mat-raised-button mat-button-base"
-          (click)="copyInputMessage(userinput4)" value="click to copy">Mumkin Emas</button>
 
-        <br>
+❌ Bazi umuman mumkin bo'lmagan jo'natmalar:
 
-        <textarea id="clipboard-example-textarea" #userinput2 cols="12" rows="5">
-Bu AVTO Kargo manzilimiz:
+  • atirlar (chunki tarkibi yonuvchan)
+  • suyuqliklar (Vaqtincha mumkin emas, Shampun, kasmetikalar)
+  • juda katta magnitga ega qurilmalar
+  • yog'lar
+  • dorilar
+  • yonuvchan spreylar
+  • dronlar
+  • lazer uskunalar
+  • katta qismi batareykali buyumlar (Power Banklar)
+  • har qanday intim maxsulotlar
+  • har qanday tibbiyot (meditsinaga) ga oid jo'natmalar
+  • har qanday tirik (jonli) hayvon va o'simliklar
+  • har qanday yeguliklar
+  • har qanday Harbiy maqsaddagi buyumlar
+  • Katta tig'li pichoqlar
+  • qimmatbaxo kumush yoki tilla taqinchoqlar
+  • O'z.R qonunlarida taqiqlangan har qanday buyurtmalar
+
+Bunday buyurtmalar qilinganida javobgarlik ActiveCargo zimmasida emas.
+
+⚠️ Sinishi mumkin deb o'ylagan har qanday yukingizni buyurtma qilishdan oldin biz bilan maslahatlashing. Maslahatlashmasdan qilingan va sinib qolgan buyurtmalarga ActiveCargo javob bermaydi.
+
+E'tiboringiz uchun raxmat.</textarea>
+            </div>
+
+            <!-- 4. AVTO Manzil -->
+            <div class="template-card template-orange">
+              <div class="template-card-header">
+                <div class="template-icon-wrapper orange">
+                  <i class="material-icons">local_shipping</i>
+                </div>
+                <span class="template-label">AVTO Manzil</span>
+                <button class="template-copy-btn" (click)="copyInputMessage(userinput5)" title="Nusxa olish">
+                  <i class="material-icons">content_copy</i>
+                </button>
+              </div>
+              <div class="template-preview">陆运W192
+                18028594657
+                广东省广州市白云区龙归街道南村三姓南街43号1楼原好客源超市 陆运W192</div>
+              <textarea class="template-textarea"
+                #userinput5>Bu AVTO Kargo manzilimiz:
 
 陆运W192
 18028594657
-广东省广州市白云区龙归街道南村三姓南街43号1楼原好客源超市 陆运W192 
+广东省广州市白云区龙归街道南村三姓南街43号1楼原好客源超市 陆运W192
 
-Diqqat qiling: Manzil kirgazgandan keyin albatta bizga screenshot yubring. AVTO kargoga faqat ko'p sonli yuklarni uring. AVTO va AVIA ni aralashtirib yubormang.
-</textarea>
+Diqqat qiling: Manzil kirgazgandan keyin albatta bizga screenshot yubring. AVTO kargoga faqat ko'p sonli yuklarni uring. AVTO va AVIA ni aralashtirib yubormang.</textarea>
+            </div>
 
-        <button class="mat-focus-indicator btn btn-info mat-raised-button mat-button-base"
-          (click)="copyInputMessage(userinput2)" value="click to copy">AVTO MANZIL</button>
+            <!-- 5. Video qo'llanma -->
+            <div class="template-card template-yellow">
+              <div class="template-card-header">
+                <div class="template-icon-wrapper yellow">
+                  <i class="material-icons">ondemand_video</i>
+                </div>
+                <span class="template-label">K-idlar Video</span>
+                <button class="template-copy-btn" (click)="copyInputMessage(userinput6)" title="Nusxa olish">
+                  <i class="material-icons">content_copy</i>
+                </button>
+              </div>
+              <div class="template-preview">K-Mijozlar uchun Manzil kiritish qo'llanmasi:
+                https://youtu.be/0aVJL7k0Fs8</div>
+              <textarea class="template-textarea"
+                #userinput6>K-Mijozlar uchun Manzil kiritish qo'llanmasi: https://youtu.be/0aVJL7k0Fs8</textarea>
+            </div>
 
-
-        <textarea id="clipboard-example-textarea" #userinput2 cols="12" rows="5">
-K-Mijozlar uchun Manzil kiritish qo'llanmasi: https://youtu.be/0aVJL7k0Fs8
-                </textarea>
-
-        <button class="mat-focus-indicator btn btn-warning mat-raised-button mat-button-base"
-          (click)="copyInputMessage(userinput2)" value="click to copy">K-idlar Video</button>
-
-        <!-- <textarea id="clipboard-example-textarea" #userinput2 cols="12" rows="5" >
-N-Mijozlar uchun Manzil kiritish qo'llanmasi: https://youtu.be/IXCqBZVBePg     
-              </textarea> 
-                            
-              <button class="mat-focus-indicator btn btn-warning mat-raised-button mat-button-base" (click)="copyInputMessage(userinput2)" value="click to copy" >N-idlar Video</button> 
-                                   -->
+          </div>
+        </div>
 
 
         <div class="card" id="listcard">

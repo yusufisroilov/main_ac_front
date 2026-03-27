@@ -78,7 +78,7 @@ export class AccLedgerListComponent implements OnInit {
       })
       .subscribe(
         (res) => {
-          this.accounts = (res.data || res || []).map((a: any) => ({
+          this.accounts = (res.accounts || res.data || []).map((a: any) => ({
             id: a.id,
             name: a.name,
             currency: a.currency,
@@ -113,8 +113,8 @@ export class AccLedgerListComponent implements OnInit {
         (res) => {
           this.entries = (res.entries || []).map((e: any) => ({
             ...e,
-            accountName: e.cash_account?.name || e.accountName || "",
-            accountCurrency: e.cash_account?.currency || e.accountCurrency || "",
+            accountName: e.cashAccount?.name || e.cash_account?.name || e.accountName || "",
+            accountCurrency: e.cashAccount?.currency || e.cash_account?.currency || e.accountCurrency || "",
           }));
           this.totalItems = res.totalItems || 0;
           this.totalPages = res.totalPages || 0;

@@ -49,6 +49,58 @@ export class OrderBoxesComponent implements OnInit {
 
   currentParty: string;
 
+  // Customer balance
+  debtUsd: number = 0;
+  debtUzs: number = 0;
+
+  getBalanceIcon(): string {
+    if (this.debtUsd > 0) return "account_balance_wallet";
+    if (this.debtUsd < 0) return "card_giftcard";
+    return "check_circle";
+  }
+
+  getBalanceColor(): string {
+    if (this.debtUsd > 0) return "#f44336";
+    if (this.debtUsd < 0) return "#4caf50";
+    return "#4caf50";
+  }
+
+  getBalanceLabel(): string {
+    if (this.debtUsd > 0) return "Qarzingiz";
+    if (this.debtUsd < 0) return "Balans";
+    return "Balansingiz";
+  }
+
+  getConsignmentStatusText(status: number): string {
+    const map: { [key: number]: string } = {
+      1: "Kelmagan",
+      2: "Xitoy omborida",
+      3: "Aeroportga yo'lda",
+      4: "Xitoy aeroportida",
+      5: "O'zbekiston aeroportida",
+      6: "Ofisda",
+      7: "Mijozga yuborilgan",
+      8: "Boshqa manzilga",
+      9: "Qabul qilindi",
+    };
+    return map[status] || "";
+  }
+
+  getConsignmentStatusClass(status: number): string {
+    const map: { [key: number]: string } = {
+      1: "badge-warning",
+      2: "badge-info",
+      3: "badge-primary",
+      4: "badge-primary",
+      5: "badge-info",
+      6: "badge-success",
+      7: "badge-info",
+      8: "badge-warning",
+      9: "badge-success",
+    };
+    return map[status] || "badge-secondary";
+  }
+
   constructor(
     public authService: AuthService,
     private http: Http,
@@ -88,7 +140,8 @@ export class OrderBoxesComponent implements OnInit {
       .subscribe(
         (response) => {
           this.allDataBoxes = response.json().consignments;
-          // console.log("partiyalr ", this.allDataBoxes);
+          this.debtUsd = response.json().debt_usd_total || 0;
+          this.debtUzs = response.json().debt_uzs_total || 0;
         },
         (error) => {
           if (error.status == 403) {
