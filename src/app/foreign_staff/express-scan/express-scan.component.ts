@@ -132,10 +132,10 @@ export class ExpressScanComponent implements OnInit, AfterViewInit {
 
   getListOfParcels() {
     return this.http
-      .get(GlobalVars.baseUrl + "/parcels/list", this.options)
+      .get(GlobalVars.baseUrl + "/orders/list", this.options)
       .subscribe(
         (response) => {
-          this.allData = response.json().parcels;
+          this.allData = response.json().orders;
 
           this.currentPage = response.json().currentPage;
           this.totalPages = response.json().totalPages;
@@ -163,12 +163,12 @@ export class ExpressScanComponent implements OnInit, AfterViewInit {
       if (searchkey.length > 3) {
         this.http
           .get(
-            GlobalVars.baseUrl + "/parcels/list?trackingNumber=" + searchkey,
+            GlobalVars.baseUrl + "/orders/list?tracking_number=" + searchkey,
             this.options
           )
           .subscribe(
             (response) => {
-              this.allData = response.json().parcels;
+              this.allData = response.json().orders;
 
               this.currentPage = response.json().currentPage;
               this.totalPages = response.json().totalPages;

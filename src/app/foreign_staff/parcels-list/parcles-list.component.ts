@@ -123,12 +123,9 @@ export class ParclesListComponent implements OnInit, AfterViewInit {
     this.orderTypeText = [];
     this.orderStatusText = [];
 
-    this.orderTypesList = GlobalVars.orderTypes;
-    this.orderStatusTypeList = GlobalVars.orderStatus;
+    this.orderTypesList = GlobalVars.orderTypes || [];
+    this.orderStatusTypeList = GlobalVars.orderStatus || [];
     this.isLastOrderLText = "";
-    if (this.orderStatusTypeList == null) {
-      this.router.navigate(["/dashboard"]);
-    }
 
     this.headers12 = new Headers({ "Content-Type": "application/json" });
     this.headers12.append("Authorization", localStorage.getItem("token"));
