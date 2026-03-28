@@ -90,6 +90,13 @@ export const AppRoutes: Routes = [
           ).then((m) => m.ConsignmentCalendarPageModule),
       },
       {
+        path: "consignment-tracking",
+        loadChildren: () =>
+          import(
+            "./simple_user/consignment-tracking/consignment-tracking.module"
+          ).then((m) => m.ConsignmentTrackingModule),
+      },
+      {
         path: "archive",
         loadChildren: () =>
           import("./simple_user/archive-orders/archive-orders.module").then(

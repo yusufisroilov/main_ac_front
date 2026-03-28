@@ -8,6 +8,8 @@
       <div class="btn-group">
         <button class="btn btn-sm" [class.btn-primary]="activeTab==='services'" [class.btn-outline-primary]="activeTab!=='services'"
           (click)="activeTab='services'">Xizmatlar</button>
+        <button class="btn btn-sm" [class.btn-primary]="activeTab==='all'" [class.btn-outline-primary]="activeTab!=='all'"
+          (click)="activeTab='all'; loadAllServices()">Hammasi</button>
         <button *ngIf="isOwnerOrManager" class="btn btn-sm" [class.btn-primary]="activeTab==='types'" [class.btn-outline-primary]="activeTab!=='types'"
           (click)="activeTab='types'; loadServiceTypes()">Xizmat Turlari</button>
       </div>
@@ -112,6 +114,109 @@
         <i class="material-icons" style="font-size:48px;">inbox</i>
         <p class="mt-2">Bu mijoz uchun xizmatlar yo'q</p>
         <button class="btn btn-success btn-sm" (click)="chargeService()">Xizmat Qo'shish</button>
+      </div>
+
+    </ng-container>
+
+    <!-- ══════════════════════════════════════════════════════ -->
+    <!-- TAB: All Services                                      -->
+    <!-- ══════════════════════════════════════════════════════ -->
+    <ng-container *ngIf="activeTab==='all'">
+
+      <!-- Filters -->
+      <div class="card shadow-sm mb-3">
+        <div class="card-body py-2">
+          <div class="d-flex gap-2 flex-wrap align-items-center">
+            <input type="text" [(ngModel)]="filterCustomerId" class="form-control"
+              style="max-width:160px;" placeholder="Mijoz ID" (input)="onCustomerIdInput()">
+            <select [(ngModel)]="filterStatus" class="form-control" style="max-width:180px;" (change)="onAllFilterChange()">
+              <option value="">Barchasi</option>
+              <option value="PENDING">Kutilayotgan</option>
+              <option value="COMPLETED">To'langan</option>
+              <option value="CANCELLED">Bekor Qilingan</option>
+            </select>
+            <select [(ngModel)]="filterPayment" class="form-control" style="max-width:180px;" (change)="onAllFilterChange()">
+              <option value="">To'lov holati</option>
+              <option value="paid">To'langan</option>
+              <option value="unpaid">To'lanmagan</option>
+            </select>
+            <button class="btn btn-primary btn-sm" (click)="onAllFilterChange()">
+              <i class="material-icons" style="font-size:16px;vertical-align:middle;">search</i> Qidirish
+            </button>
+            <span class="ms-auto text-muted" style="font-size:13px;">Jami: {{ allTotalItems }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Loading -->
+      <div *ngIf="loadingAll" class="text-center py-4">
+        <div class="spinner-border text-primary"></div>
+      </div>
+
+      <!-- Table -->
+      <div *ngIf="!loadingAll && allServices.length > 0" class="card shadow-sm">
+        <div class="table-responsive">
+          <table class="table table-hover mb-0">
+            <thead class="thead-light">
+              <tr>
+                <th>#</th>
+                <th>Mijoz</th>
+                <th>Xizmat</th>
+                <th>Kategoriya</th>
+                <th>Summa</th>
+                <th>Kurs</th>
+                <th>To'langan</th>
+                <th>Qarz ($)</th>
+                <th>Status</th>
+                <th>To'lov</th>
+                <th>Sana</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let s of allServices; let i=index">
+                <td>{{ allCurrentPage * 50 + i + 1 }}</td>
+                <td>
+                  <span style="font-weight:600;">K{{ s.customer?.id }}</span>
+                  <br><small class="text-muted">{{ s.customer?.first_name }} {{ s.customer?.last_name }}</small>
+                </td>
+                <td>
+                  <span style="font-weight:600;">{{ s.serviceType?.name || '—' }}</span>
+                  <br *ngIf="s.notes">
+                  <small *ngIf="s.notes" class="text-muted">{{ s.notes }}</small>
+                </td>
+                <td><span class="badge badge-light">{{ categoryLabels[s.serviceType?.category] || '—' }}</span></td>
+                <td>{{ formatAmount(s.amount) }} {{ s.currency }}</td>
+                <td>{{ s.fx_rate ? (s.fx_rate | number:'1.0-0') : '—' }}</td>
+                <td>{{ formatAmount(s.currency === 'UZS' ? s.amount_paid * (s.fx_rate || 1) : s.amount_paid) }} {{ s.currency }}</td>
+                <td>
+                  <span [class.text-danger]="!s.is_paid" [class.text-success]="s.is_paid">
+                    ${{ (s.amount_usd - (s.amount_paid || 0)) | number:'1.2-2' }}
+                  </span>
+                </td>
+                <td><span class="badge" [ngClass]="statusClass(s.status)">{{ statusLabel(s.status) }}</span></td>
+                <td>
+                  <span class="badge" [ngClass]="s.is_paid ? 'badge-success' : 'badge-danger'">
+                    {{ s.is_paid ? "To'langan" : "To'lanmagan" }}
+                  </span>
+                </td>
+                <td style="white-space:nowrap;font-size:12px;">{{ s.created_at | date:'dd.MM.yy' }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Pagination -->
+        <div *ngIf="allTotalPages > 1" class="card-footer d-flex justify-content-center gap-1 flex-wrap py-2">
+          <button *ngFor="let p of [].constructor(allTotalPages); let pi=index"
+            class="btn btn-sm" [class.btn-primary]="pi===allCurrentPage" [class.btn-outline-primary]="pi!==allCurrentPage"
+            (click)="loadAllServices(pi)">{{ pi + 1 }}</button>
+        </div>
+      </div>
+
+      <!-- Empty -->
+      <div *ngIf="!loadingAll && allServices.length === 0" class="text-center text-muted py-5">
+        <i class="material-icons" style="font-size:48px;">inbox</i>
+        <p class="mt-2">Xizmatlar topilmadi</p>
       </div>
 
     </ng-container>

@@ -47,6 +47,12 @@ export const ROUTES: RouteInfo[] = [
     type: "link",
     icontype: "cases",
   },
+  {
+    path: "/consignment-tracking",
+    title: "Reyslar Holati",
+    type: "link",
+    icontype: "flight",
+  },
 
   {
     path: "/uzm/delivery-requests",

@@ -211,7 +211,7 @@ export class Financev2Component implements OnInit {
             delivered: f.delivered,
             consignment: f.consignment,
           }));
-          console.log("all data ", this.allData);
+          // console.log("all data ", this.allData);
 
           this.totalWeight = data.totalWeight || "0";
           this.totalUSD = data.totalUSD || "0";
@@ -565,10 +565,14 @@ export class Financev2Component implements OnInit {
       return;
     }
     this.httpClient
-      .get(GlobalVars.baseUrl + `/finance-v2/download-excel?consignment=${this.currentParty}`, {
-        headers: this.getHeaders(),
-        responseType: "blob",
-      })
+      .get(
+        GlobalVars.baseUrl +
+          `/finance-v2/download-excel?consignment=${this.currentParty}`,
+        {
+          headers: this.getHeaders(),
+          responseType: "blob",
+        },
+      )
       .subscribe(
         (blob: Blob) => {
           const url = window.URL.createObjectURL(blob);

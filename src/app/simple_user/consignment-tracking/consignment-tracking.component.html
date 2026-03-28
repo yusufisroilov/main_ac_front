@@ -1,0 +1,112 @@
+<div class="main-content">
+  <div class="container-fluid">
+
+    <!-- Header -->
+    <div class="tracking-header">
+      <div class="header-icon">
+        <i class="material-icons">local_shipping</i>
+      </div>
+      <div class="header-content">
+        <h4>Reyslar Holati</h4>
+        <p class="header-desc">Barcha reyslarning hozirgi holatini kuzating</p>
+      </div>
+      <button class="btn btn-sm btn-outline-primary" (click)="loadData()" style="border-radius:8px;">
+        <i class="material-icons" style="font-size:16px;vertical-align:middle;">refresh</i>
+      </button>
+    </div>
+
+    <!-- Filters -->
+    <div class="filter-bar">
+      <button class="btn btn-sm filter-btn"
+        [class.active]="showMyOnly"
+        (click)="toggleMyOnly()">
+        <i class="material-icons" style="font-size:16px;vertical-align:middle;">inventory_2</i>
+        Yukim bor partiyalar
+        <span *ngIf="showMyOnly" class="filter-count">{{ filteredConsignments.length }}</span>
+      </button>
+
+      <div class="filter-divider"></div>
+
+      <button *ngFor="let f of statusFilters" class="btn btn-sm filter-btn"
+        [class.active]="activeStatusFilter === f.status"
+        (click)="setStatusFilter(f.status)">
+        <i class="material-icons" style="font-size:16px;vertical-align:middle;">{{ f.icon }}</i>
+        {{ f.label }}
+        <span class="filter-count">{{ getStatusFilterCount(f.status) }}</span>
+      </button>
+    </div>
+
+    <!-- Loading -->
+    <div *ngIf="loading" class="text-center" style="padding:40px 0;">
+      <div class="spinner-border text-primary" style="width:1.5rem;height:1.5rem;border-width:0.15em;"></div>
+    </div>
+
+    <!-- Empty state -->
+    <div *ngIf="!loading && filteredConsignments.length === 0" class="empty-state">
+      <i class="material-icons">flight</i>
+      <p>Reyslar topilmadi</p>
+    </div>
+
+    <!-- Consignment cards grid -->
+    <div *ngIf="!loading && filteredConsignments.length > 0" class="cards-grid">
+      <div class="calendar-card" *ngFor="let item of filteredConsignments"
+        [class.my-order]="item.hasOrders">
+
+        <!-- Row 1: Name + Type badge + Order count -->
+        <div class="calendar-card-top">
+          <span class="calendar-card-name">{{ item.name }}</span>
+          <span *ngIf="item.hasOrders" class="order-badge">
+            {{ item.orderCount }} ta
+          </span>
+          <span class="calendar-card-type"
+            [style.background]="item.isHongKong ? 'rgba(230,126,34,0.12)' : 'rgba(102,126,234,0.12)'"
+            [style.color]="item.isHongKong ? '#E67E22' : '#667eea'">
+            <i class="material-icons" style="font-size:11px;vertical-align:middle;">{{
+              item.isHongKong ? 'local_shipping' : 'flight' }}</i>
+            {{ item.isHongKong ? 'AVTO' : 'AVIA' }}
+          </span>
+        </div>
+
+        <!-- Row 2: Status + Progress % -->
+        <div class="calendar-card-status-row">
+          <span class="calendar-card-status">{{ getCalendarStatusLabel(item) }}</span>
+          <span class="calendar-card-percent"
+            [style.color]="getCalendarProgressPercent(item) === 100 ? '#4CAF50' : '#667eea'">
+            {{ getCalendarProgressPercent(item) }}%
+          </span>
+        </div>
+
+        <!-- Progress bar -->
+        <div class="calendar-card-progress-track">
+          <div class="calendar-card-progress-fill"
+            [style.width.%]="getCalendarProgressPercent(item)"
+            [style.background]="getCalendarProgressPercent(item) === 100 ? '#4CAF50' : '#667eea'">
+          </div>
+        </div>
+
+        <!-- Step icons row -->
+        <div class="calendar-card-steps">
+          <div *ngFor="let status of calendarStatusOrder" class="calendar-step-icon"
+            [class.step-completed]="isCalendarStepCompleted(item, status)"
+            [class.step-current]="isCalendarCurrentStep(item, status) && !isCalendarStepCompleted(item, status)">
+            <i class="material-icons">{{ getCalendarStepIcon(status, item) }}</i>
+            <span *ngIf="isCalendarStepCompleted(item, status)" class="step-check">
+              <i class="material-icons">check</i>
+            </span>
+          </div>
+        </div>
+
+        <!-- Step dates row -->
+        <div class="calendar-card-dates">
+          <div *ngFor="let status of calendarStatusOrder" class="step-date-cell">
+            <small *ngIf="getCalendarStepDate(item, status)">
+              {{ formatDate(getCalendarStepDate(item, status)) }}
+            </small>
+            <small *ngIf="!getCalendarStepDate(item, status)" class="text-muted">—</small>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

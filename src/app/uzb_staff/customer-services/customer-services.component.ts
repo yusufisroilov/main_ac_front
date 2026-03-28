@@ -9,7 +9,7 @@ import swal from "sweetalert2";
   styleUrls: ["./customer-services.component.css"],
 })
 export class CustomerServicesComponent implements OnInit {
-  activeTab: "services" | "types" = "services";
+  activeTab: "services" | "types" | "all" = "services";
   role = localStorage.getItem("role") || "";
   isOwnerOrManager = ["OWNER", "MANAGER"].includes(this.role);
 
@@ -19,6 +19,17 @@ export class CustomerServicesComponent implements OnInit {
   services: any[] = [];
   totalDebtUsd = 0;
   loadingServices = false;
+
+  // ── All services tab ──────────────────────────────────
+  allServices: any[] = [];
+  loadingAll = false;
+  allCurrentPage = 0;
+  allTotalPages = 0;
+  allTotalItems = 0;
+  filterStatus = "";
+  filterCustomerId = "";
+  filterPayment = "";
+  private customerIdTimeout: any;
 
   // ── Service types tab ──────────────────────────────────
   serviceTypes: any[] = [];
@@ -89,6 +100,43 @@ export class CustomerServicesComponent implements OnInit {
         },
         () => (this.loadingServices = false),
       );
+  }
+
+  // ── All services ──────────────────────────────────────
+
+  loadAllServices(page = 0) {
+    this.loadingAll = true;
+    this.allCurrentPage = page;
+
+    let params = `?page=${page}&size=50`;
+    if (this.filterStatus) params += `&status=${this.filterStatus}`;
+    if (this.filterCustomerId.trim()) params += `&customer_id=${this.filterCustomerId.trim()}`;
+    if (this.filterPayment) params += `&payment=${this.filterPayment}`;
+
+    this.http
+      .get<any>(`${GlobalVars.baseUrl}/services/all${params}`, {
+        headers: this.getHeaders(),
+      })
+      .subscribe(
+        (data) => {
+          this.allServices = data.services || [];
+          this.allTotalPages = data.totalPages || 0;
+          this.allTotalItems = data.totalItems || 0;
+          this.loadingAll = false;
+        },
+        () => (this.loadingAll = false),
+      );
+  }
+
+  onAllFilterChange() {
+    this.loadAllServices(0);
+  }
+
+  onCustomerIdInput() {
+    clearTimeout(this.customerIdTimeout);
+    this.customerIdTimeout = setTimeout(() => {
+      this.loadAllServices(0);
+    }, 400);
   }
 
   chargeService() {

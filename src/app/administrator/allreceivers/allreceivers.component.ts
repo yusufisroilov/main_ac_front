@@ -110,7 +110,7 @@ export class AllreceiversComponent implements OnInit {
       .subscribe(
         (response) => {
           this.allRecs = response.json().receivers;
-          console.log("all recs " + this.allRecs);
+          // console.log("all recs " + this.allRecs);
           this.currentPage = response.json().currentPage;
           this.totalPages = response.json().totalPages;
           if (this.totalPages > 1) {
@@ -418,53 +418,48 @@ export class AllreceiversComponent implements OnInit {
       : "Ushbu " + iddd + " RID ni o'chirishni hohlaysizmi?";
     const confirmText = isDeleted ? "Tiklash" : "O'chirish";
 
-    swal
-      .fire({
-        title: title,
-        text: text,
-        allowEnterKey: true,
-        confirmButtonText: confirmText,
-        showCancelButton: true,
-        cancelButtonText: "Bekor qilish",
-        customClass: {
-          confirmButton: isDeleted ? "btn btn-warning" : "btn btn-danger",
-          cancelButton: "btn btn-info",
-        },
-        buttonsStyling: false,
+    swal.fire({
+      title: title,
+      text: text,
+      allowEnterKey: true,
+      confirmButtonText: confirmText,
+      showCancelButton: true,
+      cancelButtonText: "Bekor qilish",
+      customClass: {
+        confirmButton: isDeleted ? "btn btn-warning" : "btn btn-danger",
+        cancelButton: "btn btn-info",
+      },
+      buttonsStyling: false,
 
-        preConfirm: () => {
-          this.http
-            .post(
-              GlobalVars.baseUrl + "/receivers/delete?rid=" + iddd,
-              {},
-              this.options,
-            )
-            .subscribe(
-              (response) => {
-                if (response.json().status == "error") {
-                  swal.fire(
-                    "Xatolik!",
-                    "Xato: " + response.json().message,
-                    "error",
-                  );
-                } else {
-                  swal.fire(
-                    "Muvaffaqiyat!",
-                    response.json().message,
-                    "success",
-                  );
-                }
-                this.getListOfRecs();
-              },
-              (error) => {
-                this.getListOfRecs();
-                if (error.status == 403) {
-                  this.authService.logout();
-                }
-              },
-            );
-        },
-      });
+      preConfirm: () => {
+        this.http
+          .post(
+            GlobalVars.baseUrl + "/receivers/delete?rid=" + iddd,
+            {},
+            this.options,
+          )
+          .subscribe(
+            (response) => {
+              if (response.json().status == "error") {
+                swal.fire(
+                  "Xatolik!",
+                  "Xato: " + response.json().message,
+                  "error",
+                );
+              } else {
+                swal.fire("Muvaffaqiyat!", response.json().message, "success");
+              }
+              this.getListOfRecs();
+            },
+            (error) => {
+              this.getListOfRecs();
+              if (error.status == 403) {
+                this.authService.logout();
+              }
+            },
+          );
+      },
+    });
   }
 
   /*

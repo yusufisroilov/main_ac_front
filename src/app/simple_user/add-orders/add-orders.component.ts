@@ -426,6 +426,10 @@ export class AddOrdersComponent implements OnInit {
                   this.consignmentName = response.json().consignment_name;
                   this.consignmentMessage = response.json().message;
                   this.consignmentId = response.json().id;
+                  this.boxes = [];
+                  this.total_count = "";
+                  this.currentWeight = "";
+                  this.thingsInBox = null;
                   this.showPartyLink();
                   const typeLabel =
                     consignmentType === "AVTO" ? "🚚 AVTO" : "🛬 AVIA";

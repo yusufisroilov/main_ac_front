@@ -233,7 +233,7 @@ export class AllordersComponent implements OnInit {
       "&consignment=" +
       this.orderFilterParty;
 
-    console.log("filter link " + filterLink);
+    // console.log("filter link " + filterLink);
     return this.http
       .get(
         GlobalVars.baseUrl +
