@@ -187,7 +187,10 @@ export class ReceiversComponent implements OnInit {
         (error) => {
           if (error.status == 403) {
             this.authService.logout();
+            return;
           }
+          const msg = error.json?.()?.message || error.json?.()?.error || "O'chirishda xatolik yuz berdi";
+          swal.fire("Xatolik", msg, "error");
         }
       );
   }

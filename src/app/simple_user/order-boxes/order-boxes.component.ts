@@ -73,13 +73,13 @@ export class OrderBoxesComponent implements OnInit {
 
   getConsignmentStatusText(status: number): string {
     const map: { [key: number]: string } = {
-      1: "Kelmagan",
+      1: "Nomalum",
       2: "Xitoy omborida",
       3: "Aeroportga yo'lda",
       4: "Xitoy aeroportida",
       5: "O'zbekiston aeroportida",
       6: "Ofisda",
-      7: "Mijozga yuborilgan",
+      7: "Toshkent Omborida",
       8: "Boshqa manzilga",
       9: "Qabul qilindi",
     };
@@ -132,7 +132,8 @@ export class OrderBoxesComponent implements OnInit {
   getListOfPartyBoxes() {
     let ownerid = localStorage.getItem("id");
 
-    return this.http
+    // Load consignments
+    this.http
       .get(
         GlobalVars.baseUrl + "/consignments/for_client?id=" + ownerid,
         this.options,
@@ -140,8 +141,27 @@ export class OrderBoxesComponent implements OnInit {
       .subscribe(
         (response) => {
           this.allDataBoxes = response.json().consignments;
-          this.debtUsd = response.json().debt_usd_total || 0;
-          this.debtUzs = response.json().debt_uzs_total || 0;
+        },
+        (error) => {
+          if (error.status == 403) {
+            this.authService.logout();
+          }
+        },
+      );
+
+    // Load balance from dashboard/stats (same as CustomerDashboard)
+    return this.http
+      .get(
+        GlobalVars.baseUrl + "/dashboard/stats?customer_id=" + ownerid,
+        this.options,
+      )
+      .subscribe(
+        (response) => {
+          const result = response.json();
+          if (result.status === "success") {
+            this.debtUsd = result.data.debt_usd_total || 0;
+            this.debtUzs = result.data.debt_uzs_total || 0;
+          }
         },
         (error) => {
           if (error.status == 403) {

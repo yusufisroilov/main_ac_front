@@ -1,21 +1,11 @@
 import { AfterViewInit, Component, OnInit } from "@angular/core";
-import {
-  HttpClient,
-  HttpErrorResponse,
-  HttpHeaders,
-  HttpParams,
-} from "@angular/common/http";
-import { Http, RequestOptions, Headers, Response } from "@angular/http";
+import { HttpClient, HttpHeaders } from "@angular/common/http";
+import { Http, RequestOptions, Headers } from "@angular/http";
 
 import swal from "sweetalert2";
-import { GlobalVars, StatusOfOrder, TypesOfOrder } from "src/app/global-vars";
+import { GlobalVars } from "src/app/global-vars";
 import { Router } from "@angular/router";
 import { AuthService } from "src/app/pages/login/auth.service";
-
-declare interface DataTable {
-  headerRow: string[];
-  dataRows: string[][];
-}
 
 declare const $: any;
 
@@ -25,402 +15,88 @@ declare const $: any;
   styleUrls: ["./employee-finance.component.css"],
 })
 export class EmployeeFinanceComponent implements OnInit {
-  public dataTable: DataTable;
-  trackingNum: string;
   headers12: any;
   options: any;
-  allData: any;
-  helloText: string;
-  registredMessage: any;
+  allData: any[] = [];
 
-  currentPage: number;
-  totalPages: number;
-  needPagination: boolean;
-  mypages = [];
-  isPageNumActive: boolean;
+  currentParty: string = "";
+  activeConsignment: string = "";
+  totalItems: number = 0;
+  totalWeight: number = 0;
 
-  orderFilterStatus: string;
-  orderFilterType: string;
-  orderFilterOwnId: string;
-  orderFilterParty: string;
-
-  currentFinID: string;
-  currentDeliveredCase: boolean;
-  allPaid: string;
-
-  totalItems: string;
-  totalWeight: string;
-  totalUSD: string;
-  totalUZS: string;
-  totalPaidUSD: string;
-  totalPaidUZS: string;
-  totalPaidPlastic: string;
-  totalDebtUSD: string;
-  totalDebtUZS: string;
-  openToBobOnly: boolean = false;
-  consignmentName: string;
-  activeConsignment: string;
   showLastFinance: boolean = false;
-  enteredLast: string;
-  enteredBeforeLast: string;
-
-  hideForManager: boolean = true;
-
-  currentParty: any = "";
+  enteredLast: string = "";
+  enteredBeforeLast: string = "";
 
   constructor(
     private http: Http,
     private httpClient: HttpClient,
     private router: Router,
-    public authService: AuthService
+    public authService: AuthService,
   ) {
     this.headers12 = new Headers({ "Content-Type": "application/json" });
     this.headers12.append("Authorization", localStorage.getItem("token"));
     this.options = new RequestOptions({ headers: this.headers12 });
+  }
 
-    if (localStorage.getItem("role") == "MANAGER" || localStorage.getItem("role") == "OWNER") {
-      this.hideForManager = false;
-    }
-
-    // if (localStorage.getItem("id") == "631") {
-    //   this.openToBobOnly = true;
-    // }
-
-    this.allPaid = "g";
-    this.currentPage = 0;
-    this.helloText = "hello";
-    this.needPagination = false;
-    this.isPageNumActive = false;
-
-    this.currentFinID = "";
-
-    this.orderFilterStatus = "";
-    this.orderFilterType = "";
-    this.orderFilterOwnId = "";
-    this.orderFilterParty = "";
+  private getHeaders(): HttpHeaders {
+    return new HttpHeaders({
+      "Content-Type": "application/json",
+      Authorization: localStorage.getItem("token") || "",
+    });
   }
 
   ngOnInit() {
-    this.dataTable = {
-      headerRow: ["No", "IDsi", "Kilosi"],
-
-      dataRows: [],
-    };
-
-    this.currentParty =
-      GlobalVars.currentParty || localStorage.getItem("current_party") || "";
+    this.getListOfFinance();
   }
 
-  ngAfterViewInit() {
-    $("#datatables").DataTable({
-      pagingType: "full_numbers",
-      lengthMenu: [
-        [10, 25, 50, -1],
-        [10, 25, 50, "All"],
-      ],
-      responsive: true,
-      language: {
-        search: "_INPUT_",
-        searchPlaceholder: "Search records",
-      },
-    });
-
-    const table = $("#datatables").DataTable();
-
-    // Edit record
-    table.on("click", ".edit", function (e) {
-      let $tr = $(this).closest("tr");
-      if ($($tr).hasClass("child")) {
-        $tr = $tr.prev(".parent");
-      }
-
-      var data = table.row($tr).data();
-      alert(
-        "You press on Row: " +
-          data[0] +
-          " " +
-          data[1] +
-          " " +
-          data[2] +
-          "'s row."
-      );
-      e.preventDefault();
-    });
-
-    // Delete a record
-    table.on("click", ".remove", function (e) {
-      const $tr = $(this).closest("tr");
-      table.row($tr).remove().draw();
-      e.preventDefault();
-    });
-
-    //Like record
-    table.on("click", ".like", function (e) {
-      alert("You clicked on Like button");
-      e.preventDefault();
-    });
-
-    $(".card .material-datatables label").addClass("form-group");
-
-    // // Debug logging
-    // console.log("🔍 Debug currentParty:");
-    // console.log("  GlobalVars.currentParty:", GlobalVars.currentParty);
-    // console.log("  localStorage current_party:", localStorage.getItem("current_party"));
-
-    this.currentParty =
-      GlobalVars.currentParty || localStorage.getItem("current_party") || "";
-    // console.log("  Final currentParty value:", this.currentParty);
-
-    return this.getListOfFinance();
-  }
+  // ── List finances (V2) ──────────────────────────────────
 
   getListOfFinance() {
-    //let filterLink = '&status='+this.orderFilterStatus+"&orderType="+this.orderFilterType+"&ownerID="+this.orderFilterOwnId+"&consignment="+this.orderFilterParty;
     return this.http
-      .get(GlobalVars.baseUrl + "/finance/list?size=800", this.options)
+      .get(GlobalVars.baseUrl + "/finance-v2/list?size=800", this.options)
       .subscribe(
         (response) => {
-          this.allData = response.json().finances;
-          this.totalItems = response.json().totalItems;
-          this.totalWeight = response.json().totalWeight;
-          this.totalUSD = response.json().totalUSD;
-          this.totalUZS = response.json().totalUZS;
-          this.totalPaidUSD = response.json().totalPaidUSD;
-          this.totalPaidUZS = response.json().totalPaidUZS;
-          this.totalPaidPlastic = response.json().totalPaidPlastic;
-          this.totalDebtUSD = response.json().totalDebtUSD;
-          this.totalDebtUZS = response.json().totalDebtUZS;
-          this.activeConsignment = response.json().activeConsignment;
-
-          // this.currentPage = response.json().currentPage;
-          //  this.totalPages = response.json().totalPages;
-          // if (this.totalPages >= 1) {
-          //   this.needPagination = true;
-          //   this.mypages=[''];
-          //   for(let i=0; i<this.totalPages;i++){
-          //     this.mypages[i] = {id: "name"};
-
-          //   }
-          // }
+          this.allData = response.json().finances || [];
+          this.totalItems = response.json().totalItems || 0;
+          this.totalWeight = response.json().totalWeight || 0;
+          this.activeConsignment = response.json().activeConsignment || "";
+          this.currentParty = this.activeConsignment || this.currentParty;
         },
         (error) => {
-          if (error.status == 403) {
-            this.authService.logout();
-          }
-        }
+          if (error.status == 403) this.authService.logout();
+        },
       );
   }
 
-  // openCurrentParty(party: string){
+  // ── Filter by customer ID (debounced) ──────────────────
 
-  //   this.consignmentName = party;
+  private filterTimeout: any;
 
-  // }
-
-  // openFinanceParty()
-  // {
-
-  //   swal.fire({
-  //     title: 'KURS KIRITING',
-  //     allowEnterKey: true,
-  //     html: '<div class="form-group">' +
-  //       '<input id="input-rate" type="text" class="form-control m-2" placeholder="kurs" />' +
-  //       '</div>',
-  //     confirmButtonText: "KIRITISH",
-  //     customClass: {
-  //       confirmButton: 'btn btn-info',
-  //     },
-  //     buttonsStyling: false,
-  //     didOpen: () => {
-
-  //       $('#input-rate').val(rate);
-
-  //      },
-  //     preConfirm: (valueB) => {
-
-  //       let newRate = $('#input-rate').val();
-
-  //       this.http.post(GlobalVars.baseUrl + '/consignments/refinance?consignment='+this.consignmentName+'&rate=' + newRate,'', this.options)
-  //       .subscribe(response => {
-
-  //         if(response.json().status == "ok")
-  //         {
-
-  //           this.http.get(GlobalVars.baseUrl + '/consignments/list', this.options)
-  //           .subscribe(response => {
-
-  //            this.consignments=response.json().consignments;
-
-  //           })
-
-  //         }else {
-
-  //           swal.fire('Error happaned!', response.json().message, 'error').then((result) => { } );
-  //         }
-
-  //       }, error => {
-  //         if (error.status == 403) {
-
-  //           this.authService.logout();
-
-  //         }
-  //     })
-
-  //         },
-
-  //         }).then((result) => {
-  //           if (result.isConfirmed) {
-  //               swal.fire('OMADLI!','O\'zgartirildi','success');
-  //           }
-  //         }
-  //         )
-
-  // }
+  onFilterInput(value: string) {
+    clearTimeout(this.filterTimeout);
+    this.filterTimeout = setTimeout(() => {
+      this.getListOfFinanceWithFilter(value);
+    }, 400);
+  }
 
   getListOfFinanceWithFilter(id: string) {
-    if (id != "") {
-      this.currentFinID = id;
-    }
-    // if (deliver != null) {this.currentDeliveredCase = deliver; }
-    if (id == "") {
-      this.currentFinID = "";
-    }
-    // console.log("current id ", this.currentFinID);
-
+    const param = id.trim() ? "&ownerId=" + id.trim() : "";
     return this.http
-      .get(
-        GlobalVars.baseUrl +
-          "/finance/list?size=500&ownerId=" +
-          this.currentFinID,
-        this.options
-      )
+      .get(GlobalVars.baseUrl + "/finance-v2/list?size=800" + param, this.options)
       .subscribe(
         (response) => {
-          this.allData = response.json().finances;
-          this.totalItems = response.json().totalItems;
-          this.totalWeight = response.json().totalWeight;
-          this.totalUSD = response.json().totalUSD;
-          this.totalUZS = response.json().totalUZS;
-          this.totalPaidUSD = response.json().totalPaidUSD;
-          this.totalPaidUZS = response.json().totalPaidUZS;
-          this.totalPaidPlastic = response.json().totalPaidPlastic;
-          this.totalDebtUSD = response.json().totalDebtUSD;
-          this.totalDebtUZS = response.json().totalDebtUZS;
-          this.activeConsignment = response.json().activeConsignment;
+          this.allData = response.json().finances || [];
+          this.totalItems = response.json().totalItems || 0;
+          this.totalWeight = response.json().totalWeight || 0;
         },
         (error) => {
-          if (error.status == 403) {
-            this.authService.logout();
-          }
-        }
+          if (error.status == 403) this.authService.logout();
+        },
       );
   }
 
-  getListOfParcelsWithFilter(status, type, ownerid, partNum, check) {
-    if (check == "status") {
-      this.orderFilterStatus = status;
-    } else if (check == "type") {
-      this.orderFilterType = type;
-    } else if (check == "ownerid") {
-      this.orderFilterOwnId = ownerid;
-    } else if (check == "partnum") {
-      this.orderFilterParty = partNum;
-    }
-
-    let filterLink =
-      "&status=" +
-      this.orderFilterStatus +
-      "&orderType=" +
-      this.orderFilterType +
-      "&ownerID=" +
-      this.orderFilterOwnId +
-      "&consignment=" +
-      this.orderFilterParty;
-    return this.http
-      .get(
-        GlobalVars.baseUrl +
-          "/orders/list?page=" +
-          this.currentPage +
-          "&size=300" +
-          filterLink,
-        this.options
-      )
-      .subscribe(
-        (response) => {
-          this.allData = response.json().orders;
-          this.allData = response.json().orders;
-          this.totalItems = response.json().totalItems;
-          this.totalWeight = response.json().totalWeight;
-          this.totalUSD = response.json().totalUSD;
-          this.totalUZS = response.json().totalUZS;
-          this.totalPaidUSD = response.json().totalPaidUSD;
-          this.totalPaidUZS = response.json().totalPaidUZS;
-          this.totalPaidPlastic = response.json().totalPaidPlastic;
-          this.totalDebtUSD = response.json().totalDebtUSD;
-          this.totalDebtUZS = response.json().totalDebtUZS;
-          this.activeConsignment = response.json().activeConsignment;
-
-          this.currentPage = response.json().currentPage;
-          this.totalPages = response.json().totalPages;
-          if (this.totalPages >= 1) {
-            this.needPagination = true;
-            this.mypages = [""];
-            for (let i = 0; i < this.totalPages; i++) {
-              this.mypages[i] = { id: "name" };
-            }
-          }
-        },
-        (error) => {
-          if (error.status == 403) {
-            this.authService.logout();
-          }
-        }
-      );
-  }
-
-  getListOfParcelsWithSearch(searchkey) {
-    if (searchkey == "") {
-      this.currentPage = 0;
-
-      this.getListOfFinance();
-    } else {
-      this.http
-        .get(
-          GlobalVars.baseUrl + "/orders/search?tracking_number=" + searchkey,
-          this.options
-        )
-        .subscribe(
-          (response) => {
-            this.allData = response.json().orders;
-            this.totalItems = response.json().totalItems;
-            this.totalWeight = response.json().totalWeight;
-            this.totalUSD = response.json().totalUSD;
-            this.totalUZS = response.json().totalUZS;
-            this.totalPaidUSD = response.json().totalPaidUSD;
-            this.totalPaidUZS = response.json().totalPaidUZS;
-            this.totalPaidPlastic = response.json().totalPaidPlastic;
-            this.totalDebtUSD = response.json().totalDebtUSD;
-            this.totalDebtUZS = response.json().totalDebtUZS;
-            this.activeConsignment = response.json().activeConsignment;
-
-            this.currentPage = response.json().currentPage;
-            this.totalPages = response.json().totalPages;
-            if (this.totalPages > 1) {
-              this.needPagination = true;
-
-              for (let i = 0; i < this.totalPages; i++) {
-                this.mypages[i] = { id: "name" };
-              }
-            }
-          },
-          (error) => {
-            if (error.status == 403) {
-              this.authService.logout();
-            }
-          }
-        );
-    }
-  }
+  // ── Record new finance (V2) ─────────────────────────────
 
   recordFinance() {
     swal
@@ -428,83 +104,108 @@ export class EmployeeFinanceComponent implements OnInit {
         title: "XISOB KITOB QO'SHISH!",
         html:
           '<div class="form-group">' +
-          '<input  id="input-owid" type="text" class="form-control m-2" placeholder="Mijoz IDsi" />' +
-          '<input  id="input-weight" type="text" class="form-control m-2" placeholder="Yuk Og\'rili" />' +
+          '<input id="input-owid" type="text" class="form-control m-2" placeholder="Mijoz IDsi" />' +
+          '<input id="input-weight" type="text" class="form-control m-2" placeholder="Yuk Og\'irligi" />' +
           "</div>",
         confirmButtonText: "QO'SHISH",
-        customClass: {
-          confirmButton: "btn btn-success",
-        },
+        customClass: { confirmButton: "btn btn-success" },
         buttonsStyling: false,
         didOpen: () => {
           this.showLastFinance = true;
-          var ele = $("input[id=input-owid]").filter(":visible").focus();
+          $("input[id=input-owid]").filter(":visible").focus();
         },
-        preConfirm: (result) => {
+        preConfirm: () => {
           this.enteredBeforeLast = this.enteredLast;
-          let ownerId = $("#input-owid").val();
-          let weight = $("#input-weight").val();
+          const ownerId = $("#input-owid").val();
+          const weight = $("#input-weight").val();
           this.enteredLast = ownerId + " ID ga " + weight + " kg";
 
-          this.http
-            .post(
+          this.httpClient
+            .post<any>(
               GlobalVars.baseUrl +
-                "/finance/add?owner_id=" +
-                ownerId +
-                "&weight=" +
-                weight +
-                "&name=" +
-                localStorage.getItem("current_party"),
-              "",
-              this.options
+                "/finance-v2/add?owner_id=" + ownerId +
+                "&weight=" + weight +
+                "&name=" + (this.currentParty || ""),
+              {},
+              { headers: this.getHeaders() },
             )
             .subscribe(
-              (response) => {
-                if (response.json().status == "error") {
-                  this.registredMessage = response.json().message;
-                  swal
-                    .fire("Not Added", this.registredMessage, "error")
-                    .then((result) => {
-                      if (result.isConfirmed) {
-                        this.recordFinance();
-                      } else {
-                      }
-                    });
+              (data) => {
+                if (data.status === "error") {
+                  swal.fire("Qo'shilmadi", data.message || data.error, "error")
+                    .then((r) => { if (r.isConfirmed) this.recordFinance(); });
                 } else {
                   this.getListOfFinance();
-                  return false;
                 }
               },
-
               (error) => {
-                if (error) {
-                  swal
-                    .fire(
-                      "Not Added",
-                      `BAD REQUEST: ${error.json().error}`,
-                      "error"
-                    )
-                    .then((result) => {
-                      if (result.isConfirmed) {
-                        this.recordFinance();
-                      } else {
-                      }
-                    });
-                }
-
-                if (error.status == 403) {
-                  this.authService.logout();
-                }
-              }
+                swal.fire("Xatolik", error.error?.error || error.error?.message || "Xatolik yuz berdi", "error")
+                  .then((r) => { if (r.isConfirmed) this.recordFinance(); });
+              },
             );
         },
       })
       .then((result) => {
-        if (result.isConfirmed) {
-          this.recordFinance();
-        }
+        if (result.isConfirmed) this.recordFinance();
       });
   }
+
+  // ── Edit finance weight (V2) ────────────────────────────
+
+  editFinance(finId: number, weight: number) {
+    swal
+      .fire({
+        title: "Og'irlikni O'zgartirish",
+        html:
+          '<div class="form-group">' +
+          '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;"><label style="min-width:60px;">Kilosi:</label><input id="input-weight" type="text" class="form-control" placeholder="Kilosi" /></div>' +
+          '<div style="display:flex;align-items:center;gap:8px;"><label style="min-width:60px;">RATE:</label><input id="input-rate" type="text" class="form-control" placeholder="Narx (ixtiyoriy)" /></div>' +
+          "</div>",
+        showCancelButton: true,
+        confirmButtonText: "O'zgartirish",
+        cancelButtonText: "Bekor",
+        customClass: { confirmButton: "btn btn-success", cancelButton: "btn btn-danger" },
+        buttonsStyling: false,
+        didOpen: () => {
+          $("#input-weight").val(weight);
+        },
+        preConfirm: () => {
+          const newWeight = $("#input-weight").val();
+          const newRate = $("#input-rate").val();
+
+          if (!newWeight && !newRate) {
+            swal.showValidationMessage("Kilosi yoki narxni kiriting");
+            return false;
+          }
+
+          const body: any = { finance_id: finId };
+          if (newWeight && parseFloat(newWeight) !== weight) body.weight = newWeight;
+          if (newRate) body.perKg = newRate;
+
+          this.httpClient
+            .post<any>(GlobalVars.baseUrl + "/finance-v2/edit", body, {
+              headers: this.getHeaders(),
+            })
+            .subscribe(
+              (data) => {
+                if (data.status === "error") {
+                  swal.fire("Xatolik", data.message || data.error, "error");
+                } else {
+                  swal.fire({ icon: "success", title: "O'zgartirildi!", timer: 1500, showConfirmButton: false });
+                  this.getListOfFinance();
+                }
+              },
+              (error) => {
+                swal.fire("Xatolik", error.error?.error || error.error?.message || "Xatolik yuz berdi", "error");
+              },
+            );
+
+          return false;
+        },
+      });
+  }
+
+  // ── Find consignment by name ────────────────────────────
 
   findConsignmentByName() {
     swal
@@ -512,427 +213,52 @@ export class EmployeeFinanceComponent implements OnInit {
         title: "Partiya Raqamini Qidirish",
         html:
           '<div class="form-group">' +
-          '<input  id="name" type="text" class="form-control m-2" placeholder="Partiya Raqami..." />' +
+          '<input id="name" type="text" class="form-control m-2" placeholder="Partiya Raqami..." />' +
           "</div>",
         showCancelButton: true,
         confirmButtonText: "Qidirish",
         cancelButtonText: "Bekor qilish",
-        customClass: {
-          confirmButton: "btn btn-success",
-          cancelButton: "btn btn-danger",
-        },
+        customClass: { confirmButton: "btn btn-success", cancelButton: "btn btn-danger" },
         buttonsStyling: false,
         didOpen: () => {
-          const input = document.getElementById("name");
-          if (input) {
-            input.focus();
-          }
+          document.getElementById("name")?.focus();
         },
-        preConfirm: (result) => {
-          let name = $("#name").val();
-
+        preConfirm: () => {
+          const name = $("#name").val();
           this.http
-            .get(
-              GlobalVars.baseUrl + "/consignments/info?name=" + name,
-              this.options
-            )
+            .get(GlobalVars.baseUrl + "/consignments/info?name=" + name, this.options)
             .subscribe(
               (response) => {
-                localStorage.setItem(
-                  "current_party",
-                  response.json().consignment.name
-                );
-
-                if (response.json().status == "error") {
-                  this.registredMessage = response.json().message;
-                  swal
-                    .fire("Not Added", this.registredMessage, "error")
-                    .then((result) => {
-                      if (result.isConfirmed) {
-                        this.findConsignmentByName();
-                      } else {
-                      }
-                    });
+                const res = response.json();
+                if (res.status === "error") {
+                  swal.fire("Topilmadi", res.message || res.error, "error")
+                    .then((r) => { if (r.isConfirmed) this.findConsignmentByName(); });
                 } else {
+                  localStorage.setItem("current_party", res.consignment.name);
+                  this.currentParty = res.consignment.name;
                   this.getListOfFinance();
-                  return false;
                 }
               },
               (error) => {
-                if (error) {
-                  swal
-                    .fire(
-                      "Not Added",
-                      `BAD REQUEST: ${error.json().error}`,
-                      "error"
-                    )
-                    .then((result) => {
-                      if (result.isConfirmed) {
-                        this.findConsignmentByName();
-                        this.currentParty =
-                          GlobalVars.currentParty ||
-                          localStorage.getItem("current_party") ||
-                          "";
-                      } else {
-                        this.getListOfFinance();
-                        return false;
-                      }
-                    });
-                }
-
-                if (error.status == 403) {
-                  this.authService.logout();
-                }
-              }
+                swal.fire("Xatolik", error.json?.()?.error || "Partiya topilmadi", "error")
+                  .then((r) => { if (r.isConfirmed) this.findConsignmentByName(); });
+              },
             );
         },
       })
       .then((result) => {
-        if (result.isConfirmed) {
-          swal
-            .fire({
-              icon: "success",
-              html: $("#name").val() + " Partiya Ochildi",
-              customClass: {
-                confirmButton: "btn btn-success",
-              },
-              buttonsStyling: false,
-            })
-            .then(() => {
-              this.currentParty =
-                GlobalVars.currentParty ||
-                localStorage.getItem("current_party") ||
-                "";
-            });
-        }
-      });
-  }
-
-  pagebyNum(ipage) {
-    this.currentPage = ipage;
-    this.isPageNumActive = true;
-    document.getElementById("listcard").scrollIntoView();
-    this.getListOfFinance();
-  }
-
-  editFinance(finId, weight, usd, cash, card, ownerId) {
-    swal
-      .fire({
-        title: "Xisob O'zgartirish!",
-        html:
-          '<div class="form-group">' +
-          '<div class="form-group" style="display: block ruby;"><label for="input-card">Kilosi:</label><input id="input-weight" type="text" class="form-control m-2" placeholder="Kilosi" /> </div>' +
-          '<div class="form-group" style="display: block ruby;"><label for="input-card">RATE</label> <input  id="input-rate" type="text" class="form-control m-2" placeholder="RATE" /> </div> ' +
-          "</div>",
-        showCancelButton: true,
-        confirmButtonText: "O'zgartish",
-        cancelButtonText: "No",
-        customClass: {
-          confirmButton: "btn btn-success",
-          cancelButton: "btn btn-danger",
-        },
-        buttonsStyling: false,
-        didOpen: () => {
-          $("#input-weight").val(weight);
-          $("#input-usd").val(usd);
-          $("#input-cash").val(cash);
-          $("#input-card").val(card);
-
-          // var options = [];
-          // for (var i = 0; i < GlobalVars.orderTypes.length; i++) {
-          //     options.push('<option value="',
-          //     GlobalVars.orderTypes[i].id, '">',
-          //     GlobalVars.orderTypes[i].descriptionEn, '</option>');
-          // }
-          // $("#types").html(options.join(''));
-
-          // $('#types').val(orderType);
-        },
-        preConfirm: (result) => {
-          let weight2 = $("#input-weight").val();
-          if ($("#input-weight").val() == weight) {
-            weight2 = "";
-          }
-          let usd2 = $("#input-usd").val();
-          let cash2 = $("#input-cash").val();
-          let card2 = $("#input-card").val();
-          let rate2 = $("#input-rate").val();
-
-          if (rate2 || weight2) {
-            this.http
-              .post(
-                GlobalVars.baseUrl +
-                  "/finance/changeRK?owner_id=" +
-                  ownerId +
-                  "&id=" +
-                  finId +
-                  "&weight=" +
-                  weight2 +
-                  "&name=" +
-                  localStorage.getItem("current_party") +
-                  "&perKg=" +
-                  rate2,
-                "",
-                this.options
-              )
-              .subscribe(
-                (response) => {
-                  if (response.json().status == "error") {
-                    this.registredMessage = response.json().message;
-                    swal
-                      .fire("Not Added", this.registredMessage, "error")
-                      .then((result) => {
-                        if (result.isConfirmed) {
-                          this.recordFinance();
-                        } else {
-                        }
-                      });
-                  } else {
-                    this.getListOfFinance();
-                    return false;
-                  }
-                },
-                (error) => {
-                  if (error) {
-                    swal
-                      .fire(
-                        "Not Added",
-                        `BAD REQUEST: ${error.json().error}`,
-                        "error"
-                      )
-                      .then((result) => {
-                        if (result.isConfirmed) {
-                          this.getListOfFinance();
-                          this.recordFinance();
-                        } else {
-                        }
-                      });
-                  }
-
-                  if (error.status == 403) {
-                    this.authService.logout();
-                  }
-                }
-              );
-          }
-          this.http
-            .post(
-              GlobalVars.baseUrl +
-                "/finance/edit?plastic=" +
-                card2 +
-                "&cash=" +
-                cash2 +
-                "&usd=" +
-                usd2 +
-                "&id=" +
-                finId +
-                "&rate=" +
-                rate2,
-              "",
-              this.options
-            )
-            .subscribe(
-              (response) => {
-                this.getListOfFinance();
-                if (response.json().status == "error") {
-                  this.registredMessage = response.json().message;
-                  // swal.showValidationMessage('Not Added, check: ' + this.registredMessage);
-                  swal
-                    .fire("Not Added", this.registredMessage, "error")
-                    .then((result) => {
-                      if (result.isConfirmed) {
-                      }
-                    });
-                } else {
-                  return false;
-                }
-              },
-              (error) => {
-                if (error) {
-                  swal
-                    .fire(
-                      "Not Added",
-                      `BAD REQUEST: ${error.json().error}`,
-                      "error"
-                    )
-                    .then((result) => {
-                      if (result.isConfirmed) {
-                        this.getListOfFinance();
-                      }
-                    });
-                }
-              }
-            );
-        },
-      })
-      .then((result) => {
-        this.getListOfFinance();
         if (result.isConfirmed) {
           swal.fire({
             icon: "success",
-            html: $("#input-trnum").val() + " is SUCCESSFULLY CHANGED!",
-            customClass: {
-              confirmButton: "btn btn-success",
-            },
+            html: $("#name").val() + " Partiya Ochildi",
+            customClass: { confirmButton: "btn btn-success" },
             buttonsStyling: false,
           });
         }
       });
   }
 
-  addFinance(finId) {
-    swal
-      .fire({
-        title: "Xisob Qo'shish!",
-        html:
-          '<div class="form-group">' +
-          '<input id="input-usd" type="text" class="form-control m-2" placeholder="DOLLORda berdi" />' +
-          '<input id="input-cash" type="text" class="form-control m-2" placeholder="NAQD PUL BERDI" />' +
-          '<input id="input-card" type="text" class="form-control m-2" placeholder="PLASTIKDA BERDI" />' +
-          '<input id="input-izoh" type="text" class="form-control m-2" placeholder="IZOH QOLDIRISH" />' +
-          "</div>",
-        showCancelButton: true,
-        confirmButtonText: "BERDI",
-        cancelButtonText: "No",
-        customClass: {
-          confirmButton: "btn btn-success",
-          cancelButton: "btn btn-danger",
-        },
-        buttonsStyling: false,
-        preConfirm: (result) => {
-          let usd = $("#input-usd").val();
-          let cash = $("#input-cash").val();
-          let card = $("#input-card").val();
-          let izoh = $("#input-izoh").val();
-
-          this.http
-            .post(
-              GlobalVars.baseUrl +
-                "/finance/pay?id=" +
-                finId +
-                "&plastic=" +
-                card +
-                "&usd=" +
-                usd +
-                "&cash=" +
-                cash +
-                "&comment=" +
-                izoh,
-              "",
-              this.options
-            )
-            .subscribe(
-              (response) => {
-                this.getListOfFinance();
-                if (response.json().status == "error") {
-                  // swal.showValidationMessage('Not Added, check: ' + this.registredMessage);
-                  swal
-                    .fire("Not Added", response.json().message, "error")
-                    .then((result) => {
-                      if (result.isConfirmed) {
-                      }
-                    });
-                } else {
-                  return false;
-                }
-              },
-              (error) => {
-                if (error) {
-                  swal
-                    .fire(
-                      "Not Added",
-                      `BAD REQUEST: ${error.json().error}`,
-                      "error"
-                    )
-                    .then((result) => {
-                      if (result.isConfirmed) {
-                        this.getListOfFinance();
-                      }
-                    });
-                }
-              }
-            );
-        },
-      })
-      .then((result) => {
-        if (result.isConfirmed) {
-          this.getListOfFinance();
-          swal.fire({
-            icon: "success",
-            html: "SUCCESSFULLY CHANGED!",
-            customClass: {
-              confirmButton: "btn btn-success",
-            },
-            buttonsStyling: false,
-          });
-        }
-      });
-  }
-
-  deliveredFunc(trNum, owID) {
-    swal
-      .fire({
-        title: "Bu yuki yetkazildimi??",
-        text: "ID " + owID + "ning Yuki yetkazilganini tasdiqlaysizmi?",
-        icon: "warning",
-        showCancelButton: true,
-        customClass: {
-          confirmButton: "btn btn-success",
-          cancelButton: "btn btn-danger",
-        },
-        confirmButtonText: "Ha, Yetkazildi!",
-        buttonsStyling: false,
-      })
-      .then((result) => {
-        if (result.value) {
-          this.http
-            .post(
-              GlobalVars.baseUrl +
-                "/finance/edit?delivered=true" +
-                "&id=" +
-                trNum,
-              "",
-              this.options
-            )
-            .subscribe((response) => {
-              swal.fire({
-                title: "Tasdiqlandi!",
-                text: "Bu yuk yetkazildi.",
-                icon: "success",
-                customClass: {
-                  confirmButton: "btn btn-success",
-                },
-                buttonsStyling: false,
-              });
-
-              this.getListOfFinance();
-            });
-        }
-      });
-  }
-
-  getListwithFiltr(cond) {
-    return this.http
-      .get(GlobalVars.baseUrl + "/finance/list?size=300", this.options)
-      .subscribe(
-        (response) => {
-          if (cond == "true") {
-            this.allData = response
-              .json()
-              .finances.filter((r) => r.debt_uzs > 5000);
-          } else if (cond == "false") {
-            this.allData = response
-              .json()
-              .finances.filter((r) => r.debt_uzs < 5000);
-          } else {
-            this.allData = response.json().finances;
-          }
-        },
-        (error) => {
-          if (error.status == 403) {
-            this.authService.logout();
-          }
-        }
-      );
+  getShippingLabel(row: any): string {
+    return row.shipping_type === "AVTO" || row.isHongKong ? "Avto" : "Avia";
   }
 }

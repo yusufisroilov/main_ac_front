@@ -1,7 +1,6 @@
 <div class="main-content">
   <div class="container-fluid">
 
-
     <!-- Stats Cards -->
     <div class="row" *ngIf="showLastFinance">
       <div class="col-md-6">
@@ -10,7 +9,6 @@
           <h3 class="stats-value">{{ enteredLast }}</h3>
         </div>
       </div>
-
       <div class="col-md-6">
         <div class="stats-card stats-card-before-last">
           <div class="stats-label">Oxirgidan Oldingi</div>
@@ -24,7 +22,7 @@
       <div class="col-md-12">
         <div class="card" id="listcard">
 
-          <!-- Card Header with Icon, Title, Buttons, and Search - All in One Row -->
+          <!-- Card Header -->
           <div class="card-header card-header-success card-header-icon"
             style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap; padding: 15px 20px;">
 
@@ -34,22 +32,21 @@
                 <i class="material-icons">assignment</i>
               </div>
               <div>
-                <h4 class="card-title" style="margin: 0; font-size: 18px; white-space: nowrap;">Xisob Kitoblar Reys:
-                  <b>{{ currentParty }}</b>
+                <h4 class="card-title" style="margin: 0; font-size: 18px; white-space: nowrap;">
+                  Xisob Kitoblar Reys: <b>{{ currentParty }}</b>
                 </h4>
-
+                <small class="text-muted" *ngIf="totalItems">{{ totalItems }} ta / {{ totalWeight }} kg</small>
               </div>
             </div>
 
             <!-- Center: Action Buttons -->
             <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-              <button type="button" mat-raised-button (click)="findConsignmentByName()" class="btn btn-primary btn-sm"
+              <button type="button" (click)="findConsignmentByName()" class="btn btn-primary btn-sm"
                 style="display: flex; align-items: center; gap: 6px; font-size: 13px; padding: 8px 16px; white-space: nowrap; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
                 <i class="material-icons" style="font-size: 18px;">flight_land</i>
                 Partiya Belgilash
               </button>
-
-              <button type="button" mat-raised-button (click)="recordFinance()" class="btn btn-success btn-sm"
+              <button type="button" (click)="recordFinance()" class="btn btn-success btn-sm"
                 style="display: flex; align-items: center; gap: 6px; font-size: 13px; padding: 8px 16px; white-space: nowrap; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
                 <i class="material-icons" style="font-size: 18px;">add</i>
                 Xisob Qo'shish
@@ -63,7 +60,7 @@
                   style="position: absolute; left: 12px; color: #666; font-size: 20px; z-index: 1;">search</i>
                 <input type="text" class="form-control form-control-sm"
                   placeholder="Mijoz ID raqami bo'yicha qidirish..."
-                  (input)="getListOfFinanceWithFilter($event.target.value)"
+                  (input)="onFilterInput($event.target.value)"
                   style="padding: 8px 12px 8px 42px; font-size: 13px; background: rgba(255,255,255,0.95); border-radius: 25px; border: 1px solid rgba(255,255,255,0.3); box-shadow: 0 2px 4px rgba(0,0,0,0.1); width: 100%;" />
               </div>
             </div>
@@ -71,21 +68,16 @@
 
           <div class="card-body" style="padding: 20px;">
 
-            <!-- Pagination Top -->
-            <ul class="pagination" *ngIf="needPagination">
-              <li class="page-item" [ngClass]="{ active: currentPage == i }" *ngFor="let page of mypages; index as i">
-                <a mat-button class="page-link" (click)="pagebyNum(i)">{{ i + 1 }}</a>
-              </li>
-            </ul>
-
             <!-- Table -->
             <div class="table-responsive">
               <table class="table">
                 <thead>
                   <tr>
-                    <th class="text-center">{{ dataTable.headerRow[0] }}</th>
-                    <th class="text-center">{{ dataTable.headerRow[1] }}</th>
-                    <th class="text-center">{{ dataTable.headerRow[2] }}</th>
+                    <th class="text-center">No</th>
+                    <th class="text-center">IDsi</th>
+                    <th class="text-center">Partiya</th>
+                    <th class="text-center">Turi</th>
+                    <th class="text-center">Kilosi</th>
                     <th class="text-center">Amallar</th>
                   </tr>
                 </thead>
@@ -93,42 +85,29 @@
                   <tr *ngFor="let row of allData; let i = index">
                     <td class="text-center">{{ i + 1 }}</td>
                     <td class="text-center">
-                      <span class="id-badge">K{{ row.owner_id }}</span>
+                      <span class="id-badge">K{{ row.customer_id }}</span>
+                    </td>
+                    <td class="text-center">{{ row.consignment }}</td>
+                    <td class="text-center">
+                      <span [style.color]="row.shipping_type === 'AVTO' ? '#1506ba' : '#00e5ff'"
+                        style="font-weight: 600;">
+                        {{ getShippingLabel(row) }}
+                      </span>
                     </td>
                     <td class="text-center">
-                      <span class="weight-badge">{{ row.weight }} kg</span>
+                      <span class="weight-badge">{{ row.weight_kg }} kg</span>
                     </td>
                     <td class="text-center">
                       <button class="btn btn-link btn-success btn-just-icon"
-                        (click)="editFinance(row.id, row.weight, row.paid_usd_cash, row.paid_uzs_cash, row.paid_plastic, row.owner_id)"
+                        (click)="editFinance(row.id, row.weight_kg)"
                         title="Tahrirlash">
                         <i class="material-icons">edit</i>
                       </button>
                     </td>
                   </tr>
-
-
                 </tbody>
               </table>
             </div>
-
-            <!-- Pagination Bottom -->
-            <ul class="pagination" *ngIf="needPagination">
-              <li class="page-item">
-                <a mat-button class="page-link" (click)="pagebyNum(currentPage - 1)" *ngIf="currentPage > 0">
-                  <i class="fa fa-angle-double-left"></i>
-                </a>
-              </li>
-              <li class="page-item" [ngClass]="{ active: currentPage == i }" *ngFor="let page of mypages; index as i">
-                <a mat-button class="page-link" (click)="pagebyNum(i)">{{ i + 1 }}</a>
-              </li>
-              <li class="page-item">
-                <a mat-button class="page-link" (click)="pagebyNum(currentPage + 1)"
-                  *ngIf="currentPage < mypages.length - 1">
-                  <i class="fa fa-angle-double-right"></i>
-                </a>
-              </li>
-            </ul>
 
           </div>
         </div>

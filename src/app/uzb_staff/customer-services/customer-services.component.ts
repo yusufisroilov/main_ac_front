@@ -1,4 +1,5 @@
 import { Component, OnInit } from "@angular/core";
+import { ActivatedRoute } from "@angular/router";
 import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { GlobalVars } from "src/app/global-vars";
 import swal from "sweetalert2";
@@ -47,7 +48,7 @@ export class CustomerServicesComponent implements OnInit {
     OTHER: "Boshqa",
   };
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private route: ActivatedRoute) {}
 
   private getHeaders(): HttpHeaders {
     return new HttpHeaders({
@@ -59,6 +60,13 @@ export class CustomerServicesComponent implements OnInit {
   ngOnInit() {
     this.loadCashAccounts();
     if (this.isOwnerOrManager) this.loadServiceTypes();
+
+    this.route.queryParams.subscribe((params) => {
+      if (params["customer_id"]) {
+        this.customerId = params["customer_id"];
+        this.searchCustomer();
+      }
+    });
   }
 
   // ── Cash accounts ──────────────────────────────────────
@@ -613,28 +621,50 @@ export class CustomerServicesComponent implements OnInit {
         },
       })
       .then((result) => {
-        if (!result.isConfirmed || !result.value) return;
-        this.http
-          .post<any>(
-            `${GlobalVars.baseUrl}/services/refund`,
-            {
-              customer_id: customerId,
-              overpayment_usd: overpaymentUsd,
-              cash_account_id: result.value.cash_account_id,
-            },
-            { headers: this.getHeaders() },
-          )
-          .subscribe(
-            (data) => {
-              if (data.status === "ok") {
-                swal.fire({ icon: "success", title: "Qaytarildi!", text: `$${overpaymentUsd} qaytarildi.`, timer: 2500, showConfirmButton: false });
-                this.searchCustomer();
-              } else {
-                swal.fire("Xatolik", data.error, "error");
-              }
-            },
-            (err) => swal.fire("Xatolik", err.error?.error || "Xatolik yuz berdi", "error"),
-          );
+        if (result.isConfirmed && result.value) {
+          // User chose an account — refund
+          this.http
+            .post<any>(
+              `${GlobalVars.baseUrl}/services/refund`,
+              {
+                customer_id: customerId,
+                overpayment_usd: overpaymentUsd,
+                cash_account_id: result.value.cash_account_id,
+              },
+              { headers: this.getHeaders() },
+            )
+            .subscribe(
+              (data) => {
+                if (data.status === "ok") {
+                  swal.fire({ icon: "success", title: "Qaytarildi!", text: `$${overpaymentUsd} qaytarildi.`, timer: 2500, showConfirmButton: false });
+                  this.searchCustomer();
+                } else {
+                  swal.fire("Xatolik", data.error, "error");
+                }
+              },
+              (err) => swal.fire("Xatolik", err.error?.error || "Xatolik yuz berdi", "error"),
+            );
+        } else {
+          // Popup dismissed — default to bonus/credit
+          this.http
+            .post<any>(
+              `${GlobalVars.baseUrl}/services/overpayment-to-bonus`,
+              {
+                customer_id: customerId,
+                overpayment_usd: overpaymentUsd,
+              },
+              { headers: this.getHeaders() },
+            )
+            .subscribe(
+              (data) => {
+                if (data.status === "ok") {
+                  swal.fire({ icon: "info", title: "Bonus", text: `Ortiqcha $${overpaymentUsd} bonus sifatida saqlandi.`, timer: 2500, showConfirmButton: false });
+                  this.searchCustomer();
+                }
+              },
+              () => {},
+            );
+        }
       });
   }
 

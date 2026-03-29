@@ -114,6 +114,13 @@ export const EmployeeROUTE: RouteInfo[] = [
     icontype: "badge",
   },
   {
+    path: "/uzs/each-client-admin2",
+    title: "Har Bir Mijoz2",
+    type: "link",
+    icontype: "person_search",
+  },
+
+  {
     path: "/uzs/employee-finance",
     title: "Xisob Kitob",
     type: "link",
@@ -187,6 +194,12 @@ export const adminROUTES: RouteInfo[] = [
     title: "Har bir Mijoz",
     type: "link",
     icontype: "badge",
+  },
+  {
+    path: "/uzs/each-client-admin2",
+    title: "Har Bir Mijoz2",
+    type: "link",
+    icontype: "person_search",
   },
 
   {

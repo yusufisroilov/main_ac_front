@@ -53,11 +53,8 @@ export class Financev2Component implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.currentParty = localStorage.getItem("current_party") || "";
     this.loadCashAccounts();
-    if (this.currentParty) {
-      this.getListOfFinance();
-    }
+    this.getListOfFinance();
   }
 
   private getHeaders(): HttpHeaders {
@@ -160,7 +157,6 @@ export class Financev2Component implements OnInit {
                   return;
                 }
                 this.currentParty = data.consignment.name;
-                localStorage.setItem("current_party", data.consignment.name);
                 this.getListOfFinance();
               },
               (error) => {
@@ -219,6 +215,11 @@ export class Financev2Component implements OnInit {
           this.totalDebtUSD = data.totalDebtUSD || "0";
           this.totalDebtUZS = data.totalDebtUZS || "0";
           this.fxRate = data.fxRate || 0;
+
+          // Always trust the backend's active consignment, not localStorage
+          if (data.activeConsignment) {
+            this.currentParty = data.activeConsignment;
+          }
 
           this.currentPage = data.currentPage || 0;
           this.totalPages = data.totalPages || 0;
@@ -345,7 +346,7 @@ export class Financev2Component implements OnInit {
                 "&weight=" +
                 weight +
                 "&name=" +
-                (localStorage.getItem("current_party") || ""),
+                (this.currentParty || ""),
               {},
               { headers: this.getHeaders() },
             )

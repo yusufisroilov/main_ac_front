@@ -181,6 +181,9 @@ export class ConsignmentTrackingComponent implements OnInit {
   formatDate(dateStr: string): string {
     if (!dateStr) return "";
     const d = new Date(dateStr);
-    return d.toLocaleDateString("uz-UZ", { day: "2-digit", month: "2-digit", year: "2-digit" });
+    const dd = String(d.getDate()).padStart(2, "0");
+    const mm = String(d.getMonth() + 1).padStart(2, "0");
+    const yy = String(d.getFullYear()).slice(-2);
+    return `${dd}.${mm}.${yy}`;
   }
 }

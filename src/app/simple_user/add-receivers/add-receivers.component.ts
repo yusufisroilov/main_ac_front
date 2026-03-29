@@ -23,6 +23,7 @@ import { GlobalVars } from "src/app/global-vars";
 import { FormsModule } from "@angular/forms";
 import { AuthService } from "src/app/pages/login/auth.service";
 import { FormBuilder, FormGroup } from "@angular/forms";
+import swal from "sweetalert2";
 
 declare const $: any;
 interface FileReaderEventTarget extends EventTarget {
@@ -153,18 +154,26 @@ export class AddReceiversComponent implements OnInit, OnChanges, AfterViewInit {
         )
         .subscribe(
           (response) => {
-            this.registredMessage = response.json().message;
+            const res = response.json();
+            if (res.status === "error") {
+              swal.fire("Xatolik", res.message || res.error || "Tahrirlashda xatolik yuz berdi", "error");
+              return;
+            }
+            this.registredMessage = res.message;
             localStorage.removeItem("editpr");
             localStorage.removeItem("recid");
             this.editOr = "N";
             this.showAddNotification("top", "center");
-            this.router.navigate(["/uzm/allreceivers"]); //line 157
+            this.router.navigate(["/uzm/allreceivers"]);
             return false;
           },
           (error) => {
             if (error.status == 403) {
               this.authService.logout();
+              return;
             }
+            const msg = error.json?.()?.message || error.json?.()?.error || "Tahrirlashda xatolik yuz berdi";
+            swal.fire("Xatolik", msg, "error");
           }
         );
     } else {
@@ -180,13 +189,17 @@ export class AddReceiversComponent implements OnInit, OnChanges, AfterViewInit {
             this.checkPassport = true;
             this.checkPassportMessage =
               this.addRegService.checkPassportMessageS;
+            swal.fire("Xatolik", this.checkPassportMessage || "Qo'shishda xatolik yuz berdi", "error");
             return false;
           }
         },
         (error) => {
           if (error.status == 403) {
             this.authService.logout();
+            return;
           }
+          const msg = error.error?.message || error.error?.error || "Qo'shishda xatolik yuz berdi";
+          swal.fire("Xatolik", msg, "error");
         }
       );
     }

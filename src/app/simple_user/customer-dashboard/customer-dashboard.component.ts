@@ -31,13 +31,12 @@ interface Consignment {
   name: string;
   weight: number;
   sum_usd: number;
-  sum_uzs: number;
   debt: number;
   debt_uzs: number;
-  registered_date: Date;
-  delivered: boolean;
   quantity: number;
   isHongKong: boolean;
+  shipping_type: string;
+  status: number;
   rate: number;
 }
 

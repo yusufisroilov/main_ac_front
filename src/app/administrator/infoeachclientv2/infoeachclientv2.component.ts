@@ -578,6 +578,8 @@ export class Infoeachclientv2Component implements OnInit {
       denyButtonText: "💵 Naqd qaytarish",
       customClass: { confirmButton: "btn btn-success", denyButton: "btn btn-warning" },
       buttonsStyling: false,
+      allowOutsideClick: false,
+      allowEscapeKey: false,
     }).then((result) => {
       if (result.isConfirmed) {
         // Button A: keep as unallocated BONUS credit
@@ -867,7 +869,9 @@ export class Infoeachclientv2Component implements OnInit {
   // ─── Services ───
 
   openServices() {
-    // TODO: implement services dialog
+    this.router.navigate(["/uzm/customer-services"], {
+      queryParams: { customer_id: this.currentID },
+    });
   }
 
   // ─── Delivery ───

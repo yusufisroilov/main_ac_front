@@ -16,7 +16,8 @@
                                 <i class="material-icons">motorcycle</i>
                             </div>
                             <div>
-                                <h4 class="card-title" style="margin: 0; font-size: 18px;">Bizning Kuryer Yetkazishlar</h4>
+                                <h4 class="card-title" style="margin: 0; font-size: 18px;">Bizning Kuryer Yetkazishlar
+                                </h4>
                                 <p class="card-category" style="margin: 0; font-size: 13px;">
                                     {{selectedDateFilterText}} • {{totalDeliveries}} ta yetkazish
                                 </p>
@@ -79,6 +80,7 @@
                                             <th>Quti Barkod</th>
                                             <th>Mijoz</th>
                                             <th>Qutillar</th>
+                                            <th>Og'irligi</th>
                                             <th>Telefon</th>
                                             <th>Manzil</th>
                                             <th>Holat</th>
@@ -93,6 +95,15 @@
                                             <td><code>{{delivery.barcode}}</code></td>
                                             <td><strong>K{{delivery.owner_id}}</strong></td>
                                             <td>{{delivery.total_packages}} ta</td>
+                                            <td>
+                                                <span *ngIf="delivery.weight">{{delivery.weight}} kg</span>
+                                                <span *ngIf="!delivery.weight" class="text-muted">-</span>
+                                                <button *ngIf="canEditWeight(delivery)"
+                                                    class="btn btn-sm btn-link text-primary"
+                                                    (click)="editWeight(delivery)">
+                                                    <i class="material-icons">edit</i>
+                                                </button>
+                                            </td>
                                             <td>{{delivery.customer_phone}}</td>
                                             <td>
                                                 <small
@@ -162,6 +173,10 @@
                         <p><strong>Telefon:</strong> {{selectedDelivery.customer_phone}}</p>
                         <p><strong>Yetkazish turi:</strong> Bizning Kuryer</p>
                         <p><strong>Qutillar soni:</strong> {{selectedDelivery.total_packages}} ta</p>
+                        <p><strong>Og'irligi:</strong>
+                            <span *ngIf="selectedDelivery.weight">{{selectedDelivery.weight}} kg</span>
+                            <span *ngIf="!selectedDelivery.weight" class="text-muted">Kiritilmagan</span>
+                        </p>
                         <p><strong>Holat:</strong>
                             <span class="badge" [class]="getStatusBadgeClass(selectedDelivery.status)">
                                 {{getStatusText(selectedDelivery.status)}}
@@ -201,6 +216,45 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Yopish</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Weight Modal -->
+<div class="modal fade" id="editWeightModalCourier" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Og'irlikni Tahrirlash</h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row" *ngIf="selectedDeliveryForWeight">
+                    <div class="col-md-12">
+                        <p><strong>Yetkazish ID:</strong> {{selectedDeliveryForWeight.barcode}}</p>
+                        <p><strong>Hozirgi og'irlik:</strong> {{selectedDeliveryForWeight.weight}} kg</p>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="bmd-label-floating">Yangi og'irlik (kg) *</label>
+                    <input type="number" class="form-control" [(ngModel)]="enteredWeight"
+                        placeholder="Yangi og'irlikni kiriting" min="0" step="0.1" required>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                    Bekor qilish
+                </button>
+                <button type="button" class="btn btn-warning" (click)="updateWeight()"
+                    [disabled]="!enteredWeight || processingDelivery">
+                    <span *ngIf="processingDelivery" class="spinner-border spinner-border-sm mr-1"></span>
+                    <i class="material-icons" *ngIf="!processingDelivery">edit</i>
+                    Yangilash
+                </button>
             </div>
         </div>
     </div>

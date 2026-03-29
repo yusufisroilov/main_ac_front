@@ -180,7 +180,7 @@
                             <p class="text-muted">Siz uchun yuklar kelganda bu yerda ko'rinadi</p>
                         </div>
 
-                        <!-- Consignments Table -->
+                        <!-- Consignments Table (same as OrderBoxes) -->
                         <div *ngIf="!loadingStats && lastTwoConsignments.length > 0" class="table-responsive">
                             <table class="table table-hover">
                                 <thead class="text-primary">
@@ -188,79 +188,81 @@
                                         <th class="text-center">No</th>
                                         <th>Partiya</th>
                                         <th class="text-center">Avia/Avto</th>
+                                        <th class="text-center">Status</th>
                                         <th class="text-center">Soni</th>
                                         <th class="text-center">Og'irligi</th>
                                         <th class="text-center">Summasi</th>
                                         <th class="text-center">Kurs</th>
-                                        <th class="text-center">Qarz $</th>
-                                        <th class="text-center">Qarz So'm</th>
+                                        <th class="text-center">Qarzi $da</th>
+                                        <th class="text-center">Qarzi SUMda</th>
+                                        <th class="text-center">Holati</th>
                                         <th class="text-center">Amallar</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr *ngFor="let consignment of lastTwoConsignments; let i = index">
                                         <td class="text-center">{{ i + 1 }}</td>
-                                        <td>
-                                            <strong>{{ consignment.name }}</strong>
-                                            <br>
-                                            <small class="text-muted">
-                                                {{ consignment.registered_date | date: 'dd.MM.yyyy' }}
-                                            </small>
-                                        </td>
+                                        <td><strong>{{ consignment.name }}</strong></td>
                                         <td class="text-center">
-                                            <span *ngIf="consignment.isHongKong" class="badge badge-primary"
-                                                style="font-size: 14px; padding: 8px 12px;">
-                                                🚚 Avto
+                                            <span *ngIf="consignment.isHongKong"
+                                                style="font-weight: 600; color: rgb(33, 6, 186)">
+                                                Avto
                                             </span>
-                                            <span *ngIf="!consignment.isHongKong" class="badge badge-info"
-                                                style="font-size: 14px; padding: 8px 12px;">
-                                                🛬 Avia
+                                            <span *ngIf="!consignment.isHongKong"
+                                                style="font-weight: 600; color: rgb(0, 229, 255)">
+                                                Avia
                                             </span>
                                         </td>
                                         <td class="text-center">
-                                            <strong>{{ consignment.quantity }}</strong> ta
-                                        </td>
-                                        <td class="text-center">
-                                            <span *ngIf="consignment.weight && consignment.weight !== '0'">
-                                                {{ consignment.weight }} kg
-                                            </span>
-                                            <span *ngIf="!consignment.weight || consignment.weight === '0'"
-                                                class="text-muted">
-                                                - -
+                                            <span class="badge" [ngClass]="getStatusBadgeClass(consignment.status)">
+                                                {{ getOrderStatusText(consignment.status) }}
                                             </span>
                                         </td>
+                                        <td class="text-center">{{ consignment.quantity }} ta</td>
                                         <td class="text-center">
-                                            <span *ngIf="consignment.sum_usd && consignment.sum_usd !== '0'">
-                                                ${{ consignment.sum_usd }}
-                                            </span>
-                                            <span *ngIf="!consignment.sum_usd || consignment.sum_usd === '0'"
-                                                class="text-muted">
-                                                - -
-                                            </span>
-                                        </td>
-                                        <td class="text-center">{{ consignment.rate }}</td>
-                                        <td class="text-center">
-                                            <span *ngIf="consignment.debt && consignment.debt !== '0'"
-                                                class="text-danger font-weight-bold">
-                                                ${{ consignment.debt }}
-                                            </span>
-                                            <span *ngIf="!consignment.debt || consignment.debt === '0'"
-                                                class="text-success">
-                                                <i class="material-icons" style="font-size: 20px;">check_circle</i>
-                                            </span>
+                                            <span *ngIf="consignment.weight">{{ consignment.weight }} kg</span>
+                                            <span *ngIf="!consignment.weight" class="text-muted">- -</span>
                                         </td>
                                         <td class="text-center">
-                                            <span
-                                                *ngIf="consignment.for_debt_total && consignment.for_debt_total !== '0'"
-                                                class="text-danger font-weight-bold">
-                                                {{ consignment.for_debt_total | currency: ' ' : 'symbol' : '1.0-0' }}
-                                                so'm
-                                            </span>
-                                            <span
-                                                *ngIf="!consignment.for_debt_total || consignment.for_debt_total === '0'"
-                                                class="text-success">
-                                                To'langan
-                                            </span>
+                                            <span *ngIf="consignment.weight && consignment.sum_usd">{{ consignment.sum_usd }} $</span>
+                                            <span *ngIf="!consignment.weight" class="text-muted">- -</span>
+                                        </td>
+                                        <td class="text-center">
+                                            <span *ngIf="consignment.weight">{{ consignment.rate }}</span>
+                                            <span *ngIf="!consignment.weight" class="text-muted">- -</span>
+                                        </td>
+                                        <td class="text-center">
+                                            <ng-container *ngIf="consignment.weight">
+                                                <span *ngIf="consignment.debt > 0" class="text-danger font-weight-bold">
+                                                    {{ consignment.debt | number:'1.2-2' }}$
+                                                </span>
+                                                <span *ngIf="!consignment.debt || consignment.debt <= 0" class="text-success">
+                                                    0.00$
+                                                </span>
+                                            </ng-container>
+                                            <span *ngIf="!consignment.weight" class="text-muted">- -</span>
+                                        </td>
+                                        <td class="text-center">
+                                            <ng-container *ngIf="consignment.weight">
+                                                <span *ngIf="consignment.debt_uzs > 0" class="text-danger font-weight-bold">
+                                                    {{ consignment.debt_uzs | currency : ' ' : 'symbol' : '1.0-0' }} Sum
+                                                </span>
+                                                <span *ngIf="!consignment.debt_uzs || consignment.debt_uzs <= 0" class="text-success">
+                                                    0 Sum
+                                                </span>
+                                            </ng-container>
+                                            <span *ngIf="!consignment.weight" class="text-muted">- -</span>
+                                        </td>
+                                        <td class="text-center">
+                                            <ng-container *ngIf="consignment.weight">
+                                                <span *ngIf="consignment.debt > 0" class="badge badge-danger" style="font-size: 12px;">
+                                                    To'lanmagan
+                                                </span>
+                                                <span *ngIf="!consignment.debt || consignment.debt <= 0" class="badge badge-success" style="font-size: 12px;">
+                                                    To'langan
+                                                </span>
+                                            </ng-container>
+                                            <span *ngIf="!consignment.weight" class="text-muted">- -</span>
                                         </td>
                                         <td class="text-center">
                                             <button mat-raised-button type="button" class="btn btn-info btn-sm"

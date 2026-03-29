@@ -17,12 +17,14 @@ import { ComponentsModule } from "src/app/components/components.module";
 import { PaginationComponent } from "../shared/pagination/pagination.component";
 import { PaginationModule } from "../shared/pagination/pagination.module";
 import { InfoeachClientAdminComponent } from "./infoeach-client-admin/infoeach-client-admin.component";
+import { InfoeachClientAdmin2Component } from "./infoeach-client-admin2/infoeach-client-admin2.component";
 import { OwnCourierDeliveriesComponent } from "./own-courier-deliveries/own-courier-deliveries.component";
 import { PickupDeliveriesComponent } from "./pickup-deliveries/pickup-deliveries.component";
 import { EmuDeliveriesComponent } from "./emu-deliveries/emu-deliveries.component";
 import { YandexDeliveriesComponent } from "./yandex-deliveries/yandex-deliveries.component";
 import { SharedModule } from "src/app/shared/shared.module";
 import { CargoTariffsComponent } from "./cargo-tariffs/cargo-tariffs.component";
+import { CustomerServicesModule } from "./customer-services/customer-services.module";
 
 @NgModule({
   imports: [
@@ -35,6 +37,7 @@ import { CargoTariffsComponent } from "./cargo-tariffs/cargo-tariffs.component";
     ComponentsModule,
     PaginationModule,
     SharedModule,
+    CustomerServicesModule,
   ],
   declarations: [
     BoxesListComponent,
@@ -44,6 +47,7 @@ import { CargoTariffsComponent } from "./cargo-tariffs/cargo-tariffs.component";
     EmployeeFinanceComponent,
     DeliveriesListComponent2,
     InfoeachClientAdminComponent,
+    InfoeachClientAdmin2Component,
     OwnCourierDeliveriesComponent,
     PickupDeliveriesComponent,
     EmuDeliveriesComponent,

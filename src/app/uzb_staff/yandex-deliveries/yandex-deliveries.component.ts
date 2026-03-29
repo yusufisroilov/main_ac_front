@@ -66,6 +66,10 @@ export class YandexDeliveriesComponent implements OnInit {
 
   // Modal states
   selectedDelivery: Delivery | null = null;
+  selectedDeliveryForWeight: Delivery | null = null;
+
+  // Weight input
+  enteredWeight: number | null = null;
 
   // Processing states
   processingDelivery: boolean = false;
@@ -218,6 +222,70 @@ export class YandexDeliveriesComponent implements OnInit {
         },
         (error) => {
           swal.fire("Xatolik", "Yetkazishni qayta ishlashda xatolik", "error");
+          this.processingDelivery = false;
+          if (error.status == 403) {
+            this.authService.logout();
+          }
+        },
+      );
+  }
+
+  // Check if employee can edit weight
+  canEditWeight(delivery: Delivery): boolean {
+    return delivery.weight && delivery.status === "sent";
+  }
+
+  // Edit weight
+  editWeight(delivery: Delivery) {
+    this.selectedDeliveryForWeight = delivery;
+    this.enteredWeight = delivery.weight;
+    $("#editWeightModalYandex").modal("show");
+  }
+
+  // Update weight only
+  updateWeight() {
+    if (!this.enteredWeight) {
+      swal.fire("Xatolik", "Yangi og'irlikni kiriting", "error");
+      return;
+    }
+
+    this.processingDelivery = true;
+
+    const updateData = {
+      weight: this.enteredWeight,
+    };
+
+    this.http
+      .post(
+        GlobalVars.baseUrl +
+          "/deliveries/edit?delivery_id=" +
+          this.selectedDeliveryForWeight.id,
+        JSON.stringify(updateData),
+        this.options,
+      )
+      .subscribe(
+        (response) => {
+          const result = response.json();
+          if (result.status === "ok") {
+            swal.fire({
+              icon: "success",
+              title: "Yangilandi!",
+              text: "Og'irlik muvaffaqiyatli yangilandi",
+              customClass: {
+                confirmButton: "btn btn-success",
+              },
+              buttonsStyling: false,
+            });
+
+            $("#editWeightModalYandex").modal("hide");
+            this.applyFilters();
+          } else {
+            swal.fire("Xatolik", result.message, "error");
+          }
+          this.processingDelivery = false;
+        },
+        (error) => {
+          swal.fire("Xatolik", "Og'irlikni yangilashda xatolik", "error");
           this.processingDelivery = false;
           if (error.status == 403) {
             this.authService.logout();

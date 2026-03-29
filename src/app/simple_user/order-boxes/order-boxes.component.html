@@ -246,31 +246,42 @@
                       </td>
                       <td class="text-center">{{ row.quantity }} ta</td>
 
-                      <td *ngIf="row.weight != '0'; else elseBlock" class="text-center">
-                        {{ row.weight }} kg
+                      <td class="text-center">
+                        <span *ngIf="row.weight && row.weight !== '0'">{{ row.weight }} kg</span>
+                        <span *ngIf="!row.weight || row.weight === '0'" class="text-muted">- -</span>
                       </td>
-                      <ng-template #elseBlock>
-                        <td class="text-center">- -</td>
-                      </ng-template>
-
-                      <td *ngIf="row.sum != '0'; else elseBlock2" class="text-center">
-                        {{ row.sum_usd }} $
-                      </td>
-                      <ng-template #elseBlock2>
-                        <td class="text-center">- -</td>
-                      </ng-template>
-
-                      <td class="text-center">{{ row.rate }}</td>
-
-                      <td *ngIf="row.debt != '0'; else elseBlock3" class="text-center">
-                        {{ row.debt | number:'1.2-2' }}$
-                      </td>
-                      <ng-template #elseBlock3>
-                        <td class="text-center">- -</td>
-                      </ng-template>
 
                       <td class="text-center">
-                        {{ row.for_debt_total | currency : " " : "symbol" : "1.0-0" }} Sum
+                        <ng-container *ngIf="row.weight && row.weight !== '0'">
+                          <span *ngIf="row.sum_usd">{{ row.sum_usd }} $</span>
+                          <span *ngIf="!row.sum_usd" class="text-success">0 $</span>
+                        </ng-container>
+                        <span *ngIf="!row.weight || row.weight === '0'" class="text-muted">- -</span>
+                      </td>
+
+                      <td class="text-center">
+                        <span *ngIf="row.weight && row.weight !== '0'">{{ row.rate }}</span>
+                        <span *ngIf="!row.weight || row.weight === '0'" class="text-muted">- -</span>
+                      </td>
+
+                      <td class="text-center">
+                        <ng-container *ngIf="row.weight && row.weight !== '0'">
+                          <span *ngIf="row.debt > 0.01" class="text-danger font-weight-bold">
+                            {{ row.debt | number:'1.2-2' }}$
+                          </span>
+                          <span *ngIf="!row.debt || row.debt <= 0.01" class="text-success">0.00$</span>
+                        </ng-container>
+                        <span *ngIf="!row.weight || row.weight === '0'" class="text-muted">- -</span>
+                      </td>
+
+                      <td class="text-center">
+                        <ng-container *ngIf="row.weight && row.weight !== '0'">
+                          <span *ngIf="row.debt_uzs > 100" class="text-danger font-weight-bold">
+                            {{ row.debt_uzs | currency : " " : "symbol" : "1.0-0" }} Sum
+                          </span>
+                          <span *ngIf="!row.debt_uzs || row.debt_uzs <= 100" class="text-success">0 Sum</span>
+                        </ng-container>
+                        <span *ngIf="!row.weight || row.weight === '0'" class="text-muted">- -</span>
                       </td>
 
                       <td class="td-actions text-right">

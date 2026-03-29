@@ -10,11 +10,13 @@ import { EmployeeAuthGuardService } from "../services/employee-auth-guard.servic
 import { EmployeeFinanceComponent } from "./employee-finance/employee-finance.component";
 import { DeliveriesListComponent2 } from "./deliveries-list-2/deliveries-list-2.component";
 import { InfoeachClientAdminComponent } from "./infoeach-client-admin/infoeach-client-admin.component";
+import { InfoeachClientAdmin2Component } from "./infoeach-client-admin2/infoeach-client-admin2.component";
 import { EmuDeliveriesComponent } from "./emu-deliveries/emu-deliveries.component";
 import { YandexDeliveriesComponent } from "./yandex-deliveries/yandex-deliveries.component";
 import { OwnCourierDeliveriesComponent } from "./own-courier-deliveries/own-courier-deliveries.component";
 import { PickupDeliveriesComponent } from "./pickup-deliveries/pickup-deliveries.component";
 import { CargoTariffsComponent } from "./cargo-tariffs/cargo-tariffs.component";
+import { CustomerServicesComponent } from "./customer-services/customer-services.component";
 
 export const UzbStaffRoutes: Routes = [
   {
@@ -85,6 +87,10 @@ export const UzbStaffRoutes: Routes = [
         component: InfoeachClientAdminComponent,
       },
       {
+        path: "each-client-admin2",
+        component: InfoeachClientAdmin2Component,
+      },
+      {
         path: "scanuz",
         component: ScanParcelUzbComponent,
       },
@@ -94,6 +100,13 @@ export const UzbStaffRoutes: Routes = [
         component: CargoTariffsComponent,
         data: {
           title: "Kargo Tariflari",
+        },
+      },
+      {
+        path: "customer-services",
+        component: CustomerServicesComponent,
+        data: {
+          title: "Mijoz Xizmatlari",
         },
       },
     ],
