@@ -93,8 +93,7 @@
           <div class="account-actions">
             <button class="btn btn-sm action-edit" (click)="editAccount(account)"><i class="material-icons">edit</i>
               Tahrirlash</button>
-            <button class="btn btn-sm action-delete" (click)="deactivateAccount(account)" *ngIf="account.is_active"><i
-                class="material-icons">block</i> O'chirish</button>
+            <!-- O'chirish vaqtincha to'xtatilgan -->
             <button class="btn btn-sm action-history" (click)="viewLedger(account)"
               [class.active]="selectedAccount?.id === account.id"><i class="material-icons">history</i></button>
           </div>
