@@ -192,13 +192,22 @@
             </div>
             <h4 class="card-title" style="display: flex; align-items: center; flex-wrap: wrap; gap: 12px;">
               Har bir reysda sizga kelayotgan yuklarni ko'rish
-              <span style="display: inline-flex; align-items: center; gap: 7px; margin-left: auto; padding: 5px 12px 5px 8px; border-radius: 20px; border: 1.5px solid"
+              <span class="balance-warning">
+                <i class="material-icons" style="font-size: 14px; color: #f9a825; flex-shrink: 0;">info_outline</i>
+                <span>Diqqat: Balansingiz <strong>CU540</strong> partiyadan ko'rsatiladi. Oldingi partiyalar alohida
+                  hisoblanadi.</span>
+              </span>
+              <span
+                style="display: inline-flex; align-items: center; gap: 7px; margin-left: auto; padding: 5px 12px 5px 8px; border-radius: 20px; border: 1.5px solid"
                 [style.background]="debtUsd > 0 ? '#fff0f0' : '#f0faf0'"
                 [style.borderColor]="debtUsd > 0 ? '#ef9a9a' : '#a5d6a7'">
-                <i class="material-icons" [style.color]="getBalanceColor()" style="font-size: 18px;">{{ getBalanceIcon() }}</i>
+                <i class="material-icons" [style.color]="getBalanceColor()" style="font-size: 18px;">{{ getBalanceIcon()
+                  }}</i>
                 <span style="display: flex; flex-direction: column; line-height: 1.2;">
-                  <span [style.color]="getBalanceColor()" style="font-size: 14px; font-weight: 800; letter-spacing: -0.3px;">
-                    <span *ngIf="debtUsd !== 0">{{ debtUsd > 0 ? '' : '+' }}{{ debtUsd | number:'1.2-2' }}$ / {{ debtUzs | number:'1.0-0' }} so'm</span>
+                  <span [style.color]="getBalanceColor()"
+                    style="font-size: 14px; font-weight: 800; letter-spacing: -0.3px;">
+                    <span *ngIf="debtUsd !== 0">{{ debtUsd > 0 ? '' : '+' }}{{ debtUsd | number:'1.2-2' }}$ / {{ debtUzs
+                      | number:'1.0-0' }} so'm</span>
                     <span *ngIf="debtUsd === 0">0.00$</span>
                   </span>
                   <span style="font-size: 10px; color: #888; font-weight: 500;">{{ getBalanceLabel() }}</span>

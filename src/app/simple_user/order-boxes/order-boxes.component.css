@@ -1,0 +1,23 @@
+.balance-warning {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  background: #fff8e1;
+  border: 1px solid #ffe082;
+  border-radius: 12px;
+  font-size: 11px;
+  color: #6d4c00;
+  line-height: 1.3;
+  white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+  .balance-warning {
+    white-space: normal;
+    width: 100%;
+    padding: 6px 10px;
+    border-radius: 8px;
+    margin-top: 4px;
+  }
+}
