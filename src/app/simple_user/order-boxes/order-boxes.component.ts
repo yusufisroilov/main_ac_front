@@ -73,32 +73,70 @@ export class OrderBoxesComponent implements OnInit {
 
   getConsignmentStatusText(status: number): string {
     const map: { [key: number]: string } = {
-      1: "Nomalum",
+      1: "Kelmagan",
       2: "Xitoy omborida",
-      3: "Aeroportga yo'lda",
       4: "Xitoy aeroportida",
       5: "O'zbekiston aeroportida",
-      6: "Ofisda",
-      7: "Toshkent Omborida",
-      8: "Boshqa manzilga",
-      9: "Qabul qilindi",
+      6: "Bojxonada",
+      7: "Toshkent omborida",
     };
-    return map[status] || "";
+    return map[status] || "Nomalum";
   }
 
   getConsignmentStatusClass(status: number): string {
     const map: { [key: number]: string } = {
       1: "badge-warning",
       2: "badge-info",
-      3: "badge-primary",
       4: "badge-primary",
       5: "badge-info",
       6: "badge-success",
-      7: "badge-info",
-      8: "badge-warning",
-      9: "badge-success",
+      7: "badge-success",
     };
     return map[status] || "badge-secondary";
+  }
+
+  // ── Delivery helpers ──
+
+  getDeliveryTypeLabel(type: string): string {
+    const map: { [key: string]: string } = {
+      "EMU": "EMU",
+      "Yandex": "Yandex",
+      "Own-Courier": "Kuryer",
+      "Pick-up": "Mijoz o'zi",
+    };
+    return map[type] || type;
+  }
+
+  getDeliveryBadgeClass(type: string): string {
+    const map: { [key: string]: string } = {
+      "EMU": "badge-info",
+      "Yandex": "badge-warning",
+      "Own-Courier": "badge-primary",
+      "Pick-up": "badge-success",
+    };
+    return map[type] || "badge-secondary";
+  }
+
+  getDeliveryIcon(type: string): string {
+    const map: { [key: string]: string } = {
+      "EMU": "local_shipping",
+      "Yandex": "delivery_dining",
+      "Own-Courier": "two_wheeler",
+      "Pick-up": "store",
+    };
+    return map[type] || "local_shipping";
+  }
+
+  getDeliveryStatusLabel(status: string): string {
+    const map: { [key: string]: string } = {
+      "created": "Yaratilgan",
+      "sent": "Yuborilgan",
+      "collected": "Olingan",
+      "delivered": "Yetkazilgan",
+      "returned": "Qaytarilgan",
+      "cancelled": "Bekor",
+    };
+    return map[status] || status;
   }
 
   constructor(

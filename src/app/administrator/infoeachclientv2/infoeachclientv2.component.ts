@@ -548,7 +548,7 @@ export class Infoeachclientv2Component implements OnInit {
             if (data.overpayment_usd > 0) {
               this.handleOverpayment(data.overpayment_usd, data.finance_id);
             } else {
-              swal.fire({ icon: "success", title: "Muvaffaqiyat!", timer: 1500, showConfirmButton: false });
+              this.checkPackagesAndPromptDelivery();
             }
           },
           (error) => {
@@ -847,7 +847,7 @@ export class Infoeachclientv2Component implements OnInit {
             if (data.overpayment_usd > 0) {
               this.handleOverpayment(data.overpayment_usd);
             } else {
-              swal.fire({ icon: "success", title: data.message || "Muvaffaqiyat!", timer: 1500, showConfirmButton: false });
+              this.checkPackagesAndPromptDelivery();
             }
           },
           (error) => {
@@ -872,6 +872,72 @@ export class Infoeachclientv2Component implements OnInit {
     this.router.navigate(["/uzm/customer-services"], {
       queryParams: { customer_id: this.currentID },
     });
+  }
+
+  // ─── Delivery helpers ───
+
+  getDeliveryBadgeClass(type: string): string {
+    const map: Record<string, string> = {
+      "EMU": "badge-info",
+      "Yandex": "badge-warning",
+      "Own-Courier": "badge-primary",
+      "Pick-up": "badge-success",
+    };
+    return map[type] || "badge-secondary";
+  }
+
+  getDeliveryIcon(type: string): string {
+    const map: Record<string, string> = {
+      "EMU": "local_shipping",
+      "Yandex": "delivery_dining",
+      "Own-Courier": "two_wheeler",
+      "Pick-up": "store",
+    };
+    return map[type] || "local_shipping";
+  }
+
+  getDeliveryTypeLabel(type: string): string {
+    const map: Record<string, string> = {
+      "EMU": "EMU",
+      "Yandex": "Yandex",
+      "Own-Courier": "Kuryer",
+      "Pick-up": "Mijoz o'zi",
+    };
+    return map[type] || type;
+  }
+
+  getDeliveryStatusLabel(status: string): string {
+    const map: Record<string, string> = {
+      "created": "Yaratilgan",
+      "sent": "Yuborilgan",
+      "collected": "Olingan",
+      "delivered": "Yetkazilgan",
+      "returned": "Qaytarilgan",
+      "cancelled": "Bekor",
+    };
+    return map[status] || status;
+  }
+
+  // Check if customer has packages and open delivery modal automatically
+  private checkPackagesAndPromptDelivery() {
+    this.httpClient
+      .get<any>(
+        GlobalVars.baseUrl + "/deliveries/admin?owner_id=" + this.currentID,
+        { headers: this.getHeaders() },
+      )
+      .subscribe(
+        (result) => {
+          if (result.status === "success" && (result.data.package_groups || []).length > 0) {
+            swal.fire({ icon: "success", title: "To'lov muvaffaqiyat!", timer: 1000, showConfirmButton: false });
+            setTimeout(() => this.openDeliveryForAll(), 1000);
+          } else {
+            swal.fire({ icon: "success", title: "Muvaffaqiyat!", timer: 1500, showConfirmButton: false });
+          }
+        },
+        () => {
+          swal.fire({ icon: "success", title: "Muvaffaqiyat!", timer: 1500, showConfirmButton: false });
+        },
+      );
   }
 
   // ─── Delivery ───

@@ -325,7 +325,7 @@
             </div>
         </div>
 
-        <!-- My Requests - Simplified -->
+        <!-- My Requests - Full Details -->
         <div class="row" *ngIf="showMyRequests">
             <div class="col-md-12">
                 <div class="card">
@@ -335,43 +335,123 @@
                     <div class="card-body">
 
                         <div *ngIf="myDeliveryRequests.length > 0" class="requests-container">
-                            <div class="request-item" *ngFor="let request of myDeliveryRequests; let i = index">
+                            <div class="request-item" *ngFor="let request of myDeliveryRequests; let i = index"
+                                [class.request-urgent]="request.is_urgent">
 
+                                <!-- Header: number + urgent badge + status -->
                                 <div class="request-top">
-                                    <span class="request-num">#{{i + 1}}</span>
+                                    <div style="display:flex;align-items:center;gap:8px;">
+                                        <span class="request-num">#{{i + 1}}</span>
+                                        <span *ngIf="request.is_urgent" class="urgent-badge">
+                                            <i class="material-icons" style="font-size:13px;vertical-align:middle;">priority_high</i> Shoshilinch
+                                        </span>
+                                    </div>
                                     <span class="status-pill" [class.status-pending]="request.status === 'pending'"
                                         [class.status-approved]="request.status === 'approved'"
-                                        [class.status-rejected]="request.status === 'rejected'">
+                                        [class.status-rejected]="request.status === 'rejected'"
+                                        [class.status-cancelled]="request.status === 'cancelled'">
                                         {{getStatusText(request.status)}}
                                     </span>
                                 </div>
 
-                                <div class="request-content">
-                                    <div class="request-row">
-                                        <i class="material-icons">local_shipping</i>
-                                        <span>{{getDeliveryTypeText(request.delivery_type)}}</span>
+                                <!-- Main info grid -->
+                                <div class="request-details-grid">
+                                    <!-- Delivery type -->
+                                    <div class="detail-item">
+                                        <div class="detail-label"><i class="material-icons">local_shipping</i> Yetkazish turi</div>
+                                        <div class="detail-value">{{getDeliveryTypeText(request.delivery_type)}}</div>
                                     </div>
-                                    <div class="request-row">
-                                        <i class="material-icons">inventory_2</i>
-                                        <span>{{request.total_packages}} ta quti</span>
+
+                                    <!-- Packages -->
+                                    <div class="detail-item">
+                                        <div class="detail-label"><i class="material-icons">inventory_2</i> Qutillar soni</div>
+                                        <div class="detail-value">{{request.total_packages}} ta</div>
                                     </div>
-                                    <div class="request-row">
-                                        <i class="material-icons">phone</i>
-                                        <span>{{request.customer_phone}}</span>
+
+                                    <!-- Weight -->
+                                    <div class="detail-item" *ngIf="request.total_weight > 0">
+                                        <div class="detail-label"><i class="material-icons">scale</i> Umumiy og'irlik</div>
+                                        <div class="detail-value">{{request.total_weight}} kg</div>
                                     </div>
-                                    <div class="request-row">
-                                        <i class="material-icons">schedule</i>
-                                        <span>{{request.created_at | date:'dd.MM.yyyy HH:mm'}}</span>
+
+                                    <!-- Phone -->
+                                    <div class="detail-item">
+                                        <div class="detail-label"><i class="material-icons">phone</i> Telefon</div>
+                                        <div class="detail-value">{{request.customer_phone}}</div>
+                                    </div>
+
+                                    <!-- Date -->
+                                    <div class="detail-item">
+                                        <div class="detail-label"><i class="material-icons">schedule</i> Yaratilgan sana</div>
+                                        <div class="detail-value">{{request.created_at | date:'dd.MM.yyyy HH:mm'}}</div>
+                                    </div>
+
+                                    <!-- Address -->
+                                    <div class="detail-item detail-full" *ngIf="request.delivery_address">
+                                        <div class="detail-label"><i class="material-icons">location_on</i> Manzil</div>
+                                        <div class="detail-value">{{request.delivery_address}}</div>
+                                    </div>
+
+                                    <!-- EMU branch -->
+                                    <div class="detail-item" *ngIf="request.emuBranch">
+                                        <div class="detail-label"><i class="material-icons">store</i> EMU filial</div>
+                                        <div class="detail-value">{{request.emuBranch.name}}</div>
+                                    </div>
+
+                                    <!-- Preferred date -->
+                                    <div class="detail-item" *ngIf="request.preferred_delivery_date">
+                                        <div class="detail-label"><i class="material-icons">event</i> Afzal sana</div>
+                                        <div class="detail-value">{{request.preferred_delivery_date}}</div>
+                                    </div>
+
+                                    <!-- Payment amount -->
+                                    <div class="detail-item" *ngIf="request.payment_amount > 0">
+                                        <div class="detail-label"><i class="material-icons">payments</i> To'lov summasi</div>
+                                        <div class="detail-value">
+                                            {{request.payment_amount | number:'1.0-0'}} so'm
+                                            <span *ngIf="request.payment_verified" class="verified-badge">
+                                                <i class="material-icons" style="font-size:13px;vertical-align:middle;">verified</i> Tasdiqlangan
+                                            </span>
+                                            <span *ngIf="!request.payment_verified" class="unverified-badge">Tekshirilmoqda</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Estimated fees -->
+                                    <div class="detail-item" *ngIf="request.estimated_delivery_fee > 0">
+                                        <div class="detail-label"><i class="material-icons">receipt</i> Yetkazish narxi</div>
+                                        <div class="detail-value">{{request.estimated_delivery_fee | number:'1.0-0'}} so'm</div>
+                                    </div>
+                                    <div class="detail-item" *ngIf="request.estimated_yandex_fee > 0">
+                                        <div class="detail-label"><i class="material-icons">receipt</i> Yandex narxi</div>
+                                        <div class="detail-value">{{request.estimated_yandex_fee | number:'1.0-0'}} so'm</div>
                                     </div>
                                 </div>
 
-                                <div class="request-note" *ngIf="request.admin_notes || request.rejection_reason">
-                                    <small>
-                                        {{request.status === 'approved' ? request.admin_notes :
-                                        request.rejection_reason}}
-                                    </small>
+                                <!-- Customer notes -->
+                                <div class="request-note customer-note" *ngIf="request.notes">
+                                    <div class="note-label"><i class="material-icons" style="font-size:14px;vertical-align:middle;">comment</i> Sizning izohingiz</div>
+                                    <small>{{request.notes}}</small>
                                 </div>
-                                <!-- Better styled cancel button -->
+
+                                <!-- Admin notes / rejection -->
+                                <div class="request-note admin-note" *ngIf="request.admin_notes && request.status === 'approved'">
+                                    <div class="note-label"><i class="material-icons" style="font-size:14px;vertical-align:middle;">admin_panel_settings</i> Admin izohi</div>
+                                    <small>{{request.admin_notes}}</small>
+                                </div>
+                                <div class="request-note rejection-note" *ngIf="request.rejection_reason && request.status === 'rejected'">
+                                    <div class="note-label"><i class="material-icons" style="font-size:14px;vertical-align:middle;">block</i> Rad etilish sababi</div>
+                                    <small>{{request.rejection_reason}}</small>
+                                </div>
+
+                                <!-- Package barcodes -->
+                                <div class="request-packages" *ngIf="request.requested_packages">
+                                    <div class="note-label"><i class="material-icons" style="font-size:14px;vertical-align:middle;">qr_code</i> Qutillar ({{request.total_packages}})</div>
+                                    <div class="barcode-list">
+                                        <span class="barcode-chip" *ngFor="let barcode of parsePackages(request.requested_packages)">{{barcode}}</span>
+                                    </div>
+                                </div>
+
+                                <!-- Cancel button -->
                                 <button *ngIf="request.status === 'pending'" class="cancel-button"
                                     (click)="cancelRequest(request.id)">
                                     <i class="material-icons">cancel</i>

@@ -458,26 +458,48 @@ export class CustomerDashboardComponent implements OnInit, AfterViewInit {
     return GlobalVars.getDesOrderStatusWithID(statusId, "uz");
   }
 
-  // Get badge class based on status
+  // Get consignment status text (4 key statuses only)
+  getConsignmentStatusText(status: number): string {
+    const map: { [key: number]: string } = {
+      2: "Xitoy omborida",
+      4: "Xitoy aeroportida",
+      5: "O'zbekiston aeroportida",
+      7: "Toshkent omborida",
+    };
+    return map[status] || "Nomalum";
+  }
+
+  // Get consignment status badge class
+  getConsignmentStatusClass(status: number): string {
+    const map: { [key: number]: string } = {
+      2: "badge-info",
+      4: "badge-primary",
+      5: "badge-info",
+      7: "badge-success",
+    };
+    return map[status] || "badge-secondary";
+  }
+
+  // Get badge class based on order status
   getStatusBadgeClass(statusId: number): string {
     switch (statusId) {
-      case 1: // Not arrived
+      case 1:
         return "badge-warning";
-      case 2: // In foreign warehouse
+      case 2:
         return "badge-info";
-      case 3: // On way to airport
+      case 3:
         return "badge-primary";
-      case 4: // In foreign airport
+      case 4:
         return "badge-primary";
-      case 5: // In Uzbekistan airport
+      case 5:
         return "badge-info";
-      case 6: // In Uzbekistan warehouse
+      case 6:
         return "badge-success";
-      case 7: // Sent to client
-        return "badge-info";
-      case 8: // Sent to another address
+      case 7:
+        return "badge-success";
+      case 8:
         return "badge-warning";
-      case 9: // Client received
+      case 9:
         return "badge-success";
       default:
         return "badge-secondary";

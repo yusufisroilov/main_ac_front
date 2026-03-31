@@ -220,6 +220,7 @@
                     <th class="text-center">Kurs</th>
                     <th class="text-center">Qarzi $da</th>
                     <th class="text-center">Qarzi SUMda</th>
+                    <th class="text-center">Yetkazish</th>
                     <th class="text-right">{{ tableData1.headerRow[4] }}</th>
                   </tr>
                 </thead>
@@ -267,9 +268,22 @@
                         </span>
                       </div>
                     </td>
+                    <td class="text-center">
+                      <ng-container *ngIf="row.delivery">
+                        <span class="badge" [ngClass]="getDeliveryBadgeClass(row.delivery.delivery_type)" style="font-size: 11px; padding: 3px 8px;">
+                          <i class="material-icons" style="font-size: 12px; vertical-align: middle;">{{ getDeliveryIcon(row.delivery.delivery_type) }}</i>
+                          {{ getDeliveryTypeLabel(row.delivery.delivery_type) }}
+                        </span>
+                        <br>
+                        <small class="text-muted" style="font-size: 10px;">{{ getDeliveryStatusLabel(row.delivery.status) }}</small>
+                      </ng-container>
+                      <span *ngIf="!row.delivery" class="text-muted">—</span>
+                    </td>
                     <td class="td-actions text-right">
-                      <button mat-raised-button type="button" class="btn btn-info" (click)="getListOfParcels(row.name)">
-                        Ro'yhat<i class="material-icons">preview</i>
+                      <button type="button" class="btn btn-sm" (click)="getListOfParcels(row.name)"
+                        style="border-radius:8px; font-size:12px; padding:5px 12px; display:inline-flex; align-items:center; gap:4px; color:#7b1fa2; border:1.5px solid #ce93d8; background:transparent;"
+                        onmouseover="this.style.background='#f3e5f5'" onmouseout="this.style.background='transparent'">
+                        Ro'yhat <i class="material-icons" style="font-size:16px;">preview</i>
                       </button>
                     </td>
                   </tr>

@@ -1,11 +1,14 @@
 // src/app/pages/delivery/admin-delivery.component.ts
-import { Component, OnInit, ChangeDetectorRef } from "@angular/core";
+import { Component, OnInit, ChangeDetectorRef, ViewChild } from "@angular/core";
 import { Router } from "@angular/router";
 import { GlobalVars } from "src/app/global-vars";
 import swal from "sweetalert2";
 import { HttpClient, HttpHeaders, HttpParams } from "@angular/common/http";
 import { Http, RequestOptions, Headers, Response } from "@angular/http";
 import { AuthService } from "src/app/pages/login/auth.service";
+import {
+  PrintCheckComponent,
+} from "src/app/shared/print-check/print-check.component";
 
 declare var $: any;
 
@@ -48,6 +51,8 @@ interface Delivery {
   styleUrls: ["./deliveries-list.component.css"],
 })
 export class DeliveriesListComponent {
+  @ViewChild("printCheck") printCheckComponent: PrintCheckComponent;
+
   headers12: any;
   options: any;
 
@@ -707,5 +712,9 @@ export class DeliveriesListComponent {
             );
         }
       });
+  }
+
+  printDeliveryCheck(delivery: Delivery) {
+    this.printCheckComponent.print(delivery.id);
   }
 }

@@ -231,6 +231,7 @@
                     <th class="text-center">Kurs</th>
                     <th class="text-center">Qarzingiz $da</th>
                     <th class="text-center">Qarzingiz SUMda</th>
+                    <th class="text-center">Yetkazish</th>
                     <th class="text-right">{{ tableData1.headerRow[4] }}</th>
                     <!-- <th class="text-right">{{ tableData1.headerRow[5] }}</th> -->
                   </tr>
@@ -293,6 +294,17 @@
                         <span *ngIf="!row.weight || row.weight === '0'" class="text-muted">- -</span>
                       </td>
 
+                      <td class="text-center">
+                        <ng-container *ngIf="row.delivery">
+                          <span class="badge" [ngClass]="getDeliveryBadgeClass(row.delivery.delivery_type)" style="font-size: 11px; padding: 3px 8px;">
+                            <i class="material-icons" style="font-size: 12px; vertical-align: middle;">{{ getDeliveryIcon(row.delivery.delivery_type) }}</i>
+                            {{ getDeliveryTypeLabel(row.delivery.delivery_type) }}
+                          </span>
+                          <br>
+                          <small class="text-muted" style="font-size: 10px;">{{ getDeliveryStatusLabel(row.delivery.status) }}</small>
+                        </ng-container>
+                        <span *ngIf="!row.delivery" class="text-muted">—</span>
+                      </td>
                       <td class="td-actions text-right">
                         <button mat-raised-button type="button" class="btn btn-info"
                           (click)="getListOfParcels(row.name)">

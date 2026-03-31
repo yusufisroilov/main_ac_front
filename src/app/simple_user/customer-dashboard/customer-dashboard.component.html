@@ -214,8 +214,8 @@
                                             </span>
                                         </td>
                                         <td class="text-center">
-                                            <span class="badge" [ngClass]="getStatusBadgeClass(consignment.status)">
-                                                {{ getOrderStatusText(consignment.status) }}
+                                            <span class="badge" [ngClass]="getConsignmentStatusClass(consignment.status)">
+                                                {{ getConsignmentStatusText(consignment.status) }}
                                             </span>
                                         </td>
                                         <td class="text-center">{{ consignment.quantity }} ta</td>
@@ -265,9 +265,11 @@
                                             <span *ngIf="!consignment.weight" class="text-muted">- -</span>
                                         </td>
                                         <td class="text-center">
-                                            <button mat-raised-button type="button" class="btn btn-info btn-sm"
-                                                (click)="openConsignmentModal(consignment.name)">
-                                                <i class="material-icons">visibility</i>
+                                            <button type="button" class="btn btn-sm"
+                                                (click)="openConsignmentModal(consignment.name)"
+                                                style="border-radius:8px; font-size:12px; padding:5px 12px; display:inline-flex; align-items:center; gap:4px; color:#7b1fa2; border:1.5px solid #ce93d8; background:transparent;"
+                                                onmouseover="this.style.background='#f3e5f5'" onmouseout="this.style.background='transparent'">
+                                                <i class="material-icons" style="font-size:16px;">visibility</i>
                                                 Ko'rish
                                             </button>
                                         </td>

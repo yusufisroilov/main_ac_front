@@ -220,11 +220,16 @@
                                                     (click)="viewDeliveryDetails(delivery.id)" matTooltip="Ko'rish">
                                                     <i class="material-icons">visibility</i>
                                                 </button>
-                                                <button class="btn btn-warning btn-sm btn-just-icon"
+                                                <button class="btn btn-warning btn-sm btn-just-icon mr-1"
                                                     (click)="updateDeliveryStatus(delivery)"
                                                     *ngIf="delivery.status !== 'delivered' && delivery.status !== 'cancelled'"
                                                     matTooltip="Holat o'zgartirish">
                                                     <i class="material-icons">edit</i>
+                                                </button>
+                                                <button class="btn btn-success btn-sm btn-just-icon"
+                                                    (click)="printDeliveryCheck(delivery)"
+                                                    matTooltip="Chek chiqarish">
+                                                    <i class="material-icons">print</i>
                                                 </button>
                                             </td>
                                         </tr>
@@ -551,3 +556,6 @@
 
 <!-- Modal backdrop -->
 <div class="modal-backdrop fade show" *ngIf="showDetailsModal || showStatusModal" (click)="closeModal()"></div>
+
+<!-- Hidden Print Check Component -->
+<app-print-check #printCheck></app-print-check>

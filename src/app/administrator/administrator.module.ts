@@ -37,6 +37,7 @@ import { Financev2Component } from "./financev2/financev2.component";
 import { Infoeachclientv2Component } from "./infoeachclientv2/infoeachclientv2.component";
 import { CashAccountsComponent } from "./cash-accounts/cash-accounts.component";
 import { CustomerServicesModule } from "../uzb_staff/customer-services/customer-services.module";
+import { SharedModule } from "src/app/shared/shared.module";
 import { VideoLessonsComponent } from "./video-lessons/video-lessons.component";
 
 // import { FlexLayoutModule } from '@angular/flex-layout';
@@ -51,6 +52,7 @@ import { VideoLessonsComponent } from "./video-lessons/video-lessons.component";
     MdModule,
     PaginationModule,
     CustomerServicesModule,
+    SharedModule,
   ],
   declarations: [
     UsersListComponent,

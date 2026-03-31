@@ -640,6 +640,12 @@ export class CustomerRequestsComponent implements OnInit {
     return statuses[status] || status;
   }
 
+  parsePackages(requested: any): string[] {
+    if (!requested) return [];
+    if (Array.isArray(requested)) return requested;
+    try { return JSON.parse(requested); } catch { return []; }
+  }
+
   // Cancel delivery request
   cancelRequest(requestId: number) {
     swal
