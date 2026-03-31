@@ -1,89 +1,358 @@
-/* Stat cards */
-.card-stats .card-icon {
-  width: 60px;
-  height: 60px;
-}
-
-.card-stats .card-title {
-  margin: 10px 0;
-  font-size: 2em;
-  font-weight: 700;
-}
-
-.card-stats .card-category {
-  margin-bottom: 0;
-  font-size: 14px;
-}
-
-/* Extra badge colors used in progress rows */
-.badge-purple {
-  background-color: #9b59b6;
-  color: #fff;
-}
-
-.badge-orange {
-  background-color: #f39c12;
-  color: #fff;
-}
-
-/* Progress bar color matchers */
-.progress-bar.badge-danger {
-  background-color: #f44336;
-}
-
-.progress-bar.badge-info {
-  background-color: #00bcd4;
-}
-
-.progress-bar.badge-purple {
-  background-color: #9b59b6;
-}
-
-.progress-bar.badge-warning {
-  background-color: #ff9800;
-}
-
-.progress-bar.badge-secondary {
-  background-color: #9e9e9e;
-}
-
-.progress-bar.badge-success {
-  background-color: #4caf50;
-}
-
-.mb-3 {
-  margin-bottom: 1rem;
-}
-
-.d-flex {
+/* ===== Toolbar ===== */
+.td-toolbar {
   display: flex;
-}
-
-.justify-content-between {
+  align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 14px;
+  padding: 10px 16px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
 }
 
-.text-muted {
-  color: #6c757d;
+.td-toolbar-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
-.py-5 {
-  padding-top: 3rem;
-  padding-bottom: 3rem;
+.td-toolbar-icon {
+  font-size: 22px;
+  color: #00bcd4;
 }
 
-/* Removed slow animation for stat cards */
-.card-stats:hover {
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+.td-toolbar-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #344767;
 }
 
-/* Table hover - removed slow transition */
-.table-hover tbody tr:hover {
-  background-color: #f5f5f5;
+.td-toolbar-count {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: rgba(0, 188, 212, 0.12);
+  color: #00bcd4;
+}
+
+.td-toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.td-filter-select {
+  padding: 5px 10px;
+  border: 1.5px solid #ddd;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #555;
+  background: #fff;
+  outline: none;
   cursor: pointer;
 }
 
-/* Center mat-spinner */
-mat-spinner {
-  display: inline-block;
+.td-filter-select:focus {
+  border-color: #00bcd4;
+}
+
+.td-search-input {
+  padding: 5px 10px;
+  border: 1.5px solid #ddd;
+  border-radius: 6px;
+  font-size: 12px;
+  width: 160px;
+  outline: none;
+}
+
+.td-search-input:focus {
+  border-color: #00bcd4;
+}
+
+.td-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 12px;
+  border: none;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.td-btn i {
+  font-size: 16px;
+}
+
+.td-btn-primary {
+  background: #00bcd4;
+  color: #fff;
+}
+
+.td-btn-primary:hover {
+  background: #00acc1;
+}
+
+.td-btn-refresh {
+  background: #f0f0f0;
+  color: #555;
+  padding: 5px 8px;
+}
+
+.td-btn-refresh:hover {
+  background: #e0e0e0;
+}
+
+/* ===== Tickets Card ===== */
+.td-card {
+  border-radius: 10px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+  margin-bottom: 14px;
+}
+
+.td-table {
+  margin-bottom: 0;
+  font-size: 13px;
+}
+
+.td-table thead th {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #888;
+  letter-spacing: 0.3px;
+  border-bottom: 1px solid #eee;
+  padding: 10px 12px;
+}
+
+.td-table tbody td {
+  padding: 10px 12px;
+  vertical-align: middle;
+  border-bottom: 1px solid #f5f5f5;
+}
+
+.td-table tbody tr:hover {
+  background: #f8f9fa;
+}
+
+.td-btn-view {
+  border: none;
+  background: transparent;
+  color: #00bcd4;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: background 0.15s;
+}
+
+.td-btn-view:hover {
+  background: rgba(0, 188, 212, 0.1);
+}
+
+.td-btn-view i {
+  font-size: 18px;
+}
+
+/* ===== Collapsible Stats ===== */
+.td-stats-section {
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+}
+
+.td-stats-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 18px;
+  cursor: pointer;
+  user-select: none;
+  background: linear-gradient(135deg, #00bcd4, #26c6da);
+  color: #fff;
+  transition: background 0.2s;
+}
+
+.td-stats-header:hover {
+  background: linear-gradient(135deg, #00acc1, #00bcd4);
+}
+
+.td-stats-header-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.td-stats-badge {
+  background: rgba(255, 255, 255, 0.25);
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.td-stats-chevron {
+  font-size: 26px;
+  transition: transform 0.3s;
+}
+
+.td-stats-chevron.rotated {
+  transform: rotate(180deg);
+}
+
+.td-stats-body {
+  padding: 16px;
+  background: #f8f9fa;
+}
+
+/* Stat cards */
+.td-stat-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.td-stat-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  cursor: pointer;
+  transition: box-shadow 0.2s, transform 0.2s;
+  flex: 1;
+  min-width: 140px;
+}
+
+.td-stat-card:hover {
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
+}
+
+.td-stat-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.td-stat-icon i {
+  font-size: 18px;
+  color: #fff;
+}
+
+.td-stat-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.td-stat-value {
+  font-size: 18px;
+  font-weight: 700;
+  color: #344767;
+  line-height: 1.2;
+}
+
+.td-stat-label {
+  font-size: 11px;
+  color: #888;
+  font-weight: 500;
+}
+
+/* Charts */
+.td-charts-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.td-chart-card {
+  background: #fff;
+  border-radius: 10px;
+  padding: 14px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+}
+
+.td-chart-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: #555;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  margin: 0 0 12px 0;
+}
+
+.td-progress-item {
+  margin-bottom: 10px;
+}
+
+.td-progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.td-progress-val {
+  font-size: 11px;
+  color: #888;
+  font-weight: 600;
+}
+
+/* Progress bar colors */
+.progress-bar.badge-danger { background-color: #f44336; }
+.progress-bar.badge-info { background-color: #00bcd4; }
+.progress-bar.badge-primary { background-color: #2196F3; }
+.progress-bar.badge-warning { background-color: #ff9800; }
+.progress-bar.badge-success { background-color: #4caf50; }
+.progress-bar.badge-secondary { background-color: #9e9e9e; }
+.progress-bar.badge-purple { background-color: #9b59b6; }
+
+/* Badge extras */
+.badge-purple { background-color: #9b59b6; color: #fff; }
+.badge-orange { background-color: #f39c12; color: #fff; }
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+  .td-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .td-toolbar-right {
+    justify-content: flex-start;
+  }
+
+  .td-search-input {
+    width: 100%;
+    flex: 1;
+  }
+
+  .td-stat-cards {
+    flex-direction: column;
+  }
+
+  .td-stat-card {
+    min-width: unset;
+  }
+
+  .td-charts-row {
+    grid-template-columns: 1fr;
+  }
 }

@@ -89,6 +89,7 @@ export class WarehouseInventoryComponent implements OnInit {
   showTyingView: boolean = false;
   showInventory: boolean = true;
   showCustomerModal: boolean = false;
+  showStatsPanel: boolean = false;
 
   // Filter and search
   filterCustomerId: string = "";

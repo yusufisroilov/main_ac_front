@@ -35,7 +35,7 @@ export class AdminTicketListComponent implements OnInit {
   // Pagination
   currentPage: number = 1;
   totalPages: number = 0;
-  pageSize: number = 20;
+  pageSize: number = 100;
   totalTickets: number = 0;
   needPagination: boolean = false;
   mypages = [];
@@ -53,6 +53,9 @@ export class AdminTicketListComponent implements OnInit {
 
   // Loading states
   isLoading: boolean = false;
+
+  // UI state
+  statsExpanded: boolean = false;
 
   // Notification count
   notificationCount: number = 0;

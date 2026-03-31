@@ -47,13 +47,16 @@ export class EmployerDeliveryComponent {
 
   // Filter states
   selectedDeliveryType: string = "";
-  selectedDateFilter: string = "today";
+  selectedDateFilter: string = "all";
   selectedStatusFilter: string = "";
 
   // Deliveries data
   deliveries: Delivery[] = [];
   totalDeliveries: number = 0;
   loadingDeliveries: boolean = false;
+  currentPage: number = 0;
+  totalPages: number = 0;
+  pageSize: number = 50;
 
   // Modal states
   selectedDelivery: Delivery | null = null;
@@ -84,29 +87,33 @@ export class EmployerDeliveryComponent {
   }
 
   ngOnInit() {
-    // Don't load deliveries on init, wait for user to select delivery type
+    this.applyFilters();
   }
 
   // Select delivery type and load deliveries
   selectDeliveryType(type: string) {
-    this.selectedDeliveryType = type;
+    this.selectedDeliveryType = this.selectedDeliveryType === type ? "" : type;
+    this.currentPage = 0;
+    this.applyFilters();
+  }
+
+  onPageChanged(page: number) {
+    this.currentPage = page;
     this.applyFilters();
   }
 
   // Apply filters and load deliveries
   applyFilters() {
-    if (!this.selectedDeliveryType) {
-      return;
-    }
-
     this.loadingDeliveries = true;
 
     let params = new HttpParams()
-      .set("delivery_type", this.selectedDeliveryType)
       .set("date_filter", this.selectedDateFilter)
-      .set("limit", "50")
-      .set("offset", "0");
+      .set("limit", this.pageSize.toString())
+      .set("offset", (this.currentPage * this.pageSize).toString());
 
+    if (this.selectedDeliveryType) {
+      params = params.set("delivery_type", this.selectedDeliveryType);
+    }
     if (this.selectedStatusFilter) {
       params = params.set("status", this.selectedStatusFilter);
     }
@@ -122,6 +129,7 @@ export class EmployerDeliveryComponent {
           if (result.status === "success") {
             this.deliveries = result.data.deliveries || [];
             this.totalDeliveries = result.data.pagination.total;
+            this.totalPages = Math.ceil(this.totalDeliveries / this.pageSize);
 
             // console.log("Employee deliveries loaded:", this.deliveries);
           } else {
@@ -409,8 +417,8 @@ export class EmployerDeliveryComponent {
     const types = {
       EMU: "EMU",
       Yandex: "Yandex",
-      "Own-Courier": "Bizning Kuryerimiz",
-      "Pick-up": "O'zim olib ketaman",
+      "Own-Courier": "Kuryer",
+      "Pick-up": "Mijoz o'zi",
     };
     return types[type] || type;
   }

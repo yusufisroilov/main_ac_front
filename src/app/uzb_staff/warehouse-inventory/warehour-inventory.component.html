@@ -5,16 +5,20 @@
         <!-- Page Header with Stats -->
         <div class="row">
             <div class="col-md-12">
-                <div class="card">
+                <div class="card" style="margin-bottom: 0;">
                     <div class="card-header card-header-gradient" style="padding: 15px 20px;">
-                        <div style="display: flex; align-items: center; justify-content: space-between; gap: 15px; flex-wrap: wrap;">
+                        <div
+                            style="display: flex; align-items: center; justify-content: space-between; gap: 15px; flex-wrap: wrap;">
                             <!-- Left: Title and Description -->
                             <div style="flex: 1; min-width: 200px;">
-                                <h3 class="card-title" style="margin: 0 0 4px 0; font-size: 20px; display: flex; align-items: center; gap: 8px;">
+                                <h3 class="card-title"
+                                    style="margin: 0 0 4px 0; font-size: 20px; display: flex; align-items: center; gap: 8px;">
                                     <i class="material-icons" style="font-size: 24px;">inventory_2</i>
                                     Ombor Qutilari
                                 </h3>
-                                <p class="card-category" style="margin: 0; font-size: 13px; color: rgba(255,255,255,0.8);">Omborda qolgan qutillarni kuzatish va boshqarish</p>
+                                <p class="card-category"
+                                    style="margin: 0; font-size: 13px; color: rgba(255,255,255,0.8);">Omborda qolgan
+                                    qutillarni kuzatish va boshqarish</p>
                             </div>
 
                             <!-- Right: Action Buttons (Refresh and Search) -->
@@ -29,22 +33,30 @@
 
                                 <!-- Search Box (shows on medium+ screens, or toggle on small) -->
                                 <div style="position: relative; min-width: 240px; max-width: 320px;">
-                                    <i class="material-icons" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 20px; color: #666; z-index: 1;">search</i>
-                                    <input type="text" class="form-control form-control-sm" [(ngModel)]="filterCustomerId"
-                                        placeholder="Mijoz ID bo'yicha qidirish..."
+                                    <i class="material-icons"
+                                        style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 20px; color: #666; z-index: 1;">search</i>
+                                    <input type="text" class="form-control form-control-sm"
+                                        [(ngModel)]="filterCustomerId" placeholder="Mijoz ID bo'yicha qidirish..."
                                         style="padding: 8px 12px 8px 42px; font-size: 13px; background: rgba(255,255,255,0.95); border-radius: 20px; border: 1px solid rgba(0,0,0,0.1);">
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="card-body">
+                    <div class="card-body" style="padding: 6px 20px 4px;">
+                        <!-- Toggle button for stats & actions -->
+                        <button class="btn btn-sm" (click)="showStatsPanel = !showStatsPanel"
+                            style="display:inline-flex; align-items:center; gap:4px; font-size:12px; padding:4px 10px; color:#666; border:1px solid #e0e0e0; border-radius:6px; background:#fafafa;">
+                            <i class="material-icons" style="font-size:16px;">{{ showStatsPanel ? 'expand_less' :
+                                'expand_more' }}</i>
+                            {{ showStatsPanel ? 'Yopish' : 'Statistika & Amallar' }}
+                        </button>
 
-                        <!-- Compact Summary & Actions - All in One Row -->
-                        <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap; padding: 10px 0;">
+                        <!-- Collapsible stats + action buttons -->
+                        <div *ngIf="showStatsPanel"
+                            style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap; padding: 12px 0 4px;">
 
                             <!-- Compact Stats -->
                             <div *ngIf="inventorySummary" style="display: flex; gap: 12px; flex: 1; flex-wrap: wrap;">
-                                <!-- Stat 1: Total Packages -->
                                 <div
                                     style="display: flex; align-items: center; gap: 8px; padding: 8px 14px; background: #fff3e0; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
                                     <i class="material-icons" style="font-size: 22px; color: #ff9800;">inventory</i>
@@ -55,8 +67,6 @@
                                             {{inventorySummary.total_packages}}</h4>
                                     </div>
                                 </div>
-
-                                <!-- Stat 2: Customers -->
                                 <div
                                     style="display: flex; align-items: center; gap: 8px; padding: 8px 14px; background: #e8f5e9; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
                                     <i class="material-icons" style="font-size: 22px; color: #4caf50;">people</i>
@@ -66,8 +76,6 @@
                                             {{inventorySummary.total_customers}}</h4>
                                     </div>
                                 </div>
-
-                                <!-- Stat 3: Tied Packages -->
                                 <div
                                     style="display: flex; align-items: center; gap: 8px; padding: 8px 14px; background: #e3f2fd; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
                                     <i class="material-icons" style="font-size: 22px; color: #2196f3;">link</i>
@@ -78,8 +86,6 @@
                                             {{inventorySummary.tied_packages}}</h4>
                                     </div>
                                 </div>
-
-                                <!-- Stat 4: Items -->
                                 <div
                                     style="display: flex; align-items: center; gap: 8px; padding: 8px 14px; background: #ffebee; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
                                     <i class="material-icons" style="font-size: 22px; color: #f44336;">shopping_bag</i>
@@ -92,55 +98,32 @@
                                 </div>
                             </div>
 
-                            <!-- Compact Action Buttons (Right Side) with Active States -->
-                            <div style="display: flex; gap: 8px; margin-left: auto; flex-wrap: wrap; justify-content: flex-end;">
-                                <!-- Add Package Button -->
+                            <!-- Action Buttons -->
+                            <div
+                                style="display: flex; gap: 8px; margin-left: auto; flex-wrap: wrap; justify-content: flex-end;">
                                 <button class="btn btn-sm" (click)="showAddPackageForm()"
-                                    [class.btn-primary]="showAddForm"
-                                    [class.btn-outline-primary]="!showAddForm"
                                     [style.background]="showAddForm ? '#2196f3' : 'transparent'"
                                     [style.color]="showAddForm ? '#fff' : '#2196f3'"
-                                    [style.border]="showAddForm ? '2px solid #2196f3' : '2px solid #2196f3'"
-                                    [style.box-shadow]="showAddForm ? '0 4px 8px rgba(33,150,243,0.4), inset 0 0 0 1px rgba(255,255,255,0.2)' : '0 2px 4px rgba(0,0,0,0.1)'"
-                                    [style.transform]="showAddForm ? 'scale(1.02)' : 'scale(1)'"
-                                    style="display: flex; align-items: center; gap: 6px; font-size: 13px; padding: 8px 14px; white-space: nowrap; transition: all 0.2s ease; position: relative;">
-                                    <i class="material-icons" style="font-size: 18px;">add_box</i>
-                                    Yangi Quti
-                                    <span *ngIf="showAddForm" style="position: absolute; bottom: -2px; left: 50%; transform: translateX(-50%); width: 70%; height: 3px; background: #fff; border-radius: 2px;"></span>
+                                    [style.border]="'2px solid #2196f3'"
+                                    style="display: flex; align-items: center; gap: 6px; font-size: 13px; padding: 8px 14px; white-space: nowrap; border-radius: 8px;">
+                                    <i class="material-icons" style="font-size: 18px;">add_box</i> Yangi Quti
                                 </button>
-
-                                <!-- Tying Interface Button -->
                                 <button class="btn btn-sm" (click)="showTyingInterface()"
-                                    [class.btn-info]="showTyingView"
-                                    [class.btn-outline-info]="!showTyingView"
                                     [style.background]="showTyingView ? '#00bcd4' : 'transparent'"
                                     [style.color]="showTyingView ? '#fff' : '#00bcd4'"
-                                    [style.border]="showTyingView ? '2px solid #00bcd4' : '2px solid #00bcd4'"
-                                    [style.box-shadow]="showTyingView ? '0 4px 8px rgba(0,188,212,0.4), inset 0 0 0 1px rgba(255,255,255,0.2)' : '0 2px 4px rgba(0,0,0,0.1)'"
-                                    [style.transform]="showTyingView ? 'scale(1.02)' : 'scale(1)'"
-                                    style="display: flex; align-items: center; gap: 6px; font-size: 13px; padding: 8px 14px; white-space: nowrap; transition: all 0.2s ease; position: relative;">
-                                    <i class="material-icons" style="font-size: 18px;">link</i>
-                                    Bog'lash
-                                    <span *ngIf="showTyingView" style="position: absolute; bottom: -2px; left: 50%; transform: translateX(-50%); width: 70%; height: 3px; background: #fff; border-radius: 2px;"></span>
+                                    [style.border]="'2px solid #00bcd4'"
+                                    style="display: flex; align-items: center; gap: 6px; font-size: 13px; padding: 8px 14px; white-space: nowrap; border-radius: 8px;">
+                                    <i class="material-icons" style="font-size: 18px;">link</i> Bog'lash
                                 </button>
-
-                                <!-- Inventory View Button -->
                                 <button class="btn btn-sm" (click)="showInventoryView()"
-                                    [class.btn-warning]="showInventory"
-                                    [class.btn-outline-warning]="!showInventory"
                                     [style.background]="showInventory ? '#ff9800' : 'transparent'"
                                     [style.color]="showInventory ? '#fff' : '#ff9800'"
-                                    [style.border]="showInventory ? '2px solid #ff9800' : '2px solid #ff9800'"
-                                    [style.box-shadow]="showInventory ? '0 4px 8px rgba(255,152,0,0.4), inset 0 0 0 1px rgba(255,255,255,0.2)' : '0 2px 4px rgba(0,0,0,0.1)'"
-                                    [style.transform]="showInventory ? 'scale(1.02)' : 'scale(1)'"
-                                    style="display: flex; align-items: center; gap: 6px; font-size: 13px; padding: 8px 14px; white-space: nowrap; transition: all 0.2s ease; position: relative;">
-                                    <i class="material-icons" style="font-size: 18px;">view_list</i>
-                                    Inventar
-                                    <span *ngIf="showInventory" style="position: absolute; bottom: -2px; left: 50%; transform: translateX(-50%); width: 70%; height: 3px; background: #fff; border-radius: 2px;"></span>
+                                    [style.border]="'2px solid #ff9800'"
+                                    style="display: flex; align-items: center; gap: 6px; font-size: 13px; padding: 8px 14px; white-space: nowrap; border-radius: 8px;">
+                                    <i class="material-icons" style="font-size: 18px;">view_list</i> Inventar
                                 </button>
                             </div>
                         </div>
-
                     </div>
                 </div>
             </div>
@@ -276,7 +259,7 @@
                                 </button>
                             </div>
 
-                            <div class="table-responsive mt-3">
+                            <div class="table-responsive mt-2">
                                 <table class="table table-modern">
                                     <thead>
                                         <tr>
@@ -377,15 +360,10 @@
         </div>
 
         <!-- Warehouse Inventory View -->
-        <div class="row" *ngIf="showInventory">
+        <div class="row" style="margin-top: 8px;" *ngIf="showInventory">
             <div class="col-md-12">
-                <div class="card card-modern">
-                    <div class="card-header bg-info">
-                        <div class="d-flex justify-content-between align-items-center">
-
-                        </div>
-                    </div>
-                    <div class="card-body">
+                <div class="card card-modern" style="margin-bottom: 0;">
+                    <div class="card-body" style="padding: 10px 15px;">
 
                         <!-- Loading indicator -->
                         <div *ngIf="loadingInventory" class="loading-state">

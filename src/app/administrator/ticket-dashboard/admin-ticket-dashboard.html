@@ -1,269 +1,209 @@
 <div class="main-content">
     <div class="container-fluid">
-        <!-- Header -->
-        <div class="row">
-            <div class="col-md-12">
-                <div class="card">
-                    <div class="card-header card-header-info card-header-icon">
-                        <div class="card-icon">
-                            <i class="material-icons">dashboard</i>
-                        </div>
-                        <h4 class="card-title">So'rovlar Nazorati Panelu</h4>
-                        <p class="card-category">Konsultatsiya Sistemasi Ko'rinishi</p>
-                        <button mat-raised-button class="btn btn-primary btn-sm" style="float: right; margin-top: -60px"
-                            (click)="refreshDashboard()">
-                            <i class="material-icons">refresh</i> Yangilash
-                        </button>
+
+        <!-- Toolbar: title + filters + actions in one line -->
+        <div class="td-toolbar">
+            <div class="td-toolbar-left">
+                <i class="material-icons td-toolbar-icon">support_agent</i>
+                <span class="td-toolbar-title">So'rovlar</span>
+                <span class="td-toolbar-count" *ngIf="!loadingRecent">{{ recentTickets.length }}</span>
+            </div>
+            <div class="td-toolbar-right">
+                <select class="td-filter-select" [(ngModel)]="filterStatus" (change)="loadRecentTickets()">
+                    <option value="">Barchasi</option>
+                    <option value="unread">O'qilmagan</option>
+                    <option value="open">Ochiq</option>
+                    <option value="customer-reply">Javob kutayotgan</option>
+                    <option value="answered">Javob berilgan</option>
+                    <option value="closed">Yopilgan</option>
+                </select>
+                <input type="text" class="td-search-input" placeholder="Qidirish..." [(ngModel)]="searchQuery"
+                    (keyup.enter)="loadRecentTickets()">
+                <button class="td-btn td-btn-primary" (click)="viewAllTickets()">
+                    <i class="material-icons">list</i> Hammasi
+                </button>
+                <button class="td-btn td-btn-refresh" (click)="refreshDashboard()" title="Yangilash">
+                    <i class="material-icons">refresh</i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Tickets Table (main focus) -->
+        <div class="card td-card">
+            <div class="card-body" style="padding: 0;">
+
+                <!-- Loading -->
+                <div *ngIf="loadingRecent" class="text-center" style="padding: 40px 0;">
+                    <div class="spinner-border text-primary" style="width:1.5rem;height:1.5rem;border-width:0.15em;">
                     </div>
+                </div>
+
+                <!-- Table -->
+                <div *ngIf="!loadingRecent && recentTickets.length > 0" class="table-responsive">
+                    <table class="table table-hover td-table">
+                        <thead>
+                            <tr>
+                                <th class="text-center">Nomer</th>
+                                <th>Mijoz</th>
+                                <th>Mavzusi</th>
+                                <th class="text-center">Muhimlilik</th>
+                                <th class="text-center">Status</th>
+                                <th class="text-center">Yangilangan</th>
+                                <th class="text-center"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let ticket of recentTickets" (click)="viewTicket(ticket)"
+                                style="cursor:pointer;">
+                                <td class="text-center">
+                                    <strong>{{ ticket.ticket_number }}</strong>
+                                </td>
+                                <td>{{ ticket.customer_name }}</td>
+                                <td>
+                                    {{ ticket.subject.length > 50 ? (ticket.subject | slice: 0:50) + '...' :
+                                    ticket.subject }}
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge {{ getPriorityClass(ticket.priority) }}">{{
+                                        getPriorityLabel(ticket.priority) }}</span>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge {{ getStatusClass(ticket.status) }}">{{
+                                        getStatusLabel(ticket.status) }}</span>
+                                </td>
+                                <td class="text-center text-muted">
+                                    <small>{{ formatDate(ticket.updated_at) }}</small>
+                                </td>
+                                <td class="text-center">
+                                    <button class="td-btn-view" (click)="viewTicket(ticket); $event.stopPropagation();">
+                                        <i class="material-icons">open_in_new</i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Empty -->
+                <div *ngIf="!loadingRecent && recentTickets.length === 0" class="text-center text-muted"
+                    style="padding: 40px 0;">
+                    <i class="material-icons" style="font-size: 48px; color:#ccc;">inbox</i>
+                    <p style="margin-top: 8px;">So'rovlar topilmadi</p>
                 </div>
             </div>
         </div>
 
-        <!-- Stat cards -->
-        <div class="row">
-            <!-- Total -->
-            <div class="col-lg-3 col-md-6 col-sm-6">
-                <div class="card card-stats">
-                    <div class="card-header card-header-info card-header-icon">
-                        <div class="card-icon">
+        <!-- Collapsible Stats Section -->
+        <div class="td-stats-section">
+            <div class="td-stats-header" (click)="statsExpanded = !statsExpanded">
+                <div class="td-stats-header-left">
+                    <i class="material-icons">analytics</i>
+                    <span>Statistika</span>
+                    <span class="td-stats-badge">{{ totalTickets }}</span>
+                </div>
+                <i class="material-icons td-stats-chevron" [class.rotated]="statsExpanded">expand_more</i>
+            </div>
+
+            <div class="td-stats-body" *ngIf="statsExpanded">
+
+                <!-- Stat cards row -->
+                <div class="td-stat-cards">
+                    <div class="td-stat-card" (click)="viewAllTickets()">
+                        <div class="td-stat-icon" style="background:#00bcd4;">
                             <i class="material-icons">confirmation_number</i>
                         </div>
-                        <p class="card-category">Barcha So'rovlar</p>
-                        <h3 class="card-title">{{ totalTickets }}</h3>
-                    </div>
-                    <div class="card-footer">
-                        <div class="stats">
-                            <a (click)="viewAllTickets()" style="cursor: pointer">
-                                <i class="material-icons">visibility</i> Hammasini Ko'rish
-                            </a>
+                        <div class="td-stat-info">
+                            <span class="td-stat-value">{{ totalTickets }}</span>
+                            <span class="td-stat-label">Barcha</span>
                         </div>
                     </div>
-                </div>
-            </div>
 
-            <!-- Unread -->
-            <div class="col-lg-3 col-md-6 col-sm-6">
-                <div class="card card-stats">
-                    <div class="card-header card-header-danger card-header-icon">
-                        <div class="card-icon">
+                    <div class="td-stat-card" (click)="viewTicketsByStatus('unread')">
+                        <div class="td-stat-icon" style="background:#f44336;">
                             <i class="material-icons">notifications_active</i>
                         </div>
-                        <p class="card-category">O'qilmagan</p>
-                        <h3 class="card-title">{{ unreadTickets }}</h3>
-                    </div>
-                    <div class="card-footer">
-                        <div class="stats">
-                            <a (click)="viewTicketsByStatus('unread')" style="cursor: pointer">
-                                <i class="material-icons">visibility</i> Ko'rish
-                            </a>
+                        <div class="td-stat-info">
+                            <span class="td-stat-value">{{ unreadTickets }}</span>
+                            <span class="td-stat-label">O'qilmagan</span>
                         </div>
                     </div>
-                </div>
-            </div>
 
-            <!-- Open -->
-            <div class="col-lg-3 col-md-6 col-sm-6">
-                <div class="card card-stats">
-                    <div class="card-header card-header-success card-header-icon">
-                        <div class="card-icon">
+                    <div class="td-stat-card" (click)="viewTicketsByStatus('open')">
+                        <div class="td-stat-icon" style="background:#4caf50;">
                             <i class="material-icons">folder_open</i>
                         </div>
-                        <p class="card-category">Ochiq</p>
-                        <h3 class="card-title">{{ openTickets }}</h3>
-                    </div>
-                    <div class="card-footer">
-                        <div class="stats">
-                            <a (click)="viewTicketsByStatus('open')" style="cursor: pointer">
-                                <i class="material-icons">visibility</i> Ko'rish
-                            </a>
+                        <div class="td-stat-info">
+                            <span class="td-stat-value">{{ openTickets }}</span>
+                            <span class="td-stat-label">Ochiq</span>
                         </div>
                     </div>
-                </div>
-            </div>
 
-            <!-- Needs response -->
-            <div class="col-lg-3 col-md-6 col-sm-6">
-                <div class="card card-stats">
-                    <div class="card-header card-header-warning card-header-icon">
-                        <div class="card-icon">
+                    <div class="td-stat-card" (click)="viewTicketsByStatus('customer-reply')">
+                        <div class="td-stat-icon" style="background:#ff9800;">
                             <i class="material-icons">hourglass_empty</i>
                         </div>
-                        <p class="card-category">Javob Kutayotganlar</p>
-                        <h3 class="card-title">{{ needsResponseTickets }}</h3>
+                        <div class="td-stat-info">
+                            <span class="td-stat-value">{{ needsResponseTickets }}</span>
+                            <span class="td-stat-label">Javob kutayotgan</span>
+                        </div>
                     </div>
-                    <div class="card-footer">
-                        <div class="stats">
-                            <a (click)="viewTicketsByStatus('customer-reply')" style="cursor: pointer">
-                                <i class="material-icons">visibility</i> Ko'rish
-                            </a>
+
+                    <div class="td-stat-card">
+                        <div class="td-stat-icon" style="background:#9c27b0;">
+                            <i class="material-icons">access_time</i>
+                        </div>
+                        <div class="td-stat-info">
+                            <span class="td-stat-value">{{ avgResolutionTime | number: '1.0-0' }}s</span>
+                            <span class="td-stat-label">O'rtacha vaqt</span>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
 
-        <!-- Charts (progress rows) -->
-        <div class="row">
-            <!-- By Status -->
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header card-header-primary card-header-icon">
-                        <div class="card-icon">
-                            <i class="material-icons">pie_chart</i>
-                        </div>
-                        <h4 class="card-title">Status Bo'yicha Statistika</h4>
-                    </div>
-                    <div class="card-body">
-                        <div *ngIf="loadingStats" class="text-center">
-                            <mat-spinner style="margin: 0 auto"></mat-spinner>
-                        </div>
-
-                        <div *ngIf="!loadingStats && getStatusChartData().length > 0">
-                            <div *ngFor="let item of getStatusChartData()" class="mb-3">
-                                <div class="d-flex justify-content-between">
-                                    <span><span class="badge {{ item.class }}">{{ item.label }}</span></span>
-                                    <span><strong>{{ item.value }}</strong> ({{ calculatePercentage(item.value)
-                                        }}%)</span>
-                                </div>
-                                <div class="progress" style="height: 10px">
-                                    <div class="progress-bar" [ngClass]="item.class" role="progressbar"
-                                        [style.width.%]="calculatePercentage(item.value)"></div>
-                                </div>
+                <!-- Charts row -->
+                <div class="td-charts-row" *ngIf="!loadingStats">
+                    <!-- By Status -->
+                    <div class="td-chart-card">
+                        <h6 class="td-chart-title">Status bo'yicha</h6>
+                        <div *ngFor="let item of getStatusChartData()" class="td-progress-item">
+                            <div class="td-progress-header">
+                                <span class="badge {{ item.class }}">{{ item.label }}</span>
+                                <span class="td-progress-val">{{ item.value }} ({{ calculatePercentage(item.value)
+                                    }}%)</span>
+                            </div>
+                            <div class="progress" style="height: 6px;">
+                                <div class="progress-bar" [ngClass]="item.class" role="progressbar"
+                                    [style.width.%]="calculatePercentage(item.value)"></div>
                             </div>
                         </div>
-
-                        <div *ngIf="!loadingStats && getStatusChartData().length === 0" class="text-center text-muted">
-                            Malumotlar Topilmadi
+                        <div *ngIf="getStatusChartData().length === 0" class="text-muted"
+                            style="font-size:12px;text-align:center;padding:12px 0;">
+                            Malumotlar topilmadi
                         </div>
                     </div>
-                </div>
-            </div>
 
-            <!-- By Priority -->
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header card-header-warning card-header-icon">
-                        <div class="card-icon">
-                            <i class="material-icons">priority_high</i>
-                        </div>
-                        <h4 class="card-title">Muhimlilik Bo'yicha Statistika</h4>
-                    </div>
-                    <div class="card-body">
-                        <div *ngIf="loadingStats" class="text-center">
-                            <mat-spinner style="margin: 0 auto"></mat-spinner>
-                        </div>
-
-                        <div *ngIf="!loadingStats && getPriorityChartData().length > 0">
-                            <div *ngFor="let item of getPriorityChartData()" class="mb-3">
-                                <div class="d-flex justify-content-between">
-                                    <span><span class="badge {{ item.class }}">{{ item.label }}</span></span>
-                                    <span><strong>{{ item.value }}</strong> ({{ calculatePercentage(item.value)
-                                        }}%)</span>
-                                </div>
-                                <div class="progress" style="height: 10px">
-                                    <div class="progress-bar" [ngClass]="item.class" role="progressbar"
-                                        [style.width.%]="calculatePercentage(item.value)"></div>
-                                </div>
+                    <!-- By Priority -->
+                    <div class="td-chart-card">
+                        <h6 class="td-chart-title">Muhimlilik bo'yicha</h6>
+                        <div *ngFor="let item of getPriorityChartData()" class="td-progress-item">
+                            <div class="td-progress-header">
+                                <span class="badge {{ item.class }}">{{ item.label }}</span>
+                                <span class="td-progress-val">{{ item.value }} ({{ calculatePercentage(item.value)
+                                    }}%)</span>
+                            </div>
+                            <div class="progress" style="height: 6px;">
+                                <div class="progress-bar" [ngClass]="item.class" role="progressbar"
+                                    [style.width.%]="calculatePercentage(item.value)"></div>
                             </div>
                         </div>
-
-                        <div *ngIf="!loadingStats && getPriorityChartData().length === 0"
-                            class="text-center text-muted">
-                            Malumotlar Topilmadi
+                        <div *ngIf="getPriorityChartData().length === 0" class="text-muted"
+                            style="font-size:12px;text-align:center;padding:12px 0;">
+                            Malumotlar topilmadi
                         </div>
                     </div>
                 </div>
+
             </div>
         </div>
 
-        <!-- Avg resolve time -->
-        <div class="row">
-            <div class="col-md-12">
-                <div class="card">
-                    <div class="card-header card-header-success card-header-icon">
-                        <div class="card-icon"><i class="material-icons">timer</i></div>
-                        <h4 class="card-title">O'rtacha Javoblar Vaqti</h4>
-                    </div>
-                    <div class="card-body">
-                        <div class="text-center">
-                            <h2 class="text-success">
-                                <i class="material-icons" style="font-size: 48px">access_time</i><br />
-                                {{ avgResolutionTime | number: "1.1-1" }} Soat
-                            </h2>
-                            <p class="text-muted">Yopilgan So'rovlar uchun o'rtacha miqdorda</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Recent activity -->
-        <div class="row">
-            <div class="col-md-12">
-                <div class="card">
-                    <div class="card-header card-header-info card-header-icon">
-                        <div class="card-icon">
-                            <i class="material-icons">history</i>
-                        </div>
-                        <h4 class="card-title">Oxirgi Activlik</h4>
-                        <p class="card-category">Oxrigi 10 So'rov</p>
-                    </div>
-
-                    <div class="card-body">
-                        <div *ngIf="loadingRecent" class="text-center">
-                            <mat-spinner style="margin: 0 auto"></mat-spinner>
-                        </div>
-
-                        <div *ngIf="!loadingRecent && recentTickets.length > 0" class="table-responsive">
-                            <table class="table table-hover">
-                                <thead>
-                                    <tr>
-                                        <th class="text-center">Nomer</th>
-                                        <th>Mijoz</th>
-                                        <th>Mavzusi</th>
-                                        <th class="text-center">Muhimlilik</th>
-                                        <th class="text-center">Status</th>
-                                        <th class="text-center">Yangilangan</th>
-                                        <th class="text-center">Harakatlar</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr *ngFor="let ticket of recentTickets">
-                                        <td class="text-center"><strong>{{ ticket.ticket_number }}</strong></td>
-                                        <td>{{ ticket.customer_name }}</td>
-                                        <td>
-                                            {{ ticket.subject.length > 50 ? (ticket.subject | slice: 0:50) + '...' :
-                                            ticket.subject }}
-                                        </td>
-                                        <td class="text-center">
-                                            <span class="badge {{ getPriorityClass(ticket.priority) }}">{{
-                                                getPriorityLabel(ticket.priority) }}</span>
-                                        </td>
-                                        <td class="text-center">
-                                            <span class="badge {{ getStatusClass(ticket.status) }}">{{
-                                                getStatusLabel(ticket.status) }}</span>
-                                        </td>
-                                        <td class="text-center text-muted">
-                                            <small>{{ formatDate(ticket.updated_at) }}</small>
-                                        </td>
-                                        <td class="text-center">
-                                            <button mat-raised-button class="btn btn-primary btn-sm"
-                                                (click)="viewTicket(ticket)">
-                                                <i class="material-icons">visibility</i> Ochish
-                                            </button>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <div *ngIf="!loadingRecent && recentTickets.length === 0" class="text-center text-muted py-5">
-                            <i class="material-icons" style="font-size: 64px">inbox</i>
-                            <p>So'rovlar Malumotlar topilmadi </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
 </div>

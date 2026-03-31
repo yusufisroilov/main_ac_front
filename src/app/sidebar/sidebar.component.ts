@@ -350,29 +350,6 @@ export const managerROUTES: RouteInfo[] = [
     icontype: "person_search",
   },
   {
-    path: "/uzm/transactions",
-    title: "Tranzaksiyalar ",
-    type: "link",
-    icontype: "credit_card",
-  },
-  {
-    path: "/oa/other-incomes",
-    title: "Boshqa Daromadlar",
-    type: "link",
-    icontype: "attach_money",
-  },
-  {
-    path: "/oa",
-    title: "Hisoblar&Trans",
-    type: "sub-abs",
-    icontype: "account_balance",
-    collapse: "hisoblar-trans",
-    children: [
-      { path: "/oa/cash-accounts", title: "Kassa Hisoblar", ab: "KH" },
-      { path: "/oa/acc-ledger", title: "Kassa Tarixi", ab: "KT" },
-    ],
-  },
-  {
     path: "/uzm/warehouse-inventory",
     title: "Officedagi Yuklar",
     type: "link",
@@ -384,6 +361,18 @@ export const managerROUTES: RouteInfo[] = [
     type: "link",
     icontype: "local_shipping",
   },
+  {
+    path: "/uzm/admin-del-requests",
+    title: "Yetkazish So'rovlari",
+    type: "link",
+    icontype: "assignment",
+  },
+  // {
+  //   path: "/oa/other-incomes",
+  //   title: "Boshqa Daromadlar",
+  //   type: "link",
+  //   icontype: "attach_money",
+  // },
 
   // {
   //   path: "/uzm/for-debt-management",
@@ -391,12 +380,7 @@ export const managerROUTES: RouteInfo[] = [
   //   type: "link",
   //   icontype: "payments",
   // },
-  {
-    path: "/uzm/admin-del-requests",
-    title: "Yetkazish So'rovlari",
-    type: "link",
-    icontype: "assignment",
-  },
+
   {
     path: "/uzm/tickets-list",
     title: "Murojaatlar Ro'yxati",
@@ -410,10 +394,27 @@ export const managerROUTES: RouteInfo[] = [
     icontype: "credit_card",
   },
   {
+    path: "/uzm/transactions",
+    title: "Tranzaksiyalar ",
+    type: "link",
+    icontype: "credit_card",
+  },
+  {
     path: "/oa/top-debtors",
     title: "Eng Ko'p Qarzdorlar",
     type: "link",
     icontype: "people",
+  },
+  {
+    path: "/oa",
+    title: "Hisoblar&Trans",
+    type: "sub-abs",
+    icontype: "account_balance",
+    collapse: "hisoblar-trans",
+    children: [
+      { path: "/oa/cash-accounts", title: "Kassa Hisoblar", ab: "KH" },
+      { path: "/oa/acc-ledger", title: "Kassa Tarixi", ab: "KT" },
+    ],
   },
   {
     path: "/uzm",

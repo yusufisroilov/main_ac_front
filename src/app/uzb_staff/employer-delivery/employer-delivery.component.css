@@ -1,0 +1,75 @@
+/* Filter chips */
+.filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 16px;
+  background: #fff;
+  color: #555;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.filter-chip i {
+  font-size: 14px;
+}
+
+.filter-chip:hover {
+  border-color: #667eea;
+  color: #667eea;
+}
+
+.filter-chip.active {
+  background: #667eea;
+  border-color: #667eea;
+  color: #fff;
+}
+
+/* Filter select */
+.filter-select {
+  padding: 4px 8px;
+  font-size: 12px;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 6px;
+  background: #fff;
+  color: #555;
+  outline: none;
+  min-width: 100px;
+}
+
+.filter-select:focus {
+  border-color: #667eea;
+}
+
+/* Type badges in table */
+.type-badge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 10px;
+  white-space: nowrap;
+}
+
+.type-EMU {
+  background: #e3f2fd;
+  color: #1565c0;
+}
+
+.type-Yandex {
+  background: #fff8e1;
+  color: #f57f17;
+}
+
+.type-Own-Courier {
+  background: #e8eaf6;
+  color: #283593;
+}
+
+.type-Pick-up {
+  background: #e8f5e9;
+  color: #2e7d32;
+}

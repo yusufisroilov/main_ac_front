@@ -11,6 +11,11 @@ import { AuthService } from "src/app/pages/login/auth.service";
   styleUrls: ["./admin-ticket-dashboard.component.css"],
 })
 export class AdminTicketDashboardComponent implements OnInit {
+  // UI state
+  statsExpanded = false;
+  filterStatus = "";
+  searchQuery = "";
+
   // Stat cards
   totalTickets = 0;
   unreadTickets = 0;
@@ -116,10 +121,12 @@ export class AdminTicketDashboardComponent implements OnInit {
   /**
    * Load recent tickets
    */
-  private loadRecentTickets(): void {
+  loadRecentTickets(): void {
     this.loadingRecent = true;
 
-    const queryParams = "?limit=10&sort_by=updated_at&sort_order=DESC";
+    let queryParams = "?limit=10&sort_by=updated_at&sort_order=DESC";
+    if (this.filterStatus) queryParams += "&status=" + this.filterStatus;
+    if (this.searchQuery.trim()) queryParams += "&search=" + encodeURIComponent(this.searchQuery.trim());
 
     this.http
       .get(
