@@ -57,6 +57,12 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
   public tableData: TableData;
 
+  // Manager sections data
+  recentDeliveryRequests: any[] = [];
+  recentTickets: any[] = [];
+  loadingRequests = false;
+  loadingTickets = false;
+
   isManager(): boolean {
     return this.role === "MANAGER" || this.role === "UZBSTAFF";
   }
@@ -75,6 +81,76 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
   goToAccLedger() {
     this.router.navigate(["/oa/acc-ledger"]);
+  }
+
+  goToDeliveryRequests() {
+    this.router.navigate(["/uzm/admin-del-requests"]);
+  }
+
+  goToTicketsList() {
+    this.router.navigate(["/uzm/tickets-list"]);
+  }
+
+  loadRecentDeliveryRequests() {
+    this.loadingRequests = true;
+    this.http
+      .get(
+        GlobalVars.baseUrl + "/requests/pending?limit=10",
+        this.options,
+      )
+      .subscribe(
+        (response) => {
+          const data = response.json();
+          this.recentDeliveryRequests = data.data?.requests || [];
+          this.loadingRequests = false;
+        },
+        () => {
+          this.loadingRequests = false;
+        },
+      );
+  }
+
+  loadRecentTickets() {
+    this.loadingTickets = true;
+    this.http
+      .get(
+        GlobalVars.baseUrl + "/tickets/admin/all?limit=10&sort_by=updated_at&sort_order=DESC",
+        this.options,
+      )
+      .subscribe(
+        (response) => {
+          const data = response.json();
+          this.recentTickets = data.tickets || [];
+          this.loadingTickets = false;
+        },
+        () => {
+          this.loadingTickets = false;
+        },
+      );
+  }
+
+  getTicketStatusClass(status: string): string {
+    const map = { unread: "badge-danger", open: "badge-primary", answered: "badge-info", "customer-reply": "badge-warning", closed: "badge-success" };
+    return map[status] || "badge-secondary";
+  }
+
+  getTicketStatusLabel(status: string): string {
+    const map = { unread: "O'qilmagan", open: "Ochiq", answered: "Javob berilgan", "customer-reply": "Mijoz javobi", closed: "Yopilgan" };
+    return map[status] || status;
+  }
+
+  getRequestStatusClass(status: string): string {
+    const map = { pending: "badge-warning", approved: "badge-success", rejected: "badge-danger", completed: "badge-info" };
+    return map[status] || "badge-secondary";
+  }
+
+  getRequestStatusLabel(status: string): string {
+    const map = { pending: "Kutilmoqda", approved: "Tasdiqlangan", rejected: "Rad etilgan", completed: "Yakunlangan" };
+    return map[status] || status;
+  }
+
+  viewTicket(ticket: any) {
+    this.router.navigate(["/uzm/ticket-detail"], { queryParams: { ticket: ticket.id } });
   }
 
   startAnimationForLineChart(chart: any) {
@@ -147,6 +223,11 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     //     html: '<b>Iltimos yangi manzildan foydalaning!</b> ' +
     //         '<b style="align: left;"> <br>国际仓C'+ this.id +' <br>18028594657<br> 广东省广州市白云区太和镇南村三姓南街43号1楼档口(原好客源超市)C'+this.id +'<br> 510440 </b><br>'
     // });
+
+    if (this.role === "MANAGER") {
+      this.loadRecentDeliveryRequests();
+      this.loadRecentTickets();
+    }
 
     this.tableData = {
       headerRow: ["ID", "Name", "Salary", "Country", "City"],
