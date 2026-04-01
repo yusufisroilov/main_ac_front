@@ -306,12 +306,12 @@ export const managerROUTES: RouteInfo[] = [
     type: "link",
     icontype: "contacts",
   },
-  {
-    path: "/uzs/uzparcelslist",
-    title: "Hamma buyurtmalar",
-    type: "link",
-    icontype: "list",
-  },
+  // {
+  //   path: "/uzs/uzparcelslist",
+  //   title: "Hamma buyurtmalar",
+  //   type: "link",
+  //   icontype: "list",
+  // },
   {
     path: "/uzm/allorders",
     title: "Hamma buyurtmalar 2",
