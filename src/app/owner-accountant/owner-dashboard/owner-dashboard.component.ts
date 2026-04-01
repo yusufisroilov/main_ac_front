@@ -1,4 +1,5 @@
 import { Component, OnInit } from "@angular/core";
+import { Router } from "@angular/router";
 import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { GlobalVars } from "src/app/global-vars";
 import { AuthService } from "src/app/pages/login/auth.service";
@@ -17,7 +18,13 @@ export class OwnerDashboardComponent implements OnInit {
   customFrom = "";
   customTo = "";
 
-  constructor(private http: HttpClient, public authService: AuthService) {}
+  // Delivery requests & tickets
+  recentDeliveryRequests: any[] = [];
+  recentTickets: any[] = [];
+  loadingRequests = false;
+  loadingTickets = false;
+
+  constructor(private http: HttpClient, private router: Router, public authService: AuthService) {}
 
   private getHeaders(): HttpHeaders {
     return new HttpHeaders({
@@ -33,6 +40,8 @@ export class OwnerDashboardComponent implements OnInit {
   ngOnInit() {
     this.loadStats();
     this.loadCashAccounts();
+    this.loadRecentDeliveryRequests();
+    this.loadRecentTickets();
   }
 
   loadCashAccounts() {
@@ -90,5 +99,38 @@ export class OwnerDashboardComponent implements OnInit {
     const abs = Math.abs(value);
     const [intPart, decPart] = abs.toFixed(2).split(".");
     return intPart.replace(/\B(?=(\d{3})+(?!\d))/g, " ") + "." + decPart;
+  }
+
+  // ── Delivery Requests & Tickets ──
+
+  loadRecentDeliveryRequests() {
+    this.loadingRequests = true;
+    this.http
+      .get<any>(`${GlobalVars.baseUrl}/requests/pending?limit=10`, { headers: this.getHeaders() })
+      .subscribe(
+        (data) => { this.recentDeliveryRequests = data.data?.requests || []; this.loadingRequests = false; },
+        () => { this.loadingRequests = false; },
+      );
+  }
+
+  loadRecentTickets() {
+    this.loadingTickets = true;
+    this.http
+      .get<any>(`${GlobalVars.baseUrl}/tickets/admin/all?limit=10&sort_by=updated_at&sort_order=DESC`, { headers: this.getHeaders() })
+      .subscribe(
+        (data) => { this.recentTickets = data.tickets || []; this.loadingTickets = false; },
+        () => { this.loadingTickets = false; },
+      );
+  }
+
+  goToDeliveryRequests() { this.router.navigate(["/uzm/admin-del-requests"]); }
+  goToTicketsList() { this.router.navigate(["/uzm/tickets-list"]); }
+  viewTicket(ticket: any) { this.router.navigate(["/uzm/ticket-detail"], { queryParams: { ticket: ticket.id } }); }
+
+  getTicketStatusClass(s: string): string {
+    return { unread: "badge-danger", open: "badge-primary", answered: "badge-info", "customer-reply": "badge-warning", closed: "badge-success" }[s] || "badge-secondary";
+  }
+  getTicketStatusLabel(s: string): string {
+    return { unread: "O'qilmagan", open: "Ochiq", answered: "Javob berilgan", "customer-reply": "Mijoz javobi", closed: "Yopilgan" }[s] || s;
   }
 }

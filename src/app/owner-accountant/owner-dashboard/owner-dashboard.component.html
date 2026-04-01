@@ -183,5 +183,117 @@
       </div>
 
     </div>
+
+    <!-- ── Delivery Requests & Tickets ── -->
+    <div class="row" style="margin-top: 20px;">
+
+      <!-- Recent Delivery Requests -->
+      <div class="col-md-6">
+        <div class="card" style="border-radius:10px; box-shadow:0 1px 4px rgba(0,0,0,0.06);">
+          <div class="card-header" style="display:flex; align-items:center; justify-content:space-between; padding:12px 16px; border-bottom:1px solid #eee;">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <i class="material-icons" style="color:#ff9800;">local_shipping</i>
+              <strong style="font-size:14px;">Yetkazish So'rovlari</strong>
+              <span *ngIf="recentDeliveryRequests.length" style="font-size:11px; font-weight:700; padding:2px 8px; border-radius:10px; background:rgba(255,152,0,0.12); color:#ff9800;">
+                {{ recentDeliveryRequests.length }}
+              </span>
+            </div>
+            <button class="btn btn-sm btn-outline-warning" (click)="goToDeliveryRequests()" style="border-radius:6px; font-size:12px; padding:3px 10px;">
+              Barchasi...
+            </button>
+          </div>
+          <div class="card-body" style="padding:0; max-height:400px; overflow-y:auto;">
+            <div *ngIf="loadingRequests" class="text-center" style="padding:30px 0;">
+              <div class="spinner-border text-warning" style="width:1.2rem;height:1.2rem;border-width:0.15em;"></div>
+            </div>
+            <table *ngIf="!loadingRequests && recentDeliveryRequests.length > 0" class="table table-hover" style="margin:0; font-size:12px;">
+              <thead>
+                <tr>
+                  <th style="padding:8px 10px; font-size:10px; text-transform:uppercase; color:#888;">Mijoz</th>
+                  <th style="padding:8px 10px; font-size:10px; text-transform:uppercase; color:#888;">Turi</th>
+                  <th style="padding:8px 10px; font-size:10px; text-transform:uppercase; color:#888;">Qutlar</th>
+                  <th style="padding:8px 10px; font-size:10px; text-transform:uppercase; color:#888;">Telefon</th>
+                  <th style="padding:8px 10px; font-size:10px; text-transform:uppercase; color:#888;">Manzil</th>
+                  <th style="padding:8px 10px; font-size:10px; text-transform:uppercase; color:#888;">Sana</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let req of recentDeliveryRequests" style="cursor:pointer;" (click)="goToDeliveryRequests()">
+                  <td style="padding:6px 10px;">
+                    <strong>K{{ req.owner_id }}</strong>
+                    <span *ngIf="req.is_urgent" style="color:#f44336; font-size:10px; margin-left:4px;">SHOSHILINCH</span>
+                  </td>
+                  <td style="padding:6px 10px;">
+                    <span class="badge" style="font-size:10px;"
+                      [style.background]="req.delivery_type === 'EMU' ? '#7b1fa2' : req.delivery_type === 'Yandex' ? '#f44336' : req.delivery_type === 'Kuryer' ? '#1976d2' : '#43a047'"
+                      [style.color]="'#fff'">
+                      {{ req.delivery_type }}
+                    </span>
+                  </td>
+                  <td style="padding:6px 10px;">{{ req.total_packages }} ta</td>
+                  <td style="padding:6px 10px;"><small>{{ req.customer_phone }}</small></td>
+                  <td style="padding:6px 10px;">
+                    <small class="text-muted">{{ req.delivery_address?.length > 25 ? (req.delivery_address | slice:0:25) + '...' : req.delivery_address || '-' }}</small>
+                  </td>
+                  <td style="padding:6px 10px;"><small class="text-muted">{{ req.created_at | slice:0:10 }}</small></td>
+                </tr>
+              </tbody>
+            </table>
+            <div *ngIf="!loadingRequests && recentDeliveryRequests.length === 0" class="text-center text-muted" style="padding:30px 0;">
+              <i class="material-icons" style="font-size:32px; color:#ccc;">inbox</i>
+              <p style="margin-top:4px; font-size:12px;">Kutilayotgan so'rovlar yo'q</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Tickets -->
+      <div class="col-md-6">
+        <div class="card" style="border-radius:10px; box-shadow:0 1px 4px rgba(0,0,0,0.06);">
+          <div class="card-header" style="display:flex; align-items:center; justify-content:space-between; padding:12px 16px; border-bottom:1px solid #eee;">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <i class="material-icons" style="color:#7b1fa2;">support_agent</i>
+              <strong style="font-size:14px;">Tiketlar</strong>
+              <span *ngIf="recentTickets.length" style="font-size:11px; font-weight:700; padding:2px 8px; border-radius:10px; background:rgba(123,31,162,0.1); color:#7b1fa2;">
+                {{ recentTickets.length }}
+              </span>
+            </div>
+            <button class="btn btn-sm btn-outline-primary" (click)="goToTicketsList()" style="border-radius:6px; font-size:12px; padding:3px 10px;">
+              Barchasi...
+            </button>
+          </div>
+          <div class="card-body" style="padding:0; max-height:400px; overflow-y:auto;">
+            <div *ngIf="loadingTickets" class="text-center" style="padding:30px 0;">
+              <div class="spinner-border text-primary" style="width:1.2rem;height:1.2rem;border-width:0.15em;"></div>
+            </div>
+            <table *ngIf="!loadingTickets && recentTickets.length > 0" class="table table-hover" style="margin:0; font-size:12px;">
+              <thead>
+                <tr>
+                  <th style="padding:8px 10px; font-size:10px; text-transform:uppercase; color:#888;">Nomer</th>
+                  <th style="padding:8px 10px; font-size:10px; text-transform:uppercase; color:#888;">Mavzu</th>
+                  <th class="text-center" style="padding:8px 10px; font-size:10px; text-transform:uppercase; color:#888;">Status</th>
+                  <th style="padding:8px 10px; font-size:10px; text-transform:uppercase; color:#888;">Mijoz</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let ticket of recentTickets" style="cursor:pointer;" (click)="viewTicket(ticket)">
+                  <td style="padding:6px 10px;"><strong>{{ ticket.ticket_number }}</strong></td>
+                  <td style="padding:6px 10px;">{{ ticket.subject?.length > 30 ? (ticket.subject | slice:0:30) + '...' : ticket.subject }}</td>
+                  <td class="text-center" style="padding:6px 10px;">
+                    <span class="badge" [ngClass]="getTicketStatusClass(ticket.status)">{{ getTicketStatusLabel(ticket.status) }}</span>
+                  </td>
+                  <td style="padding:6px 10px;">{{ ticket.customer_name }}</td>
+                </tr>
+              </tbody>
+            </table>
+            <div *ngIf="!loadingTickets && recentTickets.length === 0" class="text-center text-muted" style="padding:30px 0;">
+              <i class="material-icons" style="font-size:32px; color:#ccc;">inbox</i>
+              <p style="margin-top:4px; font-size:12px;">Tiketlar yo'q</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>
