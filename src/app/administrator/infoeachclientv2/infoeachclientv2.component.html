@@ -214,13 +214,14 @@
                     <th class="text-center">{{ tableData1.headerRow[0] }}</th>
                     <th>{{ tableData1.headerRow[2] }}</th>
                     <th class="text-center">AVIA/AVTO</th>
+                    <th class="text-center">Status</th>
                     <th class="text-center">{{ tableData1.headerRow[3] }}</th>
                     <th class="text-center">Yuk og'irligi</th>
                     <th class="text-center">Summasi</th>
                     <th class="text-center">Kurs</th>
                     <th class="text-center">Qarzi $da</th>
                     <th class="text-center">Qarzi SUMda</th>
-                    <th class="text-center">Yetkazish</th>
+                    <th class="text-center">Izoh</th>
                     <th class="text-right">{{ tableData1.headerRow[4] }}</th>
                   </tr>
                 </thead>
@@ -235,6 +236,20 @@
                     <ng-template #elseBlockAvia>
                       <td style="font-weight: bold; color: rgb(0, 229, 255)">AVIA</td>
                     </ng-template>
+                    <td class="text-center">
+                      <ng-container *ngIf="row.status === 7 && row.delivery; else normalStatusV2">
+                        <span style="font-size: 13px; color: #888;">Yetkazish:</span>
+                        <i class="material-icons" style="font-size: 14px; vertical-align: middle; margin: 0 2px;" [style.color]="row.delivery.delivery_type === 'EMU' ? '#7b1fa2' : row.delivery.delivery_type === 'Yandex' ? '#f44336' : row.delivery.delivery_type === 'Own-Courier' ? '#1976d2' : '#43a047'">{{ getDeliveryIcon(row.delivery.delivery_type) }}</i>
+                        <span style="font-size: 13px; font-weight: 600;" [style.color]="row.delivery.delivery_type === 'EMU' ? '#7b1fa2' : row.delivery.delivery_type === 'Yandex' ? '#f44336' : row.delivery.delivery_type === 'Own-Courier' ? '#1976d2' : '#43a047'">{{ getDeliveryTypeLabel(row.delivery.delivery_type) }}</span>
+                        <br>
+                        <small style="font-size: 12px; font-weight: 600;" [style.color]="row.delivery.status === 'delivered' ? '#4caf50' : row.delivery.status === 'sent' ? '#1976d2' : '#ff9800'">{{ getDeliveryStatusLabel(row.delivery.status) }}</small>
+                      </ng-container>
+                      <ng-template #normalStatusV2>
+                        <span class="badge" [ngClass]="getConsignmentStatusClass(row.status)">
+                          {{ getConsignmentStatusText(row.status) }}
+                        </span>
+                      </ng-template>
+                    </td>
                     <td class="text-center">{{ row.quantity }} ta</td>
                     <td *ngIf="row.weight; else elseBlock" class="text-center">
                       {{ row.weight }} kg
@@ -251,15 +266,23 @@
                     <td class="text-center">
                       {{ row.rate }}
                     </td>
-                    <td *ngIf="row.debt; else elseBlock3" class="text-center">
-                      {{ row.debt | number:'1.2-2' }}$
-                    </td>
-                    <ng-template #elseBlock3>
-                      <td class="text-center">- -</td>
-                    </ng-template>
                     <td class="text-center">
-                      {{ row.debt_uzs | currency : " " : "symbol" : "1.0-0" }}
-                      Sum
+                      <ng-container *ngIf="row.weight">
+                        <span *ngIf="row.debt > 0.01" class="text-danger font-weight-bold">
+                          {{ row.debt | number:'1.2-2' }}$
+                        </span>
+                        <span *ngIf="!row.debt || row.debt <= 0.01" class="text-success">0.00$</span>
+                      </ng-container>
+                      <span *ngIf="!row.weight" class="text-muted">- -</span>
+                    </td>
+                    <td class="text-center">
+                      <ng-container *ngIf="row.weight">
+                        <span *ngIf="row.debt_uzs > 100" class="text-danger font-weight-bold">
+                          {{ row.debt_uzs | currency : " " : "symbol" : "1.0-0" }} Sum
+                        </span>
+                        <span *ngIf="!row.debt_uzs || row.debt_uzs <= 100" class="text-success">0 Sum</span>
+                      </ng-container>
+                      <span *ngIf="!row.weight" class="text-muted">- -</span>
                       <div *ngIf="row.for_debt" style="margin-top: 4px;">
                         <span class="badge badge-warning" style="font-size: 11px; padding: 3px 8px;">
                           <i class="material-icons"
@@ -268,16 +291,17 @@
                         </span>
                       </div>
                     </td>
-                    <td class="text-center">
-                      <ng-container *ngIf="row.delivery">
-                        <span class="badge" [ngClass]="getDeliveryBadgeClass(row.delivery.delivery_type)" style="font-size: 11px; padding: 3px 8px;">
-                          <i class="material-icons" style="font-size: 12px; vertical-align: middle;">{{ getDeliveryIcon(row.delivery.delivery_type) }}</i>
-                          {{ getDeliveryTypeLabel(row.delivery.delivery_type) }}
+                    <td class="text-center" style="max-width: 150px;">
+                      <ng-container *ngIf="row.comment; else noCommentV2">
+                        <span *ngIf="!row._exp && row.comment.length > 30" style="font-size:13px; color:#333; cursor:pointer;" (click)="row._exp = true">
+                          {{ row.comment | slice:0:30 }}... <i class="material-icons" style="font-size:14px; vertical-align:middle; color:#999;">expand_more</i>
                         </span>
-                        <br>
-                        <small class="text-muted" style="font-size: 10px;">{{ getDeliveryStatusLabel(row.delivery.status) }}</small>
+                        <span *ngIf="row._exp || row.comment.length <= 30" style="font-size:13px; color:#333; cursor:pointer;" (click)="row._exp = false">
+                          {{ row.comment }}
+                          <i *ngIf="row.comment.length > 30" class="material-icons" style="font-size:14px; vertical-align:middle; color:#999;">expand_less</i>
+                        </span>
                       </ng-container>
-                      <span *ngIf="!row.delivery" class="text-muted">—</span>
+                      <ng-template #noCommentV2><span class="text-muted">--</span></ng-template>
                     </td>
                     <td class="td-actions text-right">
                       <button type="button" class="btn btn-sm" (click)="getListOfParcels(row.name)"

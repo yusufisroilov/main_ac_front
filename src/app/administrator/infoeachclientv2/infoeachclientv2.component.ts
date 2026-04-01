@@ -874,6 +874,32 @@ export class Infoeachclientv2Component implements OnInit {
     });
   }
 
+  // ─── Consignment status helpers ───
+
+  getConsignmentStatusText(status: number): string {
+    const map: { [key: number]: string } = {
+      1: "Kelmagan",
+      2: "Xitoy omborida",
+      4: "Xitoy aeroportida",
+      5: "O'zbekiston aeroportida",
+      6: "Bojxonada",
+      7: "Toshkent omborida",
+    };
+    return map[status] || "Nomalum";
+  }
+
+  getConsignmentStatusClass(status: number): string {
+    const map: { [key: number]: string } = {
+      1: "badge-warning",
+      2: "badge-info",
+      4: "badge-primary",
+      5: "badge-info",
+      6: "badge-success",
+      7: "badge-success",
+    };
+    return map[status] || "badge-secondary";
+  }
+
   // ─── Delivery helpers ───
 
   getDeliveryBadgeClass(type: string): string {

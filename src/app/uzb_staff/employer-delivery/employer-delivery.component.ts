@@ -69,6 +69,9 @@ export class EmployerDeliveryComponent {
   // Processing states
   processingDelivery: boolean = false;
 
+  // Expandable barcodes
+  expandedBarcodes: Set<number> = new Set();
+
   // Current employee
   currentEmployee: string = "";
 
@@ -130,8 +133,6 @@ export class EmployerDeliveryComponent {
             this.deliveries = result.data.deliveries || [];
             this.totalDeliveries = result.data.pagination.total;
             this.totalPages = Math.ceil(this.totalDeliveries / this.pageSize);
-
-            // console.log("Employee deliveries loaded:", this.deliveries);
           } else {
             swal.fire(
               "Xatolik",
@@ -226,7 +227,7 @@ export class EmployerDeliveryComponent {
       );
   }
 
-  // Process non-EMU delivery (no weight required)
+  // Process non-EMU delivery (requires weight + notes)
   processDelivery(delivery: Delivery) {
     const statusToSet = this.getTargetStatusForDeliveryType(
       delivery.delivery_type
@@ -235,9 +236,13 @@ export class EmployerDeliveryComponent {
     swal
       .fire({
         title: "Tasdiqlash",
-        text: `${delivery.barcode} yetkazishni "${this.getStatusText(
+        html: `
+          <p>${delivery.barcode} yetkazishni "${this.getStatusText(
           statusToSet
-        )}" holatiga o'tkazishni tasdiqlaysizmi?`,
+        )}" holatiga o'tkazishni tasdiqlaysizmi?</p>
+          <input id="weight-input" class="swal2-input" type="number" step="0.01" min="0" placeholder="Og'irlik (kg)" />
+          <textarea id="notes-input" class="swal2-textarea" placeholder="Izoh (ixtiyoriy)"></textarea>
+        `,
         icon: "question",
         showCancelButton: true,
         confirmButtonText: "Ha, tasdiqlash",
@@ -247,10 +252,20 @@ export class EmployerDeliveryComponent {
           cancelButton: "btn btn-secondary",
         },
         buttonsStyling: false,
+        preConfirm: () => {
+          const weightEl = document.getElementById("weight-input") as HTMLInputElement;
+          const notesEl = document.getElementById("notes-input") as HTMLTextAreaElement;
+          const weight = parseFloat(weightEl?.value);
+          if (!weightEl?.value || isNaN(weight) || weight <= 0) {
+            swal.showValidationMessage("Og'irlikni kiriting");
+            return false;
+          }
+          return { weight, notes: notesEl?.value || "" };
+        },
       })
       .then((result) => {
-        if (result.isConfirmed) {
-          this.updateDeliveryStatus(delivery, statusToSet);
+        if (result.isConfirmed && result.value) {
+          this.updateDeliveryStatus(delivery, statusToSet, result.value.weight, result.value.notes);
         }
       });
   }
@@ -269,15 +284,17 @@ export class EmployerDeliveryComponent {
   }
 
   // Update delivery status
-  updateDeliveryStatus(delivery: Delivery, newStatus: string) {
+  updateDeliveryStatus(delivery: Delivery, newStatus: string, weight?: number, notes?: string) {
     this.processingDelivery = true;
 
-    const updateData = {
+    const updateData: any = {
       new_status: newStatus,
       processed_by_employee: this.currentEmployee,
       [newStatus === "collected" ? "collected_date" : "sent_date"]:
         new Date().toISOString(),
     };
+    if (weight != null) updateData.weight = weight;
+    if (notes) updateData.notes = notes;
 
     this.http
       .put(
@@ -474,5 +491,19 @@ export class EmployerDeliveryComponent {
   // Get action button icon based on delivery type
   getActionButtonIcon(deliveryType: string): string {
     return deliveryType === "EMU" ? "inventory" : "send";
+  }
+
+  // Expandable barcode
+  toggleBarcode(id: number) {
+    if (this.expandedBarcodes.has(id)) {
+      this.expandedBarcodes.delete(id);
+    } else {
+      this.expandedBarcodes.add(id);
+    }
+  }
+
+  getTruncatedBarcode(barcode: string, maxLen: number = 10): string {
+    if (!barcode || barcode.length <= maxLen) return barcode;
+    return barcode.substring(0, maxLen) + "...";
   }
 }

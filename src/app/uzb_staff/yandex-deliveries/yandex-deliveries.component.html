@@ -75,11 +75,11 @@
                                 <table class="table table-hover">
                                     <thead class="text-primary">
                                         <tr>
-                                            <th>Quti Barkod</th>
                                             <th>Mijoz</th>
                                             <th>Qutillar</th>
                                             <th>Og'irligi</th>
                                             <th>Telefon</th>
+                                            <th>Quti Barkod</th>
                                             <th>Manzil</th>
                                             <th>Holat</th>
                                             <th>Izoh</th>
@@ -91,7 +91,6 @@
                                         <tr *ngFor="let delivery of deliveries" [ngClass]="{
                                              'row-sent': delivery.status == 'sent'
                                         }">
-                                            <td><code>{{delivery.barcode}}</code></td>
                                             <td><strong>K{{delivery.owner_id}}</strong></td>
                                             <td>{{delivery.total_packages}} ta</td>
                                             <td>
@@ -104,6 +103,10 @@
                                                 </button>
                                             </td>
                                             <td>{{delivery.customer_phone}}</td>
+                                            <td style="cursor:pointer;" (click)="toggleBarcode(delivery.id)">
+                                                <code *ngIf="!expandedBarcodes.has(delivery.id)">{{getTruncatedBarcode(delivery.barcode)}}</code>
+                                                <code *ngIf="expandedBarcodes.has(delivery.id)">{{delivery.barcode}}</code>
+                                            </td>
                                             <td>
                                                 <small
                                                     *ngIf="delivery.delivery_address">{{delivery.delivery_address}}</small>

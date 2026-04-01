@@ -21,6 +21,7 @@ export class Financev2Component implements OnInit {
     "SO'M da",
     "Qarz $",
     "Qarz SO'M",
+    "Izoh",
     "Yetkazildi",
     "Actions",
   ];
@@ -206,6 +207,7 @@ export class Financev2Component implements OnInit {
             debt_uzs: f.debt_uzs,
             delivered: f.delivered,
             consignment: f.consignment,
+            comment: f.comment || null,
           }));
           // console.log("all data ", this.allData);
 
@@ -254,6 +256,7 @@ export class Financev2Component implements OnInit {
             debt_uzs: f.debt_uzs,
             delivered: f.delivered,
             consignment: f.consignment,
+            comment: f.comment || null,
           }));
 
           this.totalWeight = data.totalWeight || "0";
@@ -292,6 +295,7 @@ export class Financev2Component implements OnInit {
             debt_uzs: f.debt_uzs,
             delivered: f.delivered,
             consignment: f.consignment,
+            comment: f.comment || null,
           }));
 
           this.totalWeight = data.totalWeight || "0";
@@ -598,5 +602,44 @@ export class Financev2Component implements OnInit {
 
   gototransactions() {
     this.router.navigate(["/uzm/transactions"]);
+  }
+
+  updateComment(row: any) {
+    swal
+      .fire({
+        title: "Izoh",
+        input: "textarea",
+        inputValue: row.comment || "",
+        inputPlaceholder: "Izoh kiriting...",
+        showCancelButton: true,
+        confirmButtonText: "Saqlash",
+        cancelButtonText: "Bekor",
+        customClass: {
+          confirmButton: "btn btn-success",
+          cancelButton: "btn btn-secondary",
+        },
+        buttonsStyling: false,
+      })
+      .then((result) => {
+        if (result.isConfirmed) {
+          this.httpClient
+            .post<any>(
+              GlobalVars.baseUrl + "/finance-v2/update-comment",
+              { finance_id: row.id, comment: result.value || null },
+              { headers: this.getHeaders() },
+            )
+            .subscribe(
+              (data) => {
+                if (data.status === "ok") {
+                  row.comment = result.value || null;
+                  swal.fire({ icon: "success", title: "Saqlandi!", timer: 1000, showConfirmButton: false });
+                } else {
+                  swal.fire("Xatolik", data.error, "error");
+                }
+              },
+              (error) => swal.fire("Xatolik", "Izohni saqlashda xatolik", "error"),
+            );
+        }
+      });
   }
 }

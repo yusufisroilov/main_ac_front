@@ -214,9 +214,18 @@
                                             </span>
                                         </td>
                                         <td class="text-center">
-                                            <span class="badge" [ngClass]="getConsignmentStatusClass(consignment.status)">
-                                                {{ getConsignmentStatusText(consignment.status) }}
-                                            </span>
+                                            <ng-container *ngIf="consignment.status === 7 && consignment.delivery; else normalStatusDash">
+                                                <span style="font-size: 13px; color: #888;">Yetkazish:</span>
+                                                <i class="material-icons" style="font-size: 14px; vertical-align: middle; margin: 0 2px;" [style.color]="consignment.delivery.delivery_type === 'EMU' ? '#7b1fa2' : consignment.delivery.delivery_type === 'Yandex' ? '#f44336' : consignment.delivery.delivery_type === 'Own-Courier' ? '#1976d2' : '#43a047'">{{ getDeliveryIcon(consignment.delivery.delivery_type) }}</i>
+                                                <span style="font-size: 13px; font-weight: 600;" [style.color]="consignment.delivery.delivery_type === 'EMU' ? '#7b1fa2' : consignment.delivery.delivery_type === 'Yandex' ? '#f44336' : consignment.delivery.delivery_type === 'Own-Courier' ? '#1976d2' : '#43a047'">{{ getDeliveryTypeLabel(consignment.delivery.delivery_type) }}</span>
+                                                <br>
+                                                <small style="font-size: 12px; font-weight: 600;" [style.color]="consignment.delivery.status === 'delivered' ? '#4caf50' : consignment.delivery.status === 'sent' ? '#1976d2' : '#ff9800'">{{ getDeliveryStatusLabel(consignment.delivery.status) }}</small>
+                                            </ng-container>
+                                            <ng-template #normalStatusDash>
+                                                <span class="badge" [ngClass]="getConsignmentStatusClass(consignment.status)">
+                                                    {{ getConsignmentStatusText(consignment.status) }}
+                                                </span>
+                                            </ng-template>
                                         </td>
                                         <td class="text-center">{{ consignment.quantity }} ta</td>
                                         <td class="text-center">

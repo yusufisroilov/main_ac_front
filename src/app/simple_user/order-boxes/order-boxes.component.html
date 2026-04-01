@@ -206,8 +206,8 @@
                 <span style="display: flex; flex-direction: column; line-height: 1.2;">
                   <span [style.color]="getBalanceColor()"
                     style="font-size: 14px; font-weight: 800; letter-spacing: -0.3px;">
-                    <span *ngIf="debtUsd !== 0">{{ debtUsd > 0 ? '' : '+' }}{{ debtUsd | number:'1.2-2' }}$ / {{ debtUzs
-                      | number:'1.0-0' }} so'm</span>
+                    <span *ngIf="debtUsd > 0">-{{ debtUsd | number:'1.2-2' }}$ / -{{ debtUzs | number:'1.0-0' }} so'm</span>
+                    <span *ngIf="debtUsd < 0">+{{ -debtUsd | number:'1.2-2' }}$ / +{{ -debtUzs | number:'1.0-0' }} so'm</span>
                     <span *ngIf="debtUsd === 0">0.00$</span>
                   </span>
                   <span style="font-size: 10px; color: #888; font-weight: 500;">{{ getBalanceLabel() }}</span>
@@ -231,7 +231,7 @@
                     <th class="text-center">Kurs</th>
                     <th class="text-center">Qarzingiz $da</th>
                     <th class="text-center">Qarzingiz SUMda</th>
-                    <th class="text-center">Yetkazish</th>
+                    <th class="text-center">Izoh</th>
                     <th class="text-right">{{ tableData1.headerRow[4] }}</th>
                     <!-- <th class="text-right">{{ tableData1.headerRow[5] }}</th> -->
                   </tr>
@@ -250,9 +250,18 @@
                         <td style=" font-weight: 600; color: rgb(0, 229, 255)">Avia 🛬</td>
                       </ng-template>
                       <td class="text-center">
-                        <span class="badge" [ngClass]="getConsignmentStatusClass(row.status)">
-                          {{ getConsignmentStatusText(row.status) }}
-                        </span>
+                        <ng-container *ngIf="row.status === 7 && row.delivery; else normalStatus">
+                          <span style="font-size: 13px; color: #888;">Yetkazish:</span>
+                          <i class="material-icons" style="font-size: 14px; vertical-align: middle; margin: 0 2px;" [style.color]="row.delivery.delivery_type === 'EMU' ? '#7b1fa2' : row.delivery.delivery_type === 'Yandex' ? '#f44336' : row.delivery.delivery_type === 'Own-Courier' ? '#1976d2' : '#43a047'">{{ getDeliveryIcon(row.delivery.delivery_type) }}</i>
+                          <span style="font-size: 13px; font-weight: 600;" [style.color]="row.delivery.delivery_type === 'EMU' ? '#7b1fa2' : row.delivery.delivery_type === 'Yandex' ? '#f44336' : row.delivery.delivery_type === 'Own-Courier' ? '#1976d2' : '#43a047'">{{ getDeliveryTypeLabel(row.delivery.delivery_type) }}</span>
+                          <br>
+                          <small style="font-size: 12px; font-weight: 600;" [style.color]="row.delivery.status === 'delivered' ? '#4caf50' : row.delivery.status === 'sent' ? '#1976d2' : '#ff9800'">{{ getDeliveryStatusLabel(row.delivery.status) }}</small>
+                        </ng-container>
+                        <ng-template #normalStatus>
+                          <span class="badge" [ngClass]="getConsignmentStatusClass(row.status)">
+                            {{ getConsignmentStatusText(row.status) }}
+                          </span>
+                        </ng-template>
                       </td>
                       <td class="text-center">{{ row.quantity }} ta</td>
 
@@ -294,17 +303,19 @@
                         <span *ngIf="!row.weight || row.weight === '0'" class="text-muted">- -</span>
                       </td>
 
-                      <td class="text-center">
-                        <ng-container *ngIf="row.delivery">
-                          <span class="badge" [ngClass]="getDeliveryBadgeClass(row.delivery.delivery_type)" style="font-size: 11px; padding: 3px 8px;">
-                            <i class="material-icons" style="font-size: 12px; vertical-align: middle;">{{ getDeliveryIcon(row.delivery.delivery_type) }}</i>
-                            {{ getDeliveryTypeLabel(row.delivery.delivery_type) }}
+                      <td class="text-center" style="max-width: 150px;">
+                        <ng-container *ngIf="row.comment; else noComment">
+                          <span *ngIf="!row._exp && row.comment.length > 30" style="font-size:13px; color:#333; cursor:pointer;" (click)="row._exp = true">
+                            {{ row.comment | slice:0:30 }}... <i class="material-icons" style="font-size:14px; vertical-align:middle; color:#999;">expand_more</i>
                           </span>
-                          <br>
-                          <small class="text-muted" style="font-size: 10px;">{{ getDeliveryStatusLabel(row.delivery.status) }}</small>
+                          <span *ngIf="row._exp || row.comment.length <= 30" style="font-size:13px; color:#333; cursor:pointer;" (click)="row._exp = false">
+                            {{ row.comment }}
+                            <i *ngIf="row.comment.length > 30" class="material-icons" style="font-size:14px; vertical-align:middle; color:#999;">expand_less</i>
+                          </span>
                         </ng-container>
-                        <span *ngIf="!row.delivery" class="text-muted">—</span>
+                        <ng-template #noComment><span class="text-muted">--</span></ng-template>
                       </td>
+
                       <td class="td-actions text-right">
                         <button mat-raised-button type="button" class="btn btn-info"
                           (click)="getListOfParcels(row.name)">

@@ -480,6 +480,39 @@ export class CustomerDashboardComponent implements OnInit, AfterViewInit {
     return map[status] || "badge-secondary";
   }
 
+  // Delivery helpers
+  getDeliveryIcon(type: string): string {
+    const map: { [key: string]: string } = {
+      "EMU": "local_shipping",
+      "Yandex": "delivery_dining",
+      "Own-Courier": "two_wheeler",
+      "Pick-up": "store",
+    };
+    return map[type] || "local_shipping";
+  }
+
+  getDeliveryTypeLabel(type: string): string {
+    const map: { [key: string]: string } = {
+      "EMU": "EMU",
+      "Yandex": "Yandex",
+      "Own-Courier": "Kuryer",
+      "Pick-up": "Mijoz o'zi",
+    };
+    return map[type] || type;
+  }
+
+  getDeliveryStatusLabel(status: string): string {
+    const map: { [key: string]: string } = {
+      "created": "Yaratilgan",
+      "sent": "Yuborilgan",
+      "collected": "Olingan",
+      "delivered": "Yetkazilgan",
+      "returned": "Qaytarilgan",
+      "cancelled": "Bekor",
+    };
+    return map[status] || status;
+  }
+
   // Get badge class based on order status
   getStatusBadgeClass(statusId: number): string {
     switch (statusId) {

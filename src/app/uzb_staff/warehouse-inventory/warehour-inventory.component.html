@@ -207,128 +207,101 @@
             </div>
         </div>
 
-        <!-- Package Tying Interface -->
-        <div class="row" *ngIf="showTyingView">
+        <!-- Package Tying - Compact Inline -->
+        <div class="row" *ngIf="showTyingView" style="margin-top: 8px;">
             <div class="col-md-12">
-                <div class="card card-modern">
-                    <div class="card-header bg-info">
-                        <h4 class="card-title text-white mb-0">
-                            <i class="material-icons align-middle">link</i>
-                            Qutillarni Bog'lash
-                        </h4>
-                    </div>
-                    <div class="card-body">
+                <div class="card" style="margin-bottom: 0; box-shadow: 0 1px 4px rgba(0,0,0,0.08);">
+                    <div class="card-body" style="padding: 10px 16px;">
+                        <!-- Compact input row -->
+                        <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                            <i class="material-icons" style="font-size: 20px; color: #00bcd4;">link</i>
+                            <span style="font-size: 13px; font-weight: 500; color: #555; white-space: nowrap;">Partiya:</span>
+                            <input type="text" class="form-control form-control-sm"
+                                [(ngModel)]="selectedConsignment" name="selectedConsignment"
+                                (keyup.enter)="findPackagesToTie()" placeholder="CU109"
+                                style="max-width: 180px; font-size: 13px; padding: 6px 10px;">
+                            <button class="btn btn-sm btn-info" (click)="findPackagesToTie()"
+                                [disabled]="!selectedConsignment || loadingPackagesToTie"
+                                style="display: flex; align-items: center; gap: 4px; font-size: 12px; padding: 5px 12px;">
+                                <span *ngIf="loadingPackagesToTie" class="spinner-border spinner-border-sm"></span>
+                                <i class="material-icons" *ngIf="!loadingPackagesToTie" style="font-size: 16px;">search</i>
+                                Qidirish
+                            </button>
 
-                        <!-- Consignment selector -->
-                        <div class="search-section">
-                            <div class="row align-items-end">
-                                <div class="col-md-8">
-                                    <div class="form-group-modern">
-                                        <label>Partiya Nomini Kiriting</label>
-                                        <input type="text" class="form-control form-control-lg"
-                                            [(ngModel)]="selectedConsignment" name="selectedConsignment"
-                                            (keyup.enter)="findPackagesToTie()" placeholder="Masalan: CU109">
-                                    </div>
-                                </div>
-
-                            </div>
+                            <!-- Action buttons (show when results exist) -->
+                            <ng-container *ngIf="packagesToTie.length > 0">
+                                <span style="width:1px; height:22px; background:#e0e0e0;"></span>
+                                <span class="badge badge-primary" style="font-size: 12px;">{{packagesToTie.length}} mijoz</span>
+                                <button class="btn btn-sm btn-success" (click)="autoTieAllPackages()"
+                                    [disabled]="autoTyingPackages"
+                                    style="display: flex; align-items: center; gap: 4px; font-size: 12px; padding: 5px 12px;">
+                                    <span *ngIf="autoTyingPackages" class="spinner-border spinner-border-sm"></span>
+                                    <i class="material-icons" *ngIf="!autoTyingPackages" style="font-size: 16px;">done_all</i>
+                                    Hammasini
+                                </button>
+                                <button *ngIf="getSelectedPackagesCount() > 0"
+                                    class="btn btn-sm btn-info" (click)="tieSelectedPackages()"
+                                    style="display: flex; align-items: center; gap: 4px; font-size: 12px; padding: 5px 12px;">
+                                    <i class="material-icons" style="font-size: 16px;">link</i>
+                                    Tanlangan ({{getSelectedPackagesCount()}})
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger" (click)="clearTyingSection()"
+                                    style="display: flex; align-items: center; gap: 4px; font-size: 12px; padding: 5px 10px;">
+                                    <i class="material-icons" style="font-size: 16px;">clear</i>
+                                </button>
+                            </ng-container>
                         </div>
 
-                        <!-- Packages to tie table -->
-                        <div *ngIf="packagesToTie.length > 0" class="tie-section">
-                            <div class="section-header">
-                                <h5 class="mb-0">
-                                    <i class="material-icons text-warning">warning</i>
-                                    Bog'lash Kerak Bo'lgan Qutillar
-                                    <span class="badge badge-primary badge-pill ml-2">{{packagesToTie.length}}
-                                        mijoz</span>
-                                </h5>
-
-                                <button class="btn btn-success btn-lg" (click)="autoTieAllPackages()"
-                                    [disabled]="autoTyingPackages">
-                                    <span *ngIf="autoTyingPackages"
-                                        class="spinner-border spinner-border-sm mr-1"></span>
-                                    <i class="material-icons" *ngIf="!autoTyingPackages">done_all</i>
-                                    Hammasini Bog'lash
-                                </button>
-
-                                <button class="btn btn-danger btn-sm mr-2" (click)="clearTyingSection()"
-                                    *ngIf="packagesToTie.length > 0">
-                                    <i class="material-icons">clear</i>
-                                    Tozalash
-                                </button>
-                            </div>
-
-                            <div class="table-responsive mt-2">
-                                <table class="table table-modern">
+                        <!-- Compact results table -->
+                        <div *ngIf="packagesToTie.length > 0" style="margin-top: 8px;">
+                            <div class="table-responsive">
+                                <table class="table table-hover" style="margin-bottom: 0; font-size: 12px;">
                                     <thead>
                                         <tr>
-                                            <th width="5%">
+                                            <th style="padding: 4px 8px; width: 30px;">
                                                 <div class="custom-control custom-checkbox">
                                                     <input type="checkbox" class="custom-control-input" id="selectAll"
                                                         [(ngModel)]="selectAllPackages" (change)="toggleSelectAll()">
                                                     <label class="custom-control-label" for="selectAll"></label>
                                                 </div>
                                             </th>
-                                            <th width="10%">Mijoz ID</th>
-                                            <th width="20%">Yangi Quti</th>
-                                            <th width="25%">Mavjud Qutillar</th>
-                                            <th width="10%">Jami</th>
-                                            <th width="15%">Holat</th>
-                                            <th width="15%">Amallar</th>
+                                            <th style="padding: 4px 8px;">Mijoz</th>
+                                            <th style="padding: 4px 8px;">Yangi Quti</th>
+                                            <th style="padding: 4px 8px;">Mavjud</th>
+                                            <th style="padding: 4px 8px;">Jami</th>
+                                            <th style="padding: 4px 8px;">Holat</th>
+                                            <th style="padding: 4px 8px;">Amal</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <tr *ngFor="let package of packagesToTie; let i = index"
                                             [class.selected-row]="package.selected">
-                                            <td>
+                                            <td style="padding: 4px 8px;">
                                                 <div class="custom-control custom-checkbox">
                                                     <input type="checkbox" class="custom-control-input"
                                                         [id]="'package-' + i" [(ngModel)]="package.selected">
                                                     <label class="custom-control-label" [for]="'package-' + i"></label>
                                                 </div>
                                             </td>
-                                            <td>
-                                                <div class="customer-id">K{{package.owner_id}}</div>
+                                            <td style="padding: 4px 8px;">
+                                                <strong>K{{package.owner_id}}</strong>
                                             </td>
-                                            <td>
-                                                <div class="package-badge badge-new">
-                                                    <i class="material-icons">fiber_new</i>
-                                                    <span>{{package.new_package.barcode}}</span>
-                                                </div>
+                                            <td style="padding: 4px 8px;">
+                                                <code style="font-size: 11px;">{{package.new_package.barcode}}</code>
                                             </td>
-                                            <td>
-                                                <div class="existing-packages">
-                                                    <span class="package-count">
-                                                        <i class="material-icons">inventory_2</i>
-                                                        {{package.existing_packages.length}} ta quti
-                                                    </span>
-                                                    <div class="consignment-list">
-                                                        <span
-                                                            *ngFor="let cons of getUniqueConsignments(package.existing_packages)"
-                                                            class="consignment-tag">{{cons}}</span>
-                                                    </div>
-                                                </div>
+                                            <td style="padding: 4px 8px;">
+                                                <span style="font-size: 11px;">{{package.existing_packages.length}} ta</span>
+                                                <span *ngFor="let cons of getUniqueConsignments(package.existing_packages)"
+                                                    class="consignment-tag" style="font-size: 10px; padding: 1px 5px; margin-left: 3px;">{{cons}}</span>
                                             </td>
-                                            <td>
-                                                <span class="total-badge">{{package.total_packages}} ta</span>
+                                            <td style="padding: 4px 8px;">{{package.total_packages}}</td>
+                                            <td style="padding: 4px 8px;">
+                                                <span *ngIf="package.already_has_tie_group" class="badge badge-info" style="font-size: 10px;">Qisman</span>
+                                                <span *ngIf="!package.already_has_tie_group" class="badge badge-warning" style="font-size: 10px;">Yo'q</span>
                                             </td>
-                                            <td>
-                                                <span *ngIf="package.already_has_tie_group"
-                                                    class="status-badge status-partial">
-                                                    <i class="material-icons">link</i>
-                                                    Qisman bog'langan
-                                                </span>
-                                                <span *ngIf="!package.already_has_tie_group"
-                                                    class="status-badge status-unlinked">
-                                                    <i class="material-icons">link_off</i>
-                                                    Bog'lanmagan
-                                                </span>
-                                            </td>
-                                            <td>
-                                                <button class="btn btn-sm btn-success btn-action-small"
+                                            <td style="padding: 4px 8px;">
+                                                <button class="btn btn-sm btn-success" style="padding: 2px 8px; font-size: 11px;"
                                                     (click)="tiePackagesForCustomer(package.owner_id)">
-                                                    <i class="material-icons">link</i>
                                                     Bog'lash
                                                 </button>
                                             </td>
@@ -336,24 +309,14 @@
                                     </tbody>
                                 </table>
                             </div>
-
-                            <!-- Tie selected button -->
-                            <div class="text-right mt-3" *ngIf="getSelectedPackagesCount() > 0">
-                                <button class="btn btn-info btn-lg" (click)="tieSelectedPackages()">
-                                    <i class="material-icons">link</i>
-                                    Tanlangan {{getSelectedPackagesCount()}} ta mijozni bog'lash
-                                </button>
-                            </div>
                         </div>
 
-                        <!-- No packages to tie -->
+                        <!-- No results message (compact) -->
                         <div *ngIf="selectedConsignment && packagesToTie.length === 0 && !loadingPackagesToTie"
-                            class="empty-state">
-                            <i class="material-icons">link_off</i>
-                            <h5>Bog'lash kerak bo'lgan quti yo'q</h5>
-                            <p>Bu Partiyada bog'lash kerak bo'lgan mijozlar topilmadi</p>
+                            style="text-align: center; padding: 10px 0; color: #999; font-size: 13px;">
+                            <i class="material-icons" style="font-size: 18px; vertical-align: middle;">link_off</i>
+                            Bog'lash kerak bo'lgan quti topilmadi
                         </div>
-
                     </div>
                 </div>
             </div>

@@ -76,11 +76,11 @@
                                 <table class="table table-hover">
                                     <thead class="text-primary">
                                         <tr>
-                                            <th>Quti Barkod</th>
                                             <th>Mijoz</th>
                                             <th>Qutillar</th>
                                             <th>Og'irligi</th>
                                             <th>Telefon</th>
+                                            <th>Quti Barkod</th>
                                             <th>Holat</th>
                                             <th>Yaratilgan</th>
                                             <th>Amallar</th>
@@ -91,7 +91,6 @@
                                             'row-collected': delivery.status == 'collected',
                                              'row-sent': delivery.status == 'sent'
                                         }">
-                                            <td><code>{{delivery.barcode}}</code></td>
                                             <td><strong>K{{delivery.owner_id}}</strong></td>
                                             <td>{{delivery.total_packages}} ta</td>
                                             <td>
@@ -104,6 +103,7 @@
                                                 </button>
                                             </td>
                                             <td>{{delivery.customer_phone}}</td>
+                                            <td><code>{{delivery.barcode}}</code></td>
                                             <td>
                                                 <span class="badge" [class]="getStatusBadgeClass(delivery.status)">
                                                     {{getStatusText(delivery.status)}}

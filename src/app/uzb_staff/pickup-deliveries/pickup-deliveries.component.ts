@@ -296,4 +296,40 @@ export class PickupDeliveriesComponent implements OnInit {
     // PrintCheckComponent will fetch data from backend and print
     this.printCheckComponent.print(delivery.id);
   }
+
+  // Frontend date filtering
+  filterDeliveriesByDate(deliveries: Delivery[]): Delivery[] {
+    if (this.selectedDateFilter === "all") return deliveries;
+
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    let startDate: Date;
+    let endDate: Date;
+
+    switch (this.selectedDateFilter) {
+      case "today":
+        startDate = today;
+        endDate = new Date(today.getTime() + 86400000);
+        break;
+      case "yesterday":
+        startDate = new Date(today.getTime() - 86400000);
+        endDate = today;
+        break;
+      case "week":
+        startDate = new Date(today.getTime() - 7 * 86400000);
+        endDate = new Date(today.getTime() + 86400000);
+        break;
+      case "month":
+        startDate = new Date(today.getTime() - 30 * 86400000);
+        endDate = new Date(today.getTime() + 86400000);
+        break;
+      default:
+        return deliveries;
+    }
+
+    return deliveries.filter((d) => {
+      const created = new Date(d.created_date);
+      return created >= startDate && created < endDate;
+    });
+  }
 }

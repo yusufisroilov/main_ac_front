@@ -74,6 +74,9 @@ export class YandexDeliveriesComponent implements OnInit {
   // Processing states
   processingDelivery: boolean = false;
 
+  // Expandable barcodes
+  expandedBarcodes: Set<number> = new Set();
+
   // Current employee
   currentEmployee: string = "";
 
@@ -370,5 +373,19 @@ export class YandexDeliveriesComponent implements OnInit {
   printDeliveryCheck(delivery: Delivery) {
     // PrintCheckComponent will fetch data from backend and print
     this.printCheckComponent.print(delivery.id);
+  }
+
+  // Expandable barcode
+  toggleBarcode(id: number) {
+    if (this.expandedBarcodes.has(id)) {
+      this.expandedBarcodes.delete(id);
+    } else {
+      this.expandedBarcodes.add(id);
+    }
+  }
+
+  getTruncatedBarcode(barcode: string, maxLen: number = 10): string {
+    if (!barcode || barcode.length <= maxLen) return barcode;
+    return barcode.substring(0, maxLen) + "...";
   }
 }

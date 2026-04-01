@@ -82,8 +82,9 @@
                       <th class="text-center">{{ headerRow[4] }}</th>
                       <th class="text-center">{{ headerRow[5] }}</th>
                       <th class="text-center">{{ headerRow[6] }}</th>
-                      <!-- <th class="text-center">{{ headerRow[7] }}</th> -->
-                      <th class="text-center">{{ headerRow[8] }}</th>
+                      <th class="text-center">{{ headerRow[7] }}</th>
+                      <!-- <th class="text-center">{{ headerRow[8] }}</th> -->
+                      <th class="text-center">{{ headerRow[9] }}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -96,6 +97,25 @@
                       <td>{{ row.amount_uzs | currency : " " : "symbol" : "4.0-0" }}</td>
                       <td>{{ row.debt_usd | number:'1.2-2' }}$</td>
                       <td>{{ row.debt_uzs | currency : " " : "symbol" : "4.0-0" }}</td>
+                      <td class="text-center" style="max-width:140px;">
+                        <ng-container *ngIf="row.comment; else noCommentFin">
+                          <span *ngIf="!row._exp && row.comment.length > 30" style="font-size:13px; color:#333; cursor:pointer;" (click)="row._exp = true">
+                            {{ row.comment | slice:0:30 }}... <i class="material-icons" style="font-size:14px; vertical-align:middle; color:#999;">expand_more</i>
+                          </span>
+                          <span *ngIf="row._exp || row.comment.length <= 30" style="font-size:13px; color:#333; cursor:pointer;" (click)="row._exp = false">
+                            {{ row.comment }}
+                            <i *ngIf="row.comment.length > 30" class="material-icons" style="font-size:14px; vertical-align:middle; color:#999;">expand_less</i>
+                          </span>
+                          <button class="btn btn-link btn-just-icon btn-warning" style="padding:2px;" (click)="updateComment(row)" title="Izohni tahrirlash">
+                            <i class="material-icons" style="font-size:14px;">edit</i>
+                          </button>
+                        </ng-container>
+                        <ng-template #noCommentFin>
+                          <button class="btn btn-link btn-just-icon btn-info" style="padding:2px;" (click)="updateComment(row)" title="Izoh qo'shish">
+                            <i class="material-icons" style="font-size:18px;">add_comment</i>
+                          </button>
+                        </ng-template>
+                      </td>
                       <!-- <td>
                         <span *ngIf="row.delivered" style="font-weight: bold; color: green">
                           <i class="material-icons">verified</i>
@@ -120,6 +140,7 @@
                       <th class="text-center">{{ totalUZS | currency : " " : "symbol" : "4.0-0" }}</th>
                       <th class="text-center">{{ totalDebtUSD | currency }}</th>
                       <th class="text-center">{{ totalDebtUZS | currency : " " : "symbol" : "4.0-0" }}</th>
+                      <th class="text-center"></th>
                       <th class="text-center"></th>
                       <th class="text-center"></th>
                     </tr>
