@@ -94,10 +94,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   loadRecentDeliveryRequests() {
     this.loadingRequests = true;
     this.http
-      .get(
-        GlobalVars.baseUrl + "/requests/pending?limit=10",
-        this.options,
-      )
+      .get(GlobalVars.baseUrl + "/requests/pending?limit=10", this.options)
       .subscribe(
         (response) => {
           const data = response.json();
@@ -114,7 +111,8 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     this.loadingTickets = true;
     this.http
       .get(
-        GlobalVars.baseUrl + "/tickets/admin/all?limit=10&sort_by=updated_at&sort_order=DESC",
+        GlobalVars.baseUrl +
+          "/tickets/admin/all?limit=10&sort_by=updated_at&sort_order=DESC",
         this.options,
       )
       .subscribe(
@@ -130,27 +128,51 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   }
 
   getTicketStatusClass(status: string): string {
-    const map = { unread: "badge-danger", open: "badge-primary", answered: "badge-info", "customer-reply": "badge-warning", closed: "badge-success" };
+    const map = {
+      unread: "badge-danger",
+      open: "badge-primary",
+      answered: "badge-info",
+      "customer-reply": "badge-warning",
+      closed: "badge-success",
+    };
     return map[status] || "badge-secondary";
   }
 
   getTicketStatusLabel(status: string): string {
-    const map = { unread: "O'qilmagan", open: "Ochiq", answered: "Javob berilgan", "customer-reply": "Mijoz javobi", closed: "Yopilgan" };
+    const map = {
+      unread: "O'qilmagan",
+      open: "Ochiq",
+      answered: "Javob berilgan",
+      "customer-reply": "Mijoz javobi",
+      closed: "Yopilgan",
+    };
     return map[status] || status;
   }
 
   getRequestStatusClass(status: string): string {
-    const map = { pending: "badge-warning", approved: "badge-success", rejected: "badge-danger", completed: "badge-info" };
+    const map = {
+      pending: "badge-warning",
+      approved: "badge-success",
+      rejected: "badge-danger",
+      completed: "badge-info",
+    };
     return map[status] || "badge-secondary";
   }
 
   getRequestStatusLabel(status: string): string {
-    const map = { pending: "Kutilmoqda", approved: "Tasdiqlangan", rejected: "Rad etilgan", completed: "Yakunlangan" };
+    const map = {
+      pending: "Kutilmoqda",
+      approved: "Tasdiqlangan",
+      rejected: "Rad etilgan",
+      completed: "Yakunlangan",
+    };
     return map[status] || status;
   }
 
   viewTicket(ticket: any) {
-    this.router.navigate(["/uzm/ticket-detail"], { queryParams: { ticket: ticket.id } });
+    this.router.navigate(["/uzm/ticket-detail"], {
+      queryParams: { ticket: ticket.id },
+    });
   }
 
   startAnimationForLineChart(chart: any) {
@@ -523,5 +545,10 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         return false; // Prevent the popup from closing
       },
     });
+  }
+
+  // Navigate to today's EMU deliveries
+  goToTodayEmuDeliveries() {
+    this.router.navigate(["/uzs/deliveries-list2"]);
   }
 }

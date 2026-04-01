@@ -1,6 +1,6 @@
 <div class="main-content">
-    <div class="container-fluid">
-      <!-- <div class="row">
+  <div class="container-fluid">
+    <!-- <div class="row">
           <div class="col-md-12">
               <div class="card">
                 <div class="card-header card-header-success card-header-icon">
@@ -112,173 +112,201 @@
         Muhim E'lon
      </button>-->
 
-      <!-- User ID Card -->
-      <div class="row">
-        <div class="col-lg-3 col-md-6 col-sm-6">
-          <div class="card card-stats">
-            <div class="card-header card-header-warning card-header-icon">
-              <div class="card-icon">
-                <i class="material-icons">account_box</i>
-              </div>
-              <p class="card-category">SIZNING ID</p>
-              <h3 class="card-title" style="font-weight: bold;">{{id}}</h3>
+    <!-- User ID Card -->
+    <div class="row">
+      <div class="col-lg-3 col-md-6 col-sm-6">
+        <div class="card card-stats">
+          <div class="card-header card-header-warning card-header-icon">
+            <div class="card-icon">
+              <i class="material-icons">account_box</i>
             </div>
-            <div class="card-footer">
-              <div class="stats">
-                <i class="material-icons text-danger">warning</i>
-                <a href="#pablo">ID ingizni yodingizda tuting!</a>
-              </div>
+            <p class="card-category">SIZNING ID</p>
+            <h3 class="card-title" style="font-weight: bold;">{{id}}</h3>
+          </div>
+          <div class="card-footer">
+            <div class="stats">
+              <i class="material-icons text-danger">warning</i>
+              <a href="#pablo">ID ingizni yodingizda tuting!</a>
             </div>
           </div>
         </div>
       </div>
+    </div>
 
-      <!-- Quick Actions -->
-      <div class="row mb-3" *ngIf="role === 'MANAGER'">
-        <div class="col-md-12">
-          <div style="display:flex; gap:8px; flex-wrap:wrap; padding:10px 14px; background:#fff; border-radius:10px; box-shadow:0 1px 4px rgba(0,0,0,0.06);">
-            <button class="btn btn-sm btn-primary" (click)="showFinanceTotals()" style="border-radius:6px; display:inline-flex; align-items:center; gap:4px; font-size:12px; font-weight:600;">
-              <i class="material-icons" style="font-size:16px;">assessment</i> Moliyaviy Hisobot
-            </button>
-            <button class="btn btn-sm btn-success" (click)="goToCargoTariffs()" style="border-radius:6px; display:inline-flex; align-items:center; gap:4px; font-size:12px; font-weight:600;">
-              <i class="material-icons" style="font-size:16px;">price_change</i> Kargo Tariflari
-            </button>
-            <button class="btn btn-sm btn-info" (click)="goToReferralsBonuses()" style="border-radius:6px; display:inline-flex; align-items:center; gap:4px; font-size:12px; font-weight:600;">
-              <i class="material-icons" style="font-size:16px;">people</i> Referallar
-            </button>
-            <button class="btn btn-sm btn-warning" (click)="goToCashAccounts()" style="border-radius:6px; display:inline-flex; align-items:center; gap:4px; font-size:12px; font-weight:600;">
-              <i class="material-icons" style="font-size:16px;">account_balance</i> Kassa
-            </button>
-            <button class="btn btn-sm btn-default" (click)="goToAccLedger()" style="border-radius:6px; display:inline-flex; align-items:center; gap:4px; font-size:12px; font-weight:600;">
-              <i class="material-icons" style="font-size:16px;">receipt_long</i> Kassa Tarixi
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Non-manager: just finance button -->
-      <div class="row mb-3" *ngIf="role !== 'MANAGER'">
-        <div class="col-md-12">
-          <button class="btn btn-sm btn-primary" (click)="showFinanceTotals()" style="border-radius:6px; display:inline-flex; align-items:center; gap:4px; font-size:12px; font-weight:600;">
+    <!-- Quick Actions -->
+    <div class="row mb-3" *ngIf="role === 'MANAGER'">
+      <div class="col-md-12">
+        <div
+          style="display:flex; gap:8px; flex-wrap:wrap; padding:10px 14px; background:#fff; border-radius:10px; box-shadow:0 1px 4px rgba(0,0,0,0.06);">
+          <button class="btn btn-sm" (click)="goToTodayEmuDeliveries()"
+            style="border-radius:6px; display:inline-flex; align-items:center; gap:4px; font-size:12px; font-weight:600; background:#7b1fa2; color:#fff;">
+            <i class="material-icons" style="font-size:16px;">assessment</i> Bugungi EMUlar
+          </button>
+          <button class="btn btn-sm btn-warning" (click)="goToCashAccounts()"
+            style="border-radius:6px; display:inline-flex; align-items:center; gap:4px; font-size:12px; font-weight:600;">
+            <i class="material-icons" style="font-size:16px;">account_balance</i> Kassa
+          </button>
+          <button class="btn btn-sm btn-default" (click)="goToAccLedger()"
+            style="border-radius:6px; display:inline-flex; align-items:center; gap:4px; font-size:12px; font-weight:600;">
+            <i class="material-icons" style="font-size:16px;">receipt_long</i> Kassa Tarixi
+          </button>
+          <button class="btn btn-sm btn-primary" (click)="showFinanceTotals()"
+            style="border-radius:6px; display:inline-flex; align-items:center; gap:4px; font-size:12px; font-weight:600;">
             <i class="material-icons" style="font-size:16px;">assessment</i> Moliyaviy Hisobot
           </button>
+          <button class="btn btn-sm btn-success" (click)="goToCargoTariffs()"
+            style="border-radius:6px; display:inline-flex; align-items:center; gap:4px; font-size:12px; font-weight:600;">
+            <i class="material-icons" style="font-size:16px;">price_change</i> Kargo Tariflari
+          </button>
+          <button class="btn btn-sm btn-info" (click)="goToReferralsBonuses()"
+            style="border-radius:6px; display:inline-flex; align-items:center; gap:4px; font-size:12px; font-weight:600;">
+            <i class="material-icons" style="font-size:16px;">people</i> Referallar&Bosunlar
+          </button>
+
+
         </div>
       </div>
+    </div>
 
-      <!-- Manager Sections: Delivery Requests & Tickets -->
-      <div class="row" *ngIf="role === 'MANAGER'">
+    <!-- Non-manager: just finance button -->
+    <div class="row mb-3" *ngIf="role !== 'MANAGER'">
+      <div class="col-md-12">
+        <button class="btn btn-sm btn-primary" (click)="showFinanceTotals()"
+          style="border-radius:6px; display:inline-flex; align-items:center; gap:4px; font-size:12px; font-weight:600;">
+          <i class="material-icons" style="font-size:16px;">assessment</i> Moliyaviy Hisobot
+        </button>
+      </div>
+    </div>
 
-        <!-- Recent Delivery Requests -->
-        <div class="col-md-6">
-          <div class="card" style="border-radius:10px; box-shadow:0 1px 4px rgba(0,0,0,0.06);">
-            <div class="card-header" style="display:flex; align-items:center; justify-content:space-between; padding:12px 16px; border-bottom:1px solid #eee;">
-              <div style="display:flex; align-items:center; gap:8px;">
-                <i class="material-icons" style="color:#ff9800;">local_shipping</i>
-                <strong style="font-size:14px;">Yetkazish So'rovlari</strong>
-                <span *ngIf="recentDeliveryRequests.length" style="font-size:11px; font-weight:700; padding:2px 8px; border-radius:10px; background:rgba(255,152,0,0.12); color:#ff9800;">
-                  {{ recentDeliveryRequests.length }}
-                </span>
-              </div>
-              <button class="btn btn-sm btn-outline-warning" (click)="goToDeliveryRequests()" style="border-radius:6px; font-size:12px; padding:3px 10px;">
-                Barchasi...
-              </button>
+    <!-- Manager Sections: Delivery Requests & Tickets -->
+    <div class="row" *ngIf="role === 'MANAGER'">
+
+      <!-- Recent Delivery Requests -->
+      <div class="col-md-6">
+        <div class="card" style="border-radius:10px; box-shadow:0 1px 4px rgba(0,0,0,0.06);">
+          <div class="card-header"
+            style="display:flex; align-items:center; justify-content:space-between; padding:12px 16px; border-bottom:1px solid #eee;">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <i class="material-icons" style="color:#ff9800;">local_shipping</i>
+              <strong style="font-size:14px;">Yetkazish So'rovlari</strong>
+              <span *ngIf="recentDeliveryRequests.length"
+                style="font-size:11px; font-weight:700; padding:2px 8px; border-radius:10px; background:rgba(255,152,0,0.12); color:#ff9800;">
+                {{ recentDeliveryRequests.length }}
+              </span>
             </div>
-            <div class="card-body" style="padding:0; max-height:400px; overflow-y:auto;">
-              <div *ngIf="loadingRequests" class="text-center" style="padding:30px 0;">
-                <div class="spinner-border text-warning" style="width:1.2rem;height:1.2rem;border-width:0.15em;"></div>
-              </div>
-              <table *ngIf="!loadingRequests && recentDeliveryRequests.length > 0" class="table table-hover" style="margin:0; font-size:12px;">
-                <thead>
-                  <tr>
-                    <th style="padding:8px 10px; font-size:10px; text-transform:uppercase; color:#888;">Mijoz</th>
-                    <th style="padding:8px 10px; font-size:10px; text-transform:uppercase; color:#888;">Turi</th>
-                    <th style="padding:8px 10px; font-size:10px; text-transform:uppercase; color:#888;">Qutlar</th>
-                    <th style="padding:8px 10px; font-size:10px; text-transform:uppercase; color:#888;">Telefon</th>
-                    <th style="padding:8px 10px; font-size:10px; text-transform:uppercase; color:#888;">Manzil</th>
-                    <th style="padding:8px 10px; font-size:10px; text-transform:uppercase; color:#888;">Sana</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr *ngFor="let req of recentDeliveryRequests" style="cursor:pointer;" (click)="goToDeliveryRequests()">
-                    <td style="padding:6px 10px;">
-                      <strong>K{{ req.owner_id }}</strong>
-                      <span *ngIf="req.is_urgent" style="color:#f44336; font-size:10px; margin-left:4px;">SHOSHILINCH</span>
-                    </td>
-                    <td style="padding:6px 10px;">
-                      <span class="badge" style="font-size:10px;"
-                        [style.background]="req.delivery_type === 'EMU' ? '#7b1fa2' : req.delivery_type === 'Yandex' ? '#f44336' : req.delivery_type === 'Kuryer' ? '#1976d2' : '#43a047'"
-                        [style.color]="'#fff'">
-                        {{ req.delivery_type }}
-                      </span>
-                    </td>
-                    <td style="padding:6px 10px;">{{ req.total_packages }} ta</td>
-                    <td style="padding:6px 10px;"><small>{{ req.customer_phone }}</small></td>
-                    <td style="padding:6px 10px;">
-                      <small class="text-muted">{{ req.delivery_address?.length > 25 ? (req.delivery_address | slice:0:25) + '...' : req.delivery_address || '-' }}</small>
-                    </td>
-                    <td style="padding:6px 10px;"><small class="text-muted">{{ req.created_at | slice:0:10 }}</small></td>
-                  </tr>
-                </tbody>
-              </table>
-              <div *ngIf="!loadingRequests && recentDeliveryRequests.length === 0" class="text-center text-muted" style="padding:30px 0;">
-                <i class="material-icons" style="font-size:32px; color:#ccc;">inbox</i>
-                <p style="margin-top:4px; font-size:12px;">Kutilayotgan so'rovlar yo'q</p>
-              </div>
-            </div>
+            <button class="btn btn-sm btn-outline-warning" (click)="goToDeliveryRequests()"
+              style="border-radius:6px; font-size:12px; padding:3px 10px;">
+              Barchasi...
+            </button>
           </div>
-        </div>
-
-        <!-- Recent Tickets -->
-        <div class="col-md-6">
-          <div class="card" style="border-radius:10px; box-shadow:0 1px 4px rgba(0,0,0,0.06);">
-            <div class="card-header" style="display:flex; align-items:center; justify-content:space-between; padding:12px 16px; border-bottom:1px solid #eee;">
-              <div style="display:flex; align-items:center; gap:8px;">
-                <i class="material-icons" style="color:#7b1fa2;">support_agent</i>
-                <strong style="font-size:14px;">Tiketlar</strong>
-                <span *ngIf="recentTickets.length" style="font-size:11px; font-weight:700; padding:2px 8px; border-radius:10px; background:rgba(123,31,162,0.1); color:#7b1fa2;">
-                  {{ recentTickets.length }}
-                </span>
-              </div>
-              <button class="btn btn-sm btn-outline-primary" (click)="goToTicketsList()" style="border-radius:6px; font-size:12px; padding:3px 10px;">
-                Barchasi...
-              </button>
+          <div class="card-body" style="padding:0; max-height:400px; overflow-y:auto;">
+            <div *ngIf="loadingRequests" class="text-center" style="padding:30px 0;">
+              <div class="spinner-border text-warning" style="width:1.2rem;height:1.2rem;border-width:0.15em;"></div>
             </div>
-            <div class="card-body" style="padding:0; max-height:400px; overflow-y:auto;">
-              <div *ngIf="loadingTickets" class="text-center" style="padding:30px 0;">
-                <div class="spinner-border text-primary" style="width:1.2rem;height:1.2rem;border-width:0.15em;"></div>
-              </div>
-              <table *ngIf="!loadingTickets && recentTickets.length > 0" class="table table-hover" style="margin:0; font-size:12px;">
-                <thead>
-                  <tr>
-                    <th style="padding:8px 10px; font-size:10px; text-transform:uppercase; color:#888;">Nomer</th>
-                    <th style="padding:8px 10px; font-size:10px; text-transform:uppercase; color:#888;">Mavzu</th>
-                    <th class="text-center" style="padding:8px 10px; font-size:10px; text-transform:uppercase; color:#888;">Status</th>
-                    <th style="padding:8px 10px; font-size:10px; text-transform:uppercase; color:#888;">Mijoz</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr *ngFor="let ticket of recentTickets" style="cursor:pointer;" (click)="viewTicket(ticket)">
-                    <td style="padding:6px 10px;"><strong>{{ ticket.ticket_number }}</strong></td>
-                    <td style="padding:6px 10px;">{{ ticket.subject?.length > 30 ? (ticket.subject | slice:0:30) + '...' : ticket.subject }}</td>
-                    <td class="text-center" style="padding:6px 10px;">
-                      <span class="badge" [ngClass]="getTicketStatusClass(ticket.status)">{{ getTicketStatusLabel(ticket.status) }}</span>
-                    </td>
-                    <td style="padding:6px 10px;">{{ ticket.customer_name }}</td>
-                  </tr>
-                </tbody>
-              </table>
-              <div *ngIf="!loadingTickets && recentTickets.length === 0" class="text-center text-muted" style="padding:30px 0;">
-                <i class="material-icons" style="font-size:32px; color:#ccc;">inbox</i>
-                <p style="margin-top:4px; font-size:12px;">Tiketlar yo'q</p>
-              </div>
+            <table *ngIf="!loadingRequests && recentDeliveryRequests.length > 0" class="table table-hover"
+              style="margin:0; font-size:12px;">
+              <thead>
+                <tr>
+                  <th style="padding:8px 10px; font-size:10px; text-transform:uppercase; color:#888;">Mijoz</th>
+                  <th style="padding:8px 10px; font-size:10px; text-transform:uppercase; color:#888;">Turi</th>
+                  <th style="padding:8px 10px; font-size:10px; text-transform:uppercase; color:#888;">Qutlar</th>
+                  <th style="padding:8px 10px; font-size:10px; text-transform:uppercase; color:#888;">Telefon</th>
+                  <th style="padding:8px 10px; font-size:10px; text-transform:uppercase; color:#888;">Manzil</th>
+                  <th style="padding:8px 10px; font-size:10px; text-transform:uppercase; color:#888;">Sana</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let req of recentDeliveryRequests" style="cursor:pointer;" (click)="goToDeliveryRequests()">
+                  <td style="padding:6px 10px;">
+                    <strong>K{{ req.owner_id }}</strong>
+                    <span *ngIf="req.is_urgent"
+                      style="color:#f44336; font-size:10px; margin-left:4px;">SHOSHILINCH</span>
+                  </td>
+                  <td style="padding:6px 10px;">
+                    <span class="badge" style="font-size:10px;"
+                      [style.background]="req.delivery_type === 'EMU' ? '#7b1fa2' : req.delivery_type === 'Yandex' ? '#f44336' : req.delivery_type === 'Kuryer' ? '#1976d2' : '#43a047'"
+                      [style.color]="'#fff'">
+                      {{ req.delivery_type }}
+                    </span>
+                  </td>
+                  <td style="padding:6px 10px;">{{ req.total_packages }} ta</td>
+                  <td style="padding:6px 10px;"><small>{{ req.customer_phone }}</small></td>
+                  <td style="padding:6px 10px;">
+                    <small class="text-muted">{{ req.delivery_address?.length > 25 ? (req.delivery_address | slice:0:25)
+                      + '...' : req.delivery_address || '-' }}</small>
+                  </td>
+                  <td style="padding:6px 10px;"><small class="text-muted">{{ req.created_at | slice:0:10 }}</small></td>
+                </tr>
+              </tbody>
+            </table>
+            <div *ngIf="!loadingRequests && recentDeliveryRequests.length === 0" class="text-center text-muted"
+              style="padding:30px 0;">
+              <i class="material-icons" style="font-size:32px; color:#ccc;">inbox</i>
+              <p style="margin-top:4px; font-size:12px;">Kutilayotgan so'rovlar yo'q</p>
             </div>
           </div>
         </div>
       </div>
 
+      <!-- Recent Tickets -->
+      <div class="col-md-6">
+        <div class="card" style="border-radius:10px; box-shadow:0 1px 4px rgba(0,0,0,0.06);">
+          <div class="card-header"
+            style="display:flex; align-items:center; justify-content:space-between; padding:12px 16px; border-bottom:1px solid #eee;">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <i class="material-icons" style="color:#7b1fa2;">support_agent</i>
+              <strong style="font-size:14px;">Tiketlar</strong>
+              <span *ngIf="recentTickets.length"
+                style="font-size:11px; font-weight:700; padding:2px 8px; border-radius:10px; background:rgba(123,31,162,0.1); color:#7b1fa2;">
+                {{ recentTickets.length }}
+              </span>
+            </div>
+            <button class="btn btn-sm btn-outline-primary" (click)="goToTicketsList()"
+              style="border-radius:6px; font-size:12px; padding:3px 10px;">
+              Barchasi...
+            </button>
+          </div>
+          <div class="card-body" style="padding:0; max-height:400px; overflow-y:auto;">
+            <div *ngIf="loadingTickets" class="text-center" style="padding:30px 0;">
+              <div class="spinner-border text-primary" style="width:1.2rem;height:1.2rem;border-width:0.15em;"></div>
+            </div>
+            <table *ngIf="!loadingTickets && recentTickets.length > 0" class="table table-hover"
+              style="margin:0; font-size:12px;">
+              <thead>
+                <tr>
+                  <th style="padding:8px 10px; font-size:10px; text-transform:uppercase; color:#888;">Nomer</th>
+                  <th style="padding:8px 10px; font-size:10px; text-transform:uppercase; color:#888;">Mavzu</th>
+                  <th class="text-center"
+                    style="padding:8px 10px; font-size:10px; text-transform:uppercase; color:#888;">Status</th>
+                  <th style="padding:8px 10px; font-size:10px; text-transform:uppercase; color:#888;">Mijoz</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let ticket of recentTickets" style="cursor:pointer;" (click)="viewTicket(ticket)">
+                  <td style="padding:6px 10px;"><strong>{{ ticket.ticket_number }}</strong></td>
+                  <td style="padding:6px 10px;">{{ ticket.subject?.length > 30 ? (ticket.subject | slice:0:30) + '...' :
+                    ticket.subject }}</td>
+                  <td class="text-center" style="padding:6px 10px;">
+                    <span class="badge" [ngClass]="getTicketStatusClass(ticket.status)">{{
+                      getTicketStatusLabel(ticket.status) }}</span>
+                  </td>
+                  <td style="padding:6px 10px;">{{ ticket.customer_name }}</td>
+                </tr>
+              </tbody>
+            </table>
+            <div *ngIf="!loadingTickets && recentTickets.length === 0" class="text-center text-muted"
+              style="padding:30px 0;">
+              <i class="material-icons" style="font-size:32px; color:#ccc;">inbox</i>
+              <p style="margin-top:4px; font-size:12px;">Tiketlar yo'q</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
-        
-       <!-- <div class="col-lg-3 col-md-6 col-sm-6">
+
+
+    <!-- <div class="col-lg-3 col-md-6 col-sm-6">
           <div class="card card-stats">
             <div class="card-header card-header-rose card-header-icon">
               <div class="card-icon">
@@ -327,14 +355,14 @@
           </div>
         </div> -->
 
-      <div class="row">
-        <div class="col-md-8 ml-auto mr-auto">
-          <div class="page-categories">
-            <!-- <h3 class="title text-center">Hurmatli {{firstname}} {{lastname}} Active Cargo ni tanlaganingizdan Mamnunmiz!</h3>
+    <div class="row">
+      <div class="col-md-8 ml-auto mr-auto">
+        <div class="page-categories">
+          <!-- <h3 class="title text-center">Hurmatli {{firstname}} {{lastname}} Active Cargo ni tanlaganingizdan Mamnunmiz!</h3>
             <h4 class="text-center">Quyida siz yodda tutishingiz lozim bo'lgan bazi qisqa ma'lumotlar!</h4>
            -->
-            <br />
-            <!-- <ul class="nav nav-pills nav-pills-warning nav-pills-icons justify-content-center" role="tablist">
+          <br />
+          <!-- <ul class="nav nav-pills nav-pills-warning nav-pills-icons justify-content-center" role="tablist">
               <li class="nav-item">
                 <a class="nav-link active" data-toggle="tab" href="#yoddatuting" role="tablist">
                   <i class="material-icons">info</i> YODDA TUTING
@@ -434,10 +462,10 @@
                 </div>
               </div>
             </div> -->
-          </div>
         </div>
       </div>
-     
+    </div>
+
     <!--
       <h3>Manage Listings</h3>
       <br>
@@ -561,8 +589,9 @@
         </div>
       </div>
     -->
-     <!-- notice modal -->
-     <div class="modal fade" id="noticeModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <!-- notice modal -->
+    <div class="modal fade" id="noticeModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+      aria-hidden="true">
       <div class="modal-dialog modal-notice">
         <div class="modal-content">
           <div class="modal-header">
@@ -577,7 +606,9 @@
                 <div class="col-md-8">
                   <strong>1. Register</strong>
                   <p class="description">The first step is to create an account at
-                    <a href="https://www.creative-tim.com/">Creative Tim</a>. You can choose a social network or go for the classic version, whatever works best for you.</p>
+                    <a href="https://www.creative-tim.com/">Creative Tim</a>. You can choose a social network or go for
+                    the classic version, whatever works best for you.
+                  </p>
                 </div>
                 <div class="col-md-4">
                   <div class="picture">
@@ -591,7 +622,9 @@
                 <div class="col-md-8">
                   <strong>2. Apply</strong>
                   <p class="description">The first step is to create an account at
-                    <a href="https://www.creative-tim.com/">Creative Tim</a>. You can choose a social network or go for the classic version, whatever works best for you.</p>
+                    <a href="https://www.creative-tim.com/">Creative Tim</a>. You can choose a social network or go for
+                    the classic version, whatever works best for you.
+                  </p>
                 </div>
                 <div class="col-md-4">
                   <div class="picture">
@@ -600,14 +633,16 @@
                 </div>
               </div>
             </div>
-            <p>If you have more questions, don't hesitate to contact us or send us a tweet @creativetim. We're here to help!</p>
+            <p>If you have more questions, don't hesitate to contact us or send us a tweet @creativetim. We're here to
+              help!</p>
           </div>
           <div class="modal-footer justify-content-center">
-            <button mat-raised-button type="button" class="btn btn-info btn-round" data-dismiss="modal">Sounds good!</button>
+            <button mat-raised-button type="button" class="btn btn-info btn-round" data-dismiss="modal">Sounds
+              good!</button>
           </div>
         </div>
       </div>
     </div>
     <!-- end notice modal -->
-    </div>
+  </div>
 </div>
