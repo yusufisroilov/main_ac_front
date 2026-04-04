@@ -8,3 +8,43 @@
     padding: 3px 3px;
     vertical-align: middle;
   }
+
+/* =============================================
+   CLIENT MOBILE MODE - Bottom Nav Layout
+   ============================================= */
+
+/* Hide sidebar completely for client on mobile */
+.wrapper.client-mobile > .sidebar {
+  display: none !important;
+}
+
+/* Main panel takes full width */
+.wrapper.client-mobile > .main-panel {
+  width: 100% !important;
+  padding-bottom: 68px;
+}
+
+/* Hide footer - bottom nav replaces it */
+.wrapper.client-mobile app-footer-cmp {
+  display: none !important;
+}
+
+/* Hide hamburger menu toggle - clients use bottom nav */
+.wrapper.client-mobile .navbar-toggler {
+  display: none !important;
+}
+
+/* Hide sidebar minimize button on client mobile */
+.wrapper.client-mobile .navbar-minimize {
+  display: none !important;
+}
+
+/* Ensure navbar takes full width */
+.wrapper.client-mobile .navbar {
+  width: 100% !important;
+}
+
+/* Prevent sidebar from appearing via nav-open on client mobile */
+.wrapper.client-mobile .nav-open .sidebar {
+  display: none !important;
+}

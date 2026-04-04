@@ -393,6 +393,7 @@ export const managerROUTES: RouteInfo[] = [
     type: "link",
     icontype: "credit_card",
   },
+
   {
     path: "/uzm/transactions",
     title: "Tranzaksiyalar ",
@@ -414,6 +415,9 @@ export const managerROUTES: RouteInfo[] = [
     children: [
       { path: "/oa/cash-accounts", title: "Kassa Hisoblar", ab: "KH" },
       { path: "/oa/acc-ledger", title: "Kassa Tarixi", ab: "KT" },
+      { path: "/oa/expenses", title: "Xarajatlar", ab: "X" },
+      { path: "/oa/owner-draws", title: "Owner Draw", ab: "OD" },
+      { path: "/oa/other-incomes", title: "Boshqa Kirimlar", ab: "BK" },
     ],
   },
   {
@@ -680,7 +684,7 @@ export class SidebarComponent implements OnInit {
   firstname = localStorage.getItem("first_name");
   lastname = localStorage.getItem("last_name");
 
-  public menuItems: any[];
+  public menuItems!: any[];
 
   ps: any;
   isMobileMenu() {

@@ -68,4 +68,33 @@ export class AuthService {
   getRole() {
     return localStorage.getItem("role");
   }
+
+  isTelegramMiniApp(): boolean {
+    return !!(window as any).Telegram?.WebApp?.initData;
+  }
+
+  telegramLogin() {
+    const tg = (window as any).Telegram?.WebApp;
+    if (!tg || !tg.initData) {
+      return null;
+    }
+
+    return this.http
+      .post<any>(GlobalVars.baseUrl + "/auth/telegram", {
+        initData: tg.initData,
+      })
+      .map((response) => {
+        if (response && response.token) {
+          localStorage.setItem("token", response.token);
+          localStorage.setItem("id", response.id.toString());
+          localStorage.setItem("username", response.username);
+          localStorage.setItem("role", response.role);
+          localStorage.setItem("first_name", response.first_name);
+          localStorage.setItem("last_name", response.last_name);
+          GlobalVars.currentParty = response.current_party;
+          return true;
+        }
+        return false;
+      });
+  }
 }

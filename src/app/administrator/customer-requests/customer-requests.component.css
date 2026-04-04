@@ -937,57 +937,385 @@
 }
 
 /* ===================================
-   RESPONSIVE
+   MOBILE COMPACT REDESIGN
    =================================== */
-@media (max-width: 768px) {
+@media (max-width: 991px) {
+
+  /* --- Page Header: compact --- */
+  .card-header-primary .card-category {
+    display: none !important;
+  }
+
+  .card-header-primary .card-title {
+    font-size: 16px !important;
+    margin: 0 !important;
+  }
+
+  .card-header-icon {
+    margin-top: -15px !important;
+  }
+
   .action-buttons {
-    flex-direction: column;
+    flex-direction: row;
+    gap: 0.5rem;
   }
 
   .action-buttons .btn {
-    width: 100%;
+    flex: 1;
+    padding: 8px 6px;
+    font-size: 12px;
     justify-content: center;
+  }
+
+  .action-buttons .btn i {
+    font-size: 18px;
+  }
+
+  /* --- Step headers: compact --- */
+  .step-badge {
+    width: 24px;
+    height: 24px;
+    font-size: 13px;
+  }
+
+  .card-header h4.card-title {
+    font-size: 15px !important;
+  }
+
+  /* --- Package grid: compact 2-column --- */
+  .packages-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .package-card {
+    padding: 0.75rem 0.5rem;
+    border-radius: 8px;
+    border-width: 1.5px;
+  }
+
+  .package-card:hover {
+    transform: none;
+  }
+
+  .package-icon {
+    margin-bottom: 0.25rem;
+  }
+
+  .package-icon .material-icons {
+    font-size: 28px;
+  }
+
+  .package-details {
+    margin-bottom: 0.25rem;
+  }
+
+  .package-details strong {
+    font-size: 13px;
+    margin-bottom: 1px;
+  }
+
+  .package-details small {
+    font-size: 11px;
+  }
+
+  .package-consignments {
+    margin-bottom: 0.25rem;
+    gap: 3px;
+  }
+
+  .consignment-tag {
+    padding: 2px 6px;
+    font-size: 10px;
+  }
+
+  .tie-group-id {
+    padding: 3px 6px;
+    font-size: 10px;
+    margin-bottom: 0.25rem;
+  }
+
+  .barcode-count {
+    font-size: 10px;
+  }
+
+  .check-icon {
+    top: -8px;
+    right: -8px;
+    width: 28px;
+    height: 28px;
+  }
+
+  .check-icon .material-icons {
+    font-size: 16px;
+  }
+
+  /* --- Selection summary: compact --- */
+  .selection-summary {
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    gap: 0.5rem;
+    flex-direction: row;
+  }
+
+  .summary-text {
+    gap: 0.5rem;
+    font-size: 13px;
+  }
+
+  .summary-text .material-icons {
+    font-size: 22px;
+  }
+
+  .selection-summary .btn {
+    padding: 8px 16px;
+    font-size: 13px;
+  }
+
+  /* --- Delivery type: horizontal pill row --- */
+  .delivery-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.5rem;
+  }
+
+  .delivery-option {
+    padding: 0.6rem 0.25rem;
+    border-radius: 8px;
+    border-width: 1.5px;
+  }
+
+  .delivery-option:hover {
+    transform: none;
+  }
+
+  .delivery-option .material-icons {
+    font-size: 22px;
+    margin-bottom: 2px;
+  }
+
+  .delivery-option span {
+    font-size: 10px;
+    font-weight: 700;
+  }
+
+  /* --- Form sections: tighter spacing --- */
+  .form-section {
+    margin-bottom: 1rem;
+  }
+
+  .section-label {
+    font-size: 13px;
+    margin-bottom: 0.4rem;
+  }
+
+  .form-control {
+    padding: 0.5rem 0.75rem;
+    font-size: 14px;
+    border-radius: 6px;
+  }
+
+  /* --- Address type selector: compact --- */
+  .address-type-selector {
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .address-type-option {
+    padding: 0.6rem;
+    border-radius: 8px;
+    gap: 0.25rem;
+  }
+
+  .address-type-option .material-icons {
+    font-size: 22px;
+  }
+
+  .address-type-option span {
+    font-size: 12px;
+  }
+
+  /* --- Map instructions: compact --- */
+  .map-instructions {
+    padding: 0.5rem 0.75rem;
+    margin-top: 0.5rem;
+  }
+
+  .map-instructions strong {
+    font-size: 12px;
+    margin-bottom: 0.25rem;
+  }
+
+  .map-instructions li {
+    font-size: 11px;
+    margin-bottom: 0.25rem;
+  }
+
+  /* --- Upload box: compact --- */
+  .upload-label {
+    padding: 0.75rem;
+    flex-direction: row;
+    gap: 0.5rem;
+  }
+
+  .upload-label .material-icons {
+    font-size: 28px;
+    margin-bottom: 0;
+  }
+
+  .upload-label span {
+    font-size: 13px;
+  }
+
+  .image-previews {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+  }
+
+  .image-item img {
+    height: 60px;
+  }
+
+  /* --- Urgent checkbox: compact --- */
+  .urgent-check label {
+    padding: 0.6rem;
+  }
+
+  .urgent-check .material-icons {
+    font-size: 18px;
+  }
+
+  /* --- Notes textarea: smaller --- */
+  .form-section textarea[name="deliveryNotes"] {
+    rows: 1;
+  }
+
+  /* --- Form buttons: sticky at bottom --- */
+  .form-buttons {
+    position: sticky;
+    bottom: 68px;
+    background: #fff;
+    margin: 0 -1.25rem;
+    padding: 0.75rem 1.25rem;
+    border-top: 1px solid #e0e0e0;
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.06);
+    z-index: 10;
+    flex-direction: row;
+    gap: 0.5rem;
+  }
+
+  .form-buttons .btn {
+    flex: 1;
+    font-size: 13px;
+    padding: 10px 8px;
+  }
+
+  /* --- My Requests list: compact --- */
+  .request-item {
+    padding: 0.75rem;
+    border-radius: 8px;
+  }
+
+  .request-top {
+    margin-bottom: 0.5rem;
+    padding-bottom: 0.5rem;
+  }
+
+  .request-num {
+    font-size: 15px;
+  }
+
+  .status-pill {
+    padding: 4px 8px;
+    font-size: 10px;
+  }
+
+  .request-details-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 6px 12px;
+    margin-bottom: 8px;
+  }
+
+  .detail-label {
+    font-size: 10px;
+  }
+
+  .detail-value {
+    font-size: 13px;
+  }
+
+  .request-note {
+    padding: 0.5rem;
+    margin-top: 0.5rem;
+  }
+
+  .barcode-list {
+    gap: 4px;
+    margin-top: 4px;
+  }
+
+  .barcode-chip {
+    padding: 2px 6px;
+    font-size: 10px;
+  }
+
+  .cancel-button {
+    padding: 0.5rem;
+    font-size: 13px;
+    margin-top: 0.5rem;
+  }
+
+  /* --- Empty state: smaller --- */
+  .empty-state {
+    padding: 2rem 1rem;
+  }
+
+  .empty-state .material-icons {
+    font-size: 48px;
+  }
+
+  .empty-state p {
+    font-size: 14px;
+  }
+
+  /* --- Card body: tighter padding --- */
+  .card .card-body {
+    padding: 0.75rem;
+  }
+
+  /* --- Reduce row/column gaps globally --- */
+  .row {
+    margin-bottom: 0;
+  }
+
+  .col-md-12 {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+}
+
+/* --- Extra small screens --- */
+@media (max-width: 380px) {
+  .delivery-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 
   .packages-grid {
     grid-template-columns: 1fr;
   }
 
-  .delivery-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .selection-summary {
-    flex-direction: column;
-    text-align: center;
-  }
-
-  .selection-summary .btn {
-    width: 100%;
-  }
-
-  .form-buttons {
-    flex-direction: column;
-  }
-
-  .form-buttons .btn {
-    width: 100%;
-  }
-
   .image-previews {
     grid-template-columns: repeat(3, 1fr);
   }
-}
 
-@media (max-width: 480px) {
-  .delivery-grid {
+  .request-details-grid {
     grid-template-columns: 1fr;
   }
+}
 
-  .image-previews {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
+/* Sending animation mobile */
+@media (max-width: 480px) {
   .message-icon .material-icons {
     font-size: 60px;
   }

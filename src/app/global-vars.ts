@@ -35,7 +35,7 @@ export class GlobalVars {
     }
     return descArray;
   }
-  public static getDescriptionWithID(id, lang: string) {
+  public static getDescriptionWithID(id: any, lang: string) {
     var desc = "";
 
     for (let index = 0; index < this.orderTypes.length; index++) {
@@ -77,7 +77,7 @@ export class GlobalVars {
     }
     return descOrArray;
   }
-  public static getDesOrderStatusWithID(id, lang: string) {
+  public static getDesOrderStatusWithID(id: any, lang: string) {
     for (let index = 0; index < this.orderStatus.length; index++) {
       if (this.orderStatus[index].id == id) {
         switch (lang) {
@@ -98,16 +98,16 @@ export class GlobalVars {
 
 @Injectable()
 export class TypesOfOrder {
-  description_en: string;
-  description_uz: string;
-  id: string;
-  description_ru: string;
+  description_en!: string;
+  description_uz!: string;
+  id!: string;
+  description_ru!: string;
 }
 
 @Injectable()
 export class StatusOfOrder {
-  description_en: string;
-  description_uz: string;
-  id: string;
-  description_ru: string;
+  description_en!: string;
+  description_uz!: string;
+  id!: string;
+  description_ru!: string;
 }

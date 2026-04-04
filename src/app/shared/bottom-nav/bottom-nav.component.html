@@ -1,0 +1,35 @@
+<div class="bottom-nav-container" *ngIf="isClient && isMobile">
+
+  <!-- More menu overlay -->
+  <div class="more-overlay" *ngIf="showMoreMenu" (click)="closeMore()"></div>
+
+  <!-- More menu popup -->
+  <div class="more-menu" *ngIf="showMoreMenu">
+    <div class="more-menu-item" *ngFor="let item of moreItems"
+         [class.active]="isActive(item.path)"
+         (click)="navigate(item.path)">
+      <i class="material-icons">{{ item.icon }}</i>
+      <span>{{ item.label }}</span>
+    </div>
+  </div>
+
+  <!-- Bottom navigation bar -->
+  <nav class="bottom-nav">
+    <div class="bottom-nav-item"
+         *ngFor="let item of navItems"
+         [class.active]="isActive(item.path)"
+         (click)="navigate(item.path)">
+      <i class="material-icons">{{ item.icon }}</i>
+      <span>{{ item.label }}</span>
+    </div>
+
+    <!-- More button -->
+    <div class="bottom-nav-item"
+         [class.active]="showMoreMenu || isMoreActive()"
+         (click)="toggleMore()">
+      <i class="material-icons">{{ showMoreMenu ? 'close' : 'more_horiz' }}</i>
+      <span>Ko'proq</span>
+    </div>
+  </nav>
+
+</div>

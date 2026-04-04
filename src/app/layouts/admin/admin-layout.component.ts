@@ -22,11 +22,20 @@ export class AdminLayoutComponent implements OnInit, AfterViewInit {
     url: string;
     location: Location;
 
+    isClientMobile = false;
+
     @ViewChild('sidebar', {static: false}) sidebar: any;
     @ViewChild(NavbarComponent, {static: false}) navbar: NavbarComponent;
     constructor( private router: Router, location: Location ) {
       this.location = location;
+      this.checkClientMobile();
+      window.addEventListener('resize', this.checkClientMobile.bind(this));
     }
+
+    checkClientMobile() {
+      this.isClientMobile = localStorage.getItem('role') === 'CLIENT' && window.innerWidth <= 991;
+    }
+
     ngOnInit() {
         const elemMainPanel = <HTMLElement>document.querySelector('.main-panel');
         const elemSidebar = <HTMLElement>document.querySelector('.sidebar .sidebar-wrapper');

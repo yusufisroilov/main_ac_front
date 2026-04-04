@@ -1,5 +1,5 @@
 
-<div class="wrapper">
+<div class="wrapper" [class.client-mobile]="isClientMobile">
     <div class="sidebar" data-color="white" data-background-color="black">
         <app-sidebar-cmp></app-sidebar-cmp>
         <div class="sidebar-background" style="background-color: antiquewhite;"></div>
@@ -11,5 +11,6 @@
             <app-footer-cmp></app-footer-cmp>
         </div>
     </div>
+    <app-bottom-nav></app-bottom-nav>
    <!-- <app-fixedplugin></app-fixedplugin> -->
 </div>

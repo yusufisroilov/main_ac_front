@@ -23,14 +23,14 @@ export class LoginComponent implements OnInit, OnDestroy {
     private element: ElementRef,
     private router: Router,
     private authService: AuthService,
-    private http: HttpClient
+    private http: HttpClient,
   ) {
     this.nativeElement = element.nativeElement;
     this.sidebarVisible = false;
     this.invalidLogin = false;
   }
 
-  addPrefix(event) {
+  addPrefix(_event: Event) {
     this.inputValue = `998`;
   }
 
@@ -38,19 +38,17 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.authService.login(credentials).subscribe(
       (result) => {
         if (result) {
-          if (localStorage.getItem("role") == "CLIENT") {
-            this.router.navigate(["/customer-dashboard"]);
-          } else {
-            this.router.navigate(["/dashboard"]);
-          }
+          this.navigateAfterLogin();
 
           this.authService.isLoggedIn();
 
           this.http
-            .post<{ token: string }>(
-              "http://185.196.213.248:3018/api/auth/login",
-              { username: "998110266399", password: "qobul6399" }
-            )
+            .post<{
+              token: string;
+            }>("http://185.196.213.248:3018/api/auth/login", {
+              username: "998110266399",
+              password: "qobul6399",
+            })
             .subscribe(
               (result) => {
                 if (result && result.token) {
@@ -60,7 +58,7 @@ export class LoginComponent implements OnInit, OnDestroy {
               },
               (error) => {
                 console.error("Login failed:", error);
-              }
+              },
             );
 
           return false;
@@ -82,11 +80,42 @@ export class LoginComponent implements OnInit, OnDestroy {
 
           //sdsdsds
         }
-      }
+      },
     );
   }
 
+  private navigateAfterLogin() {
+    const redirectUrl = localStorage.getItem("redirectUrl");
+    localStorage.removeItem("redirectUrl");
+
+    if (redirectUrl) {
+      this.router.navigateByUrl(redirectUrl);
+    } else if (localStorage.getItem("role") == "CLIENT") {
+      this.router.navigate(["/customer-dashboard"]);
+    } else {
+      this.router.navigate(["/dashboard"]);
+    }
+  }
+
   ngOnInit() {
+    // Telegram Mini App auto-login
+    if (this.authService.isTelegramMiniApp()) {
+      const tgLogin$ = this.authService.telegramLogin();
+      if (tgLogin$) {
+        tgLogin$.subscribe(
+          (result) => {
+            if (result) {
+              this.navigateAfterLogin();
+            }
+          },
+          (error) => {
+            console.error("Telegram auto-login failed:", error);
+          },
+        );
+        return; // Skip rendering login form
+      }
+    }
+
     var navbar: HTMLElement = this.element.nativeElement;
     this.toggleButton = navbar.getElementsByClassName("navbar-toggle")[0];
     const body = document.getElementsByTagName("body")[0];
@@ -156,7 +185,7 @@ export class LoginComponent implements OnInit, OnDestroy {
           "</div>" +
           '<a href="{3}" target="{4}" data-notify="url"></a>' +
           "</div>",
-      }
+      },
     );
   }
 }

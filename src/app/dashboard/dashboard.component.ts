@@ -91,6 +91,18 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     this.router.navigate(["/uzm/tickets-list"]);
   }
 
+  goToExpenses() {
+    this.router.navigate(["/oa/expenses"]);
+  }
+
+  goToOwnerDraws() {
+    this.router.navigate(["/oa/owner-draws"]);
+  }
+
+  goToOtherIncomes() {
+    this.router.navigate(["/oa/other-incomes"]);
+  }
+
   loadRecentDeliveryRequests() {
     this.loadingRequests = true;
     this.http
