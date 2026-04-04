@@ -111,6 +111,13 @@ export const AppRoutes: Routes = [
           ),
       },
       {
+        path: "info",
+        loadChildren: () =>
+          import("./simple_user/info-page/info-page.module").then(
+            (m) => m.InfoPageModule
+          ),
+      },
+      {
         path: "addorders",
         loadChildren: () =>
           import("./simple_user/add-orders/add-orders.module").then(

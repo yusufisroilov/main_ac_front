@@ -290,6 +290,20 @@ export class CustomerDashboardComponent implements OnInit, AfterViewInit {
     this.router.navigate(["/orderboxes"]);
   }
 
+  // ── Quick Actions ──
+  goToDeliveryRequests() { this.router.navigate(["/uzm/delivery-requests"]); }
+  goToChinaAddress() {
+    const el = document.getElementById("china-address-section");
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+  goToNews() { /* placeholder */ }
+  goToContacts() { this.router.navigate(["/info"], { queryParams: { section: "kontaktlar" } }); }
+  goToHelpCenter() { this.router.navigate(["/customer-tickets"]); }
+  goToVideoLessons() { this.router.navigate(["/uzm/video-lessons"]); }
+  goToTariffs() { this.router.navigate(["/info"], { queryParams: { section: "tariflar" } }); }
+  goToReminder() { this.router.navigate(["/info"], { queryParams: { section: "eslatma" } }); }
+  goToHowItWorks() { this.router.navigate(["/info"], { queryParams: { section: "ishlashi" } }); }
+
   // ── Calendar Preview ──────────────────────────────────────
 
   loadCalendarPreview() {

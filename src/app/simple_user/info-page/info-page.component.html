@@ -1,0 +1,309 @@
+<div class="main-content">
+  <div class="container-fluid">
+
+    <!-- Header + Back -->
+    <div class="ip-header">
+      <button class="ip-back" (click)="goBack()">
+        <i class="material-icons">arrow_back</i>
+      </button>
+      <h5 class="ip-title">Ma'lumotlar</h5>
+    </div>
+
+    <!-- Sticky Section Nav -->
+    <div class="ip-nav">
+      <button *ngFor="let s of sections" class="ip-nav-btn" [class.active]="activeSection === s.id"
+        (click)="scrollTo(s.id)">
+        <i class="material-icons">{{ s.icon }}</i> {{ s.label }}
+      </button>
+    </div>
+
+    <!-- ═══════════════════════════════════════ -->
+    <!-- SECTION: Tariflar                       -->
+    <!-- ═══════════════════════════════════════ -->
+    <div id="tariflar" class="ip-section">
+      <div class="ip-section-header">
+        <div class="ip-section-icon blue"><i class="material-icons">price_change</i></div>
+        <div>
+          <h5 class="ip-section-title">Kargo Tariflari</h5>
+          <small class="text-muted">ActiveCargo narxlar bilan tanishing</small>
+        </div>
+      </div>
+
+      <!-- AVIA Oddiy -->
+      <div class="ip-tariff-card blue">
+        <div class="ip-tariff-header">
+          <i class="material-icons">flight</i>
+          <div>
+            <strong>AVIA - Oddiy buyurtmalar</strong>
+            <small>Kiyimlar, Oyoq kiyimlar, Sumkalar, o'yinchoqlar, oshxona anjomlari, uy buyumlari</small>
+          </div>
+        </div>
+        <div class="ip-tariff-rates">
+          <div class="ip-rate"><span class="ip-medal">🥇</span> 0.2kg — 20kg: har kilosi <strong>9.5$</strong> dan</div>
+          <div class="ip-rate"><span class="ip-medal">🥈</span> 20kg — 60kg: har kilosi <strong>9$</strong> dan</div>
+          <div class="ip-rate"><span class="ip-medal">🥉</span> 60kg dan ko'proq: har kilosi <strong>8.5$</strong> dan</div>
+        </div>
+        <div class="ip-tariff-delivery">
+          <i class="material-icons">schedule</i> Kelish muddati: 4-9 Kun. Xaftada ikkita reys!
+        </div>
+      </div>
+
+      <!-- AVIA Brend -->
+      <div class="ip-tariff-card orange">
+        <div class="ip-tariff-header">
+          <i class="material-icons">flight</i>
+          <div>
+            <strong>AVIA - BREND, BATAREYKALI, SUYUQLIK</strong>
+            <small>Brend, batareykali va suyuqlik jo'natmalar</small>
+          </div>
+        </div>
+        <div class="ip-tariff-rates">
+          <div class="ip-rate"><span class="ip-medal">💰</span> Har kilosi <strong>12$</strong> dan</div>
+        </div>
+        <div class="ip-tariff-delivery">
+          <i class="material-icons">schedule</i> Kelish muddati: 14-19 Kun
+        </div>
+      </div>
+
+      <!-- AVTO -->
+      <div class="ip-tariff-card green">
+        <div class="ip-tariff-header">
+          <i class="material-icons">local_shipping</i>
+          <div>
+            <strong>AVTO - Seriya yuklar</strong>
+            <small>Asosan ko'p sonli (SERIYA) yuklar</small>
+          </div>
+        </div>
+        <div class="ip-tariff-rates">
+          <div class="ip-rate"><span class="ip-medal">🥇</span> 0.2kg — 30kg: har kilosi <strong>7$</strong> dan</div>
+          <div class="ip-rate"><span class="ip-medal">🥈</span> 30kg dan ko'proq: har kilosi <strong>6.5$</strong> dan</div>
+          <div class="ip-rate"><span class="ip-medal">🥉</span> Yuklar ko'paygan sari kelishiladi</div>
+        </div>
+        <div class="ip-tariff-delivery">
+          <i class="material-icons">schedule</i> Kelish muddati: 14-19 Kun
+        </div>
+      </div>
+
+      <!-- Free delivery note -->
+      <div class="ip-info-box green">
+        <i class="material-icons">check_circle</i>
+        <span>O'zbekiston bo'ylab 140 ta filialaga bepul yetkazamiz, Viloyat markazlari qolaversa juda ko'plab tuman markazlarigacha tekin yetkaziladi.</span>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════ -->
+    <!-- SECTION: Xitoy Manzilim                 -->
+    <!-- ═══════════════════════════════════════ -->
+    <div id="manzil" class="ip-section">
+      <div class="ip-section-header">
+        <div class="ip-section-icon green"><i class="material-icons">location_on</i></div>
+        <div>
+          <h5 class="ip-section-title">Xitoy Manzilim</h5>
+          <small class="text-muted">Buyurtma qilishda quyidagi manzilni kiriting</small>
+        </div>
+      </div>
+
+      <!-- Avia / Avto Toggle -->
+      <div class="ip-address-toggle">
+        <button [class.active]="addressMode === 'avia'" (click)="addressMode = 'avia'">
+          <i class="material-icons">flight</i> AVIA
+        </button>
+        <button [class.active]="addressMode === 'avto'" (click)="addressMode = 'avto'">
+          <i class="material-icons">local_shipping</i> AVTO
+        </button>
+      </div>
+
+      <!-- Address Card -->
+      <div class="ip-address-card">
+        <div class="ip-address-text" *ngIf="addressMode === 'avia'">
+          <div class="ip-address-line"><strong>易洋K{{ customerId }}</strong></div>
+          <div class="ip-address-line">18028594657</div>
+          <div class="ip-address-line">广州市白云区太和镇龙归南村三姓南街43号1楼原好客源超市K{{ customerId }}</div>
+        </div>
+        <div class="ip-address-text" *ngIf="addressMode === 'avto'">
+          <div class="ip-address-line"><strong>陆运W{{ customerId }}</strong></div>
+          <div class="ip-address-line">18028594657</div>
+          <div class="ip-address-line">广东省广州市白云区龙归街道南村三姓南街43号1楼原好客源超市 陆运W{{ customerId }}</div>
+        </div>
+        <button class="ip-copy-btn" (click)="copyAddress()" [class.copied]="copiedAddress">
+          <i class="material-icons">{{ copiedAddress ? 'check' : 'content_copy' }}</i>
+          {{ copiedAddress ? 'Nusxa olindi!' : 'Nusxa Olish' }}
+        </button>
+      </div>
+
+      <div class="ip-info-box green" style="margin-top:12px;">
+        <i class="material-icons">info</i>
+        <span>Manzilni kiritganingizdan keyin albatta bizga screenshot yuboring va tekshirtiring!</span>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════ -->
+    <!-- SECTION: Eslatma                        -->
+    <!-- ═══════════════════════════════════════ -->
+    <div id="eslatma" class="ip-section">
+      <div class="ip-section-header">
+        <div class="ip-section-icon orange"><i class="material-icons">notifications</i></div>
+        <div>
+          <h5 class="ip-section-title">Eslatma</h5>
+          <small class="text-muted">Quydagilarni doimo yodingizda tuting</small>
+        </div>
+      </div>
+
+      <div class="ip-note-card orange">
+        <div class="ip-note-icon"><i class="material-icons">info_outline</i></div>
+        <div>
+          <strong>ID ni yodda tuting</strong>
+          <p>Sizning ID ingizni doim yodingizda tuting. Qachonki siz bizga murojat qilganingizda xodimlarimiz IDingizni so'rashsa, ushbu raqamni aytasiz.</p>
+        </div>
+      </div>
+
+      <div class="ip-note-card green">
+        <div class="ip-note-icon"><i class="material-icons">person_add</i></div>
+        <div>
+          <strong>Qabul qiluvchi qo'shing</strong>
+          <p>Siz eng kamida bitta Qabul qiluvchi qo'shib qo'yishingiz kerak. Sizning yuklaringiz qabul qiluvchi nomiga keladi. Bu yerga o'zingizni yoki Tanishlaringizni kiritishingiz mumkin. Pasport raqam va Ism sharf ma'lumotlari to'g'ri bo'lishi shart.</p>
+        </div>
+      </div>
+
+      <div class="ip-note-card blue">
+        <div class="ip-note-icon"><i class="material-icons">inventory_2</i></div>
+        <div>
+          <strong>Buyurtmalar bo'limi</strong>
+          <p>Siz buyurtmalar bo'limi orqali yuklaringiz haqida ma'lumotlarni bilib borishingiz mumkin. Har bir buyurtmangiz bu yerda sizga doim qayerdaligi va boshqa ma'lumotlar bilan ko'rinib turadi. Siz bergan buyurtmangizni sistemaga kiritishingiz shart emas, xodimlarimiz o'zlari sizga kelgan yuklarni sizning nomingizga kirgazib qo'yishadi.</p>
+        </div>
+      </div>
+
+      <div class="ip-note-card red">
+        <div class="ip-note-icon"><i class="material-icons">warning</i></div>
+        <div>
+          <strong>Taqiqlangan yuklar</strong>
+          <p>Har qanday arzon qimmat bujiteriyalar (taqinchoqlar), Har qanday Suyuqlikka, gazga, magnitga ega qurilmalar, Kasmetikalar, Shampun, Tish pastalari, Kleylar, Yog'lar, Dorilar, balzamlar, Kontakt linzalar, Spreylar, Dronlar, Har qanday Tibbiyot (Meditsinaga) ga oid jo'natmalar va O'z.R qonunlarida taqiqlangan har qanday buyurtmalar yetkazib berilmaydi. Bunday buyurtmalar qilinganida javobgarlik ActiveCargo zimmasida emas.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════ -->
+    <!-- SECTION: Ishlashi                       -->
+    <!-- ═══════════════════════════════════════ -->
+    <div id="ishlashi" class="ip-section">
+      <div class="ip-section-header">
+        <div class="ip-section-icon purple"><i class="material-icons">info_outline</i></div>
+        <div>
+          <h5 class="ip-section-title">Biz bilan qanday ishlanadi?</h5>
+          <small class="text-muted">Quyida siz biz bilan ishlash haqida qisqacha ma'lumotga ega bo'lasiz</small>
+        </div>
+      </div>
+
+      <div class="ip-step-card">
+        <div class="ip-step-num" style="background:#ff9800;">1</div>
+        <div>
+          <strong>Ro'yhatdan o'ting</strong>
+          <p>Siz avvalo Taobao yoki boshqa internet do'konlaridan ro'yhatdan o'tishingiz kerak bo'ladi, yoki Xitoyda tanishingiz, yoki Xitoyda bo'lsangiz o'zingiz biz bergan manzilga to'g'ridan to'g'ri jo'natishingiz ham mumkin.</p>
+        </div>
+      </div>
+
+      <div class="ip-step-card">
+        <div class="ip-step-num" style="background:#4caf50;">2</div>
+        <div>
+          <strong>Manzilni kiriting</strong>
+          <p>Ro'yhatdan o'tganingizdan keyin biz sizga bergan manzilni taobaoga yoki boshqa internet do'konga kiritishingiz lozim. O'zi yuboradiganlar ushbu manzil va berilgan ID dan foydalanadilar.</p>
+        </div>
+      </div>
+
+      <div class="ip-step-card">
+        <div class="ip-step-num" style="background:#9c27b0;">3</div>
+        <div>
+          <strong>Tekshirtiring</strong>
+          <p>Kiritilgan manzilni bizning xodimlarimizga telegram orqali screenshot jo'natib tekshirtirasiz. Hammasi to'g'ri deganmizdan keyin buyurtmalarni boshlashingiz mumkin.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════ -->
+    <!-- SECTION: Kontaktlar                     -->
+    <!-- ═══════════════════════════════════════ -->
+    <div id="kontaktlar" class="ip-section">
+      <div class="ip-section-header">
+        <div class="ip-section-icon navy"><i class="material-icons">contacts</i></div>
+        <div>
+          <h5 class="ip-section-title">Biz bilan bog'laning</h5>
+          <small class="text-muted">Biz doim sizga yordam berishdan ma'mnunmiz</small>
+        </div>
+      </div>
+
+      <!-- Phone -->
+      <div class="ip-contact-card">
+        <div class="ip-contact-title">
+          <i class="material-icons" style="color:#4caf50;">phone</i> Telefon raqamlar
+        </div>
+        <a class="ip-contact-row" href="tel:+998990099048">
+          <div class="ip-contact-label">Admin</div>
+          <div class="ip-contact-value">+998 99 009 90 48</div>
+          <i class="material-icons">call</i>
+        </a>
+        <a class="ip-contact-row" href="tel:+998998099048">
+          <div class="ip-contact-label">Yuk bo'limi</div>
+          <div class="ip-contact-value">+998 99 809 90 48</div>
+          <i class="material-icons">call</i>
+        </a>
+        <a class="ip-contact-row" href="tel:+998992099048">
+          <div class="ip-contact-label">NewLine</div>
+          <div class="ip-contact-value">+998 99 209 90 48</div>
+          <i class="material-icons">call</i>
+        </a>
+      </div>
+
+      <!-- Telegram -->
+      <div class="ip-contact-card">
+        <div class="ip-contact-title">
+          <i class="material-icons" style="color:#0088cc;">telegram</i> Telegram
+        </div>
+        <a class="ip-contact-row" href="https://t.me/activecargo_admin" target="_blank">
+          <div class="ip-contact-label">Admin</div>
+          <div class="ip-contact-value" style="color:#0088cc;">@activecargo_admin</div>
+          <i class="material-icons">open_in_new</i>
+        </a>
+        <a class="ip-contact-row" href="https://t.me/activecargo_yuk" target="_blank">
+          <div class="ip-contact-label">Yuk bo'limi</div>
+          <div class="ip-contact-value" style="color:#0088cc;">@activecargo_yuk</div>
+          <i class="material-icons">open_in_new</i>
+        </a>
+        <a class="ip-contact-row" href="https://t.me/acargo_newline" target="_blank">
+          <div class="ip-contact-label">Newline</div>
+          <div class="ip-contact-value" style="color:#0088cc;">@acargo_newline</div>
+          <i class="material-icons">open_in_new</i>
+        </a>
+      </div>
+
+      <!-- Location -->
+      <div class="ip-contact-card">
+        <div class="ip-contact-title">
+          <i class="material-icons" style="color:#e53935;">location_on</i> Manzilimiz
+        </div>
+        <a class="ip-location-card" href="https://www.google.com/maps/search/?api=1&query=41.253749,69.200142" target="_blank">
+          <div class="ip-location-map">
+            <i class="material-icons">map</i>
+            <span>Xaritada ko'rish</span>
+          </div>
+          <div class="ip-location-info">
+            <div class="ip-location-address">
+              <i class="material-icons">place</i>
+              <span>Toshkent shahar, ActiveCargo ofisi</span>
+            </div>
+            <div class="ip-location-hint">
+              <i class="material-icons">touch_app</i>
+              <span>Bosing — Google Xarita ochiladi</span>
+            </div>
+          </div>
+        </a>
+      </div>
+
+      <!-- Telegram Channel -->
+      <div class="ip-info-box blue">
+        <i class="material-icons">campaign</i>
+        <span>Yangiliklar uchun telegram kanal: <a href="https://t.me/activecargo" target="_blank" style="color:#1976d2; font-weight:700;">@activecargo</a></span>
+      </div>
+    </div>
+
+  </div>
+</div>

@@ -153,6 +153,77 @@
             </div>
         </div>
 
+        <!-- Tezkor Amallar (Quick Actions) -->
+        <div class="row mt-3">
+            <div class="col-md-12">
+                <h5 style="font-weight:700; color:#344767; margin-bottom:14px;">Tezkor amallar</h5>
+
+                <!-- 2x2 Grid Cards -->
+                <div class="qa-grid">
+                    <div class="qa-card qa-blue" (click)="goToDeliveryRequests()">
+                        <div class="qa-icon-wrap qa-icon-blue">
+                            <i class="material-icons">local_shipping</i>
+                        </div>
+                        <span class="qa-label">Yetkazish So'rovi</span>
+                    </div>
+                    <div class="qa-card qa-green" (click)="goToChinaAddress()">
+                        <div class="qa-icon-wrap qa-icon-green">
+                            <i class="material-icons">location_on</i>
+                        </div>
+                        <span class="qa-label">Xitoy Manzilim</span>
+                    </div>
+                    <div class="qa-card qa-orange" (click)="goToNews()">
+                        <div class="qa-icon-wrap qa-icon-orange">
+                            <i class="material-icons">article</i>
+                        </div>
+                        <span class="qa-label">Yangiliklar</span>
+                    </div>
+                    <div class="qa-card qa-gray" (click)="goToContacts()">
+                        <div class="qa-icon-wrap qa-icon-gray">
+                            <i class="material-icons">help_outline</i>
+                        </div>
+                        <span class="qa-label">Kontaktlar</span>
+                    </div>
+                </div>
+
+                <!-- List-style Cards -->
+                <div class="qa-list-card" (click)="goToHelpCenter()">
+                    <div class="qa-list-icon qa-list-icon-blue">
+                        <i class="material-icons">support_agent</i>
+                    </div>
+                    <div class="qa-list-info">
+                        <strong>Yordam Markazi</strong>
+                        <small>Savolingiz bo'lsa, biz doimo yordam berishga tayyormiz</small>
+                    </div>
+                    <i class="material-icons qa-list-arrow">chevron_right</i>
+                </div>
+
+                <div class="qa-list-card" (click)="goToVideoLessons()">
+                    <div class="qa-list-icon qa-list-icon-red">
+                        <i class="material-icons">play_circle_outline</i>
+                    </div>
+                    <div class="qa-list-info">
+                        <strong>Video Darsliklar</strong>
+                        <small>Dasturdan foydalanish bo'yicha qo'llanmalar</small>
+                    </div>
+                    <i class="material-icons qa-list-arrow">chevron_right</i>
+                </div>
+
+                <!-- Three Horizontal Buttons -->
+                <div class="qa-three-btns">
+                    <button class="qa-btn" (click)="goToTariffs()">
+                        <i class="material-icons">price_change</i> Tariflar <i class="material-icons qa-btn-arrow">chevron_right</i>
+                    </button>
+                    <button class="qa-btn" (click)="goToReminder()">
+                        <i class="material-icons">notifications</i> Eslatma <i class="material-icons qa-btn-arrow">chevron_right</i>
+                    </button>
+                    <button class="qa-btn" (click)="goToHowItWorks()">
+                        <i class="material-icons">info_outline</i> Ishlashi <i class="material-icons qa-btn-arrow">chevron_right</i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
         <!-- Last 2 Consignments Section -->
         <div class="row mt-4">
             <div class="col-md-12">
@@ -302,7 +373,7 @@
         </div>
 
         <!-- Chinese Address Section -->
-        <div class="row mt-4">
+        <div class="row mt-4" id="china-address-section">
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-header card-header-success card-header-icon">

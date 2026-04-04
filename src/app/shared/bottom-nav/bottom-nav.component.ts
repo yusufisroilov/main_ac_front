@@ -12,27 +12,23 @@ export class BottomNavComponent implements OnInit, OnDestroy {
   isMobile = false;
   activeRoute = "";
   showMoreMenu = false;
-  private routerSub: Subscription;
+  private routerSub!: Subscription;
 
   navItems = [
     { path: "/customer-dashboard", icon: "home", label: "Asosiy" },
-    { path: "/orderboxes", icon: "inventory_2", label: "Jo'natmalar" },
     { path: "/orders", icon: "shopping_cart", label: "Buyurtmalar" },
-    {
-      path: "/uzm/delivery-requests",
-      icon: "local_shipping",
-      label: "Yetkazish",
-    },
+    { path: "/orderboxes", icon: "inventory_2", label: "Jo'natmalar" },
   ];
 
   moreItems = [
+    { path: "/uzm/delivery-requests", icon: "local_shipping", label: "Yetkazish So'rovi" },
     { path: "/receivers", icon: "contacts", label: "Qabul qiluvchilar" },
     {
       path: "/customer-tickets",
       icon: "confirmation_number",
       label: "Murojaatlar",
     },
-    { path: "/consignment-tracking", icon: "flight", label: "Kuzatish" },
+    { path: "/consignment-tracking", icon: "flight", label: "Reyslar Taqvimi" },
     { path: "/archive", icon: "archive", label: "Arxiv" },
     {
       path: "/uzm/video-lessons",
