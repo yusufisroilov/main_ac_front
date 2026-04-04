@@ -521,3 +521,87 @@
 .ticket-card {
   animation: slideIn 0.3s ease;
 }
+
+/* ===== Compact Toolbar ===== */
+.ct-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.ct-input {
+  padding: 6px 10px;
+  border: 1.5px solid #ddd;
+  border-radius: 8px;
+  font-size: 13px;
+  width: 150px;
+  outline: none;
+}
+
+.ct-input:focus { border-color: #7b1fa2; }
+
+.ct-select {
+  padding: 6px 8px;
+  border: 1.5px solid #ddd;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #555;
+  background: #fff;
+  outline: none;
+  cursor: pointer;
+}
+
+.ct-select:focus { border-color: #7b1fa2; }
+
+.ct-count {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 10px;
+  background: rgba(123, 31, 162, 0.1);
+  color: #7b1fa2;
+}
+
+.ct-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px 8px;
+  border: none;
+  border-radius: 6px;
+  background: #f0f0f0;
+  color: #555;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.ct-btn:hover { background: #e0e0e0; }
+.ct-btn i { font-size: 18px; }
+
+@media (max-width: 576px) {
+  .ct-toolbar {
+    gap: 4px;
+  }
+
+  .ct-input {
+    width: 100%;
+    flex: 1;
+    font-size: 12px;
+    padding: 5px 8px;
+  }
+
+  .ct-select {
+    flex: 1;
+    font-size: 11px;
+    padding: 5px 6px;
+  }
+
+  .ct-btn {
+    padding: 4px 6px;
+  }
+
+  .ct-btn i { font-size: 16px; }
+}
