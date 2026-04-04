@@ -19,7 +19,8 @@
                             <i class="material-icons wb-balance-icon">{{ getBalanceIcon(debtUsdTotal) }}</i>
                             <div class="wb-balance-body">
                                 <span class="wb-balance-amount" [style.color]="getBalanceColor(debtUsdTotal)">
-                                    {{ getBalanceSign(debtUsdTotal) }}{{ getBalanceAbsUsd(debtUsdTotal) | number:'1.2-2' }}$
+                                    {{ getBalanceSign(debtUsdTotal) }}{{ getBalanceAbsUsd(debtUsdTotal) | number:'1.2-2'
+                                    }}$
                                 </span>
                                 <span class="wb-balance-hint">Balansingiz</span>
                             </div>
@@ -56,13 +57,13 @@
             </div>
             <div class="stat-tile balance-tile"
                 [ngClass]="{'debt-tile': debtUsdTotal > 0, 'credit-tile': debtUsdTotal < 0, 'paid-tile': debtUsdTotal === 0}">
-                <i class="material-icons stat-tile-icon"
-                    [style.color]="getBalanceColor(debtUsdTotal)">
+                <i class="material-icons stat-tile-icon" [style.color]="getBalanceColor(debtUsdTotal)">
                     {{ getBalanceIcon(debtUsdTotal) }}
                 </i>
                 <div class="stat-tile-value balance-value" *ngIf="!loadingStats">
                     <span [style.color]="getBalanceColor(debtUsdTotal)" class="balance-amount">
-                        {{ getBalanceSign(debtUsdTotal) }}{{ getBalanceAbsUsd(debtUsdTotal) | number:'1.2-2' }}<span class="balance-currency">$</span>
+                        {{ getBalanceSign(debtUsdTotal) }}{{ getBalanceAbsUsd(debtUsdTotal) | number:'1.2-2' }}<span
+                            class="balance-currency">$</span>
                     </span>
                     <br>
                     <small [style.color]="getBalanceColor(debtUzsTotal)" style="font-size: 11px;">
@@ -212,13 +213,16 @@
                 <!-- Three Horizontal Buttons -->
                 <div class="qa-three-btns">
                     <button class="qa-btn" (click)="goToTariffs()">
-                        <i class="material-icons">price_change</i> Tariflar <i class="material-icons qa-btn-arrow">chevron_right</i>
+                        <i class="material-icons">price_change</i> Tariflar <i
+                            class="material-icons qa-btn-arrow">chevron_right</i>
                     </button>
-                    <button class="qa-btn" (click)="goToReminder()">
-                        <i class="material-icons">notifications</i> Eslatma <i class="material-icons qa-btn-arrow">chevron_right</i>
+                    <button class="qa-btn qa-btn-red" (click)="goToReminder()">
+                        <i class="material-icons">notifications</i> Eslatma <i
+                            class="material-icons qa-btn-arrow">chevron_right</i>
                     </button>
                     <button class="qa-btn" (click)="goToHowItWorks()">
-                        <i class="material-icons">info_outline</i> Ishlashi <i class="material-icons qa-btn-arrow">chevron_right</i>
+                        <i class="material-icons">info_outline</i> Ishlashi <i
+                            class="material-icons qa-btn-arrow">chevron_right</i>
                     </button>
                 </div>
             </div>
@@ -285,15 +289,24 @@
                                             </span>
                                         </td>
                                         <td class="text-center">
-                                            <ng-container *ngIf="consignment.status === 7 && consignment.delivery; else normalStatusDash">
+                                            <ng-container
+                                                *ngIf="consignment.status === 7 && consignment.delivery; else normalStatusDash">
                                                 <span style="font-size: 13px; color: #888;">Yetkazish:</span>
-                                                <i class="material-icons" style="font-size: 14px; vertical-align: middle; margin: 0 2px;" [style.color]="consignment.delivery.delivery_type === 'EMU' ? '#7b1fa2' : consignment.delivery.delivery_type === 'Yandex' ? '#f44336' : consignment.delivery.delivery_type === 'Own-Courier' ? '#1976d2' : '#43a047'">{{ getDeliveryIcon(consignment.delivery.delivery_type) }}</i>
-                                                <span style="font-size: 13px; font-weight: 600;" [style.color]="consignment.delivery.delivery_type === 'EMU' ? '#7b1fa2' : consignment.delivery.delivery_type === 'Yandex' ? '#f44336' : consignment.delivery.delivery_type === 'Own-Courier' ? '#1976d2' : '#43a047'">{{ getDeliveryTypeLabel(consignment.delivery.delivery_type) }}</span>
+                                                <i class="material-icons"
+                                                    style="font-size: 14px; vertical-align: middle; margin: 0 2px;"
+                                                    [style.color]="consignment.delivery.delivery_type === 'EMU' ? '#7b1fa2' : consignment.delivery.delivery_type === 'Yandex' ? '#f44336' : consignment.delivery.delivery_type === 'Own-Courier' ? '#1976d2' : '#43a047'">{{
+                                                    getDeliveryIcon(consignment.delivery.delivery_type) }}</i>
+                                                <span style="font-size: 13px; font-weight: 600;"
+                                                    [style.color]="consignment.delivery.delivery_type === 'EMU' ? '#7b1fa2' : consignment.delivery.delivery_type === 'Yandex' ? '#f44336' : consignment.delivery.delivery_type === 'Own-Courier' ? '#1976d2' : '#43a047'">{{
+                                                    getDeliveryTypeLabel(consignment.delivery.delivery_type) }}</span>
                                                 <br>
-                                                <small style="font-size: 12px; font-weight: 600;" [style.color]="consignment.delivery.status === 'delivered' ? '#4caf50' : consignment.delivery.status === 'sent' ? '#1976d2' : '#ff9800'">{{ getDeliveryStatusLabel(consignment.delivery.status) }}</small>
+                                                <small style="font-size: 12px; font-weight: 600;"
+                                                    [style.color]="consignment.delivery.status === 'delivered' ? '#4caf50' : consignment.delivery.status === 'sent' ? '#1976d2' : '#ff9800'">{{
+                                                    getDeliveryStatusLabel(consignment.delivery.status) }}</small>
                                             </ng-container>
                                             <ng-template #normalStatusDash>
-                                                <span class="badge" [ngClass]="getConsignmentStatusClass(consignment.status)">
+                                                <span class="badge"
+                                                    [ngClass]="getConsignmentStatusClass(consignment.status)">
                                                     {{ getConsignmentStatusText(consignment.status) }}
                                                 </span>
                                             </ng-template>
@@ -304,7 +317,8 @@
                                             <span *ngIf="!consignment.weight" class="text-muted">- -</span>
                                         </td>
                                         <td class="text-center">
-                                            <span *ngIf="consignment.weight && consignment.sum_usd">{{ consignment.sum_usd }} $</span>
+                                            <span *ngIf="consignment.weight && consignment.sum_usd">{{
+                                                consignment.sum_usd }} $</span>
                                             <span *ngIf="!consignment.weight" class="text-muted">- -</span>
                                         </td>
                                         <td class="text-center">
@@ -316,7 +330,8 @@
                                                 <span *ngIf="consignment.debt > 0" class="text-danger font-weight-bold">
                                                     {{ consignment.debt | number:'1.2-2' }}$
                                                 </span>
-                                                <span *ngIf="!consignment.debt || consignment.debt <= 0" class="text-success">
+                                                <span *ngIf="!consignment.debt || consignment.debt <= 0"
+                                                    class="text-success">
                                                     0.00$
                                                 </span>
                                             </ng-container>
@@ -324,10 +339,12 @@
                                         </td>
                                         <td class="text-center">
                                             <ng-container *ngIf="consignment.weight">
-                                                <span *ngIf="consignment.debt_uzs > 0" class="text-danger font-weight-bold">
+                                                <span *ngIf="consignment.debt_uzs > 0"
+                                                    class="text-danger font-weight-bold">
                                                     {{ consignment.debt_uzs | currency : ' ' : 'symbol' : '1.0-0' }} Sum
                                                 </span>
-                                                <span *ngIf="!consignment.debt_uzs || consignment.debt_uzs <= 0" class="text-success">
+                                                <span *ngIf="!consignment.debt_uzs || consignment.debt_uzs <= 0"
+                                                    class="text-success">
                                                     0 Sum
                                                 </span>
                                             </ng-container>
@@ -335,10 +352,12 @@
                                         </td>
                                         <td class="text-center">
                                             <ng-container *ngIf="consignment.weight">
-                                                <span *ngIf="consignment.debt > 0" class="badge badge-danger" style="font-size: 12px;">
+                                                <span *ngIf="consignment.debt > 0" class="badge badge-danger"
+                                                    style="font-size: 12px;">
                                                     To'lanmagan
                                                 </span>
-                                                <span *ngIf="!consignment.debt || consignment.debt <= 0" class="badge badge-success" style="font-size: 12px;">
+                                                <span *ngIf="!consignment.debt || consignment.debt <= 0"
+                                                    class="badge badge-success" style="font-size: 12px;">
                                                     To'langan
                                                 </span>
                                             </ng-container>
@@ -348,7 +367,8 @@
                                             <button type="button" class="btn btn-sm"
                                                 (click)="openConsignmentModal(consignment.name)"
                                                 style="border-radius:8px; font-size:12px; padding:5px 12px; display:inline-flex; align-items:center; gap:4px; color:#7b1fa2; border:1.5px solid #ce93d8; background:transparent;"
-                                                onmouseover="this.style.background='#f3e5f5'" onmouseout="this.style.background='transparent'">
+                                                onmouseover="this.style.background='#f3e5f5'"
+                                                onmouseout="this.style.background='transparent'">
                                                 <i class="material-icons" style="font-size:16px;">visibility</i>
                                                 Ko'rish
                                             </button>
@@ -385,11 +405,16 @@
                     <div class="card-body">
                         <!-- Avia / Avto Toggle -->
                         <div class="btn-group mb-3" style="width:100%;max-width:300px;">
-                            <button class="btn" [class.btn-info]="addressMode==='avia'" [class.btn-outline-info]="addressMode!=='avia'" (click)="addressMode='avia'" style="flex:1;">
+                            <button class="btn" [class.btn-info]="addressMode==='avia'"
+                                [class.btn-outline-info]="addressMode!=='avia'" (click)="addressMode='avia'"
+                                style="flex:1;">
                                 <i class="material-icons" style="font-size:16px;vertical-align:middle;">flight</i> Avia
                             </button>
-                            <button class="btn" [class.btn-warning]="addressMode==='avto'" [class.btn-outline-warning]="addressMode!=='avto'" (click)="addressMode='avto'" style="flex:1;">
-                                <i class="material-icons" style="font-size:16px;vertical-align:middle;">local_shipping</i> Avto
+                            <button class="btn" [class.btn-warning]="addressMode==='avto'"
+                                [class.btn-outline-warning]="addressMode!=='avto'" (click)="addressMode='avto'"
+                                style="flex:1;">
+                                <i class="material-icons"
+                                    style="font-size:16px;vertical-align:middle;">local_shipping</i> Avto
                             </button>
                         </div>
 

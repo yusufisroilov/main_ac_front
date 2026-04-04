@@ -986,6 +986,10 @@ td small.text-muted {
   border-color: #667eea;
 }
 
+.qa-btn-red { border-color: #ef9a9a; color: #c62828; }
+.qa-btn-red i { color: #f44336 !important; }
+.qa-btn-red:hover { background: #ffebee; border-color: #f44336; }
+
 /* Responsive */
 @media (max-width: 576px) {
   .qa-grid {

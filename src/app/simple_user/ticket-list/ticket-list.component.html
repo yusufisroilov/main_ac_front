@@ -20,104 +20,26 @@
                             </button>
                         </div>
                     </div>
-                    <div class="card-body">
+                    <div class="card-body" style="padding: 10px 14px;">
 
-                        <!-- Stats Row -->
-                        <div class="row mb-4">
-                            <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
-                                <div class="info-card">
-                                    <div class="info-icon bg-info">
-                                        <mat-icon>confirmation_number</mat-icon>
-                                    </div>
-                                    <div class="info-content">
-                                        <h3>{{ totalTickets }}</h3>
-                                        <p>{{ isChinaStaff ? 'Total Tickets' : 'Jami Murojaatlar' }}</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
-                                <div class="info-card">
-                                    <div class="info-icon bg-warning">
-                                        <mat-icon>schedule</mat-icon>
-                                    </div>
-                                    <div class="info-content">
-                                        <!-- <h3>{{ tickets.filter(t => isWaitingForSupport(t)).length }}</h3> -->
-                                        <p>{{ isChinaStaff ? 'Waiting for Support' : 'Yordam Kutilmoqda' }}</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
-                                <div class="info-card">
-                                    <div class="info-icon bg-success">
-                                        <mat-icon>check_circle</mat-icon>
-                                    </div>
-                                    <div class="info-content">
-                                        <!-- <h3>{{ tickets.filter(t => isWaitingForCustomer(t)).length }}</h3> -->
-                                        <p>{{ isChinaStaff ? 'Waiting for Your Reply' : 'Javobingiz Kutilmoqda' }}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Filter Bar -->
-                        <div class="row mb-3">
-                            <div class="col-lg-3 col-md-6 mb-3">
-                                <mat-form-field class="w-100" appearance="outline">
-                                    <mat-label>{{ isChinaStaff ? 'Search' : 'Qidirish' }}</mat-label>
-                                    <input #searchInput matInput [placeholder]="isChinaStaff ? 'Search by ticket number or subject' : 'Murojaat raqami yoki mavzu bo\'yicha qidiring'"
-                                        [(ngModel)]="searchQuery" (keyup.enter)="onSearch()">
-                                    <mat-icon matSuffix>search</mat-icon>
-                                </mat-form-field>
-                            </div>
-
-                            <div class="col-lg-3 col-md-6 mb-3">
-                                <mat-form-field class="w-100" appearance="outline">
-                                    <mat-label>{{ isChinaStaff ? 'Filter by Status' : 'Holat bo\'yicha filtrlash' }}</mat-label>
-                                    <mat-select [(ngModel)]="selectedStatus" (selectionChange)="onFilterChange()">
-                                        <mat-option *ngFor="let option of statusOptions" [value]="option.value">
-                                            {{ option.label }}
-                                        </mat-option>
-                                    </mat-select>
-                                </mat-form-field>
-                            </div>
-
-                            <div class="col-lg-3 col-md-6 mb-3">
-                                <mat-form-field class="w-100" appearance="outline">
-                                    <mat-label>{{ isChinaStaff ? 'Filter by Category' : 'Kategoriya bo\'yicha filtrlash' }}</mat-label>
-                                    <mat-select [(ngModel)]="selectedCategory" (selectionChange)="onFilterChange()">
-                                        <mat-option *ngFor="let option of categoryOptions" [value]="option.value">
-                                            {{ option.label }}
-                                        </mat-option>
-                                    </mat-select>
-                                </mat-form-field>
-                            </div>
-
-                            <div class="col-lg-3 col-md-6 mb-3">
-                                <mat-form-field class="w-100" appearance="outline">
-                                    <mat-label>{{ isChinaStaff ? 'Filter by Priority' : 'Ustuvrolik bo\'yicha filtrlash' }}</mat-label>
-                                    <mat-select [(ngModel)]="selectedPriority" (selectionChange)="onFilterChange()">
-                                        <mat-option *ngFor="let option of priorityOptions" [value]="option.value">
-                                            {{ option.label }}
-                                        </mat-option>
-                                    </mat-select>
-                                </mat-form-field>
-                            </div>
-                        </div>
-
-                        <!-- Action Buttons -->
-                        <div class="row mb-3" *ngIf="hasActiveFilters()">
-                            <div class="col-md-12">
-                                <button mat-raised-button (click)="clearFilters()">
-                                    <mat-icon>clear</mat-icon>
-                                    {{ isChinaStaff ? 'Clear Filters' : 'Filtrlarni tozalash' }}
-                                </button>
-                                <button mat-raised-button (click)="getListOfTickets()" class="ml-2">
-                                    <mat-icon>refresh</mat-icon>
-                                    {{ isChinaStaff ? 'Refresh' : 'Yangilash' }}
-                                </button>
-                            </div>
+                        <!-- Compact Toolbar -->
+                        <div class="ct-toolbar">
+                            <input type="text" class="ct-input" [(ngModel)]="searchQuery"
+                                (keyup.enter)="onSearch()"
+                                [placeholder]="isChinaStaff ? 'Search...' : 'Qidirish...'">
+                            <select class="ct-select" [(ngModel)]="selectedStatus" (change)="onFilterChange()">
+                                <option *ngFor="let option of statusOptions" [value]="option.value">{{ option.label }}</option>
+                            </select>
+                            <select class="ct-select" [(ngModel)]="selectedCategory" (change)="onFilterChange()">
+                                <option *ngFor="let option of categoryOptions" [value]="option.value">{{ option.label }}</option>
+                            </select>
+                            <span class="ct-count" *ngIf="totalTickets">{{ totalTickets }}</span>
+                            <button class="ct-btn" (click)="clearFilters()" *ngIf="hasActiveFilters()" title="Tozalash">
+                                <i class="material-icons">clear</i>
+                            </button>
+                            <button class="ct-btn" (click)="getListOfTickets()" title="Yangilash">
+                                <i class="material-icons">refresh</i>
+                            </button>
                         </div>
 
                         <!-- Loading Spinner -->
@@ -250,31 +172,10 @@
             </div>
         </div>
 
-        <!-- Help Section -->
-        <div class="row mt-4">
-            <div class="col-md-12">
-                <div class="card">
-                    <div class="card-body">
-                        <h5>
-                            <mat-icon class="align-middle">help</mat-icon>
-                            {{ isChinaStaff ? 'Need help?' : 'Yordam kerakmi?' }}
-                        </h5>
-                        <p class="mb-2" *ngIf="isChinaStaff">
-                            <strong>Response time:</strong> We usually respond within 2-4 hours during business hours.
-                        </p>
-                        <p class="mb-0" *ngIf="isChinaStaff">
-                            <strong>Urgent issues:</strong> For urgent delivery problems, create a ticket with "Urgent" priority.
-                        </p>
-                        <p class="mb-2" *ngIf="!isChinaStaff">
-                            <strong>Javob vaqti:</strong> Biz odatda ish soatlari davomida 2-4 soat ichida javob beramiz.
-                        </p>
-                        <p class="mb-0" *ngIf="!isChinaStaff">
-                            <strong>Shoshilinch masalalar:</strong> Shoshilinch yetkazish muammolari uchun "Shoshilinch" ustuvorlikda murojaat yarating.
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <!-- Help hint (compact) -->
+        <p class="text-center text-muted" style="font-size:11px; margin-top:10px;">
+            {{ isChinaStaff ? 'Response time: 2-4 hours during business hours' : 'Javob vaqti: ish soatlari davomida 2-4 soat' }}
+        </p>
 
     </div>
 </div>
