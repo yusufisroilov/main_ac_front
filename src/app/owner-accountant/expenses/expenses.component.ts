@@ -22,6 +22,7 @@ export class OaExpensesComponent implements OnInit {
   filterCategoryId = "";
   filterCashAccountId = "";
   filterConsignment = "";
+  filterComment = "";
   filterStartDate = "";
   filterEndDate = "";
 
@@ -63,6 +64,7 @@ export class OaExpensesComponent implements OnInit {
     if (this.filterCategoryId) url += `&category_id=${this.filterCategoryId}`;
     if (this.filterCashAccountId) url += `&cash_account_id=${this.filterCashAccountId}`;
     if (this.filterConsignment) url += `&consignment=${this.filterConsignment}`;
+    if (this.filterComment) url += `&comment=${encodeURIComponent(this.filterComment)}`;
     if (this.filterStartDate) url += `&start_date=${this.filterStartDate}`;
     if (this.filterEndDate) url += `&end_date=${this.filterEndDate}`;
 
@@ -91,6 +93,7 @@ export class OaExpensesComponent implements OnInit {
     this.filterCategoryId = "";
     this.filterCashAccountId = "";
     this.filterConsignment = "";
+    this.filterComment = "";
     this.filterStartDate = "";
     this.filterEndDate = "";
     this.currentPage = 0;

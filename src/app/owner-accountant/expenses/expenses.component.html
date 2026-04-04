@@ -54,6 +54,11 @@
                 (keyup.enter)="applyFilters()" placeholder="Partiya...">
             </div>
             <div class="oi-filter-item">
+              <label class="oi-filter-label">Izoh</label>
+              <input type="text" class="form-control form-control-sm" [(ngModel)]="filterComment"
+                (input)="applyFilters()" placeholder="Izoh...">
+            </div>
+            <div class="oi-filter-item">
               <label class="oi-filter-label">Boshlanish</label>
               <input type="date" class="form-control form-control-sm" [(ngModel)]="filterStartDate" (change)="applyFilters()">
             </div>
