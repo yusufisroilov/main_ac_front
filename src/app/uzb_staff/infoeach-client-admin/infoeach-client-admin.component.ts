@@ -228,4 +228,32 @@ export class InfoeachClientAdminComponent implements OnInit {
   getInfoOfParcel(me) {
     this.trackingNum2 = me;
   }
+
+  // ── Status helpers ──
+
+  getConsignmentStatusText(status: number): string {
+    return { 1: "Kelmagan", 2: "Xitoy omborida", 4: "Xitoy aeroportida", 5: "O'zbekiston aeroportida", 6: "Bojxonada", 7: "Toshkent omborida" }[status] || "Nomalum";
+  }
+
+  getConsignmentStatusClass(status: number): string {
+    return { 1: "badge-warning", 2: "badge-info", 4: "badge-primary", 5: "badge-info", 6: "badge-success", 7: "badge-success" }[status] || "badge-secondary";
+  }
+
+  // ── Delivery helpers ──
+
+  getDeliveryBadgeClass(type: string): string {
+    return { "EMU": "badge-info", "Yandex": "badge-warning", "Own-Courier": "badge-primary", "Pick-up": "badge-success" }[type] || "badge-secondary";
+  }
+
+  getDeliveryIcon(type: string): string {
+    return { "EMU": "local_shipping", "Yandex": "delivery_dining", "Own-Courier": "two_wheeler", "Pick-up": "store" }[type] || "local_shipping";
+  }
+
+  getDeliveryTypeLabel(type: string): string {
+    return { "EMU": "EMU", "Yandex": "Yandex", "Own-Courier": "Kuryer", "Pick-up": "Mijoz o'zi" }[type] || type;
+  }
+
+  getDeliveryStatusLabel(status: string): string {
+    return { "created": "Yaratilgan", "sent": "Yuborilgan", "collected": "Olingan", "delivered": "Yetkazilgan", "returned": "Qaytarilgan", "cancelled": "Bekor" }[status] || status;
+  }
 }

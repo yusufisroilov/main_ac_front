@@ -179,6 +179,7 @@
                     <th class="text-center">{{ tableData1.headerRow[0] }}</th>
                     <th>{{ tableData1.headerRow[2] }}</th>
                     <th class="text-center">AVIA/AVTO</th>
+                    <th class="text-center">Holati</th>
                     <th class="text-center">{{ tableData1.headerRow[3] }}</th>
                     <th class="text-center">Yuk og'irligi</th>
                     <th class="text-center">{{ tableData1.headerRow[4] }}</th>
@@ -195,6 +196,21 @@
                     <ng-template #elseBlockAvia>
                       <td style="font-weight: bold; color: rgb(0, 229, 255)">AVIA</td>
                     </ng-template>
+                    <td class="text-center">
+                      <ng-container *ngIf="row.delivery; else consignmentStatus">
+                        <span class="badge" [ngClass]="getDeliveryBadgeClass(row.delivery.delivery_type)" style="font-size: 11px; padding: 3px 8px;">
+                          <i class="material-icons" style="font-size: 12px; vertical-align: middle;">{{ getDeliveryIcon(row.delivery.delivery_type) }}</i>
+                          {{ getDeliveryTypeLabel(row.delivery.delivery_type) }}
+                        </span>
+                        <br>
+                        <small class="text-muted" style="font-size: 10px;">{{ getDeliveryStatusLabel(row.delivery.status) }}</small>
+                      </ng-container>
+                      <ng-template #consignmentStatus>
+                        <span class="badge" [ngClass]="getConsignmentStatusClass(row.status)">
+                          {{ getConsignmentStatusText(row.status) }}
+                        </span>
+                      </ng-template>
+                    </td>
                     <td class="text-center">{{ row.quantity }} ta</td>
                     <td *ngIf="row.weight; else elseBlock" class="text-center">
                       {{ row.weight }} kg
