@@ -134,21 +134,23 @@
                       </td>
                       <td>
                         <div *ngIf="entry.comment; else noComment" class="comment-wrapper">
-                          <small class="comment-short" *ngIf="!entry._expanded"
+                          <span class="comment-short" *ngIf="!entry._expanded"
                             (click)="entry._expanded = true">
                             {{entry.comment.length > 30 ? entry.comment.substring(0, 30) + '...' : entry.comment}}
                             <i *ngIf="entry.comment.length > 30" class="material-icons comment-expand-icon">expand_more</i>
-                          </small>
-                          <small class="comment-full" *ngIf="entry._expanded"
+                          </span>
+                          <span class="comment-full" *ngIf="entry._expanded"
                             (click)="entry._expanded = false">
                             {{entry.comment}}
                             <i class="material-icons comment-expand-icon">expand_less</i>
-                          </small>
+                          </span>
                         </div>
                         <ng-template #noComment><span class="text-muted">—</span></ng-template>
                       </td>
-                      <td class="text-center">
-                        <small class="text-muted">{{entry.created_at | date: 'dd/MM/yyyy HH:mm'}}</small>
+                      <td class="text-center" style="white-space:nowrap;">
+                        <span style="font-size:13px; font-weight:500; color:#333;">{{entry.created_at | date: 'dd-MMM, yyyy'}}</span>
+                        <br>
+                        <span style="font-size:12px; color:#888;">{{entry.created_at | date: 'HH:mm'}}</span>
                       </td>
                     </tr>
                   </tbody>

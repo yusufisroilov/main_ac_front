@@ -26,6 +26,8 @@ export class OaExpensesComponent implements OnInit {
   filterStartDate = "";
   filterEndDate = "";
 
+  excelLoading = false;
+
   // Lookups
   categories: any[] = [];
   cashAccounts: any[] = [];
@@ -287,5 +289,32 @@ export class OaExpensesComponent implements OnInit {
   getScopeLabel(scope: string): string {
     const labels = { CONSIGNMENT: "Partiya", OFFICE: "Ofis", PROJECT: "Loyiha" };
     return labels[scope] || scope;
+  }
+
+  downloadExcel() {
+    this.excelLoading = true;
+    let url = `${GlobalVars.baseUrl}/expenses/export-excel?`;
+    if (this.filterScopeType) url += `&scope_type=${this.filterScopeType}`;
+    if (this.filterCategoryId) url += `&category_id=${this.filterCategoryId}`;
+    if (this.filterCashAccountId) url += `&cash_account_id=${this.filterCashAccountId}`;
+    if (this.filterConsignment) url += `&consignment=${this.filterConsignment}`;
+    if (this.filterComment) url += `&comment=${encodeURIComponent(this.filterComment)}`;
+    if (this.filterStartDate) url += `&start_date=${this.filterStartDate}`;
+    if (this.filterEndDate) url += `&end_date=${this.filterEndDate}`;
+
+    this.http.get(url, { headers: this.getHeaders(), responseType: "blob" }).subscribe(
+      (blob) => {
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = `Xarajatlar_${new Date().toISOString().slice(0, 10)}.xlsx`;
+        a.click();
+        URL.revokeObjectURL(a.href);
+        this.excelLoading = false;
+      },
+      (error) => {
+        this.excelLoading = false;
+        swal.fire("Xatolik", "Excel yuklab olishda xatolik yuz berdi", "error");
+      },
+    );
   }
 }

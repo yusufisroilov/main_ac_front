@@ -17,6 +17,9 @@
               <button class="btn btn-success oi-btn-add" (click)="addExpense()">
                 <i class="material-icons">add</i> Yangi
               </button>
+              <button class="btn btn-outline-success oi-btn-add" (click)="downloadExcel()" [disabled]="excelLoading">
+                <i class="material-icons" [class.spin]="excelLoading">{{ excelLoading ? 'hourglass_empty' : 'file_download' }}</i> Excel
+              </button>
               <button class="btn oi-btn-refresh" (click)="loadExpenses()" [disabled]="loading">
                 <i class="material-icons" [class.spin]="loading">refresh</i>
               </button>
