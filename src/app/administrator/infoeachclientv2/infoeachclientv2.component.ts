@@ -86,6 +86,7 @@ export class Infoeachclientv2Component implements OnInit {
   deliveryFee: number = 0;
   yandexFee: number = 0;
   deliveryNotes: string = "";
+  scheduledDate: string = "";
 
   // Debt tracking
   showDebtWarning: boolean = false;
@@ -1298,6 +1299,26 @@ export class Infoeachclientv2Component implements OnInit {
     this.updateSelectedPackages();
   }
 
+  getTomorrowDate(): string {
+    const d = new Date();
+    d.setDate(d.getDate() + 1);
+    return d.toISOString().split("T")[0];
+  }
+
+  getDayAfterTomorrowDate(): string {
+    const d = new Date();
+    d.setDate(d.getDate() + 2);
+    return d.toISOString().split("T")[0];
+  }
+
+  setScheduledDate(option: string) {
+    if (option === "tomorrow") {
+      this.scheduledDate = this.scheduledDate === this.getTomorrowDate() ? "" : this.getTomorrowDate();
+    } else if (option === "dayafter") {
+      this.scheduledDate = this.scheduledDate === this.getDayAfterTomorrowDate() ? "" : this.getDayAfterTomorrowDate();
+    }
+  }
+
   canCreateDelivery(): boolean {
     if (this.selectedPackageIdentifiers.length === 0 || !this.deliveryType) {
       return false;
@@ -1351,6 +1372,7 @@ export class Infoeachclientv2Component implements OnInit {
       delivery_fee: this.deliveryFee || 0,
       notes: this.deliveryNotes || null,
       admin_created_by: localStorage.getItem("username") || null,
+      scheduled_date: this.scheduledDate || null,
     };
 
     this.httpClient
@@ -1522,6 +1544,7 @@ export class Infoeachclientv2Component implements OnInit {
     this.deliveryFee = 0;
     this.yandexFee = 0;
     this.deliveryNotes = "";
+    this.scheduledDate = "";
     this.selectedRegionId = null;
     this.selectedBranchId = null;
     this.selectedBranchName = "";

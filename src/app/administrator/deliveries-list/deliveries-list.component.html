@@ -20,102 +20,51 @@
                     </div>
                     <div class="card-body">
 
-                        <!-- Compact Filters -->
-                        <div class="filters-section mb-4">
-                            <div class="row align-items-end">
-                                <div class="col-md-2">
-                                    <div class="form-group mb-0">
-                                        <label class="filter-label">Yetkazish Turi</label>
-                                        <select class="form-control form-control-sm" [(ngModel)]="filterDeliveryType"
-                                            (change)="applyFilters()">
-                                            <option value="">Barchasi</option>
-                                            <option value="EMU">EMU</option>
-                                            <option value="Yandex">Yandex</option>
-                                            <option value="Own-Courier">Kuryer</option>
-                                            <option value="Pick-up">Olib ketish</option>
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-2">
-                                    <div class="form-group mb-0">
-                                        <label class="filter-label">Holat</label>
-                                        <select class="form-control form-control-sm" [(ngModel)]="filterStatus"
-                                            (change)="applyFilters()">
-                                            <option value="">Barchasi</option>
-                                            <option value="collected">Yig'ilgan</option>
-                                            <option value="created">Yaratilgan</option>
-                                            <option value="sent">Yuborilgan</option>
-                                            <option value="returned">Qaytarilgan</option>
-                                            <option value="cancelled">Bekor qilingan</option>
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-2">
-                                    <div class="form-group mb-0">
-                                        <label class="filter-label">Vaqt</label>
-                                        <select class="form-control form-control-sm" [(ngModel)]="filterDateRange"
-                                            (change)="applyFilters()">
-                                            <option value="">Barchasi</option>
-                                            <option value="today">Bugun</option>
-                                            <option value="week">Bu hafta</option>
-                                            <option value="month">Bu oy</option>
-                                            <option value="custom">Boshqa</option>
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-2">
-                                    <div class="form-group mb-0">
-                                        <label class="filter-label">Mijoz ID</label>
-                                        <input type="text" class="form-control form-control-sm"
-                                            [(ngModel)]="filterCustomerId" (keyup.enter)="applyFilters()"
-                                            placeholder="ID kiriting">
-                                    </div>
-                                </div>
-
-
-                                <div class="col-md-4 text-right">
-                                    <button class="btn btn-success btn-sm mr-2" (click)="goToTodayEmuDeliveries()"
-                                        title="Bugungi EMU yetkazishlarni ko'rish">
-                                        <i class="material-icons">today</i>
-                                        Bugungi Emular
-                                    </button>
-                                    <button class="btn btn-warning btn-sm mr-2" (click)="goToCourierToday()"
-                                        title="Bugungi kuryer yetkazishlarni ko'rish">
-                                        <i class="material-icons">motorcycle</i>
-                                        Kuryer Bugun
-                                    </button>
-                                    <button class="btn btn-primary btn-sm mr-2" (click)="applyFilters()"
-                                        [disabled]="loadingDeliveries">
-                                        <i class="material-icons">search</i>
-                                        Qidirish
-                                    </button>
-                                    <button class="btn btn-secondary btn-sm" (click)="clearFilters()">
-                                        <i class="material-icons">clear</i>
-                                        Tozalash
-                                    </button>
-                                </div>
-                            </div>
-
-                            <!-- Custom date range -->
-                            <div class="row mt-3" *ngIf="filterDateRange === 'custom'">
-                                <div class="col-md-3">
-                                    <div class="form-group mb-0">
-                                        <label class="filter-label">Boshlanish</label>
-                                        <input type="date" class="form-control form-control-sm"
-                                            [(ngModel)]="customStartDate" (change)="applyFilters()">
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="form-group mb-0">
-                                        <label class="filter-label">Tugash</label>
-                                        <input type="date" class="form-control form-control-sm"
-                                            [(ngModel)]="customEndDate" (change)="applyFilters()">
-                                    </div>
-                                </div>
-                            </div>
+                        <!-- Toolbar -->
+                        <div class="dl-toolbar">
+                            <select class="dl-select" [(ngModel)]="filterDeliveryType" (change)="applyFilters()">
+                                <option value="">Turi</option>
+                                <option value="EMU">EMU</option>
+                                <option value="Yandex">Yandex</option>
+                                <option value="Own-Courier">Kuryer</option>
+                                <option value="Pick-up">Olib ketish</option>
+                            </select>
+                            <select class="dl-select" [(ngModel)]="filterStatus" (change)="applyFilters()">
+                                <option value="">Holat</option>
+                                <option value="collected">Yig'ilgan</option>
+                                <option value="created">Yaratilgan</option>
+                                <option value="sent">Yuborilgan</option>
+                                <option value="returned">Qaytarilgan</option>
+                                <option value="cancelled">Bekor qilingan</option>
+                            </select>
+                            <select class="dl-select" [(ngModel)]="filterDateRange" (change)="onDateFilterChange()">
+                                <option value="">Vaqt</option>
+                                <option value="today">Bugun</option>
+                                <option value="week">Bu hafta</option>
+                                <option value="month">Bu oy</option>
+                                <option value="scheduled_tomorrow">Ertaga (reja)</option>
+                                <option value="scheduled_dayafter">Indinga (reja)</option>
+                                <option value="custom">Boshqa</option>
+                            </select>
+                            <input type="text" class="dl-input" [(ngModel)]="filterCustomerId"
+                                (keyup.enter)="applyFilters()" placeholder="Mijoz ID">
+                            <input *ngIf="filterDateRange === 'custom'" type="date" class="dl-input"
+                                [(ngModel)]="customStartDate" (change)="applyFilters()">
+                            <input *ngIf="filterDateRange === 'custom'" type="date" class="dl-input"
+                                [(ngModel)]="customEndDate" (change)="applyFilters()">
+                            <div class="dl-spacer"></div>
+                            <button class="dl-btn dl-btn-green" (click)="goToTodayEmuDeliveries()" title="Bugungi EMU">
+                                <i class="material-icons">today</i> EMU
+                            </button>
+                            <button class="dl-btn dl-btn-orange" (click)="goToCourierToday()" title="Bugungi Kuryer">
+                                <i class="material-icons">motorcycle</i> Kuryer
+                            </button>
+                            <button class="dl-btn dl-btn-blue" (click)="applyFilters()" [disabled]="loadingDeliveries">
+                                <i class="material-icons">search</i>
+                            </button>
+                            <button class="dl-btn dl-btn-gray" (click)="clearFilters()">
+                                <i class="material-icons">clear</i>
+                            </button>
                         </div>
 
                         <!-- Loading indicator -->
@@ -209,11 +158,18 @@
                                                 </span>
                                             </td>
                                             <td>
-                                                <small class="text-muted">{{delivery.created_date |
-                                                    date:'dd.MM.yyyy'}}</small>
+                                                <span *ngIf="delivery.scheduled_date"
+                                                    [style.color]="getScheduledDateColor(delivery.scheduled_date)"
+                                                    style="font-size:12px; font-weight:700;">
+                                                    <i class="material-icons" style="font-size:13px; vertical-align:middle;">event</i>
+                                                    {{ getScheduledDateLabel(delivery.scheduled_date) }}
+                                                    <small style="font-weight:400;">{{ delivery.scheduled_date }}</small>
+                                                </span>
+                                                <span *ngIf="!delivery.scheduled_date" style="font-size:12px; color:#333;">
+                                                    {{delivery.created_date | date:'dd.MM.yyyy'}}
+                                                </span>
                                                 <br>
-                                                <small class="text-muted">{{delivery.created_date |
-                                                    date:'HH:mm'}}</small>
+                                                <small class="text-muted">{{delivery.created_date | date:'HH:mm'}}</small>
                                             </td>
                                             <td class="text-center">
                                                 <button class="btn btn-info btn-sm btn-just-icon mr-1"

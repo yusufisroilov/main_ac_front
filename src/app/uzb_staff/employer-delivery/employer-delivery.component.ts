@@ -49,6 +49,7 @@ export class EmployerDeliveryComponent {
   selectedDeliveryType: string = "";
   selectedDateFilter: string = "all";
   selectedStatusFilter: string = "";
+  filterScheduledDate: string = "";
 
   // Deliveries data
   deliveries: Delivery[] = [];
@@ -120,6 +121,9 @@ export class EmployerDeliveryComponent {
     if (this.selectedStatusFilter) {
       params = params.set("status", this.selectedStatusFilter);
     }
+    if (this.filterScheduledDate) {
+      params = params.set("scheduled_date", this.filterScheduledDate);
+    }
 
     this.http
       .get(
@@ -157,12 +161,12 @@ export class EmployerDeliveryComponent {
     return delivery.status === "created";
   }
 
-  // Check if employee can edit weight (only for EMU deliveries they processed)
+  // Check if employee can edit weight
   canEditWeight(delivery: Delivery): boolean {
     return (
-      delivery.delivery_type === "EMU" &&
-      delivery.weight &&
-      delivery.status === "collected"
+      delivery.weight != null &&
+      delivery.weight > 0 &&
+      delivery.status === "sent"
     );
   }
 
@@ -476,6 +480,22 @@ export class EmployerDeliveryComponent {
       all: "Barcha vaqtlar",
     };
     return filters[this.selectedDateFilter] || this.selectedDateFilter;
+  }
+
+  onDateFilterChange() {
+    const d = new Date();
+    if (this.selectedDateFilter === "scheduled_tomorrow") {
+      d.setDate(d.getDate() + 1);
+      this.filterScheduledDate = d.toISOString().split("T")[0];
+      this.selectedDateFilter = "all";
+    } else if (this.selectedDateFilter === "scheduled_dayafter") {
+      d.setDate(d.getDate() + 2);
+      this.filterScheduledDate = d.toISOString().split("T")[0];
+      this.selectedDateFilter = "all";
+    } else {
+      this.filterScheduledDate = "";
+    }
+    this.applyFilters();
   }
 
   // Get action button text based on delivery type

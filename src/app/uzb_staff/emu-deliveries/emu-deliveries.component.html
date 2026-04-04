@@ -28,13 +28,15 @@
                             <!-- Date Filter -->
                             <div style="min-width: 140px;">
                                 <select class="form-control form-control-sm" [(ngModel)]="selectedDateFilter"
-                                    (change)="applyFilters()"
+                                    (change)="onDateFilterChange()"
                                     style="font-size: 13px; padding: 6px 10px; background: rgba(255,255,255,0.9);">
                                     <option value="today">📅 Bugun</option>
                                     <option value="yesterday">📅 Kecha</option>
                                     <option value="week">📅 Bu hafta</option>
                                     <option value="month">📅 Bu oy</option>
                                     <option value="all">📅 Barchasi</option>
+                                    <option value="scheduled_tomorrow">📅 Ertaga (reja)</option>
+                                    <option value="scheduled_dayafter">📅 Indinga (reja)</option>
                                 </select>
                             </div>
 

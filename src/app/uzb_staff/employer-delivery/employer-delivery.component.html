@@ -36,12 +36,14 @@
                             <span style="width:1px; height:22px; background:#e0e0e0;"></span>
 
                             <!-- Date Filter -->
-                            <select class="filter-select" [(ngModel)]="selectedDateFilter" (change)="applyFilters()">
+                            <select class="filter-select" [(ngModel)]="selectedDateFilter" (change)="onDateFilterChange()">
                                 <option value="today">Bugun</option>
                                 <option value="yesterday">Kecha</option>
                                 <option value="week">Hafta</option>
                                 <option value="month">Oy</option>
                                 <option value="all">Hammasi</option>
+                                <option value="scheduled_tomorrow">Ertaga (reja)</option>
+                                <option value="scheduled_dayafter">Indinga (reja)</option>
                             </select>
 
                             <!-- Status Filter -->

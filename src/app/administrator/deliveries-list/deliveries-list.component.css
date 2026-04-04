@@ -1,6 +1,76 @@
 /* ===================================
-   FILTERS SECTION
+   TOOLBAR - One line filters + buttons
    =================================== */
+.dl-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  padding: 10px 14px;
+  background: #f8f9fa;
+  border-radius: 10px;
+  border: 1px solid #e3e3e3;
+  margin-bottom: 14px;
+}
+
+.dl-select {
+  padding: 5px 8px;
+  border: 1.5px solid #ddd;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #555;
+  background: #fff;
+  outline: none;
+  cursor: pointer;
+}
+
+.dl-select:focus { border-color: #ff9800; }
+
+.dl-input {
+  padding: 5px 10px;
+  border: 1.5px solid #ddd;
+  border-radius: 6px;
+  font-size: 12px;
+  width: 90px;
+  outline: none;
+}
+
+.dl-input:focus { border-color: #ff9800; }
+
+.dl-spacer { flex: 1; }
+
+.dl-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 5px 10px;
+  border: none;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.dl-btn i { font-size: 16px; }
+
+.dl-btn-green { background: #e8f5e9; color: #2e7d32; }
+.dl-btn-green:hover { background: #c8e6c9; }
+.dl-btn-orange { background: #fff3e0; color: #e65100; }
+.dl-btn-orange:hover { background: #ffe0b2; }
+.dl-btn-blue { background: #e3f2fd; color: #1565c0; }
+.dl-btn-blue:hover { background: #bbdefb; }
+.dl-btn-gray { background: #f0f0f0; color: #555; }
+.dl-btn-gray:hover { background: #e0e0e0; }
+
+@media (max-width: 768px) {
+  .dl-toolbar { flex-direction: column; align-items: stretch; }
+  .dl-select, .dl-input { width: 100%; }
+  .dl-spacer { display: none; }
+}
+
+/* Legacy - keep for other uses */
 .filters-section {
   background-color: #f8f9fa;
   padding: 1rem;

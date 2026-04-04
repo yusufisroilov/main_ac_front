@@ -43,6 +43,7 @@ interface Delivery {
   notes?: string;
   returned_reason?: string;
   emuBranch?: any;
+  scheduled_date?: string;
 }
 
 @Component({
@@ -96,6 +97,7 @@ export class DeliveriesListComponent {
   filterCustomerId: string = "";
   customStartDate: string = "";
   customEndDate: string = "";
+  filterScheduledDate: string = "";
 
   // Pagination
   currentPage: number = 0;
@@ -332,6 +334,9 @@ export class DeliveriesListComponent {
         }
       }
     }
+    if (this.filterScheduledDate) {
+      params = params.set("scheduled_date", this.filterScheduledDate);
+    }
 
     this.http
       .get(
@@ -384,6 +389,7 @@ export class DeliveriesListComponent {
     this.filterCustomerId = "";
     this.customStartDate = "";
     this.customEndDate = "";
+    this.filterScheduledDate = "";
     this.applyFilters();
   }
 
@@ -559,6 +565,55 @@ export class DeliveriesListComponent {
       "Pick-up": "Olib ketish",
     };
     return types[type] || type;
+  }
+
+  getTomorrowDate(): string {
+    const d = new Date(); d.setDate(d.getDate() + 1);
+    return d.toISOString().split("T")[0];
+  }
+
+  getDayAfterTomorrowDate(): string {
+    const d = new Date(); d.setDate(d.getDate() + 2);
+    return d.toISOString().split("T")[0];
+  }
+
+  getTodayDate(): string {
+    return new Date().toISOString().split("T")[0];
+  }
+
+  setScheduledFilter(date: string) {
+    this.filterScheduledDate = this.filterScheduledDate === date ? "" : date;
+    this.applyFilters();
+  }
+
+  onDateFilterChange() {
+    if (this.filterDateRange === "scheduled_tomorrow") {
+      this.filterScheduledDate = this.getTomorrowDate();
+      this.filterDateRange = "";
+    } else if (this.filterDateRange === "scheduled_dayafter") {
+      this.filterScheduledDate = this.getDayAfterTomorrowDate();
+      this.filterDateRange = "";
+    } else {
+      this.filterScheduledDate = "";
+    }
+    this.applyFilters();
+  }
+
+  getScheduledDateColor(scheduledDate: string): string {
+    if (!scheduledDate) return "";
+    const today = this.getTodayDate();
+    if (scheduledDate === today) return "#43a047";
+    if (scheduledDate > today) return "#1565c0";
+    return "#333";
+  }
+
+  getScheduledDateLabel(scheduledDate: string): string {
+    if (!scheduledDate) return "";
+    const today = this.getTodayDate();
+    if (scheduledDate === today) return "Bugun";
+    if (scheduledDate === this.getTomorrowDate()) return "Ertaga";
+    if (scheduledDate === this.getDayAfterTomorrowDate()) return "Indinga";
+    return "";
   }
 
   getStatusText(status: string): string {

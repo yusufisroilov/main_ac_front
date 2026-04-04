@@ -517,6 +517,34 @@
                   </div>
                 </div>
 
+                <!-- Scheduled Date -->
+                <div class="row" style="margin-top: 10px;">
+                  <div class="col-md-12">
+                    <label style="font-size: 12px; font-weight: 600; color: #555; margin-bottom: 6px; display: block;">Rejalashtirilgan sana</label>
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+                      <button type="button" class="btn btn-sm"
+                        [class.btn-info]="scheduledDate === getTomorrowDate()"
+                        [class.btn-outline-info]="scheduledDate !== getTomorrowDate()"
+                        (click)="setScheduledDate('tomorrow')"
+                        style="border-radius: 8px; font-size: 12px; padding: 6px 14px;">
+                        <i class="material-icons" style="font-size: 14px; vertical-align: middle;">event</i> Ertaga
+                      </button>
+                      <button type="button" class="btn btn-sm"
+                        [class.btn-warning]="scheduledDate === getDayAfterTomorrowDate()"
+                        [class.btn-outline-warning]="scheduledDate !== getDayAfterTomorrowDate()"
+                        (click)="setScheduledDate('dayafter')"
+                        style="border-radius: 8px; font-size: 12px; padding: 6px 14px;">
+                        <i class="material-icons" style="font-size: 14px; vertical-align: middle;">event</i> Indinga
+                      </button>
+                      <span *ngIf="scheduledDate" style="font-size: 12px; color: #333; font-weight: 600;">
+                        <i class="material-icons" style="font-size: 14px; vertical-align: middle; color: #43a047;">check_circle</i>
+                        {{ scheduledDate }}
+                      </span>
+                      <span *ngIf="!scheduledDate" style="font-size: 11px; color: #999;">Bugun (hozir)</span>
+                    </div>
+                  </div>
+                </div>
+
               </div>
             </div>
 

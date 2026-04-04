@@ -50,6 +50,7 @@ export class EmuDeliveriesComponent implements OnInit {
   // Filter states
   selectedDateFilter: string = "today"; // Default to today
   selectedStatusFilter: string = "";
+  filterScheduledDate: string = "";
 
   // Deliveries data
   deliveries: Delivery[] = [];
@@ -102,6 +103,9 @@ export class EmuDeliveriesComponent implements OnInit {
     if (this.selectedStatusFilter) {
       params = params.set("status", this.selectedStatusFilter);
     }
+    if (this.filterScheduledDate) {
+      params = params.set("scheduled_date", this.filterScheduledDate);
+    }
 
     this.http
       .get(
@@ -140,7 +144,7 @@ export class EmuDeliveriesComponent implements OnInit {
 
   // Check if employee can edit weight
   canEditWeight(delivery: Delivery): boolean {
-    return delivery.weight && delivery.status === "sent";
+    return delivery.weight != null && delivery.weight > 0 && delivery.status === "sent";
   }
 
   // Process EMU delivery (requires weight input)
@@ -213,7 +217,7 @@ export class EmuDeliveriesComponent implements OnInit {
 
   // Update weight only
   updateWeight() {
-    if (!this.enteredWeight) {
+    if (!this.enteredWeight || !this.selectedDeliveryForWeight) {
       swal.fire("Xatolik", "Yangi og'irlikni kiriting", "error");
       return;
     }
@@ -300,7 +304,7 @@ export class EmuDeliveriesComponent implements OnInit {
 
   // Get status display text
   getStatusText(status: string): string {
-    const statuses = {
+    const statuses: Record<string, string> = {
       created: "Yaratilgan",
       collected: "OlDIM",
       sent: "Yuborilgan",
@@ -313,7 +317,7 @@ export class EmuDeliveriesComponent implements OnInit {
 
   // Get status badge class
   getStatusBadgeClass(status: string): string {
-    const classes = {
+    const classes: Record<string, string> = {
       created: "badge-warning",
       collected: "badge-info",
       sent: "badge-primary",
@@ -326,7 +330,7 @@ export class EmuDeliveriesComponent implements OnInit {
 
   // Get date filter display text
   get selectedDateFilterText(): string {
-    const filters = {
+    const filters: Record<string, string> = {
       today: "Bugun",
       yesterday: "Kecha",
       week: "Bu hafta",
@@ -334,6 +338,22 @@ export class EmuDeliveriesComponent implements OnInit {
       all: "Barcha vaqtlar",
     };
     return filters[this.selectedDateFilter] || this.selectedDateFilter;
+  }
+
+  onDateFilterChange() {
+    const d = new Date();
+    if (this.selectedDateFilter === "scheduled_tomorrow") {
+      d.setDate(d.getDate() + 1);
+      this.filterScheduledDate = d.toISOString().split("T")[0];
+      this.selectedDateFilter = "all";
+    } else if (this.selectedDateFilter === "scheduled_dayafter") {
+      d.setDate(d.getDate() + 2);
+      this.filterScheduledDate = d.toISOString().split("T")[0];
+      this.selectedDateFilter = "all";
+    } else {
+      this.filterScheduledDate = "";
+    }
+    this.applyFilters();
   }
 
   // Format file size

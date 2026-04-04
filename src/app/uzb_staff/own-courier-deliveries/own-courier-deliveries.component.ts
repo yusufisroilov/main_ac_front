@@ -221,7 +221,7 @@ export class OwnCourierDeliveriesComponent implements OnInit {
 
   // Check if employee can edit weight
   canEditWeight(delivery: Delivery): boolean {
-    return delivery.weight && delivery.status === "sent";
+    return delivery.weight != null && delivery.weight > 0 && delivery.status === "sent";
   }
 
   // Edit weight

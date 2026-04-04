@@ -235,7 +235,7 @@ export class YandexDeliveriesComponent implements OnInit {
 
   // Check if employee can edit weight
   canEditWeight(delivery: Delivery): boolean {
-    return delivery.weight && delivery.status === "sent";
+    return delivery.weight != null && delivery.weight > 0 && delivery.status === "sent";
   }
 
   // Edit weight
@@ -247,7 +247,7 @@ export class YandexDeliveriesComponent implements OnInit {
 
   // Update weight only
   updateWeight() {
-    if (!this.enteredWeight) {
+    if (!this.enteredWeight || !this.selectedDeliveryForWeight) {
       swal.fire("Xatolik", "Yangi og'irlikni kiriting", "error");
       return;
     }
