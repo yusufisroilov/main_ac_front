@@ -35,6 +35,8 @@ export class UserComponent {
     matcher = new MyErrorStateMatcher();
 
     registredMessage: string;
+    showPassword: boolean = false;
+    showConfirmPassword: boolean = false;
 
     constructor(public authService: AuthService,private formBuilder: UntypedFormBuilder,private router: Router,private http: Http, private httpClient: HttpClient){
 
@@ -45,73 +47,54 @@ export class UserComponent {
     ngOnInit() {
 
         this.type = this.formBuilder.group({
-            // To add a validator, we must first convert the string value into an array. The first item in the array is the default value if any, then the next item in the array is the validator. Here we are adding a required validator meaning that the firstName attribute must have a value in it.
-            firstname: [null, Validators.required],
-            lastname: [null, Validators.required],
-            password: [null, Validators.required]
-    
+            password: [null],
+            confirmPassword: [null],
            });
 
     }
 
     changeUserInfo(credentials: any){
 
+        if (!credentials.password || credentials.password.trim() === "") {
+            $.notify({
+                icon: 'notifications',
+                message: 'Yangi parolni kiriting!'
+            }, { type: 'warning', timer: 3000, placement: { from: 'top', align: 'center' } });
+            return;
+        }
+
+        if (credentials.password !== credentials.confirmPassword) {
+            $.notify({
+                icon: 'notifications',
+                message: 'Parollar mos kelmaydi!'
+            }, { type: 'danger', timer: 3000, placement: { from: 'top', align: 'center' } });
+            return;
+        }
+
         let headers12 = new Headers({'Content-Type': 'application/json'});
-            headers12.append('Authorization',localStorage.getItem('token'));
-           
-    
-            let options = new RequestOptions({ headers: headers12 },);
+        headers12.append('Authorization', localStorage.getItem('token'));
+        let options = new RequestOptions({ headers: headers12 });
 
-
-        if(credentials.password=="") {
-
-
-
-        this.http.post(GlobalVars.baseUrl + '/profile/edit?first_name='+ credentials.firstname + "&last_name="+ credentials.lastname, credentials ,options)
+        this.http.post(GlobalVars.baseUrl + '/profile/edit?password=' + credentials.password, '', options)
         .subscribe(response => {
-         
-            if(response.json().status == "ok")
-            {
+            if(response.json().status == "ok") {
                 this.registredMessage = response.json().message;
                 this.showAddNotification('top','center');
-                localStorage.setItem('first_name', credentials.firstname);
-                localStorage.setItem('last_name', credentials.lastname);  
-
                 this.router.navigate(['/dashboard']);
-                return false; 
+            } else {
+                $.notify({
+                    icon: 'notifications',
+                    message: response.json().message || 'Xatolik yuz berdi'
+                }, { type: 'danger', timer: 3000, placement: { from: 'top', align: 'center' } });
             }
         }, error => {
             if (error.status == 403) {
-    
-              this.authService.logout();
-              
+                this.authService.logout();
+            } else {
+                const msg = error.json?.()?.message || 'Parolni o\'zgartirishda xatolik';
+                $.notify({ icon: 'notifications', message: msg }, { type: 'danger', timer: 3000, placement: { from: 'top', align: 'center' } });
             }
-        })
-    } else{
-
-        this.http.post(GlobalVars.baseUrl + '/profile/edit?first_name='+ credentials.firstname + "&last_name="+ credentials.lastname + "&password=" + credentials.password, credentials ,options)
-        .subscribe(response => {
-         
-            if(response.json().status == "ok")
-            {
-                this.registredMessage = response.json().message;
-                this.showAddNotification('top','center');
-                localStorage.setItem('first_name', credentials.firstname);
-                localStorage.setItem('last_name', credentials.lastname);  
-
-                this.router.navigate(['/dashboard']);
-                return false; 
-            }
-        }, error => {
-            if (error.status == 403) {
-    
-              this.authService.logout();
-              
-            }
-        })
-
-    }
-
+        });
     }
 
 

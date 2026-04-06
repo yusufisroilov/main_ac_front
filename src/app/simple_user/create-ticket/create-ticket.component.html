@@ -22,31 +22,7 @@
                                 </select>
                             </div>
 
-                            <!-- Assign to: Role dropdown for CLIENT, User ID input for staff -->
-                            <div class="form-group" *ngIf="isClient">
-                                <label class="form-label">Kimga yo'naltirish</label>
-                                <select class="form-control" [(ngModel)]="assignedRole" name="assignedRole"
-                                    [disabled]="isSubmitting">
-                                    <option *ngFor="let role of roleOptions" [value]="role.value">
-                                        {{ role.label }}
-                                    </option>
-                                </select>
-                                <small class="form-text text-muted">
-                                    Murojaatingizni kimga yo'naltirishni tanlang. Bo'sh qoldiring avtomatik uchun.
-                                </small>
-                            </div>
-                            <div class="form-group" *ngIf="!isClient">
-                                <label class="form-label">{{ isChinaStaff ? 'Assign to (User ID)' : 'Kimga yo\'naltirish (ID)' }}</label>
-                                <input type="number" class="form-control" [(ngModel)]="assignedUserId" name="assignedUserId"
-                                    [disabled]="isSubmitting"
-                                    [placeholder]="isChinaStaff ? 'User ID (e.g. 22), leave empty for auto' : 'ID raqami (masalan: 22), bo\'sh qoldiring avtomatik uchun'">
-                                <small class="form-text text-muted" *ngIf="isChinaStaff">
-                                    Enter the user ID to assign your ticket to. Leave empty for auto-assignment.
-                                </small>
-                                <small class="form-text text-muted" *ngIf="!isChinaStaff">
-                                    Murojaatingizni kimga yo'naltirishni ID raqami bilan kiriting. Bo'sh qoldiring avtomatik uchun.
-                                </small>
-                            </div>
+                            <!-- Assign to: hidden, auto-set to MANAGER for clients -->
 
                             <!-- Message (Rich Text Editor Style) -->
                             <div class="form-group">

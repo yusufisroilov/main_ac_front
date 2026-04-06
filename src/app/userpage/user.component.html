@@ -7,43 +7,18 @@
             <div class="card-icon">
               <i class="material-icons">perm_identity</i>
             </div>
-            <h4 class="card-title">Ma'lumotlaringizni o'zgartiring -
-              <small class="category">Yangi parol qo'yishingiz mumkin</small>
-            </h4>
+            <h4 class="card-title">Profil sozlamalari</h4>
           </div>
           <div class="card-body">
             <form [formGroup]="type" #f="ngForm" (ngSubmit)=changeUserInfo(f.value)>
-             <!-- <div class="row">
-                <div class="col-md-5">
-                  <div class="form-group">
-                    <label class="bmd-label-floating">Company (disabled)</label>
-                    <input type="text" class="form-control" disabled>
-                  </div>
-                </div>
-                <div class="col-md-3">
-                  <div class="form-group">
-                    <label class="bmd-label-floating">Username</label>
-                    <input type="text" class="form-control">
-                  </div>
-                </div>
-                <div class="col-md-4">
-                  <div class="form-group">
-                    <label class="bmd-label-floating">Email address</label>
-                    <input type="email" class="form-control">
-                  </div>
-                </div>
-              </div> -->
               <div class="row">
                 <div class="col-md-6">
                   <div class="form-group">
                     <mat-form-field class="example-full-width">
                     <label class="bmd-label-floating">Ismingiz</label>
                     <input matInput
-                    [(ngModel)]="firstname" 
-                    id="firstname" 
-                    name="firstname"
-                     ngModel formControlName="firstname"
-                    type="text" class="form-control">
+                    [value]="firstname"
+                    type="text" class="form-control" disabled>
                   </mat-form-field>
                   </div>
                 </div>
@@ -51,27 +26,52 @@
                   <div class="form-group">
                     <mat-form-field class="example-full-width">
                     <label class="bmd-label-floating">Familiyangiz</label>
-                    <input matInput  
-                    [(ngModel)]="lastname" 
-                    id="lastname" 
-                    name="lastname"
-                     ngModel formControlName="lastname"
-                    type="text" class="form-control">
+                    <input matInput
+                    [value]="lastname"
+                    type="text" class="form-control" disabled>
                   </mat-form-field>
                   </div>
                 </div>
               </div>
               <div class="row">
-                <div class="col-md-12">
+                <div class="col-md-6">
                   <div class="form-group">
-                    <mat-form-field class="example-full-width">
-                    <label class="bmd-label-floating">Yangi parolingiz</label>
-                    <input  matInput   
-                    id="password" 
-                    name="password"
-                     ngModel formControlName="password"
-                    type="password" class="form-control">
-                  </mat-form-field>
+                    <div style="display:flex; align-items:center; gap:4px;">
+                      <mat-form-field class="example-full-width" style="flex:1;">
+                        <label class="bmd-label-floating">Yangi parol (ixtiyoriy)</label>
+                        <input matInput
+                        id="password"
+                        name="password"
+                         ngModel formControlName="password"
+                        [type]="showPassword ? 'text' : 'password'" class="form-control">
+                      </mat-form-field>
+                      <button type="button" mat-icon-button (click)="showPassword = !showPassword"
+                        style="border:none; background:none; cursor:pointer; padding:6px; color:#888;">
+                        <i class="material-icons" style="font-size:20px;">{{ showPassword ? 'visibility_off' : 'visibility' }}</i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <div style="display:flex; align-items:center; gap:4px;">
+                      <mat-form-field class="example-full-width" style="flex:1;">
+                        <label class="bmd-label-floating">Parolni tasdiqlang</label>
+                        <input matInput
+                        id="confirmPassword"
+                        name="confirmPassword"
+                         ngModel formControlName="confirmPassword"
+                        [type]="showConfirmPassword ? 'text' : 'password'" class="form-control">
+                      </mat-form-field>
+                      <button type="button" mat-icon-button (click)="showConfirmPassword = !showConfirmPassword"
+                        style="border:none; background:none; cursor:pointer; padding:6px; color:#888;">
+                        <i class="material-icons" style="font-size:20px;">{{ showConfirmPassword ? 'visibility_off' : 'visibility' }}</i>
+                      </button>
+                    </div>
+                    <small *ngIf="type.get('confirmPassword')?.touched && type.get('password')?.value !== type.get('confirmPassword')?.value"
+                      style="color: #f44336; font-size: 12px;">
+                      Parollar mos kelmaydi
+                    </small>
                   </div>
                 </div>
               </div>
@@ -120,14 +120,16 @@
             </a>
           </div>
           <div class="card-body">
-            <h6 class="card-category text-gray">{{username}}</h6> 
+            <h6 class="card-category text-gray">{{username}}</h6>
              <h4 class="card-title">{{firstname}}, {{lastname}}</h4>
-           <!-- <p class="card-description">
-              Don't be scared of the truth because we need to restart the human foundation in truth And I love you like Kanye loves Kanye I love Rick Owens’ bed design but the back is...
-            </p>
-            <a href="#pablo" class="btn btn-rose btn-round">Follow</a> -->
           </div>
         </div>
+        <!-- Logout button -->
+        <button class="btn btn-danger btn-block" (click)="authService.logout()"
+          style="display: flex; align-items: center; justify-content: center; gap: 8px; border-radius: 8px; padding: 10px; font-size: 14px; font-weight: 600; margin-top: 12px;">
+          <i class="material-icons" style="font-size: 20px;">logout</i>
+          Chiqish
+        </button>
       </div>
     </div>
   </div>

@@ -22,7 +22,7 @@ export class CustomerCreateTicketComponent implements OnInit, AfterViewInit {
   // Form fields
   relatedService: string = "None";
   assignedUserId: string = ""; // Staff can assign to a specific user ID
-  assignedRole: string = ""; // CLIENT selects a role
+  assignedRole: string = "MANAGER"; // Auto-assigned to MANAGER
   message: string = "";
 
   // Form state

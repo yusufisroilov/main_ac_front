@@ -35,6 +35,11 @@ export class BottomNavComponent implements OnInit, OnDestroy {
       icon: "play_circle_outline",
       label: "Video Darsliklar",
     },
+    {
+      path: "/pages/user",
+      icon: "person",
+      label: "Profil",
+    },
   ];
 
   constructor(private router: Router) {}
