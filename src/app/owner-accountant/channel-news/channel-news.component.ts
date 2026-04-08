@@ -93,6 +93,11 @@ export class ChannelNewsComponent implements OnInit {
       /(?<!href="|">)(https?:\/\/[^\s<]+)/g,
       '<a href="$1" target="_blank" class="cn-link">$1</a>'
     );
+    // Convert bare domains (e.g. my.acargo.uz) — not already inside a tag
+    html = html.replace(
+      /(?<!href="|">[^\s]*|\/\/)(\b\w+\.\w+\.\w{2,})\b(?![^<]*>)/g,
+      '<a href="https://$1" target="_blank" class="cn-link">$1</a>'
+    );
     // Convert @username to Telegram links (not already inside a tag)
     html = html.replace(
       /(?<![\w\/])@(\w{5,})/g,
