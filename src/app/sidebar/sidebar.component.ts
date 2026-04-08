@@ -91,6 +91,12 @@ export const ROUTES: RouteInfo[] = [
     type: "link",
     icontype: "play_circle_outline",
   },
+  {
+    path: "/channel-news",
+    title: "Yangiliklar",
+    type: "link",
+    icontype: "campaign",
+  },
 ];
 
 //Menu Items
@@ -438,6 +444,12 @@ export const managerROUTES: RouteInfo[] = [
     type: "link",
     icontype: "play_circle_outline",
   },
+  {
+    path: "/oa/channel-news",
+    title: "Yangiliklar",
+    type: "link",
+    icontype: "campaign",
+  },
 ];
 
 export const uzbStaffROUTES: RouteInfo[] = [
@@ -543,6 +555,12 @@ export const accountantROUTES: RouteInfo[] = [
     title: "Eng Ko'p Qarzdorlar",
     type: "link",
     icontype: "people",
+  },
+  {
+    path: "/oa/channel-news",
+    title: "Yangiliklar",
+    type: "link",
+    icontype: "campaign",
   },
 ];
 
@@ -664,6 +682,12 @@ export const ownerROUTES: RouteInfo[] = [
     title: "Video Darsliklar",
     type: "link",
     icontype: "play_circle_outline",
+  },
+  {
+    path: "/oa/channel-news",
+    title: "Yangiliklar",
+    type: "link",
+    icontype: "campaign",
   },
   {
     path: "/oa/settings",

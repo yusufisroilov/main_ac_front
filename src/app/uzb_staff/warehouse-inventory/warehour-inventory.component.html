@@ -233,11 +233,11 @@
                                 <span style="width:1px; height:22px; background:#e0e0e0;"></span>
                                 <span class="badge badge-primary" style="font-size: 12px;">{{packagesToTie.length}} mijoz</span>
                                 <button class="btn btn-sm btn-success" (click)="autoTieAllPackages()"
-                                    [disabled]="autoTyingPackages"
+                                    [disabled]="autoTyingPackages || getReadyToTieCount() === 0"
                                     style="display: flex; align-items: center; gap: 4px; font-size: 12px; padding: 5px 12px;">
                                     <span *ngIf="autoTyingPackages" class="spinner-border spinner-border-sm"></span>
                                     <i class="material-icons" *ngIf="!autoTyingPackages" style="font-size: 16px;">done_all</i>
-                                    Hammasini
+                                    Hammasini ({{getReadyToTieCount()}}/{{packagesToTie.length}})
                                 </button>
                                 <button *ngIf="getSelectedPackagesCount() > 0"
                                     class="btn btn-sm btn-info" (click)="tieSelectedPackages()"
@@ -275,11 +275,14 @@
                                     </thead>
                                     <tbody>
                                         <tr *ngFor="let package of packagesToTie; let i = index"
-                                            [class.selected-row]="package.selected">
+                                            [class.selected-row]="package.selected"
+                                            [style.opacity]="package.new_package ? '1' : '0.5'"
+                                            [style.background]="package.new_package ? '' : '#fff8e1'">
                                             <td style="padding: 4px 8px;">
                                                 <div class="custom-control custom-checkbox">
                                                     <input type="checkbox" class="custom-control-input"
-                                                        [id]="'package-' + i" [(ngModel)]="package.selected">
+                                                        [id]="'package-' + i" [(ngModel)]="package.selected"
+                                                        [disabled]="!package.new_package">
                                                     <label class="custom-control-label" [for]="'package-' + i"></label>
                                                 </div>
                                             </td>
@@ -287,7 +290,11 @@
                                                 <strong>K{{package.owner_id}}</strong>
                                             </td>
                                             <td style="padding: 4px 8px;">
-                                                <code style="font-size: 11px;">{{package.new_package.barcode}}</code>
+                                                <code *ngIf="package.new_package" style="font-size: 11px;">{{package.new_package.barcode}}</code>
+                                                <span *ngIf="!package.new_package" style="font-size: 11px; color: #e65100;">
+                                                    <i class="material-icons" style="font-size: 13px; vertical-align: middle;">hourglass_empty</i>
+                                                    Quti hali yaratilmagan
+                                                </span>
                                             </td>
                                             <td style="padding: 4px 8px;">
                                                 <span style="font-size: 11px;">{{package.existing_packages.length}} ta</span>
@@ -300,10 +307,13 @@
                                                 <span *ngIf="!package.already_has_tie_group" class="badge badge-warning" style="font-size: 10px;">Yo'q</span>
                                             </td>
                                             <td style="padding: 4px 8px;">
-                                                <button class="btn btn-sm btn-success" style="padding: 2px 8px; font-size: 11px;"
+                                                <button *ngIf="package.new_package" class="btn btn-sm btn-success" style="padding: 2px 8px; font-size: 11px;"
                                                     (click)="tiePackagesForCustomer(package.owner_id)">
                                                     Bog'lash
                                                 </button>
+                                                <span *ngIf="!package.new_package" class="badge badge-warning" style="font-size: 10px;">
+                                                    <i class="material-icons" style="font-size: 11px; vertical-align: middle;">lock</i> Kutilmoqda
+                                                </span>
                                             </td>
                                         </tr>
                                     </tbody>

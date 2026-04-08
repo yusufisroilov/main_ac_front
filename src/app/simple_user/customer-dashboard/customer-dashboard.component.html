@@ -85,7 +85,7 @@
                         <h5 class="calendar-preview-title">
                             <i class="material-icons"
                                 style="font-size: 20px; vertical-align: middle; margin-right: 4px;">event</i>
-                            Yuklar Taqvimi
+                            Reyslar Taqvimi
                         </h5>
                         <a class="calendar-preview-link" (click)="goToCalendar()">
                             Barchasi
@@ -173,7 +173,8 @@
                         </div>
                         <span class="qa-label">Xitoy Manzilim</span>
                     </div>
-                    <div class="qa-card qa-orange" (click)="goToNews()">
+                    <div class="qa-card qa-orange" (click)="goToNews()" style="position:relative;">
+                        <span *ngIf="newsUnreadCount > 0" class="qa-news-badge">{{ newsUnreadCount }}</span>
                         <div class="qa-icon-wrap qa-icon-orange">
                             <i class="material-icons">article</i>
                         </div>

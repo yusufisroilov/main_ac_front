@@ -83,6 +83,13 @@ export const AppRoutes: Routes = [
           ).then((m) => m.customerDashboardModule),
       },
       {
+        path: "channel-news",
+        loadChildren: () =>
+          import(
+            "./simple_user/channel-news/channel-news.module"
+          ).then((m) => m.ChannelNewsModule),
+      },
+      {
         path: "consignment-calendar",
         loadChildren: () =>
           import(

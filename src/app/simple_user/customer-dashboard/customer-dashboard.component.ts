@@ -3,6 +3,7 @@ import {
   Component,
   OnInit,
   AfterViewInit,
+  OnDestroy,
   ElementRef,
   ViewChild,
 } from "@angular/core";
@@ -60,7 +61,7 @@ interface Order {
   templateUrl: "./customer-dashboard.component.html",
   styleUrls: ["./customer-dashboard.component.css"],
 })
-export class CustomerDashboardComponent implements OnInit, AfterViewInit {
+export class CustomerDashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild("txtConfigFile") txtConfigFile: ElementRef;
   @ViewChild("txtConfigFileAvto") txtConfigFileAvto: ElementRef;
   addressMode: 'avia' | 'avto' = 'avia';
@@ -116,6 +117,9 @@ export class CustomerDashboardComponent implements OnInit, AfterViewInit {
     this.lastname = localStorage.getItem("last_name");
   }
 
+  newsUnreadCount = 0;
+  private newsPollInterval: any = null;
+
   ngOnInit() {
     this.customerId = this.id;
     this.customerUsername = this.username;
@@ -123,6 +127,25 @@ export class CustomerDashboardComponent implements OnInit, AfterViewInit {
     // Load dashboard statistics
     this.loadDashboardStats();
     this.loadCalendarPreview();
+    this.loadNewsUnreadCount();
+
+    // Poll for new news every 30 seconds
+    this.newsPollInterval = setInterval(() => this.loadNewsUnreadCount(), 30000);
+  }
+
+  ngOnDestroy() {
+    if (this.newsPollInterval) clearInterval(this.newsPollInterval);
+  }
+
+  loadNewsUnreadCount() {
+    const headers = new HttpHeaders({
+      "Content-Type": "application/json",
+      Authorization: localStorage.getItem("token") || "",
+    });
+    this.httpClient.get<any>(GlobalVars.baseUrl + "/channel-posts/unread-count", { headers }).subscribe(
+      (data) => { this.newsUnreadCount = data.count || 0; },
+      () => {},
+    );
   }
 
   // Load customer dashboard statistics
@@ -296,7 +319,7 @@ export class CustomerDashboardComponent implements OnInit, AfterViewInit {
     const el = document.getElementById("china-address-section");
     if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
   }
-  goToNews() { /* placeholder */ }
+  goToNews() { this.router.navigate(["/channel-news"]); }
   goToContacts() { this.router.navigate(["/info"], { queryParams: { section: "kontaktlar" } }); }
   goToHelpCenter() { this.router.navigate(["/customer-tickets"]); }
   goToVideoLessons() { this.router.navigate(["/uzm/video-lessons"]); }
@@ -400,7 +423,7 @@ export class CustomerDashboardComponent implements OnInit, AfterViewInit {
   }
 
   goToCalendar() {
-    this.router.navigate(["/consignment-calendar"]);
+    this.router.navigate(["/consignment-tracking"]);
   }
 
   // Copy Chinese address to clipboard

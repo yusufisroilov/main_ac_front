@@ -17,6 +17,7 @@ import { ConsignmentSummaryComponent } from "./consignment-summary/consignment-s
 import { OaCashAccountsComponent } from "./oa-cash-accounts/oa-cash-accounts.component";
 import { OaSettingsComponent } from "./settings/settings.component";
 import { AccLedgerListComponent } from "./acc-ledger-list/acc-ledger-list.component";
+import { ChannelNewsComponent } from "./channel-news/channel-news.component";
 
 @NgModule({
   imports: [
@@ -39,6 +40,7 @@ import { AccLedgerListComponent } from "./acc-ledger-list/acc-ledger-list.compon
     OaCashAccountsComponent,
     OaSettingsComponent,
     AccLedgerListComponent,
+    ChannelNewsComponent,
   ],
 })
 export class OwnerAccountantModule {}

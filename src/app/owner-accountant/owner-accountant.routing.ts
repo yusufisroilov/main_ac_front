@@ -12,6 +12,7 @@ import { ConsignmentSummaryComponent } from "./consignment-summary/consignment-s
 import { OaCashAccountsComponent } from "./oa-cash-accounts/oa-cash-accounts.component";
 import { OaSettingsComponent } from "./settings/settings.component";
 import { AccLedgerListComponent } from "./acc-ledger-list/acc-ledger-list.component";
+import { ChannelNewsComponent } from "./channel-news/channel-news.component";
 
 export const OwnerAccountantRoutes: Routes = [
   {
@@ -88,6 +89,12 @@ export const OwnerAccountantRoutes: Routes = [
         canActivate: [OwnerAuthGuardService],
         component: AccLedgerListComponent,
         data: { title: "Acc Transaksiyalar" },
+      },
+      {
+        path: "channel-news",
+        canActivate: [OwnerAuthGuardService],
+        component: ChannelNewsComponent,
+        data: { title: "Yangiliklar" },
       },
     ],
   },

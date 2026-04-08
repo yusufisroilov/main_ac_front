@@ -1,0 +1,127 @@
+/* ===== Card ===== */
+.cn-card { border: none; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); overflow: hidden; }
+
+/* ===== Header ===== */
+.cn-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 20px 24px 12px; flex-wrap: wrap; gap: 12px;
+}
+.cn-header-left { display: flex; align-items: center; gap: 12px; }
+.cn-header-icon { font-size: 32px; color: #1976d2; background: rgba(25,118,210,0.1); border-radius: 10px; padding: 8px; }
+.cn-title { margin: 0; font-size: 20px; font-weight: 700; color: #1a1a1a; }
+.cn-subtitle { font-size: 13px; color: #888; }
+.cn-header-actions { display: flex; gap: 8px; align-items: center; }
+
+/* ===== Refresh Button ===== */
+.cn-btn-refresh {
+  display: inline-flex; align-items: center; justify-content: center;
+  border-radius: 8px; padding: 7px 10px;
+  background: #f5f5f5; border: 1px solid #e0e0e0; color: #666;
+}
+.cn-btn-refresh:hover { background: #eee; color: #333; }
+.cn-btn-refresh .material-icons { font-size: 18px; }
+.cn-btn-refresh .spin { animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ===== Body ===== */
+.cn-body { padding: 0 24px 20px; }
+
+/* ===== Loading ===== */
+.cn-loading { display: flex; justify-content: center; padding: 60px 0; }
+
+/* ===== Feed ===== */
+.cn-feed { display: flex; flex-direction: column; gap: 20px; }
+
+/* ===== Unread badge in header ===== */
+.cn-unread-badge {
+  display: inline-block; background: #e53935; color: #fff; font-size: 11px; font-weight: 700;
+  padding: 2px 8px; border-radius: 10px; margin-left: 6px; vertical-align: middle;
+}
+.cn-btn-readall {
+  display: inline-flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 600;
+  border-radius: 8px; padding: 5px 12px;
+}
+.cn-btn-readall .material-icons { font-size: 16px; }
+
+/* ===== Post Card ===== */
+.cn-post {
+  background: #fff; border: 1px solid #eee; border-radius: 12px;
+  overflow: hidden; transition: all 0.3s; position: relative;
+}
+.cn-post:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+
+/* Unread post styling */
+.cn-post.cn-unread { border-left: 4px solid #1976d2; background: #f8fbff; }
+.cn-post.cn-unread:hover { box-shadow: 0 4px 16px rgba(25,118,210,0.12); }
+
+/* New badge */
+.cn-new-badge {
+  position: absolute; top: 12px; right: 12px; z-index: 2;
+  background: #1976d2; color: #fff; font-size: 10px; font-weight: 800;
+  padding: 3px 10px; border-radius: 12px; letter-spacing: 0.5px;
+}
+
+/* ===== Media ===== */
+.cn-media { width: 100%; max-height: 500px; overflow: hidden; background: #f5f5f5; }
+.cn-img { width: 100%; max-height: 500px; object-fit: cover; display: block; }
+.cn-video { width: 100%; max-height: 500px; display: block; background: #000; }
+
+/* ===== Document ===== */
+.cn-doc { padding: 16px 20px; }
+.cn-doc-link {
+  display: inline-flex; align-items: center; gap: 8px;
+  color: #1976d2; font-size: 14px; font-weight: 600;
+  text-decoration: none; padding: 10px 16px;
+  background: #e3f2fd; border-radius: 8px;
+  transition: background 0.2s;
+}
+.cn-doc-link:hover { background: #bbdefb; }
+.cn-doc-link .material-icons { font-size: 20px; }
+
+/* ===== Text ===== */
+.cn-text {
+  padding: 16px 20px 8px;
+  font-size: 14px; line-height: 1.7; color: #333;
+  word-break: break-word;
+}
+:host ::ng-deep .cn-text .cn-link {
+  color: #1976d2; text-decoration: none; font-weight: 500;
+  border-bottom: 1px solid transparent; transition: border-color 0.2s;
+}
+:host ::ng-deep .cn-text .cn-link:hover {
+  border-bottom-color: #1976d2;
+}
+
+/* ===== Date ===== */
+.cn-date {
+  display: flex; align-items: center; gap: 4px;
+  padding: 8px 20px 14px;
+  font-size: 12px; color: #aaa;
+}
+.cn-date .material-icons { font-size: 14px; }
+
+/* ===== Empty State ===== */
+.cn-empty { text-align: center; padding: 60px 20px; }
+.cn-empty .material-icons { font-size: 56px; color: #ddd; }
+.cn-empty p { color: #aaa; margin: 8px 0 16px; font-size: 15px; }
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+  .cn-header { padding: 16px 16px 10px; }
+  .cn-title { font-size: 17px; }
+  .cn-header-icon { font-size: 26px; padding: 6px; border-radius: 8px; }
+  .cn-body { padding: 0 16px 16px; }
+  .cn-text { padding: 12px 16px 6px; font-size: 13px; }
+  .cn-date { padding: 6px 16px 12px; }
+  .cn-media { max-height: 350px; }
+  .cn-img { max-height: 350px; }
+}
+
+@media (max-width: 480px) {
+  .cn-header { padding: 12px 12px 8px; }
+  .cn-body { padding: 0 8px 12px; }
+  .cn-text { padding: 10px 12px 4px; font-size: 13px; }
+  .cn-date { padding: 4px 12px 10px; }
+  .cn-media { max-height: 260px; }
+  .cn-img { max-height: 260px; }
+}

@@ -1,0 +1,88 @@
+<div class="main-content">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card cn-card">
+
+          <!-- Header -->
+          <div class="cn-header">
+            <div class="cn-header-left">
+              <i class="material-icons cn-header-icon">campaign</i>
+              <div>
+                <h4 class="cn-title">Yangiliklar</h4>
+                <span class="cn-subtitle">
+                  Telegram kanal postlari
+                  <span *ngIf="unreadCount > 0" class="cn-unread-badge">{{ unreadCount }} ta yangi</span>
+                </span>
+              </div>
+            </div>
+            <div class="cn-header-actions">
+              <button *ngIf="unreadCount > 0" class="btn btn-sm btn-outline-primary cn-btn-readall" (click)="markAllRead()">
+                <i class="material-icons">done_all</i> Barchasini o'qilgan deb belgilash
+              </button>
+              <button class="btn cn-btn-refresh" (click)="loadPosts()" [disabled]="loading">
+                <i class="material-icons" [class.spin]="loading">refresh</i>
+              </button>
+            </div>
+          </div>
+
+          <div class="card-body cn-body">
+
+            <!-- Loading -->
+            <div *ngIf="loading" class="cn-loading">
+              <div class="spinner-border text-primary" role="status"></div>
+            </div>
+
+            <!-- Posts Feed -->
+            <div *ngIf="!loading && posts.length > 0" class="cn-feed">
+              <div *ngFor="let post of posts" class="cn-post" [class.cn-unread]="!post.is_read"
+                [attr.data-post-id]="post.id">
+
+                <!-- Unread indicator -->
+                <div *ngIf="!post.is_read" class="cn-new-badge">YANGI</div>
+
+                <!-- Media -->
+                <div *ngIf="post.media_type === 'photo'" class="cn-media">
+                  <img [src]="getMediaUrl(post.media_url)" alt="Post image" class="cn-img" loading="lazy">
+                </div>
+
+                <div *ngIf="post.media_type === 'video'" class="cn-media">
+                  <video controls [poster]="post.media_thumb_url ? getMediaUrl(post.media_thumb_url) : ''" class="cn-video" preload="metadata">
+                    <source [src]="getMediaUrl(post.media_url)" type="video/mp4">
+                  </video>
+                </div>
+
+                <div *ngIf="post.media_type === 'document'" class="cn-doc">
+                  <a [href]="getMediaUrl(post.media_url)" target="_blank" class="cn-doc-link">
+                    <i class="material-icons">attach_file</i>
+                    <span>{{ post.file_name || 'Fayl' }}</span>
+                  </a>
+                </div>
+
+                <!-- Text -->
+                <div *ngIf="post.text" class="cn-text" [innerHTML]="linkify(post.text)"></div>
+
+                <!-- Date -->
+                <div class="cn-date">
+                  <i class="material-icons">schedule</i>
+                  {{ formatDate(post.posted_at) }}
+                </div>
+              </div>
+            </div>
+
+            <!-- Pagination -->
+            <app-pagination *ngIf="totalPages > 1" [currentPage]="currentPage" [totalPages]="totalPages"
+              (pageChanged)="onPageChanged($event)"></app-pagination>
+
+            <!-- Empty -->
+            <div *ngIf="!loading && posts.length === 0" class="cn-empty">
+              <i class="material-icons">article</i>
+              <p>Hozircha yangiliklar yo'q</p>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

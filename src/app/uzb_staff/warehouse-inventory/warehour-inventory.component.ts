@@ -292,6 +292,11 @@ export class WarehouseInventoryComponent implements OnInit {
     return this.packagesToTie.filter((pkg) => pkg.selected).length;
   }
 
+  // Check if any packages are ready to tie (have LeftPackage records)
+  getReadyToTieCount(): number {
+    return this.packagesToTie.filter((pkg) => pkg.new_package).length;
+  }
+
   // Tie selected packages
   tieSelectedPackages() {
     const selectedPackages = this.packagesToTie.filter((pkg) => pkg.selected);
