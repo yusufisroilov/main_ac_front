@@ -63,7 +63,7 @@
             [style.color]="item.isHongKong ? '#E67E22' : '#667eea'">
             <i class="material-icons" style="font-size:11px;vertical-align:middle;">{{
               item.isHongKong ? 'local_shipping' : 'flight' }}</i>
-            {{ item.isHongKong ? 'AVTO' : 'AVIA' }}
+            {{ item.isHongKong ? (item.country_id === 2 ? 'AVTO POCHTA' : 'AVTO') : 'AVIA' }}
           </span>
         </div>
 

@@ -14,6 +14,7 @@ interface ConsignmentItem {
   id: number;
   name: string;
   isHongKong: boolean;
+  country_id?: number;
   currentStatus: number;
   currentStatusName: any;
   hasOrders: boolean;

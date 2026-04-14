@@ -195,12 +195,18 @@
                   <tr *ngFor="let row of allDataBoxes; let i = index">
                     <td class="text-center">{{ i + 1 }}</td>
                     <td>{{ row.name }}</td>
-                    <td *ngIf="row.isHongKong == true; else elseBlockAvia"
-                      style="font-weight: bold; color: rgb(33, 6, 186)">
-                      AVTO
+                    <td *ngIf="row.isHongKong && row.country_id === 2; else notAvtoPochta"
+                      style="font-weight: bold; color: rgb(198, 40, 40)">
+                      AVTO POCHTA
                     </td>
-                    <ng-template #elseBlockAvia>
-                      <td style="font-weight: bold; color: rgb(0, 229, 255)">AVIA</td>
+                    <ng-template #notAvtoPochta>
+                      <td *ngIf="row.isHongKong; else elseBlockAvia"
+                        style="font-weight: bold; color: rgb(33, 6, 186)">
+                        AVTO
+                      </td>
+                      <ng-template #elseBlockAvia>
+                        <td style="font-weight: bold; color: rgb(0, 229, 255)">AVIA</td>
+                      </ng-template>
                     </ng-template>
                     <td class="text-center">
                       <ng-container *ngIf="row.delivery; else consignmentStatusV1">

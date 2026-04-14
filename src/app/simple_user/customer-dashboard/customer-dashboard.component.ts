@@ -36,6 +36,7 @@ interface Consignment {
   debt_uzs: number;
   quantity: number;
   isHongKong: boolean;
+  country_id?: number;
   shipping_type: string;
   status: number;
   rate: number;

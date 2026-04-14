@@ -242,12 +242,18 @@
                       <td class="text-center">{{ i + 1 }}</td>
 
                       <td>{{ row.name }}</td>
-                      <td *ngIf="row.isHongKong == true; else elseBlockAvia"
-                        style="font-weight: 600; color: rgb(33, 6, 186)">
-                        Avto 🚚
+                      <td *ngIf="row.isHongKong && row.country_id === 2; else notAvtoPochta"
+                        style="font-weight: 600; color: rgb(198, 40, 40)">
+                        Avto Pochta 📮
                       </td>
-                      <ng-template #elseBlockAvia>
-                        <td style=" font-weight: 600; color: rgb(0, 229, 255)">Avia 🛬</td>
+                      <ng-template #notAvtoPochta>
+                        <td *ngIf="row.isHongKong; else elseBlockAvia"
+                          style="font-weight: 600; color: rgb(33, 6, 186)">
+                          Avto 🚚
+                        </td>
+                        <ng-template #elseBlockAvia>
+                          <td style=" font-weight: 600; color: rgb(0, 229, 255)">Avia 🛬</td>
+                        </ng-template>
                       </ng-template>
                       <td class="text-center">
                         <ng-container *ngIf="row.status === 7 && row.delivery; else normalStatus">

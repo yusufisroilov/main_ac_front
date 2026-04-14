@@ -183,7 +183,7 @@ export class ConsignmentListComponent implements OnInit {
     swal
       .fire({
         title: "Partiyalarni birlashtirish",
-        text: "Partiya nomerlarini kiriting: 'CU101,CU102' kabi. Iltimos extiyot bo'ling!",
+        text: "Partiya nomerlarini kiriting: 'CU540,CU541' yoki 'CN1,CN2' kabi. Iltimos extiyot bo'ling!",
         input: "text",
         confirmButtonText: "Saqlash",
         cancelButtonText: "No",

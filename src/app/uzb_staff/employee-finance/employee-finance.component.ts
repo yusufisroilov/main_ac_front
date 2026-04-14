@@ -259,6 +259,9 @@ export class EmployeeFinanceComponent implements OnInit {
   }
 
   getShippingLabel(row: any): string {
+    if (row.shipping_type === "AVTO POCHTA" || row.country_id === 2) {
+      return "Avto Pochta";
+    }
     return row.shipping_type === "AVTO" || row.isHongKong ? "Avto" : "Avia";
   }
 }

@@ -62,12 +62,18 @@
                         </button>
                       </ng-template>
                     </td>
-                    <td *ngIf="consignment.isHongKong == true; else elseBlockAvia"
-                      style="font-weight: bold; color: rgb(33, 6, 186)">
-                      AVTO 🚚
+                    <td *ngIf="consignment.isHongKong && consignment.country_id === 2; else notAvtoPochta"
+                      style="font-weight: bold; color: rgb(198, 40, 40)">
+                      AVTO POCHTA 📮
                     </td>
-                    <ng-template #elseBlockAvia>
-                      <td style="font-weight: bold; color: rgb(0, 229, 255)">AVIA 🛬</td>
+                    <ng-template #notAvtoPochta>
+                      <td *ngIf="consignment.isHongKong; else elseBlockAvia"
+                        style="font-weight: bold; color: rgb(33, 6, 186)">
+                        AVTO 🚚
+                      </td>
+                      <ng-template #elseBlockAvia>
+                        <td style="font-weight: bold; color: rgb(0, 229, 255)">AVIA 🛬</td>
+                      </ng-template>
                     </ng-template>
                     <td>{{ consignment.airway_bill }}</td>
                     <td>{{ consignment.mass }}</td>

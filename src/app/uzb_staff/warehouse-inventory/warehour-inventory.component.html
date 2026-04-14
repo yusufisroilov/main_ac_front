@@ -159,7 +159,7 @@
                                             Nomi</label>
                                         <input type="text" class="form-control form-control-sm"
                                             [(ngModel)]="newPackage.consignment_name" name="consignmentName"
-                                            placeholder="Masalan: CU109" required
+                                            placeholder="Masalan: CU540 yoki CN1" required
                                             style="font-size: 13px; padding: 8px 12px;">
                                     </div>
                                 </div>
@@ -218,7 +218,7 @@
                             <span style="font-size: 13px; font-weight: 500; color: #555; white-space: nowrap;">Partiya:</span>
                             <input type="text" class="form-control form-control-sm"
                                 [(ngModel)]="selectedConsignment" name="selectedConsignment"
-                                (keyup.enter)="findPackagesToTie()" placeholder="CU109"
+                                (keyup.enter)="findPackagesToTie()" placeholder="CU540"
                                 style="max-width: 180px; font-size: 13px; padding: 6px 10px;">
                             <button class="btn btn-sm btn-info" (click)="findPackagesToTie()"
                                 [disabled]="!selectedConsignment || loadingPackagesToTie"

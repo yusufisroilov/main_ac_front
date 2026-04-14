@@ -104,6 +104,10 @@ export class AddOrdersComponent implements OnInit {
   phone_number: string;
 
   boxMessage;
+
+  // country_id from login: 1 = CU (regular), 2 = CN (AVTO POCHTA)
+  countryId: number = parseInt(localStorage.getItem("country_id") || "1", 10) || 1;
+
   constructor(
     public authService: AuthService,
     private http: Http,
@@ -304,6 +308,52 @@ export class AddOrdersComponent implements OnInit {
   }
 
   openPartyFunc() {
+    const isAvtoPochta = this.countryId === 2;
+
+    // Build the type-selector HTML differently for CN (AVTO POCHTA) vs CU (AVIA/AVTO)
+    const typeSelectorHtml = isAvtoPochta
+      ? `
+          <div style="text-align: left; margin-bottom: 18px;">
+            <label style="font-size: 13px; font-weight: 600; color: #344767; display: block; margin-bottom: 8px;">
+              Consignment Type
+            </label>
+            <div style="padding: 12px; border: 2px solid #667eea; border-radius: 8px; background: #f0f0ff; text-align: center;">
+              <span style="font-size: 20px; vertical-align: middle;">&#128238;</span>
+              <span style="font-weight: 700; font-size: 14px; color: #344767; vertical-align: middle; margin-left: 6px;">AVTO POCHTA</span>
+              <div style="font-size: 11px; color: #6c757d; margin-top: 4px;">Sizning omboringiz uchun bu yagona variant</div>
+            </div>
+            <select id="consignment-type" style="display: none;">
+              <option value="AVTO" selected>AVTO</option>
+            </select>
+          </div>`
+      : `
+          <div style="text-align: left; margin-bottom: 18px;">
+            <label style="font-size: 13px; font-weight: 600; color: #344767; display: block; margin-bottom: 8px;">
+              Consignment Type <span style="color: #e53e3e;">*</span>
+            </label>
+            <div style="display: flex; gap: 8px;" id="type-selector">
+              <div id="btn-avia" onclick="document.getElementById('consignment-type').value='AVIA'; document.getElementById('btn-avia').style.borderColor='#667eea'; document.getElementById('btn-avia').style.background='#f0f0ff'; document.getElementById('btn-avto').style.borderColor='#e2e8f0'; document.getElementById('btn-avto').style.background='#fff'; document.getElementById('consignment-type').dispatchEvent(new Event('change'));"
+                style="flex: 1; padding: 8px 8px; border: 2px solid #e2e8f0; border-radius: 8px; cursor: pointer; text-align: center; transition: all 0.2s; background: #fff;">
+                <span style="font-size: 18px; vertical-align: middle;">&#9992;</span>
+                <span style="font-weight: 600; font-size: 13px; color: #344767; vertical-align: middle; margin-left: 4px;">AVIA</span>
+              </div>
+              <div id="btn-avto" onclick="document.getElementById('consignment-type').value='AVTO'; document.getElementById('btn-avto').style.borderColor='#667eea'; document.getElementById('btn-avto').style.background='#f0f0ff'; document.getElementById('btn-avia').style.borderColor='#e2e8f0'; document.getElementById('btn-avia').style.background='#fff'; document.getElementById('consignment-type').dispatchEvent(new Event('change'));"
+                style="flex: 1; padding: 8px 8px; border: 2px solid #e2e8f0; border-radius: 8px; cursor: pointer; text-align: center; transition: all 0.2s; background: #fff;">
+                <span style="font-size: 18px; vertical-align: middle;">&#128666;</span>
+                <span style="font-weight: 600; font-size: 13px; color: #344767; vertical-align: middle; margin-left: 4px;">AVTO</span>
+              </div>
+            </div>
+            <select id="consignment-type" style="display: none;">
+              <option value="" disabled selected></option>
+              <option value="AVIA">AVIA</option>
+              <option value="AVTO">AVTO</option>
+            </select>
+          </div>`;
+
+    const initialDateHint = isAvtoPochta
+      ? "Date when shipment departs from postal station (~20 days to UZB)"
+      : "Select consignment type first";
+
     swal
       .fire({
         title: "",
@@ -317,40 +367,25 @@ export class AddOrdersComponent implements OnInit {
               </svg>
             </div>
             <h3 style="margin: 0 0 4px 0; font-size: 20px; font-weight: 600; color: #1a1a2e;">New Consignment</h3>
-            <p style="margin: 0; font-size: 13px; color: #6c757d;">Fill in the details below to open a new consignment</p>
+            <p style="margin: 0; font-size: 13px; color: #6c757d;">${
+              isAvtoPochta
+                ? "AVTO POCHTA — yangi partiya yarating"
+                : "Fill in the details below to open a new consignment"
+            }</p>
           </div>
 
-          <div style="text-align: left; margin-bottom: 18px;">
-            <label style="font-size: 13px; font-weight: 600; color: #344767; display: block; margin-bottom: 8px;">
-              Consignment Type <span style="color: #e53e3e;">*</span>
-            </label>
-            <div style="display: flex; gap: 8px;" id="type-selector">
-              <div id="btn-avia" onclick="document.getElementById('consignment-type').value='AVIA'; document.getElementById('btn-avia').style.borderColor='#667eea'; document.getElementById('btn-avia').style.background='#f0f0ff'; document.getElementById('btn-avto').style.borderColor='#e2e8f0'; document.getElementById('btn-avto').style.background='#fff'; document.getElementById('consignment-type').dispatchEvent(new Event('change'));"
-                style="flex: 1; padding: 8px 8px; border: 2px solid #e2e8f0; border-radius: 8px; cursor: pointer; text-align: center; transition: all 0.2s; background: #fff;">
-                <span style="font-size: 18px; vertical-align: middle;">&#9992;</span>
-                <span style="font-weight: 600; font-size: 13px; color: #344767; vertical-align: middle; margin-left: 4px;">AVIA</span>
-             
-              </div>
-              <div id="btn-avto" onclick="document.getElementById('consignment-type').value='AVTO'; document.getElementById('btn-avto').style.borderColor='#667eea'; document.getElementById('btn-avto').style.background='#f0f0ff'; document.getElementById('btn-avia').style.borderColor='#e2e8f0'; document.getElementById('btn-avia').style.background='#fff'; document.getElementById('consignment-type').dispatchEvent(new Event('change'));"
-                style="flex: 1; padding: 8px 8px; border: 2px solid #e2e8f0; border-radius: 8px; cursor: pointer; text-align: center; transition: all 0.2s; background: #fff;">
-                <span style="font-size: 18px; vertical-align: middle;">&#128666;</span>
-                <span style="font-weight: 600; font-size: 13px; color: #344767; vertical-align: middle; margin-left: 4px;">AVTO</span>
-                
-              </div>
-            </div>
-            <select id="consignment-type" style="display: none;">
-              <option value="" disabled selected></option>
-              <option value="AVIA">AVIA</option>
-              <option value="AVTO">AVTO</option>
-            </select>
-          </div>
+          ${typeSelectorHtml}
 
           <div style="text-align: left; margin-bottom: 6px;">
             <label id="date-label" style="font-size: 13px; font-weight: 600; color: #344767; display: block; margin-bottom: 8px;">
-              Departure Date <span style="color: #e53e3e;">*</span>
+              ${
+                isAvtoPochta
+                  ? 'Sent to Postal Station Date <span style="color: #e53e3e;">*</span>'
+                  : 'Departure Date <span style="color: #e53e3e;">*</span>'
+              }
             </label>
             <input type="date" id="flight-date" style="width: 100%; padding: 10px 12px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 14px; color: #344767; outline: none; transition: border-color 0.2s; box-sizing: border-box;" onfocus="this.style.borderColor='#667eea'" onblur="this.style.borderColor='#e2e8f0'" required>
-            <small id="date-hint" style="display: block; margin-top: 6px; font-size: 11px; color: #a0aec0;">Select consignment type first</small>
+            <small id="date-hint" style="display: block; margin-top: 6px; font-size: 11px; color: ${isAvtoPochta ? "#6c757d" : "#a0aec0"};">${initialDateHint}</small>
           </div>
         `,
         showCancelButton: true,
@@ -431,8 +466,11 @@ export class AddOrdersComponent implements OnInit {
                   this.currentWeight = "";
                   this.thingsInBox = null;
                   this.showPartyLink();
-                  const typeLabel =
-                    consignmentType === "AVTO" ? "🚚 AVTO" : "🛬 AVIA";
+                  const typeLabel = isAvtoPochta
+                    ? "📮 AVTO POCHTA"
+                    : consignmentType === "AVTO"
+                      ? "🚚 AVTO"
+                      : "🛬 AVIA";
                   swal.fire({
                     icon: "success",
                     title: "Consignment Created",

@@ -116,7 +116,7 @@
                                     [style.color]="item.isHongKong ? '#E67E22' : '#667eea'">
                                     <i class="material-icons" style="font-size: 11px; vertical-align: middle;">{{
                                         item.isHongKong ? 'local_shipping' : 'flight' }}</i>
-                                    {{ item.isHongKong ? 'AVTO' : 'AVIA' }}
+                                    {{ item.isHongKong ? (item.country_id === 2 ? 'AVTO POCHTA' : 'AVTO') : 'AVIA' }}
                                 </span>
                             </div>
 
@@ -280,7 +280,11 @@
                                         <td class="text-center">{{ i + 1 }}</td>
                                         <td><strong>{{ consignment.name }}</strong></td>
                                         <td class="text-center">
-                                            <span *ngIf="consignment.isHongKong"
+                                            <span *ngIf="consignment.isHongKong && consignment.country_id === 2"
+                                                style="font-weight: 600; color: rgb(198, 40, 40)">
+                                                Avto Pochta
+                                            </span>
+                                            <span *ngIf="consignment.isHongKong && consignment.country_id !== 2"
                                                 style="font-weight: 600; color: rgb(33, 6, 186)">
                                                 Avto
                                             </span>

@@ -99,11 +99,13 @@ export class AllboxesComponent implements OnInit {
   }
 
   goToNextBox() {
-    let numee: string[] = this.currentBox.split("U", 9);
+    // Extract prefix (e.g. "CU", "CN") and number from current box (e.g. "CU5401001")
+    const match = this.currentBox.match(/^([A-Z]+)(\d+)$/);
+    if (!match) return;
+    const prefix = match[1];
+    const myintt = parseInt(match[2], 10) + 1;
+    this.currentBox = prefix + myintt;
     let currentRID: string;
-    let myintt = parseInt(numee[1]);
-    myintt = myintt + 1;
-    this.currentBox = "CU" + myintt;
     this.http
       .get(
         GlobalVars.baseUrl + "/boxes/listForStaff?boxNumber=" + this.currentBox,
@@ -117,11 +119,12 @@ export class AllboxesComponent implements OnInit {
   }
 
   goToNPrevBox() {
-    let numee: string[] = this.currentBox.split("U", 9);
+    const match = this.currentBox.match(/^([A-Z]+)(\d+)$/);
+    if (!match) return;
+    const prefix = match[1];
+    const myintt = parseInt(match[2], 10) - 1;
+    this.currentBox = prefix + myintt;
     let currentRID: string;
-    let myintt = parseInt(numee[1]);
-    myintt = myintt - 1;
-    this.currentBox = "CU" + myintt;
     this.http
       .get(
         GlobalVars.baseUrl + "/boxes/listForStaff?boxNumber=" + this.currentBox,
