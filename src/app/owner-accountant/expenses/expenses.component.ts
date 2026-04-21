@@ -51,11 +51,15 @@ export class OaExpensesComponent implements OnInit {
 
   loadLookups() {
     this.http
-      .get<any>(GlobalVars.baseUrl + "/expense-categories?active=true", { headers: this.getHeaders() })
+      .get<any>(GlobalVars.baseUrl + "/expense-categories?active=true", {
+        headers: this.getHeaders(),
+      })
       .subscribe((data) => (this.categories = data.categories || []));
 
     this.http
-      .get<any>(GlobalVars.baseUrl + "/cash-accounts?active=true", { headers: this.getHeaders() })
+      .get<any>(GlobalVars.baseUrl + "/cash-accounts?active=true", {
+        headers: this.getHeaders(),
+      })
       .subscribe((data) => (this.cashAccounts = data.accounts || []));
   }
 
@@ -64,9 +68,11 @@ export class OaExpensesComponent implements OnInit {
     let url = `${GlobalVars.baseUrl}/expenses?page=${this.currentPage}&size=${this.pageSize}`;
     if (this.filterScopeType) url += `&scope_type=${this.filterScopeType}`;
     if (this.filterCategoryId) url += `&category_id=${this.filterCategoryId}`;
-    if (this.filterCashAccountId) url += `&cash_account_id=${this.filterCashAccountId}`;
+    if (this.filterCashAccountId)
+      url += `&cash_account_id=${this.filterCashAccountId}`;
     if (this.filterConsignment) url += `&consignment=${this.filterConsignment}`;
-    if (this.filterComment) url += `&comment=${encodeURIComponent(this.filterComment)}`;
+    if (this.filterComment)
+      url += `&comment=${encodeURIComponent(this.filterComment)}`;
     if (this.filterStartDate) url += `&start_date=${this.filterStartDate}`;
     if (this.filterEndDate) url += `&end_date=${this.filterEndDate}`;
 
@@ -118,8 +124,14 @@ export class OaExpensesComponent implements OnInit {
       if (bIdx !== -1) return 1;
       return 0;
     });
-    const categoryOpts = sortedCategories.map((c) => `<option value="${c.id}">${c.name}</option>`).join("");
-    const accountOpts = this.cashAccounts.map((a) => `<option value="${a.id}">${a.name} (${a.currency})</option>`).join("");
+    const categoryOpts =
+      `<option value="" disabled selected>-- Tanlang --</option>` +
+      sortedCategories
+        .map((c) => `<option value="${c.id}">${c.name}</option>`)
+        .join("");
+    const accountOpts = this.cashAccounts
+      .map((a) => `<option value="${a.id}">${a.name} (${a.currency})</option>`)
+      .join("");
 
     const html = `
       <style>
@@ -174,86 +186,137 @@ export class OaExpensesComponent implements OnInit {
         </div>
       </div>`;
 
-    swal.fire({
-      title: "Yangi Xarajat",
-      html,
-      width: "min(560px, 95vw)",
-      showCancelButton: true,
-      confirmButtonText: "Qo'shish",
-      cancelButtonText: "Bekor",
-      customClass: { confirmButton: "btn btn-success", cancelButton: "btn btn-secondary" },
-      buttonsStyling: false,
-      didOpen: () => {
-        // Auto-fill fx rate
-        this.http.get<any>(GlobalVars.baseUrl + "/fx-rate").subscribe((data) => {
-          if (data.rate) {
-            const fxInput = document.getElementById("exp-fx") as HTMLInputElement;
-            if (fxInput && !fxInput.value) fxInput.value = String(data.rate);
+    swal
+      .fire({
+        title: "Yangi Xarajat",
+        html,
+        width: "min(560px, 95vw)",
+        showCancelButton: true,
+        confirmButtonText: "Qo'shish",
+        cancelButtonText: "Bekor",
+        customClass: {
+          confirmButton: "btn btn-success",
+          cancelButton: "btn btn-secondary",
+        },
+        buttonsStyling: false,
+        didOpen: () => {
+          // Auto-fill fx rate
+          this.http
+            .get<any>(GlobalVars.baseUrl + "/fx-rate")
+            .subscribe((data) => {
+              if (data.rate) {
+                const fxInput = document.getElementById(
+                  "exp-fx",
+                ) as HTMLInputElement;
+                if (fxInput && !fxInput.value)
+                  fxInput.value = String(data.rate);
+              }
+            });
+          // Toggle consignment field visibility based on scope type
+          const scopeEl = document.getElementById(
+            "exp-scope",
+          ) as HTMLSelectElement;
+          const consWrap = document.getElementById(
+            "exp-consignment-wrap",
+          ) as HTMLElement;
+          const toggleConsignment = () => {
+            consWrap.style.display =
+              scopeEl.value === "CONSIGNMENT" ? "" : "none";
+          };
+          scopeEl.addEventListener("change", toggleConsignment);
+          toggleConsignment();
+          // Live amount formatter
+          const amtEl = document.getElementById(
+            "exp-amount",
+          ) as HTMLInputElement;
+          amtEl.addEventListener("input", () => {
+            const raw = amtEl.value.replace(/[^\d.]/g, "");
+            const parts = raw.split(".");
+            parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+            if (parts.length > 2) parts.length = 2;
+            amtEl.value = parts.join(".");
+          });
+        },
+        preConfirm: () => {
+          const scopeType = (
+            document.getElementById("exp-scope") as HTMLSelectElement
+          ).value;
+          const consignment = (
+            document.getElementById("exp-consignment") as HTMLInputElement
+          ).value.trim();
+          const amountRaw = (
+            document.getElementById("exp-amount") as HTMLInputElement
+          ).value.replace(/\s/g, "");
+          const date = (document.getElementById("exp-date") as HTMLInputElement)
+            .value;
+          const categoryId = (
+            document.getElementById("exp-category") as HTMLSelectElement
+          ).value;
+          const accountId = (
+            document.getElementById("exp-account") as HTMLSelectElement
+          ).value;
+          if (!amountRaw || !date || !categoryId || !accountId) {
+            swal.showValidationMessage(
+              "Barcha majburiy maydonlarni to'ldiring",
+            );
+            return false;
           }
-        });
-        // Toggle consignment field visibility based on scope type
-        const scopeEl = document.getElementById("exp-scope") as HTMLSelectElement;
-        const consWrap = document.getElementById("exp-consignment-wrap") as HTMLElement;
-        const toggleConsignment = () => {
-          consWrap.style.display = scopeEl.value === "CONSIGNMENT" ? "" : "none";
-        };
-        scopeEl.addEventListener("change", toggleConsignment);
-        toggleConsignment();
-        // Live amount formatter
-        const amtEl = document.getElementById("exp-amount") as HTMLInputElement;
-        amtEl.addEventListener("input", () => {
-          const raw = amtEl.value.replace(/[^\d.]/g, "");
-          const parts = raw.split(".");
-          parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, " ");
-          if (parts.length > 2) parts.length = 2;
-          amtEl.value = parts.join(".");
-        });
-      },
-      preConfirm: () => {
-        const scopeType = (document.getElementById("exp-scope") as HTMLSelectElement).value;
-        const consignment = (document.getElementById("exp-consignment") as HTMLInputElement).value.trim();
-        const amountRaw = (document.getElementById("exp-amount") as HTMLInputElement).value.replace(/\s/g, "");
-        const date = (document.getElementById("exp-date") as HTMLInputElement).value;
-        const categoryId = (document.getElementById("exp-category") as HTMLSelectElement).value;
-        const accountId = (document.getElementById("exp-account") as HTMLSelectElement).value;
-        if (!amountRaw || !date || !categoryId || !accountId) {
-          swal.showValidationMessage("Barcha majburiy maydonlarni to'ldiring");
-          return false;
+          if (scopeType === "CONSIGNMENT" && !consignment) {
+            swal.showValidationMessage(
+              "Partiya turi tanlanganda partiya nomi majburiy",
+            );
+            return false;
+          }
+          if (parseFloat(amountRaw) <= 0) {
+            swal.showValidationMessage("Summa musbat bo'lishi kerak");
+            return false;
+          }
+          return {
+            scope_type: scopeType,
+            consignment: consignment || null,
+            category_id: parseInt(categoryId),
+            cash_account_id: parseInt(accountId),
+            amount_original: parseFloat(amountRaw),
+            fx_rate_used:
+              parseFloat(
+                (document.getElementById("exp-fx") as HTMLInputElement).value,
+              ) || null,
+            expense_at: date,
+            comment:
+              (document.getElementById("exp-comment") as HTMLInputElement)
+                .value || null,
+          };
+        },
+      })
+      .then((result) => {
+        if (result.isConfirmed && result.value) {
+          this.http
+            .post<any>(GlobalVars.baseUrl + "/expenses", result.value, {
+              headers: this.getHeaders(),
+            })
+            .subscribe(
+              (data) => {
+                if (data.status === "ok") {
+                  this.loadExpenses();
+                  swal.fire({
+                    icon: "success",
+                    title: "Qo'shildi!",
+                    timer: 1500,
+                    showConfirmButton: false,
+                  });
+                } else {
+                  swal.fire("Xatolik", data.error, "error");
+                }
+              },
+              (error) =>
+                swal.fire(
+                  "Xatolik",
+                  error.error?.error || "Xatolik yuz berdi",
+                  "error",
+                ),
+            );
         }
-        if (scopeType === "CONSIGNMENT" && !consignment) {
-          swal.showValidationMessage("Partiya turi tanlanganda partiya nomi majburiy");
-          return false;
-        }
-        if (parseFloat(amountRaw) <= 0) {
-          swal.showValidationMessage("Summa musbat bo'lishi kerak");
-          return false;
-        }
-        return {
-          scope_type: scopeType,
-          consignment: consignment || null,
-          category_id: parseInt(categoryId),
-          cash_account_id: parseInt(accountId),
-          amount_original: parseFloat(amountRaw),
-          fx_rate_used: parseFloat((document.getElementById("exp-fx") as HTMLInputElement).value) || null,
-          expense_at: date,
-          comment: (document.getElementById("exp-comment") as HTMLInputElement).value || null,
-        };
-      },
-    }).then((result) => {
-      if (result.isConfirmed && result.value) {
-        this.http.post<any>(GlobalVars.baseUrl + "/expenses", result.value, { headers: this.getHeaders() }).subscribe(
-          (data) => {
-            if (data.status === "ok") {
-              this.loadExpenses();
-              swal.fire({ icon: "success", title: "Qo'shildi!", timer: 1500, showConfirmButton: false });
-            } else {
-              swal.fire("Xatolik", data.error, "error");
-            }
-          },
-          (error) => swal.fire("Xatolik", error.error?.error || "Xatolik yuz berdi", "error"),
-        );
-      }
-    });
+      });
   }
 
   deleteExpense(id: number) {
@@ -264,16 +327,26 @@ export class OaExpensesComponent implements OnInit {
         showCancelButton: true,
         confirmButtonText: "O'chirish",
         cancelButtonText: "Bekor",
-        customClass: { confirmButton: "btn btn-danger", cancelButton: "btn btn-secondary" },
+        customClass: {
+          confirmButton: "btn btn-danger",
+          cancelButton: "btn btn-secondary",
+        },
         buttonsStyling: false,
       })
       .then((result) => {
         if (result.isConfirmed) {
           this.http
-            .delete<any>(GlobalVars.baseUrl + "/expenses/" + id, { headers: this.getHeaders() })
+            .delete<any>(GlobalVars.baseUrl + "/expenses/" + id, {
+              headers: this.getHeaders(),
+            })
             .subscribe(
               () => this.loadExpenses(),
-              (error) => swal.fire("Xatolik", error.error?.error || "Xatolik yuz berdi", "error"),
+              (error) =>
+                swal.fire(
+                  "Xatolik",
+                  error.error?.error || "Xatolik yuz berdi",
+                  "error",
+                ),
             );
         }
       });
@@ -287,7 +360,11 @@ export class OaExpensesComponent implements OnInit {
   }
 
   getScopeLabel(scope: string): string {
-    const labels = { CONSIGNMENT: "Partiya", OFFICE: "Ofis", PROJECT: "Loyiha" };
+    const labels = {
+      CONSIGNMENT: "Partiya",
+      OFFICE: "Ofis",
+      PROJECT: "Loyiha",
+    };
     return labels[scope] || scope;
   }
 
@@ -296,25 +373,33 @@ export class OaExpensesComponent implements OnInit {
     let url = `${GlobalVars.baseUrl}/expenses/export-excel?`;
     if (this.filterScopeType) url += `&scope_type=${this.filterScopeType}`;
     if (this.filterCategoryId) url += `&category_id=${this.filterCategoryId}`;
-    if (this.filterCashAccountId) url += `&cash_account_id=${this.filterCashAccountId}`;
+    if (this.filterCashAccountId)
+      url += `&cash_account_id=${this.filterCashAccountId}`;
     if (this.filterConsignment) url += `&consignment=${this.filterConsignment}`;
-    if (this.filterComment) url += `&comment=${encodeURIComponent(this.filterComment)}`;
+    if (this.filterComment)
+      url += `&comment=${encodeURIComponent(this.filterComment)}`;
     if (this.filterStartDate) url += `&start_date=${this.filterStartDate}`;
     if (this.filterEndDate) url += `&end_date=${this.filterEndDate}`;
 
-    this.http.get(url, { headers: this.getHeaders(), responseType: "blob" }).subscribe(
-      (blob) => {
-        const a = document.createElement("a");
-        a.href = URL.createObjectURL(blob);
-        a.download = `Xarajatlar_${new Date().toISOString().slice(0, 10)}.xlsx`;
-        a.click();
-        URL.revokeObjectURL(a.href);
-        this.excelLoading = false;
-      },
-      (error) => {
-        this.excelLoading = false;
-        swal.fire("Xatolik", "Excel yuklab olishda xatolik yuz berdi", "error");
-      },
-    );
+    this.http
+      .get(url, { headers: this.getHeaders(), responseType: "blob" })
+      .subscribe(
+        (blob) => {
+          const a = document.createElement("a");
+          a.href = URL.createObjectURL(blob);
+          a.download = `Xarajatlar_${new Date().toISOString().slice(0, 10)}.xlsx`;
+          a.click();
+          URL.revokeObjectURL(a.href);
+          this.excelLoading = false;
+        },
+        (error) => {
+          this.excelLoading = false;
+          swal.fire(
+            "Xatolik",
+            "Excel yuklab olishda xatolik yuz berdi",
+            "error",
+          );
+        },
+      );
   }
 }
