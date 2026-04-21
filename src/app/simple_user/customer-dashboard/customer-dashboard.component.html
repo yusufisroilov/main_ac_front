@@ -408,18 +408,22 @@
                         <h4 class="card-title">Xitoy Manzilim</h4>
                     </div>
                     <div class="card-body">
-                        <!-- Avia / Avto Toggle -->
-                        <div class="btn-group mb-3" style="width:100%;max-width:300px;">
-                            <button class="btn" [class.btn-info]="addressMode==='avia'"
-                                [class.btn-outline-info]="addressMode!=='avia'" (click)="addressMode='avia'"
-                                style="flex:1;">
-                                <i class="material-icons" style="font-size:16px;vertical-align:middle;">flight</i> Avia
+                        <!-- Avia / Avto / Avto Pochta Toggle -->
+                        <div class="address-mode-toggle mb-3">
+                            <button class="amt-btn amt-avia" [class.active]="addressMode==='avia'"
+                                (click)="addressMode='avia'">
+                                <i class="material-icons">flight</i>
+                                <span>Avia</span>
                             </button>
-                            <button class="btn" [class.btn-warning]="addressMode==='avto'"
-                                [class.btn-outline-warning]="addressMode!=='avto'" (click)="addressMode='avto'"
-                                style="flex:1;">
-                                <i class="material-icons"
-                                    style="font-size:16px;vertical-align:middle;">local_shipping</i> Avto
+                            <button class="amt-btn amt-avto" [class.active]="addressMode==='avto'"
+                                (click)="addressMode='avto'">
+                                <i class="material-icons">local_shipping</i>
+                                <span>Avto</span>
+                            </button>
+                            <button class="amt-btn amt-pochta" [class.active]="addressMode==='avto_pochta'"
+                                (click)="addressMode='avto_pochta'">
+                                <i class="material-icons">mark_email_read</i>
+                                <span>Avto Pochta</span>
                             </button>
                         </div>
 
@@ -433,6 +437,10 @@
                                 style="font-size: 14px; font-weight: 500;" *ngIf="addressMode==='avto'">陆运W{{ customerId }}
 18028594657
 广东省广州市白云区龙归街道南村三姓南街43号1楼原好客源超市 陆运W{{ customerId }}</textarea>
+                            <textarea #txtConfigFileAvtoPochta class="form-control" rows="4" readonly
+                                style="font-size: 14px; font-weight: 500;" *ngIf="addressMode==='avto_pochta'">小陆AP{{ customerId }}
+18529547697
+广东省深圳市宝安区福永街道怀德南路199号锦城大厦5008 AP{{ customerId }}</textarea>
                         </div>
                         <button mat-raised-button class="btn btn-success" (click)="copyToCB()">
                             <i class="material-icons">content_copy</i>

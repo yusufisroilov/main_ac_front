@@ -84,6 +84,24 @@
         </div>
       </div>
 
+      <!-- AVTO POCHTA -->
+      <div class="ip-tariff-card purple">
+        <div class="ip-tariff-header">
+          <i class="material-icons">mark_email_read</i>
+          <div>
+            <strong>AVTO POCHTA</strong>
+            <small>Pochta orqali avto jo'natmalar</small>
+          </div>
+        </div>
+        <div class="ip-tariff-rates">
+          <div class="ip-rate"><span class="ip-medal">🥇</span> 0 — 4kg: har kilosi <strong>6$</strong> dan</div>
+          <div class="ip-rate"><span class="ip-medal">🥈</span> 4kg dan ko'proq: har kilosi <strong>5.5$</strong> dan</div>
+        </div>
+        <div class="ip-tariff-delivery">
+          <i class="material-icons">schedule</i> Kelish muddati: 14-19 Kun
+        </div>
+      </div>
+
       <!-- Free delivery note -->
       <div class="ip-info-box green">
         <i class="material-icons">check_circle</i>
@@ -103,13 +121,16 @@
         </div>
       </div>
 
-      <!-- Avia / Avto Toggle -->
+      <!-- Avia / Avto / Avto Pochta Toggle -->
       <div class="ip-address-toggle">
         <button [class.active]="addressMode === 'avia'" (click)="addressMode = 'avia'">
           <i class="material-icons">flight</i> AVIA
         </button>
         <button [class.active]="addressMode === 'avto'" (click)="addressMode = 'avto'">
           <i class="material-icons">local_shipping</i> AVTO
+        </button>
+        <button [class.active]="addressMode === 'avto_pochta'" (click)="addressMode = 'avto_pochta'">
+          <i class="material-icons">mark_email_read</i> AVTO POCHTA
         </button>
       </div>
 
@@ -124,6 +145,11 @@
           <div class="ip-address-line"><strong>陆运W{{ customerId }}</strong></div>
           <div class="ip-address-line">18028594657</div>
           <div class="ip-address-line">广东省广州市白云区龙归街道南村三姓南街43号1楼原好客源超市 陆运W{{ customerId }}</div>
+        </div>
+        <div class="ip-address-text" *ngIf="addressMode === 'avto_pochta'">
+          <div class="ip-address-line"><strong>小陆AP{{ customerId }}</strong></div>
+          <div class="ip-address-line">18529547697</div>
+          <div class="ip-address-line">广东省深圳市宝安区福永街道怀德南路199号锦城大厦5008 AP{{ customerId }}</div>
         </div>
         <button class="ip-copy-btn" (click)="copyAddress()" [class.copied]="copiedAddress">
           <i class="material-icons">{{ copiedAddress ? 'check' : 'content_copy' }}</i>

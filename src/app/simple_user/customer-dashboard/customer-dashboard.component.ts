@@ -65,7 +65,8 @@ interface Order {
 export class CustomerDashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild("txtConfigFile") txtConfigFile: ElementRef;
   @ViewChild("txtConfigFileAvto") txtConfigFileAvto: ElementRef;
-  addressMode: 'avia' | 'avto' = 'avia';
+  @ViewChild("txtConfigFileAvtoPochta") txtConfigFileAvtoPochta: ElementRef;
+  addressMode: 'avia' | 'avto' | 'avto_pochta' = 'avia';
 
   headers12: any;
   options: any;
@@ -429,7 +430,18 @@ export class CustomerDashboardComponent implements OnInit, AfterViewInit, OnDest
 
   // Copy Chinese address to clipboard
   copyToCB() {
-    const el = this.addressMode === 'avto' ? this.txtConfigFileAvto : this.txtConfigFile;
+    let el: ElementRef;
+    let label: string;
+    if (this.addressMode === 'avia') {
+      el = this.txtConfigFile;
+      label = 'Avia';
+    } else if (this.addressMode === 'avto') {
+      el = this.txtConfigFileAvto;
+      label = 'Avto';
+    } else {
+      el = this.txtConfigFileAvtoPochta;
+      label = 'Avto Pochta';
+    }
     if (el) {
       el.nativeElement.select();
       document.execCommand("copy");
@@ -438,7 +450,7 @@ export class CustomerDashboardComponent implements OnInit, AfterViewInit, OnDest
       swal.fire({
         icon: "success",
         title: "Nusxa olindi!",
-        text: `${this.addressMode === 'avia' ? 'Avia' : 'Avto'} manzil nusxalandi`,
+        text: `${label} manzil nusxalandi`,
         timer: 1500,
         showConfirmButton: false,
       });

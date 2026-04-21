@@ -1126,3 +1126,74 @@ td small.text-muted {
     font-size: 16px;
   }
 }
+
+/* ============================================
+   CHINA ADDRESS MODE TOGGLE
+   ============================================ */
+.address-mode-toggle {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+  max-width: 520px;
+  flex-wrap: wrap;
+}
+
+.address-mode-toggle .amt-btn {
+  flex: 1;
+  min-width: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 11px 14px;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 10px;
+  background: #fff;
+  color: #666;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+  line-height: 1.2;
+}
+
+.address-mode-toggle .amt-btn i {
+  font-size: 18px;
+}
+
+.address-mode-toggle .amt-btn:hover {
+  background: #f5f5f5;
+}
+
+.address-mode-toggle .amt-avia.active {
+  background: #00acc1;
+  border-color: #00acc1;
+  color: #fff;
+}
+
+.address-mode-toggle .amt-avto.active {
+  background: #ff9800;
+  border-color: #ff9800;
+  color: #fff;
+}
+
+.address-mode-toggle .amt-pochta.active {
+  background: #7b1fa2;
+  border-color: #7b1fa2;
+  color: #fff;
+}
+
+@media (max-width: 480px) {
+  .address-mode-toggle {
+    gap: 6px;
+  }
+  .address-mode-toggle .amt-btn {
+    padding: 9px 8px;
+    font-size: 12px;
+    gap: 4px;
+  }
+  .address-mode-toggle .amt-btn i {
+    font-size: 15px;
+  }
+}

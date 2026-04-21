@@ -115,6 +115,7 @@
 .ip-tariff-card.blue { background: #e3f2fd; border-color: #bbdefb; }
 .ip-tariff-card.orange { background: #fff3e0; border-color: #ffe0b2; }
 .ip-tariff-card.green { background: #e8f5e9; border-color: #c8e6c9; }
+.ip-tariff-card.purple { background: #f3e5f5; border-color: #e1bee7; }
 
 .ip-tariff-header {
   display: flex;
@@ -305,34 +306,42 @@
   border-radius: 10px;
   overflow: hidden;
   border: 1.5px solid #e0e0e0;
-  max-width: 280px;
+  max-width: 420px;
+  flex-wrap: wrap;
 }
 
 .ip-address-toggle button {
   flex: 1;
+  min-width: 0;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
-  padding: 10px 16px;
+  padding: 10px 12px;
   border: none;
   background: #fff;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
   color: #888;
   cursor: pointer;
   transition: all 0.15s;
+  white-space: nowrap;
 }
 
-.ip-address-toggle button i { font-size: 18px; }
+.ip-address-toggle button i { font-size: 16px; }
 
 .ip-address-toggle button.active {
   background: #1976d2;
   color: #fff;
 }
 
-.ip-address-toggle button:last-child.active {
+.ip-address-toggle button:nth-child(2).active {
   background: #ef6c00;
+  color: #fff;
+}
+
+.ip-address-toggle button:nth-child(3).active {
+  background: #7b1fa2;
   color: #fff;
 }
 
@@ -467,4 +476,11 @@
   .ip-note-card { padding: 12px; gap: 10px; }
   .ip-step-card { padding: 12px; gap: 10px; }
   .ip-contact-row { padding: 8px 10px; }
+
+  .ip-address-toggle button {
+    padding: 7px 6px;
+    font-size: 10.5px;
+    gap: 3px;
+  }
+  .ip-address-toggle button i { font-size: 13px; }
 }

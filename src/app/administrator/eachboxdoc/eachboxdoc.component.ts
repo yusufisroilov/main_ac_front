@@ -80,7 +80,7 @@ export class EachboxdocComponent implements OnInit {
   takeBoxData(searchkey) {
     this.http
       .get(
-        GlobalVars.baseUrl + "/orders/cn23ForAdmin?box_number=CU" + searchkey,
+        GlobalVars.baseUrl + "/orders/cn23ForAdmin?box_number=" + searchkey,
         this.options
       )
       .subscribe(
@@ -113,7 +113,7 @@ export class EachboxdocComponent implements OnInit {
   takeBoxData2(searchkey) {
     this.http
       .get(
-        GlobalVars.baseUrl + "/orders/cn23ForAdmin?box_number=CU" + searchkey,
+        GlobalVars.baseUrl + "/orders/cn23ForAdmin?box_number=" + searchkey,
         this.options
       )
       .subscribe(
