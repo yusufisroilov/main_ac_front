@@ -238,7 +238,7 @@
                 </thead>
                 <tbody>
                   <ng-container *ngFor="let row of allDataBoxes; let i = index">
-                    <tr *ngIf="row.quantity !== 0">
+                    <tr *ngIf="row.quantity > 0 || row.weight > 0 || (row.debt && (row.debt > 0.01 || row.debt < -0.01))">
                       <td class="text-center">{{ i + 1 }}</td>
 
                       <td>{{ row.name }}</td>
