@@ -208,7 +208,7 @@ export class Infoeachclientv2Component implements OnInit {
       .subscribe(
         (data) => {
           this.allDataBoxes = (data.consignments || []).filter(
-            (r) => r.quantity !== 0,
+            (r) => r.quantity > 0 || r.weight > 0 || Math.abs(r.debt || 0) > 0.01,
           );
           this.umQarzUSZ = data.debt_uzs_total;
           this.umQarzUSD = data.debt_usd_total;
@@ -566,16 +566,16 @@ export class Infoeachclientv2Component implements OnInit {
 
     swal.fire({
       title: "Ortiqcha To\'lov",
-      icon: "warning",
+      icon: "info",
       html: `
-        <p style="margin-bottom:16px">
-          Mijoz <b>${overpaidUsd.toFixed(2)}$</b> ortiqcha to\'ladi.
+        <p style="margin-bottom:8px">
+          Mijozda <b>${overpaidUsd.toFixed(2)}$</b> ortiqcha to\'lov bor — kredit sifatida avtomatik saqlandi.
         </p>
-        <p style="margin-bottom:8px">Qanday amalga oshirilsin?</p>
+        <p style="margin-bottom:8px;color:#555">Naqd qaytarmoqchi bo\'lsangiz, davom eting.</p>
       `,
       showDenyButton: true,
       showCancelButton: false,
-      confirmButtonText: "✅ Kredit sifatida saqlash",
+      confirmButtonText: "✅ Kredit qoldirish",
       denyButtonText: "💵 Naqd qaytarish",
       customClass: { confirmButton: "btn btn-success", denyButton: "btn btn-warning" },
       buttonsStyling: false,
@@ -583,23 +583,22 @@ export class Infoeachclientv2Component implements OnInit {
       allowEscapeKey: false,
     }).then((result) => {
       if (result.isConfirmed) {
-        // Button A: keep as unallocated BONUS credit
-        this.httpClient
-          .post<any>(
-            GlobalVars.baseUrl + "/finance-v2/keep-credit",
-            { customer_id: this.currentID, amount_usd: overpaidUsd, finance_id: financeId, comment: "Ortiqcha to\'lov krediti" },
-            { headers: this.getHeaders() },
-          )
-          .subscribe(
-            () => swal.fire({ icon: "success", title: `${overpaidUsd.toFixed(2)}$ kredit sifatida saqlandi`, timer: 2000, showConfirmButton: false }),
-            (err) => swal.fire("Xatolik", err.error?.message || "Kredit saqlashda xatolik", "error"),
-          );
+        // Button A: keep credit — BONUS already created upstream by addPaymentV2/addBulkPaymentV2
+        swal.fire({
+          icon: "success",
+          title: `${overpaidUsd.toFixed(2)}$ kredit sifatida saqlandi`,
+          timer: 2000,
+          showConfirmButton: false,
+        });
       } else if (result.isDenied) {
-        // Button B: return cash — pick which account + fx_rate if UZS
+        // Button B: return cash — pick amount + which account + fx_rate if UZS
         swal.fire({
           title: "Qaytariladigan Hisob",
           html: `
-            <p style="margin-bottom:12px">Qaysi hisobdan <b>${overpaidUsd.toFixed(2)}$</b> qaytarilsin?</p>
+            <p style="margin-bottom:8px">Mijoz ortiqcha to'lovi: <b>${overpaidUsd.toFixed(2)}$</b></p>
+            <label style="font-size:12px;font-weight:700;color:#888;display:block;text-align:left">QAYTARILADIGAN SUMMA (USD)</label>
+            <input id="op-amount" type="number" class="form-control" style="margin-bottom:8px" value="${overpaidUsd.toFixed(2)}" min="0.01" max="${overpaidUsd.toFixed(2)}" step="0.01">
+            <p style="font-size:11px;color:#888;margin-bottom:12px;text-align:left">Qolgan summa mijozning kredit balansida saqlanadi.</p>
             <select id="op-account" class="form-control" style="margin-bottom:12px">
               <option value="">— Hisob tanlang —</option>
               ${accountOptions}
@@ -623,6 +622,9 @@ export class Infoeachclientv2Component implements OnInit {
             });
           },
           preConfirm: () => {
+            const amountVal = parseFloat((document.getElementById("op-amount") as HTMLInputElement).value);
+            if (!amountVal || amountVal <= 0) { swal.showValidationMessage("Summa kiritilmagan"); return false; }
+            if (amountVal > overpaidUsd + 0.001) { swal.showValidationMessage(`Summa ${overpaidUsd.toFixed(2)}$ dan oshmasligi kerak`); return false; }
             const sel = document.getElementById("op-account") as HTMLSelectElement;
             if (!sel.value) { swal.showValidationMessage("Hisob tanlang"); return false; }
             const opt = sel.options[sel.selectedIndex];
@@ -633,19 +635,26 @@ export class Infoeachclientv2Component implements OnInit {
               if (!rateVal || rateVal <= 0) { swal.showValidationMessage("Kurs kiritilmagan"); return false; }
               fxRate = rateVal;
             }
-            return { from_account_id: parseInt(sel.value), currency, fxRate };
+            return { amountUsd: amountVal, from_account_id: parseInt(sel.value), currency, fxRate };
           },
         }).then((r2) => {
           if (!r2.isConfirmed || !r2.value) return;
-          const { from_account_id, fxRate } = r2.value;
+          const { amountUsd, from_account_id, fxRate } = r2.value;
           this.httpClient
             .post<any>(
               GlobalVars.baseUrl + "/finance-v2/return-cash",
-              { customer_id: this.currentID, amount_usd: overpaidUsd, from_account_id, fx_rate: fxRate, finance_id: financeId },
+              { customer_id: this.currentID, amount_usd: amountUsd, from_account_id, fx_rate: fxRate, finance_id: financeId },
               { headers: this.getHeaders() },
             )
             .subscribe(
-              (res) => swal.fire({ icon: "success", title: res.message || "Qaytarildi", timer: 2000, showConfirmButton: false }),
+              (res) => {
+                const remaining = overpaidUsd - amountUsd;
+                const msg = remaining > 0.001
+                  ? `${res.message || "Qaytarildi"}. Qolgan ${remaining.toFixed(2)}$ kredit sifatida saqlandi.`
+                  : res.message || "Qaytarildi";
+                swal.fire({ icon: "success", title: msg, timer: 2500, showConfirmButton: false });
+                this.getListOfPartyBoxes(this.currentID);
+              },
               (err) => swal.fire("Xatolik", err.error?.message || "Qaytarishda xatolik", "error"),
             );
         });

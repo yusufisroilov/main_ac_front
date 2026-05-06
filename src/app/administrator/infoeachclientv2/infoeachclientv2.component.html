@@ -249,6 +249,10 @@
                         <span style="font-size: 13px; font-weight: 600;" [style.color]="row.delivery.delivery_type === 'EMU' ? '#7b1fa2' : row.delivery.delivery_type === 'Yandex' ? '#f44336' : row.delivery.delivery_type === 'Own-Courier' ? '#1976d2' : '#43a047'">{{ getDeliveryTypeLabel(row.delivery.delivery_type) }}</span>
                         <br>
                         <small style="font-size: 12px; font-weight: 600;" [style.color]="row.delivery.status === 'delivered' ? '#4caf50' : row.delivery.status === 'sent' ? '#1976d2' : '#ff9800'">{{ getDeliveryStatusLabel(row.delivery.status) }}</small>
+                        <small *ngIf="row.delivery.created_at" style="display: block; font-size: 11px; color: #9e9e9e; margin-top: 2px;">
+                          <i class="material-icons" style="font-size: 11px; vertical-align: middle;">event</i>
+                          {{ row.delivery.created_at | tzDate }}
+                        </small>
                       </ng-container>
                       <ng-template #normalStatusV2>
                         <span class="badge" [ngClass]="getConsignmentStatusClass(row.status)">
@@ -277,7 +281,10 @@
                         <span *ngIf="row.debt > 0.01" class="text-danger font-weight-bold">
                           {{ row.debt | number:'1.2-2' }}$
                         </span>
-                        <span *ngIf="!row.debt || row.debt <= 0.01" class="text-success">0.00$</span>
+                        <span *ngIf="row.debt < -0.01" class="text-info font-weight-bold" title="Mijoz krediti (ortiqcha to'lov)">
+                          +{{ -row.debt | number:'1.2-2' }}$
+                        </span>
+                        <span *ngIf="!row.debt || (row.debt >= -0.01 && row.debt <= 0.01)" class="text-success">0.00$</span>
                       </ng-container>
                       <span *ngIf="!row.weight" class="text-muted">- -</span>
                     </td>
@@ -286,7 +293,10 @@
                         <span *ngIf="row.debt_uzs > 100" class="text-danger font-weight-bold">
                           {{ row.debt_uzs | currency : " " : "symbol" : "1.0-0" }} Sum
                         </span>
-                        <span *ngIf="!row.debt_uzs || row.debt_uzs <= 100" class="text-success">0 Sum</span>
+                        <span *ngIf="row.debt_uzs < -100" class="text-info font-weight-bold" title="Mijoz krediti (ortiqcha to'lov)">
+                          +{{ -row.debt_uzs | currency : " " : "symbol" : "1.0-0" }} Sum
+                        </span>
+                        <span *ngIf="!row.debt_uzs || (row.debt_uzs >= -100 && row.debt_uzs <= 100)" class="text-success">0 Sum</span>
                       </ng-container>
                       <span *ngIf="!row.weight" class="text-muted">- -</span>
                       <div *ngIf="row.for_debt" style="margin-top: 4px;">
