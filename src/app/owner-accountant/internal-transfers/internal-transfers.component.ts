@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { GlobalVars } from "src/app/global-vars";
 import { AuthService } from "src/app/pages/login/auth.service";
 import swal from "sweetalert2";
+import flatpickr from "flatpickr";
 
 @Component({
   selector: "app-oa-internal-transfers",
@@ -102,7 +103,7 @@ export class OaInternalTransfersComponent implements OnInit {
         </div>
         <div class="tr-field">
           <span class="tr-lbl">Sana<span class="req">*</span></span>
-          <input id="tr-date" type="date" class="form-control" value="${today}">
+          <input id="tr-date" type="text" class="form-control" placeholder="kun.oy.yil" autocomplete="off">
         </div>
         <div class="tr-field">
           <span class="tr-lbl">Izoh</span>
@@ -120,6 +121,11 @@ export class OaInternalTransfersComponent implements OnInit {
       customClass: { confirmButton: "btn btn-success", cancelButton: "btn btn-secondary" },
       buttonsStyling: false,
       didOpen: () => {
+        flatpickr("#tr-date", {
+          dateFormat: "d.m.Y",
+          defaultDate: today,
+          allowInput: true,
+        });
         this.http.get<any>(GlobalVars.baseUrl + "/fx-rate").subscribe((data) => {
           if (data.rate) {
             const fxInput = document.getElementById("tr-fx") as HTMLInputElement;
@@ -150,15 +156,17 @@ export class OaInternalTransfersComponent implements OnInit {
         const fromId = (document.getElementById("tr-from") as HTMLSelectElement).value;
         const toId = (document.getElementById("tr-to") as HTMLSelectElement).value;
         const amount = (document.getElementById("tr-amount") as HTMLInputElement).value.replace(/\s/g, "");
-        const date = (document.getElementById("tr-date") as HTMLInputElement).value;
-        if (!fromId || !toId || !amount || !date) { swal.showValidationMessage("Barcha maydonlarni to'ldiring"); return false; }
+        const dateDisplay = (document.getElementById("tr-date") as HTMLInputElement).value;
+        if (!fromId || !toId || !amount || !dateDisplay) { swal.showValidationMessage("Barcha maydonlarni to'ldiring"); return false; }
         if (fromId === toId) { swal.showValidationMessage("Bir xil hisobga transfer qilib bo'lmaydi"); return false; }
+        const dateIso = this.parseDmyToIso(dateDisplay);
+        if (!dateIso) { swal.showValidationMessage("Sana noto'g'ri formatda (kun.oy.yil)"); return false; }
         return {
           from_cash_account_id: parseInt(fromId),
           to_cash_account_id: parseInt(toId),
           amount_original: parseFloat(amount),
           fx_rate_used: parseFloat((document.getElementById("tr-fx") as HTMLInputElement).value) || null,
-          transfer_at: date,
+          transfer_at: dateIso,
           comment: (document.getElementById("tr-comment") as HTMLInputElement).value || null,
         };
       },
@@ -173,6 +181,13 @@ export class OaInternalTransfersComponent implements OnInit {
         );
       }
     });
+  }
+
+  /** Convert flatpickr's "dd.mm.yyyy" display value to ISO "yyyy-mm-dd". Returns null if invalid. */
+  private parseDmyToIso(dmy: string): string | null {
+    const m = /^(\d{2})\.(\d{2})\.(\d{4})$/.exec(dmy.trim());
+    if (!m) return null;
+    return `${m[3]}-${m[2]}-${m[1]}`;
   }
 
   deleteTransfer(id: number) {

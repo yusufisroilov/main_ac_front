@@ -95,6 +95,10 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     this.router.navigate(["/oa/expenses"]);
   }
 
+  goToInternalTransfers() {
+    this.router.navigate(["/oa/internal-transfers"]);
+  }
+
   goToOwnerDraws() {
     this.router.navigate(["/oa/owner-draws"]);
   }

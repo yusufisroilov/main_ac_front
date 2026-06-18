@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { GlobalVars } from "src/app/global-vars";
 import { AuthService } from "src/app/pages/login/auth.service";
 import swal from "sweetalert2";
+import flatpickr from "flatpickr";
 
 @Component({
   selector: "app-oa-owner-draws",
@@ -112,7 +113,7 @@ export class OaOwnerDrawsComponent implements OnInit {
         </div>
         <div class="od-field">
           <span class="od-lbl">Sana<span class="req">*</span></span>
-          <input id="od-date" type="date" class="form-control" value="${today}">
+          <input id="od-date" type="text" class="form-control" placeholder="kun.oy.yil" autocomplete="off">
         </div>
         <div class="od-field full">
           <span class="od-lbl">Izoh</span>
@@ -130,6 +131,11 @@ export class OaOwnerDrawsComponent implements OnInit {
       customClass: { confirmButton: "btn btn-success", cancelButton: "btn btn-secondary" },
       buttonsStyling: false,
       didOpen: () => {
+        flatpickr("#od-date", {
+          dateFormat: "d.m.Y",
+          defaultDate: today,
+          allowInput: true,
+        });
         // Auto-fill fx rate
         this.http.get<any>(GlobalVars.baseUrl + "/fx-rate").subscribe((data) => {
           if (data.rate) {
@@ -158,17 +164,19 @@ export class OaOwnerDrawsComponent implements OnInit {
       },
       preConfirm: () => {
         const amount = (document.getElementById("od-amount") as HTMLInputElement).value.replace(/\s/g, "");
-        const date = (document.getElementById("od-date") as HTMLInputElement).value;
+        const dateDisplay = (document.getElementById("od-date") as HTMLInputElement).value;
         const accountId = (document.getElementById("od-account") as HTMLSelectElement).value;
         const fxRate = (document.getElementById("od-rate") as HTMLInputElement)?.value;
-        if (!amount || !date || !accountId) { swal.showValidationMessage("Barcha majburiy maydonlarni to'ldiring"); return false; }
+        if (!amount || !dateDisplay || !accountId) { swal.showValidationMessage("Barcha majburiy maydonlarni to'ldiring"); return false; }
         if (parseFloat(amount) <= 0) { swal.showValidationMessage("Summa musbat bo'lishi kerak"); return false; }
+        const dateIso = this.parseDmyToIso(dateDisplay);
+        if (!dateIso) { swal.showValidationMessage("Sana noto'g'ri formatda (kun.oy.yil)"); return false; }
         const selectedAcc = accountsData.find((a) => a.id === parseInt(accountId));
         if (selectedAcc?.currency === "UZS" && (!fxRate || parseFloat(fxRate) <= 0)) { swal.showValidationMessage("UZS hisob uchun kursni kiriting"); return false; }
         const payload: any = {
           cash_account_id: parseInt(accountId),
           amount: parseFloat(amount),
-          draw_at: date,
+          draw_at: dateIso,
           purpose: (document.getElementById("od-purpose") as HTMLSelectElement).value,
           comment: (document.getElementById("od-comment") as HTMLInputElement).value || null,
         };
@@ -186,6 +194,13 @@ export class OaOwnerDrawsComponent implements OnInit {
         );
       }
     });
+  }
+
+  /** Convert flatpickr's "dd.mm.yyyy" display value to ISO "yyyy-mm-dd". Returns null if invalid. */
+  private parseDmyToIso(dmy: string): string | null {
+    const m = /^(\d{2})\.(\d{2})\.(\d{4})$/.exec(dmy.trim());
+    if (!m) return null;
+    return `${m[3]}-${m[2]}-${m[1]}`;
   }
 
   deleteDraw(id: number) {

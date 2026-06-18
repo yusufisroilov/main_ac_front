@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 
 export class GlobalVars {
-  //public static baseUrl: string = "http://185.196.213.248:3033";
+  // public static baseUrl: string = "https://cargo.tushun.uz";
   //public static baseUrl: string = "https://api.acargo.uz";
 
   public static baseUrl: string = "http://localhost:3004";

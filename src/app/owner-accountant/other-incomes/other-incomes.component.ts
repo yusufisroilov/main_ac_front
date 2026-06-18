@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { GlobalVars } from "src/app/global-vars";
 import { AuthService } from "src/app/pages/login/auth.service";
 import swal from "sweetalert2";
+import flatpickr from "flatpickr";
 
 @Component({
   selector: "app-oa-other-incomes",
@@ -151,7 +152,7 @@ export class OaOtherIncomesComponent implements OnInit {
         </div>
         <div class="inc-field">
           <span class="inc-lbl">Sana<span class="req">*</span></span>
-          <input id="inc-date" type="date" class="form-control" value="${today}">
+          <input id="inc-date" type="text" class="form-control" placeholder="kun.oy.yil" autocomplete="off">
         </div>
         <div class="inc-field">
           <span class="inc-lbl">Izoh</span>
@@ -173,6 +174,11 @@ export class OaOtherIncomesComponent implements OnInit {
         },
         buttonsStyling: false,
         didOpen: () => {
+          flatpickr("#inc-date", {
+            dateFormat: "d.m.Y",
+            defaultDate: today,
+            allowInput: true,
+          });
           this.http
             .get<any>(GlobalVars.baseUrl + "/fx-rate")
             .subscribe((data) => {
@@ -200,12 +206,12 @@ export class OaOtherIncomesComponent implements OnInit {
           const amount = (
             document.getElementById("inc-amount") as HTMLInputElement
           ).value.replace(/\s/g, "");
-          const date = (document.getElementById("inc-date") as HTMLInputElement)
+          const dateDisplay = (document.getElementById("inc-date") as HTMLInputElement)
             .value;
           const accountId = (
             document.getElementById("inc-account") as HTMLSelectElement
           ).value;
-          if (!amount || !date || !accountId) {
+          if (!amount || !dateDisplay || !accountId) {
             swal.showValidationMessage(
               "Barcha majburiy maydonlarni to'ldiring",
             );
@@ -213,6 +219,11 @@ export class OaOtherIncomesComponent implements OnInit {
           }
           if (parseFloat(amount) <= 0) {
             swal.showValidationMessage("Summa musbat bo'lishi kerak");
+            return false;
+          }
+          const dateIso = this.parseDmyToIso(dateDisplay);
+          if (!dateIso) {
+            swal.showValidationMessage("Sana noto'g'ri formatda (kun.oy.yil)");
             return false;
           }
           return {
@@ -225,7 +236,7 @@ export class OaOtherIncomesComponent implements OnInit {
               parseFloat(
                 (document.getElementById("inc-fx") as HTMLInputElement).value,
               ) || null,
-            income_at: date,
+            income_at: dateIso,
             category_id:
               parseInt(
                 (document.getElementById("inc-category") as HTMLSelectElement)
@@ -266,6 +277,13 @@ export class OaOtherIncomesComponent implements OnInit {
             );
         }
       });
+  }
+
+  /** Convert flatpickr's "dd.mm.yyyy" display value to ISO "yyyy-mm-dd". Returns null if invalid. */
+  private parseDmyToIso(dmy: string): string | null {
+    const m = /^(\d{2})\.(\d{2})\.(\d{4})$/.exec(dmy.trim());
+    if (!m) return null;
+    return `${m[3]}-${m[2]}-${m[1]}`;
   }
 
   deleteIncome(id: number) {

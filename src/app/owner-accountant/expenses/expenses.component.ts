@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { GlobalVars } from "src/app/global-vars";
 import { AuthService } from "src/app/pages/login/auth.service";
 import swal from "sweetalert2";
+import flatpickr from "flatpickr";
 
 @Component({
   selector: "app-oa-expenses",
@@ -178,7 +179,7 @@ export class OaExpensesComponent implements OnInit {
         </div>
         <div class="exp-field">
           <span class="exp-lbl">Sana<span class="req">*</span></span>
-          <input id="exp-date" type="date" class="form-control" value="${today}">
+          <input id="exp-date" type="text" class="form-control" placeholder="kun.oy.yil" autocomplete="off">
         </div>
         <div class="exp-field">
           <span class="exp-lbl">Izoh</span>
@@ -200,6 +201,11 @@ export class OaExpensesComponent implements OnInit {
         },
         buttonsStyling: false,
         didOpen: () => {
+          flatpickr("#exp-date", {
+            dateFormat: "d.m.Y",
+            defaultDate: today,
+            allowInput: true,
+          });
           // Auto-fill fx rate
           this.http
             .get<any>(GlobalVars.baseUrl + "/fx-rate")
@@ -247,7 +253,7 @@ export class OaExpensesComponent implements OnInit {
           const amountRaw = (
             document.getElementById("exp-amount") as HTMLInputElement
           ).value.replace(/\s/g, "");
-          const date = (document.getElementById("exp-date") as HTMLInputElement)
+          const dateDisplay = (document.getElementById("exp-date") as HTMLInputElement)
             .value;
           const categoryId = (
             document.getElementById("exp-category") as HTMLSelectElement
@@ -255,7 +261,7 @@ export class OaExpensesComponent implements OnInit {
           const accountId = (
             document.getElementById("exp-account") as HTMLSelectElement
           ).value;
-          if (!amountRaw || !date || !categoryId || !accountId) {
+          if (!amountRaw || !dateDisplay || !categoryId || !accountId) {
             swal.showValidationMessage(
               "Barcha majburiy maydonlarni to'ldiring",
             );
@@ -271,6 +277,11 @@ export class OaExpensesComponent implements OnInit {
             swal.showValidationMessage("Summa musbat bo'lishi kerak");
             return false;
           }
+          const dateIso = this.parseDmyToIso(dateDisplay);
+          if (!dateIso) {
+            swal.showValidationMessage("Sana noto'g'ri formatda (kun.oy.yil)");
+            return false;
+          }
           return {
             scope_type: scopeType,
             consignment: consignment || null,
@@ -281,7 +292,7 @@ export class OaExpensesComponent implements OnInit {
               parseFloat(
                 (document.getElementById("exp-fx") as HTMLInputElement).value,
               ) || null,
-            expense_at: date,
+            expense_at: dateIso,
             comment:
               (document.getElementById("exp-comment") as HTMLInputElement)
                 .value || null,
@@ -317,6 +328,13 @@ export class OaExpensesComponent implements OnInit {
             );
         }
       });
+  }
+
+  /** Convert flatpickr's "dd.mm.yyyy" display value to ISO "yyyy-mm-dd". Returns null if invalid. */
+  private parseDmyToIso(dmy: string): string | null {
+    const m = /^(\d{2})\.(\d{2})\.(\d{4})$/.exec(dmy.trim());
+    if (!m) return null;
+    return `${m[3]}-${m[2]}-${m[1]}`;
   }
 
   deleteExpense(id: number) {
