@@ -176,7 +176,7 @@ export class OaOtherIncomesComponent implements OnInit {
         didOpen: () => {
           flatpickr("#inc-date", {
             dateFormat: "d.m.Y",
-            defaultDate: today,
+            defaultDate: new Date(),
             allowInput: true,
           });
           this.http

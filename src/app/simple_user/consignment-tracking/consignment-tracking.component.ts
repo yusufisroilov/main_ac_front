@@ -38,12 +38,21 @@ export class ConsignmentTrackingComponent implements OnInit {
   showMyOnly = false;
   activeStatusFilter: number | null = null;
 
-  calendarStatusOrder: number[] = [2, 4, 5, 7];
+  // AVIA passes through UZ airport (status 5); AVTO/AVTO POCHTA go through
+  // Bojxona (status 6) instead. Each type has its own 4-step order.
+  private readonly ORDER_AVIA: number[] = [2, 4, 5, 7];
+  private readonly ORDER_AVTO: number[] = [2, 4, 6, 7];
+
+  /** Returns the 4-step order to render for this consignment. */
+  getOrderFor(item: ConsignmentItem): number[] {
+    return item?.isHongKong ? this.ORDER_AVTO : this.ORDER_AVIA;
+  }
 
   statusFilters = [
     { status: 2, label: "Xitoy Omborida", icon: "inventory_2" },
     { status: 4, label: "Xitoy Aeroportida", icon: "flight_takeoff" },
-    { status: 5, label: "O'zbekiston Aeroportida", icon: "flight_land" },
+    { status: 5, label: "O'zb. Aeroportida", icon: "flight_land" },
+    { status: 6, label: "Bojxonada", icon: "assignment" },
     { status: 7, label: "Toshkent Omborida", icon: "warehouse" },
   ];
 
@@ -116,10 +125,11 @@ export class ConsignmentTrackingComponent implements OnInit {
 
   getCurrentStatus(item: ConsignmentItem): number {
     if (item.currentStatus) return item.currentStatus;
-    // Derive from timeline
-    for (let i = this.calendarStatusOrder.length - 1; i >= 0; i--) {
-      const step = item.timeline?.find((t) => t.status === this.calendarStatusOrder[i]);
-      if (step?.reached) return this.calendarStatusOrder[i];
+    // Derive from timeline using this consignment's type-specific order
+    const order = this.getOrderFor(item);
+    for (let i = order.length - 1; i >= 0; i--) {
+      const step = item.timeline?.find((t) => t.status === order[i]);
+      if (step?.reached) return order[i];
     }
     return 1;
   }
@@ -127,10 +137,11 @@ export class ConsignmentTrackingComponent implements OnInit {
   // ── Calendar card helpers (same as CustomerDashboard) ──
 
   getCalendarProgress(item: ConsignmentItem): number {
-    const completed = this.calendarStatusOrder.filter((s) =>
+    const order = this.getOrderFor(item);
+    const completed = order.filter((s) =>
       this.isCalendarStepCompleted(item, s),
     ).length;
-    return completed / this.calendarStatusOrder.length;
+    return completed / order.length;
   }
 
   getCalendarProgressPercent(item: ConsignmentItem): number {
@@ -160,8 +171,10 @@ export class ConsignmentTrackingComponent implements OnInit {
 
   getCalendarStepIcon(stepStatus: number, item: ConsignmentItem): string {
     if (item.isHongKong) {
-      return { 2: "inventory_2", 4: "local_shipping", 5: "location_on", 7: "warehouse" }[stepStatus] || "local_shipping";
+      // AVTO/AVTO POCHTA: China ombor → China aeroport → Bojxona → Toshkent
+      return { 2: "inventory_2", 4: "local_shipping", 6: "assignment", 7: "warehouse" }[stepStatus] || "local_shipping";
     }
+    // AVIA: China ombor → China aeroport → UZ aeroport → Toshkent
     return { 2: "inventory_2", 4: "flight_takeoff", 5: "flight_land", 7: "warehouse" }[stepStatus] || "local_shipping";
   }
 

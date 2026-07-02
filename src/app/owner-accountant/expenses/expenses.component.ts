@@ -203,7 +203,7 @@ export class OaExpensesComponent implements OnInit {
         didOpen: () => {
           flatpickr("#exp-date", {
             dateFormat: "d.m.Y",
-            defaultDate: today,
+            defaultDate: new Date(),
             allowInput: true,
           });
           // Auto-fill fx rate

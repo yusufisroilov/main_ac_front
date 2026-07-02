@@ -123,7 +123,7 @@ export class OaInternalTransfersComponent implements OnInit {
       didOpen: () => {
         flatpickr("#tr-date", {
           dateFormat: "d.m.Y",
-          defaultDate: today,
+          defaultDate: new Date(),
           allowInput: true,
         });
         this.http.get<any>(GlobalVars.baseUrl + "/fx-rate").subscribe((data) => {

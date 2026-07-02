@@ -133,7 +133,7 @@ export class OaOwnerDrawsComponent implements OnInit {
       didOpen: () => {
         flatpickr("#od-date", {
           dateFormat: "d.m.Y",
-          defaultDate: today,
+          defaultDate: new Date(),
           allowInput: true,
         });
         // Auto-fill fx rate

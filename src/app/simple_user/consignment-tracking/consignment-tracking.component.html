@@ -84,9 +84,9 @@
           </div>
         </div>
 
-        <!-- Step icons row -->
+        <!-- Step icons row (order depends on shipping type) -->
         <div class="calendar-card-steps">
-          <div *ngFor="let status of calendarStatusOrder" class="calendar-step-icon"
+          <div *ngFor="let status of getOrderFor(item)" class="calendar-step-icon"
             [class.step-completed]="isCalendarStepCompleted(item, status)"
             [class.step-current]="isCalendarCurrentStep(item, status) && !isCalendarStepCompleted(item, status)">
             <i class="material-icons">{{ getCalendarStepIcon(status, item) }}</i>
@@ -98,7 +98,7 @@
 
         <!-- Step dates row -->
         <div class="calendar-card-dates">
-          <div *ngFor="let status of calendarStatusOrder" class="step-date-cell">
+          <div *ngFor="let status of getOrderFor(item)" class="step-date-cell">
             <small *ngIf="getCalendarStepDate(item, status)">
               {{ formatDate(getCalendarStepDate(item, status)) }}
             </small>

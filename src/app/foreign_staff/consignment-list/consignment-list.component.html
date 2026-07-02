@@ -37,7 +37,15 @@
                 </thead>
                 <tbody>
                   <tr *ngFor="let consignment of consignments">
-                    <td class="text-center">{{ consignment.name }}</td>
+                    <td class="text-center">
+                      <a *ngIf="showOnlyForManagers; else nameOnly"
+                         (click)="editConsignmentDates(consignment)"
+                         class="cl-edit-name"
+                         title="Sanalarni tahrirlash">
+                        {{ consignment.name }}
+                      </a>
+                      <ng-template #nameOnly>{{ consignment.name }}</ng-template>
+                    </td>
                     <td *ngIf="!showOnlyForManagers" class="text-center">
                       {{ consignment.open_date | slice : 0 : 10 }}
                     </td>
