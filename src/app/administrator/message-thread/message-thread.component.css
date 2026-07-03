@@ -52,22 +52,46 @@
   animation: slideIn 0.3s ease;
 }
 
-.message-wrapper.message-customer {
-  justify-content: flex-start;
-}
+/* ─── Telegram-style alignment ────────────────────────────────
+   Alignment follows the CURRENT VIEWER: own bubbles on the right,
+   everyone else's on the left. The .message-customer / .message-staff
+   classes below stay for tinting the bubble by role, but they no
+   longer decide the side. */
 
-.message-wrapper.message-customer .message-bubble {
-  background-color: #fff;
-  border-left: 3px solid #00bcd4;
-}
-
-.message-wrapper.message-staff {
+.message-wrapper.message-mine {
   justify-content: flex-end;
 }
 
-.message-wrapper.message-staff .message-bubble {
+.message-wrapper.message-mine .message-bubble {
+  background-color: #dcf8c6; /* soft green — Telegram's "own" bubble */
+  border-left: none;
+  border-right: 3px solid #4caf50;
+}
+
+.message-wrapper.message-others {
+  justify-content: flex-start;
+}
+
+.message-wrapper.message-others .message-bubble {
+  background-color: #fff;
+  border-left: 3px solid #b0bec5;
+}
+
+/* When the other side is a staff/customer, tint their bubble so
+   the role is still visible even though the side is fixed. */
+.message-wrapper.message-others.message-customer .message-bubble {
+  border-left-color: #00bcd4;
+}
+
+.message-wrapper.message-others.message-staff .message-bubble {
   background-color: #f3e5f5;
-  border-left: 3px solid #9c27b0;
+  border-left-color: #9c27b0;
+}
+
+/* Own bubble when the viewer is staff — keep the purple accent. */
+.message-wrapper.message-mine.message-staff .message-bubble {
+  background-color: #ede7f6;
+  border-right-color: #9c27b0;
 }
 
 @keyframes slideIn {

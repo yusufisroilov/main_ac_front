@@ -51,8 +51,10 @@
                                         <div class="messages-list" *ngIf="displayMessages.length > 0">
                                             <div *ngFor="let message of displayMessages" class="message-wrapper"
                                                 [ngClass]="{
+                                                   'message-mine':   isOwnMessage(message),
+                                                   'message-others': !isOwnMessage(message),
                                                    'message-customer': isCustomerMessage(message),
-                                                   'message-staff': isStaffMessage(message)
+                                                   'message-staff':    isStaffMessage(message)
                                                  }">
 
                                                 <div class="message-bubble">

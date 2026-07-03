@@ -13,6 +13,7 @@ import {
 
 interface Message {
   id: number;
+  sender_id?: number;
   sender_role: "customer" | "staff";
   sender_name: string;
   message_text: string;
@@ -34,6 +35,9 @@ export class MessageThreadComponent
   @Input() messages: Message[] = [];
   @Input() ticketStatus: string = "";
   @Input() currentUserRole: string = localStorage.getItem("role") || "STAFF";
+
+  // Logged-in user's id — drives Telegram-style left/right alignment.
+  currentUserId: number = parseInt(localStorage.getItem("id") || "0", 10);
 
   @Output() messageEdit = new EventEmitter<{
     messageId: number;
@@ -109,6 +113,14 @@ export class MessageThreadComponent
    */
   isStaffMessage(message: Message): boolean {
     return message.sender_role === "staff";
+  }
+
+  /**
+   * Telegram-style alignment: was this message sent by the currently
+   * logged-in user? True → right-aligned bubble. False → left-aligned.
+   */
+  isOwnMessage(message: Message): boolean {
+    return !!this.currentUserId && message.sender_id === this.currentUserId;
   }
 
   /**

@@ -61,17 +61,24 @@ export class NotificationService {
 
   constructor(private http: Http) {}
 
+  /** Poll interval in ms — matches the ticket-detail silent reload cadence. */
+  private static readonly POLL_INTERVAL_MS = 15_000;
+
   /**
-   * Start polling for notifications every 30 seconds
+   * Start polling for notifications every 15 seconds.
    */
   startPolling(): void {
-    // console.log("🔔 Bildirnomalarga obuna boshlandi...");
-
     // Initial load
     this.refreshNotifications();
 
-    // Poll every 30 seconds
-    this.pollingInterval = interval(30000).subscribe(() => {
+    // If there's already an interval running (e.g., navbar remounted), replace it.
+    if (this.pollingInterval) {
+      this.pollingInterval.unsubscribe();
+    }
+
+    this.pollingInterval = interval(
+      NotificationService.POLL_INTERVAL_MS,
+    ).subscribe(() => {
       this.refreshNotifications();
     });
   }
@@ -121,141 +128,111 @@ export class NotificationService {
   }
 
   /**
-   * Load staff notifications (Manager, staff members)
+   * GET a URL and return its parsed JSON, or `fallback` if the request fails.
+   * This isolates each notification source so one failing endpoint (e.g., a
+   * 403 on delivery notifications for CHINASTAFF) can't wipe out the others.
+   */
+  private safeGetJson(url: string, options: RequestOptions): Promise<any> {
+    return this.http
+      .get(url, options)
+      .toPromise()
+      .then((res) => res.json())
+      .catch(() => null);
+  }
+
+  /**
+   * Load staff notifications (Manager, staff members).
+   *
+   * CHINASTAFF is intentionally NOT allowed to see delivery-request
+   * notifications, so we skip those requests entirely for them — otherwise the
+   * backend rightly returns 403 and the console fills with forbidden errors.
    */
   private loadStaffNotifications(options: RequestOptions): void {
-    // console.log("👔 Xodim bildirnomalari yuklanmoqda...");
+    const role = localStorage.getItem("role");
+    const canSeeDeliveryNotifications = role !== "CHINASTAFF";
 
-    Promise.all([
-      // Get ticket counts
-      this.http
-        .get(`${this.baseUrl}/tickets/admin/notifications/count`, options)
-        .toPromise(),
-      // Get delivery counts
-      this.http
-        .get(`${this.baseUrl}/requests/admin/notifications/count`, options)
-        .toPromise(),
-      // Get ticket notification details
-      this.http
-        .get(`${this.baseUrl}/tickets/admin/notifications`, options)
-        .toPromise(),
-      // Get delivery notification details
-      this.http
-        .get(`${this.baseUrl}/requests/admin/notifications`, options)
-        .toPromise(),
-    ])
-      .then(
-        ([
-          ticketCountRes,
-          deliveryCountRes,
-          ticketListRes,
-          deliveryListRes,
-        ]) => {
-          const ticketData = ticketCountRes.json();
-          const deliveryData = deliveryCountRes.json();
-          const ticketListData = ticketListRes.json();
-          const deliveryListData = deliveryListRes.json();
+    const requests = [
+      this.safeGetJson(
+        `${this.baseUrl}/tickets/admin/notifications/count`,
+        options,
+      ),
+      canSeeDeliveryNotifications
+        ? this.safeGetJson(
+            `${this.baseUrl}/requests/admin/notifications/count`,
+            options,
+          )
+        : Promise.resolve(null),
+      this.safeGetJson(`${this.baseUrl}/tickets/admin/notifications`, options),
+      canSeeDeliveryNotifications
+        ? this.safeGetJson(
+            `${this.baseUrl}/requests/admin/notifications`,
+            options,
+          )
+        : Promise.resolve(null),
+    ];
 
-          // console.log("✅ Xodim bildirnomalari yuklandi:", {
-          //   tickets: ticketData.notifications?.total_needs_attention || 0,
-          //   deliveries: deliveryData.notifications?.total_needs_attention || 0,
-          //   ticketDetails: ticketListData.notifications?.length || 0,
-          //   deliveryDetails: deliveryListData.notifications?.length || 0,
-          // });
+    Promise.all(requests).then(
+      ([ticketData, deliveryData, ticketListData, deliveryListData]) => {
+        const ticketCount =
+          ticketData?.notifications?.total_needs_attention || 0;
+        const deliveryCount =
+          deliveryData?.notifications?.total_needs_attention || 0;
 
-          // Update counts
-          this.notificationCountSubject.next({
-            tickets: ticketData.notifications?.total_needs_attention || 0,
-            deliveryRequests:
-              deliveryData.notifications?.total_needs_attention || 0,
-            total:
-              (ticketData.notifications?.total_needs_attention || 0) +
-              (deliveryData.notifications?.total_needs_attention || 0),
-          });
+        this.notificationCountSubject.next({
+          tickets: ticketCount,
+          deliveryRequests: deliveryCount,
+          total: ticketCount + deliveryCount,
+        });
 
-          // Update ticket notification list
-          this.ticketNotificationListSubject.next(
-            ticketListData.notifications || [],
-          );
-
-          // Update delivery notification list
-          this.deliveryNotificationListSubject.next(
-            deliveryListData.notifications || [],
-          );
-        },
-      )
-      .catch((err) => {
-        console.error("❌ Xodim bildirnomalari yuklashda xatolik:", err);
-      });
+        this.ticketNotificationListSubject.next(
+          ticketListData?.notifications || [],
+        );
+        this.deliveryNotificationListSubject.next(
+          deliveryListData?.notifications || [],
+        );
+      },
+    );
   }
 
   /**
    * Load customer notifications
    */
   private loadCustomerNotifications(options: RequestOptions): void {
-    // console.log("👤 Mijoz bildirnomalari yuklanmoqda...");
-
     Promise.all([
-      // Get ticket counts
-      this.http
-        .get(`${this.baseUrl}/tickets/customer/notifications/count`, options)
-        .toPromise(),
-      // Get delivery counts
-      this.http
-        .get(`${this.baseUrl}/requests/customer/notifications/count`, options)
-        .toPromise(),
-      // Get ticket notification details
-      this.http
-        .get(`${this.baseUrl}/tickets/customer/notifications`, options)
-        .toPromise(),
-      // Get delivery notification details
-      this.http
-        .get(`${this.baseUrl}/requests/customer/notifications`, options)
-        .toPromise(),
-    ])
-      .then(
-        ([
-          ticketCountRes,
-          deliveryCountRes,
-          ticketListRes,
-          deliveryListRes,
-        ]) => {
-          const ticketData = ticketCountRes.json();
-          const deliveryData = deliveryCountRes.json();
-          const ticketListData = ticketListRes.json();
-          const deliveryListData = deliveryListRes.json();
+      this.safeGetJson(
+        `${this.baseUrl}/tickets/customer/notifications/count`,
+        options,
+      ),
+      this.safeGetJson(
+        `${this.baseUrl}/requests/customer/notifications/count`,
+        options,
+      ),
+      this.safeGetJson(
+        `${this.baseUrl}/tickets/customer/notifications`,
+        options,
+      ),
+      this.safeGetJson(
+        `${this.baseUrl}/requests/customer/notifications`,
+        options,
+      ),
+    ]).then(([ticketData, deliveryData, ticketListData, deliveryListData]) => {
+      const ticketCount = ticketData?.notifications?.total_needs_attention || 0;
+      const deliveryCount =
+        deliveryData?.notifications?.total_needs_attention || 0;
 
-          // console.log("✅ Mijoz bildirnomalari yuklandi:", {
-          //   tickets: ticketData.notifications?.total_needs_attention || 0,
-          //   deliveries: deliveryData.notifications?.total_needs_attention || 0,
-          //   ticketDetails: ticketListData.notifications?.length || 0,
-          //   deliveryDetails: deliveryListData.notifications?.length || 0,
-          // });
-
-          // Update counts
-          this.notificationCountSubject.next({
-            tickets: ticketData.notifications?.total_needs_attention || 0,
-            deliveryRequests:
-              deliveryData.notifications?.total_needs_attention || 0,
-            total:
-              (ticketData.notifications?.total_needs_attention || 0) +
-              (deliveryData.notifications?.total_needs_attention || 0),
-          });
-
-          // Update ticket notification list
-          this.ticketNotificationListSubject.next(
-            ticketListData.notifications || [],
-          );
-
-          // Update delivery notification list
-          this.deliveryNotificationListSubject.next(
-            deliveryListData.notifications || [],
-          );
-        },
-      )
-      .catch((err) => {
-        console.error("❌ Mijoz bildirnomalari yuklashda xatolik:", err);
+      this.notificationCountSubject.next({
+        tickets: ticketCount,
+        deliveryRequests: deliveryCount,
+        total: ticketCount + deliveryCount,
       });
+
+      this.ticketNotificationListSubject.next(
+        ticketListData?.notifications || [],
+      );
+      this.deliveryNotificationListSubject.next(
+        deliveryListData?.notifications || [],
+      );
+    });
   }
 
   /**

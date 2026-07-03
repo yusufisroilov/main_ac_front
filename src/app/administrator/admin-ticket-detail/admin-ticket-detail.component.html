@@ -202,13 +202,22 @@
                                 <input type="number" class="form-control reassign-input"
                                     placeholder="Yangi ID (masalan: 22)"
                                     [(ngModel)]="reassignUserId"
+                                    (ngModelChange)="onReassignIdChange()"
                                     (keyup.enter)="reassignTicketDirect()">
                                 <button mat-raised-button color="primary" class="ml-2 reassign-btn"
-                                    [disabled]="!reassignUserId"
+                                    [disabled]="!reassignUserId || !!reassignLookupWarning"
                                     (click)="reassignTicketDirect()">
                                     <mat-icon>send</mat-icon> Biriktirish
                                 </button>
                             </div>
+                            <small *ngIf="reassignLookupName"
+                                   style="color:#43a047;display:block;margin-top:4px;">
+                                ✓ {{ reassignLookupName }}
+                            </small>
+                            <small *ngIf="reassignLookupWarning"
+                                   style="color:#e53935;display:block;margin-top:4px;">
+                                ✗ {{ reassignLookupWarning }}
+                            </small>
                         </div>
                     </div>
 

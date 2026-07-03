@@ -22,6 +22,22 @@
                                 </select>
                             </div>
 
+                            <!-- File on behalf of a customer (CHINASTAFF only) -->
+                            <div class="form-group" *ngIf="isChinaStaff">
+                                <label class="form-label">Customer ID
+                                    <small style="color:#888;font-weight:400;">(optional — leave empty to file for yourself)</small>
+                                </label>
+                                <input type="number" class="form-control" min="1" step="1" name="targetCustomerId"
+                                    [(ngModel)]="targetCustomerId" (ngModelChange)="onTargetCustomerIdChange()"
+                                    [disabled]="isSubmitting" placeholder="e.g. 2303" autocomplete="off" />
+                                <small *ngIf="targetCustomerName" style="color:#43a047;display:block;margin-top:4px;">
+                                    ✓ {{ targetCustomerName }}
+                                </small>
+                                <small *ngIf="targetCustomerLookupError" style="color:#e53935;display:block;margin-top:4px;">
+                                    ✗ {{ targetCustomerLookupError }}
+                                </small>
+                            </div>
+
                             <!-- Assign to: hidden, auto-set to MANAGER for clients -->
 
                             <!-- Message (Rich Text Editor Style) -->

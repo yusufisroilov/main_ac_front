@@ -1,6 +1,7 @@
 import {
   Component,
   OnInit,
+  OnDestroy,
   ViewChild,
   ElementRef,
   AfterViewInit,
@@ -30,8 +31,23 @@ interface Ticket {
   templateUrl: "./ticket-list.component.html",
   styleUrls: ["./ticket-list.component.css"],
 })
-export class CustomerTicketListComponent implements OnInit, AfterViewInit {
+export class CustomerTicketListComponent
+  implements OnInit, OnDestroy, AfterViewInit
+{
   tickets: Ticket[] = [];
+
+  // Silent auto-refresh so the "new message" highlight appears without a manual
+  // reload. Matches the 15s cadence used by the notification bell & detail page.
+  private static readonly POLL_INTERVAL_MS = 15_000;
+  private pollTimer: any = null;
+  private onVisibilityChange = () => {
+    if (document.hidden) {
+      this.stopPolling();
+    } else {
+      this.getListOfTickets(true);
+      this.startPolling();
+    }
+  };
 
   // ✅ ViewChild for search input auto-focus
   @ViewChild("searchInput") searchInput: ElementRef;
@@ -148,6 +164,30 @@ export class CustomerTicketListComponent implements OnInit, AfterViewInit {
     this.getListOfTickets();
     // ✅ Auto-focus on search input after tickets load
     this.focusSearchInput();
+    // Start silent auto-refresh + pause when the tab is hidden.
+    this.startPolling();
+    document.addEventListener("visibilitychange", this.onVisibilityChange);
+  }
+
+  ngOnDestroy(): void {
+    this.stopPolling();
+    document.removeEventListener("visibilitychange", this.onVisibilityChange);
+  }
+
+  private startPolling(): void {
+    this.stopPolling();
+    if (document.hidden) return;
+    this.pollTimer = setInterval(
+      () => this.getListOfTickets(true),
+      CustomerTicketListComponent.POLL_INTERVAL_MS,
+    );
+  }
+
+  private stopPolling(): void {
+    if (this.pollTimer) {
+      clearInterval(this.pollTimer);
+      this.pollTimer = null;
+    }
   }
 
   /**
@@ -164,8 +204,9 @@ export class CustomerTicketListComponent implements OnInit, AfterViewInit {
   /**
    * Get list of customer's tickets with pagination
    */
-  getListOfTickets() {
-    this.isLoading = true;
+  getListOfTickets(silent: boolean = false) {
+    // Silent polls skip the loading spinner so the list doesn't flicker.
+    if (!silent) this.isLoading = true;
 
     // Build query params
     let queryParams = `?page=${this.currentPage}&limit=${this.pageSize}`;
@@ -219,11 +260,12 @@ export class CustomerTicketListComponent implements OnInit, AfterViewInit {
         },
         (error) => {
           console.error("Error loading tickets:", error);
-          this.tickets = [];
           this.isLoading = false;
           if (error.status == 403) {
             this.authService.logout();
-          } else {
+          } else if (!silent) {
+            // On a background poll: keep the current list, no error dialog.
+            this.tickets = [];
             swal.fire({
               icon: "error",
               title: this.isChinaStaff ? "Error" : "Xatolik",

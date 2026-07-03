@@ -9,6 +9,8 @@
     <!-- Message List -->
     <div class="messages-list" *ngIf="displayMessages.length > 0">
         <div *ngFor="let message of displayMessages; let i = index" class="message-wrapper" [ngClass]="{
+           'message-mine':   isOwnMessage(message),
+           'message-others': !isOwnMessage(message),
            'message-customer': isCustomerMessage(message),
            'message-staff': isStaffMessage(message),
            'message-editing': isEditing(message.id)

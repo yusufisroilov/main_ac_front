@@ -171,22 +171,42 @@
   animation: slideIn 0.3s ease;
 }
 
-.message-wrapper.message-customer {
-  justify-content: flex-start;
-}
+/* ─── Telegram-style alignment ────────────────────────────────
+   Whose bubble is on which side is decided by the CURRENT VIEWER,
+   not by the sender's role. Own messages land on the right, all
+   other messages on the left, so the layout reads like a chat. */
 
-.message-wrapper.message-customer .message-bubble {
-  background-color: #fff;
-  border-left: 3px solid #00bcd4;
-}
-
-.message-wrapper.message-staff {
+.message-wrapper.message-mine {
   justify-content: flex-end;
 }
 
-.message-wrapper.message-staff .message-bubble {
+.message-wrapper.message-mine .message-bubble {
+  background-color: #dcf8c6; /* soft green — matches Telegram's "own" bubble */
+  border-left: none;
+  border-right: 3px solid #4caf50;
+}
+
+.message-wrapper.message-others {
+  justify-content: flex-start;
+}
+
+.message-wrapper.message-others .message-bubble {
+  background-color: #fff;
+  border-left: 3px solid #b0bec5;
+}
+
+/* If the "other" side is a staff member, tint their bubble so it's
+   still visually distinguishable from a customer's message. */
+.message-wrapper.message-others.message-staff .message-bubble {
   background-color: #f3e5f5;
-  border-left: 3px solid #9c27b0;
+  border-left-color: #9c27b0;
+}
+
+/* Same idea in reverse: if the viewer is staff, their own bubble
+   should keep the "staff purple" tint on the right side. */
+.message-wrapper.message-mine.message-staff .message-bubble {
+  background-color: #ede7f6;
+  border-right-color: #9c27b0;
 }
 
 @keyframes slideIn {

@@ -1,6 +1,7 @@
 import {
   Component,
   OnInit,
+  OnDestroy,
   ViewChild,
   ElementRef,
   AfterViewChecked,
@@ -10,6 +11,7 @@ import { GlobalVars } from "src/app/global-vars";
 import swal from "sweetalert2";
 import { Http, RequestOptions, Headers } from "@angular/http";
 import { AuthService } from "src/app/pages/login/auth.service";
+import { NotificationService } from "src/app/services/notification.service";
 
 interface TicketMessage {
   id: number;
@@ -53,10 +55,30 @@ interface FileWithPreview {
   templateUrl: "./ticket-detail.component.html",
   styleUrls: ["./ticket-detail.component.css"],
 })
-export class CustomerTicketDetailComponent implements OnInit, AfterViewChecked {
+export class CustomerTicketDetailComponent
+  implements OnInit, OnDestroy, AfterViewChecked
+{
   ticket: TicketDetail | null = null;
   ticketNumber: string = "";
   isLoading: boolean = true;
+
+  // The logged-in user's id, used to decide left/right alignment of message bubbles.
+  currentUserId: number = parseInt(localStorage.getItem("id") || "0", 10);
+
+  /** Poll interval (ms) for silently refreshing messages while the page is open. */
+  private static readonly POLL_INTERVAL_MS = 15_000;
+  /** Timer id for the periodic refresh; cleared in ngOnDestroy and on tab hidden. */
+  private pollTimer: any = null;
+  /** Bound handler kept so we can removeEventListener on destroy. */
+  private onVisibilityChange = () => {
+    if (document.hidden) {
+      this.stopPolling();
+    } else {
+      // Immediate silent fetch on focus, then resume periodic.
+      this.silentReload();
+      this.startPolling();
+    }
+  };
 
   // Reply form with file upload (from reply-box component)
   messageText: string = "";
@@ -105,6 +127,7 @@ export class CustomerTicketDetailComponent implements OnInit, AfterViewChecked {
     public router: Router,
     private http: Http,
     public authService: AuthService,
+    private notificationService: NotificationService,
   ) {
     this.headers12 = new Headers({ "Content-Type": "application/json" });
     this.headers12.append("Authorization", localStorage.getItem("token"));
@@ -147,6 +170,84 @@ export class CustomerTicketDetailComponent implements OnInit, AfterViewChecked {
     }
   }
 
+  ngOnDestroy(): void {
+    this.stopPolling();
+    document.removeEventListener("visibilitychange", this.onVisibilityChange);
+  }
+
+  /** Start (or restart) the 15s silent refresh loop. Skips if the tab is hidden. */
+  private startPolling(): void {
+    this.stopPolling();
+    if (document.hidden) return;
+    this.pollTimer = setInterval(
+      () => this.silentReload(),
+      CustomerTicketDetailComponent.POLL_INTERVAL_MS,
+    );
+  }
+
+  private stopPolling(): void {
+    if (this.pollTimer) {
+      clearInterval(this.pollTimer);
+      this.pollTimer = null;
+    }
+  }
+
+  /**
+   * Fetch fresh messages without touching the loading spinner, scroll position,
+   * or the user's draft in the reply box. Only appends new messages; existing
+   * ones are left in place so the DOM doesn't churn.
+   */
+  private silentReload(): void {
+    if (!this.ticketNumber) return;
+    // `?silent=true` tells the backend not to auto-mark messages as read on
+    // this background poll — otherwise every 15s tick would wipe out unread
+    // notifications for anyone else looking at this ticket.
+    this.http
+      .get(
+        GlobalVars.baseUrl +
+          "/tickets/" +
+          this.ticketNumber +
+          "?silent=true",
+        this.options,
+      )
+      .subscribe(
+        (response) => {
+          const data = response.json();
+          if (data.status !== "success" || !data.ticket) return;
+
+          const incoming = ([...(data.ticket.messages || [])] as TicketMessage[])
+            .sort(
+              (a, b) =>
+                new Date(a.created_at).getTime() -
+                new Date(b.created_at).getTime(),
+            );
+
+          // Nothing changed → keep the DOM alone (no ngFor rebuild, no scroll jump).
+          if (incoming.length === this.displayMessages.length) {
+            const oldLastId =
+              this.displayMessages[this.displayMessages.length - 1]?.id;
+            const newLastId = incoming[incoming.length - 1]?.id;
+            if (oldLastId === newLastId) return;
+          }
+
+          // Only auto-scroll if the user is already near the bottom.
+          const nearBottom = this.isScrolledNearBottom();
+          this.ticket = data.ticket;
+          this.displayMessages = incoming;
+          if (nearBottom) this.shouldScrollToBottom = true;
+        },
+        () => {
+          // Silent — the periodic tick shouldn't nag the user with error dialogs.
+        },
+      );
+  }
+
+  private isScrolledNearBottom(): boolean {
+    const el = this.messagesContainer?.nativeElement;
+    if (!el) return true;
+    return el.scrollHeight - el.scrollTop - el.clientHeight < 120;
+  }
+
   /**
    * Load ticket detail from API
    */
@@ -177,6 +278,12 @@ export class CustomerTicketDetailComponent implements OnInit, AfterViewChecked {
 
             // Focus on reply textarea after ticket loads
             this.focusReplyTextarea();
+
+            // Kick off (or restart) the 15s silent-refresh loop and pause when
+            // the browser tab is hidden.
+            this.startPolling();
+            document.removeEventListener("visibilitychange", this.onVisibilityChange);
+            document.addEventListener("visibilitychange", this.onVisibilityChange);
           } else {
             this.isLoading = false;
             swal
@@ -405,6 +512,10 @@ export class CustomerTicketDetailComponent implements OnInit, AfterViewChecked {
 
             // Reload ticket
             this.loadTicketDetail();
+
+            // Tell the notification service to refresh RIGHT NOW so the other
+            // party's mail badge lights up without waiting for the 15s tick.
+            this.notificationService.refreshNotifications();
           } else {
             this.isSubmitting = false;
             swal.fire({
@@ -447,6 +558,14 @@ export class CustomerTicketDetailComponent implements OnInit, AfterViewChecked {
    */
   isStaffMessage(message: TicketMessage): boolean {
     return message.sender_role === "staff";
+  }
+
+  /**
+   * Telegram-style alignment: was this message sent by the currently logged-in
+   * user? True → right-aligned bubble. False → left-aligned.
+   */
+  isOwnMessage(message: TicketMessage): boolean {
+    return !!this.currentUserId && message.sender_id === this.currentUserId;
   }
 
   /**

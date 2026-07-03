@@ -25,6 +25,12 @@ export class CustomerCreateTicketComponent implements OnInit, AfterViewInit {
   assignedRole: string = "MANAGER"; // Auto-assigned to MANAGER
   message: string = "";
 
+  // CHINASTAFF (and MANAGER/OWNER) can file a ticket on behalf of a customer
+  targetCustomerId: string = "";
+  targetCustomerName: string | null = null;
+  targetCustomerLookupError: string | null = null;
+  private targetLookupTimer: any = null;
+
   // Form state
   isSubmitting: boolean = false;
   lineCount: number = 0;
@@ -194,6 +200,14 @@ export class CustomerCreateTicketComponent implements OnInit, AfterViewInit {
       }
     }
 
+    // CHINASTAFF can file a ticket on behalf of a specific customer
+    if (this.isChinaStaff && this.targetCustomerId) {
+      const parsed = parseInt(String(this.targetCustomerId), 10);
+      if (!isNaN(parsed) && parsed > 0) {
+        formData.append("target_customer_id", String(parsed));
+      }
+    }
+
     // Append files
     for (let i = 0; i < this.selectedFiles.length; i++) {
       formData.append("attachments", this.selectedFiles[i]);
@@ -290,7 +304,55 @@ export class CustomerCreateTicketComponent implements OnInit, AfterViewInit {
    * Check if form is valid
    */
   isFormValid(): boolean {
-    return this.message.trim().length >= 10;
+    if (this.message.trim().length < 10) return false;
+    // If CHINASTAFF typed a customer id, it must be a valid one (looked up ok)
+    if (this.isChinaStaff && this.targetCustomerId && !this.targetCustomerName) {
+      return false;
+    }
+    return true;
+  }
+
+  /**
+   * Look up customer by id (with debounce) whenever CHINASTAFF types in the field.
+   * Populates `targetCustomerName` on success, `targetCustomerLookupError` on failure.
+   */
+  onTargetCustomerIdChange(): void {
+    this.targetCustomerName = null;
+    this.targetCustomerLookupError = null;
+    if (this.targetLookupTimer) clearTimeout(this.targetLookupTimer);
+
+    // `type="number"` inputs deliver a number via ngModel, not a string —
+    // stringify first before trimming.
+    const raw = String(this.targetCustomerId ?? "").trim();
+    if (!raw) return;
+    const parsed = parseInt(raw, 10);
+    if (isNaN(parsed) || parsed <= 0) {
+      this.targetCustomerLookupError = "Invalid ID";
+      return;
+    }
+
+    this.targetLookupTimer = setTimeout(() => {
+      this.http
+        .get(GlobalVars.baseUrl + "/customer/lookup?id=" + parsed, this.options)
+        .subscribe(
+          (resp) => {
+            const body = resp.json();
+            const user = body && (body.user || body.customer || body);
+            const first = user?.first_name || "";
+            const last = user?.last_name || "";
+            const fullName = `${first} ${last}`.trim() || user?.username;
+            if (fullName) {
+              this.targetCustomerName = fullName;
+              this.targetCustomerLookupError = null;
+            } else {
+              this.targetCustomerLookupError = "Customer not found";
+            }
+          },
+          () => {
+            this.targetCustomerLookupError = "Customer not found";
+          },
+        );
+    }, 350);
   }
 
   /**

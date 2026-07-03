@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, OnDestroy } from "@angular/core";
 import { Router } from "@angular/router";
 import { GlobalVars } from "src/app/global-vars";
 import swal from "sweetalert2";
@@ -28,9 +28,23 @@ interface Ticket {
   templateUrl: "./admin-ticket-list.component.html",
   styleUrls: ["./admin-ticket-list.component.css"],
 })
-export class AdminTicketListComponent implements OnInit {
+export class AdminTicketListComponent implements OnInit, OnDestroy {
   tickets: Ticket[] = [];
   filteredTickets: Ticket[] = [];
+
+  // Timers for silent auto-refresh (list rows + notification count).
+  private static readonly POLL_INTERVAL_MS = 15_000;
+  private listPollTimer: any = null;
+  private countPollTimer: any = null;
+  private onVisibilityChange = () => {
+    if (document.hidden) {
+      this.stopPolling();
+    } else {
+      this.getListOfTickets(true);
+      this.loadNotificationCount();
+      this.startPolling();
+    }
+  };
 
   // Pagination
   currentPage: number = 1;
@@ -121,18 +135,53 @@ export class AdminTicketListComponent implements OnInit {
     ];
 
 
-    this.startNotificationPolling();
+    // Initial notification count; periodic refresh is handled by startPolling().
+    this.loadNotificationCount();
   }
 
   ngAfterViewInit() {
     this.getListOfTickets();
+    // Silent auto-refresh of both the list rows and the notification count,
+    // so the "new message" row highlight appears without a manual reload.
+    this.startPolling();
+    document.addEventListener("visibilitychange", this.onVisibilityChange);
+  }
+
+  ngOnDestroy(): void {
+    this.stopPolling();
+    document.removeEventListener("visibilitychange", this.onVisibilityChange);
+  }
+
+  private startPolling(): void {
+    this.stopPolling();
+    if (document.hidden) return;
+    this.listPollTimer = setInterval(
+      () => this.getListOfTickets(true),
+      AdminTicketListComponent.POLL_INTERVAL_MS,
+    );
+    this.countPollTimer = setInterval(
+      () => this.loadNotificationCount(),
+      AdminTicketListComponent.POLL_INTERVAL_MS,
+    );
+  }
+
+  private stopPolling(): void {
+    if (this.listPollTimer) {
+      clearInterval(this.listPollTimer);
+      this.listPollTimer = null;
+    }
+    if (this.countPollTimer) {
+      clearInterval(this.countPollTimer);
+      this.countPollTimer = null;
+    }
   }
 
   /**
    * Get list of tickets with pagination
    */
-  getListOfTickets() {
-    this.isLoading = true;
+  getListOfTickets(silent: boolean = false) {
+    // Silent polls skip the loading spinner so the list doesn't flicker.
+    if (!silent) this.isLoading = true;
 
     // Build query params
     let queryParams = `?page=${this.currentPage}&limit=${this.pageSize}`;
@@ -187,7 +236,8 @@ export class AdminTicketListComponent implements OnInit {
           this.isLoading = false;
           if (error.status == 403) {
             this.authService.logout();
-          } else {
+          } else if (!silent) {
+            // Don't nag with an error dialog on background polls.
             swal.fire({
               icon: "error",
               title: "Error",
@@ -480,19 +530,6 @@ export class AdminTicketListComponent implements OnInit {
     if (days < 7) return `${days}d ago`;
 
     return this.formatDate(date);
-  }
-
-  /**
-   * Start polling for notifications
-   */
-  startNotificationPolling(): void {
-    // Initial load
-    this.loadNotificationCount();
-
-    // Poll every 30 seconds
-    setInterval(() => {
-      this.loadNotificationCount();
-    }, 30000);
   }
 
   /**

@@ -1,9 +1,10 @@
-import { Component, OnInit, ViewChild } from "@angular/core";
+import { Component, OnInit, OnDestroy, ViewChild } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { GlobalVars } from "src/app/global-vars";
 import swal from "sweetalert2";
 import { Http, RequestOptions, Headers } from "@angular/http";
 import { AuthService } from "src/app/pages/login/auth.service";
+import { NotificationService } from "src/app/services/notification.service";
 
 interface TicketMessage {
   id: number;
@@ -60,7 +61,7 @@ interface TicketDetail {
   templateUrl: "./admin-ticket-detail.component.html",
   styleUrls: ["./admin-ticket-detail.component.css"],
 })
-export class AdminTicketDetailComponent implements OnInit {
+export class AdminTicketDetailComponent implements OnInit, OnDestroy {
   ticket: TicketDetail | null = null;
   ticketId: string = "";
   isLoading: boolean = true;
@@ -68,6 +69,18 @@ export class AdminTicketDetailComponent implements OnInit {
   // Filtered messages (exclude internal notes for display in main thread)
   customerMessages: TicketMessage[] = [];
   internalNotes: TicketMessage[] = [];
+
+  /** Poll interval (ms) for silently refreshing messages while the page is open. */
+  private static readonly POLL_INTERVAL_MS = 15_000;
+  private pollTimer: any = null;
+  private onVisibilityChange = () => {
+    if (document.hidden) {
+      this.stopPolling();
+    } else {
+      this.silentReload();
+      this.startPolling();
+    }
+  };
 
   // Current user role
   currentUserRole: string = localStorage.getItem("role") || "STAFF";
@@ -79,6 +92,20 @@ export class AdminTicketDetailComponent implements OnInit {
 
   // Reassign inline
   reassignUserId: number | null = null;
+  reassignLookupName: string | null = null;
+  reassignLookupWarning: string | null = null;
+  private reassignLookupTimer: any = null;
+  /** Roles that are allowed as ticket assignees; must match the backend guard. */
+  private static readonly STAFF_ROLES = [
+    "OWNER",
+    "MANAGER",
+    "ADMIN",
+    "CHINASTAFF",
+    "YUKCHI",
+    "DELIVERER",
+    "ACCOUNTANT",
+    "AUDITOR",
+  ];
 
   // ✅ NEW: ViewChild for reply box component
   @ViewChild("replyBoxComponent") replyBoxComponent: any;
@@ -104,7 +131,8 @@ export class AdminTicketDetailComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private http: Http,
-    public authService: AuthService
+    public authService: AuthService,
+    private notificationService: NotificationService,
   ) {
     this.headers12 = new Headers({ "Content-Type": "application/json" });
     this.headers12.append("Authorization", localStorage.getItem("token"));
@@ -184,6 +212,73 @@ export class AdminTicketDetailComponent implements OnInit {
     this.focusReplyBox();
   }
 
+  ngOnDestroy(): void {
+    this.stopPolling();
+    document.removeEventListener("visibilitychange", this.onVisibilityChange);
+  }
+
+  /** Start (or restart) the 15s silent refresh loop. Skips if the tab is hidden. */
+  private startPolling(): void {
+    this.stopPolling();
+    if (document.hidden) return;
+    this.pollTimer = setInterval(
+      () => this.silentReload(),
+      AdminTicketDetailComponent.POLL_INTERVAL_MS,
+    );
+  }
+
+  private stopPolling(): void {
+    if (this.pollTimer) {
+      clearInterval(this.pollTimer);
+      this.pollTimer = null;
+    }
+  }
+
+  /**
+   * Fetch fresh ticket data without touching the loading spinner. If the
+   * message list didn't change, we skip the reassignment to avoid re-rendering
+   * ngFor blocks (which would blow away scroll position and draft state).
+   */
+  private silentReload(): void {
+    if (!this.ticketId) return;
+    // `?silent=true` tells the backend not to auto-mark messages as read on
+    // this background poll — otherwise every 15s tick would wipe out unread
+    // notifications for anyone else looking at this ticket.
+    this.http
+      .get(
+        GlobalVars.baseUrl + "/tickets/admin/" + this.ticketId + "?silent=true",
+        this.options,
+      )
+      .subscribe(
+        (response) => {
+          const data = response.json();
+          if (!data || !data.ticket) return;
+
+          const nextTicket = data.ticket as TicketDetail;
+          const nextMessages = nextTicket.messages || [];
+          const nextCustomer = nextMessages.filter((m) => !m.is_internal);
+          const nextInternal = nextMessages.filter((m) => m.is_internal);
+
+          const changed =
+            nextCustomer.length !== this.customerMessages.length ||
+            nextInternal.length !== this.internalNotes.length ||
+            nextCustomer[nextCustomer.length - 1]?.id !==
+              this.customerMessages[this.customerMessages.length - 1]?.id ||
+            nextInternal[nextInternal.length - 1]?.id !==
+              this.internalNotes[this.internalNotes.length - 1]?.id;
+
+          if (!changed) return;
+
+          this.ticket = nextTicket;
+          this.customerMessages = nextCustomer;
+          this.internalNotes = nextInternal;
+        },
+        () => {
+          // Silent — don't nag the user with polling errors.
+        },
+      );
+  }
+
   /**
    * Focus on the reply box input field
    */
@@ -240,10 +335,10 @@ export class AdminTicketDetailComponent implements OnInit {
           // Separate customer messages and internal notes
           if (this.ticket && this.ticket.messages) {
             this.customerMessages = this.ticket.messages.filter(
-              (m) => !m.is_internal
+              (m) => !m.is_internal,
             );
             this.internalNotes = this.ticket.messages.filter(
-              (m) => m.is_internal
+              (m) => m.is_internal,
             );
           }
 
@@ -251,6 +346,17 @@ export class AdminTicketDetailComponent implements OnInit {
 
           // ✅ Auto-focus on reply box after ticket loads
           this.focusReplyBox();
+
+          // Kick off (or restart) the 15s silent-refresh loop.
+          this.startPolling();
+          document.removeEventListener(
+            "visibilitychange",
+            this.onVisibilityChange,
+          );
+          document.addEventListener(
+            "visibilitychange",
+            this.onVisibilityChange,
+          );
         },
         (error) => {
           console.error("Error loading ticket:", error);
@@ -270,7 +376,7 @@ export class AdminTicketDetailComponent implements OnInit {
                 this.router.navigate(["/uzm/tickets"]);
               });
           }
-        }
+        },
       );
   }
 
@@ -303,7 +409,7 @@ export class AdminTicketDetailComponent implements OnInit {
       .post(
         GlobalVars.baseUrl + "/tickets/admin/" + this.ticket.id + "/reply",
         formData,
-        options
+        options,
       )
       .subscribe(
         (response) => {
@@ -321,6 +427,10 @@ export class AdminTicketDetailComponent implements OnInit {
               this.replyBoxComponent.resetForm();
             }
             this.loadTicketDetail();
+
+            // Fire the notification refresh immediately so the customer's
+            // mail badge lights up without waiting for the 15s polling tick.
+            this.notificationService.refreshNotifications();
           }
         },
         (error) => {
@@ -340,7 +450,7 @@ export class AdminTicketDetailComponent implements OnInit {
               text: "Javob yuborishda xatolik yuz berdi. Iltimos, qaytadan urinib ko'ring.",
             });
           }
-        }
+        },
       );
   }
 
@@ -376,7 +486,7 @@ export class AdminTicketDetailComponent implements OnInit {
           this.ticket.id +
           "/internal-note",
         formData,
-        options
+        options,
       )
       .subscribe(
         (response) => {
@@ -413,7 +523,7 @@ export class AdminTicketDetailComponent implements OnInit {
               text: "Ichki qayd qo'shishda xatolik yuz berdi. Iltimos, qaytadan urinib ko'ring.",
             });
           }
-        }
+        },
       );
   }
 
@@ -464,7 +574,7 @@ export class AdminTicketDetailComponent implements OnInit {
       .put(
         GlobalVars.baseUrl + "/tickets/admin/" + this.ticket.id + "/status",
         body,
-        this.options
+        this.options,
       )
       .subscribe(
         (response) => {
@@ -496,7 +606,7 @@ export class AdminTicketDetailComponent implements OnInit {
               text: "Holatni yangilashda xatolik yuz berdi. Iltimos, qaytadan urinib ko'ring.",
             });
           }
-        }
+        },
       );
   }
 
@@ -512,7 +622,7 @@ export class AdminTicketDetailComponent implements OnInit {
       .put(
         GlobalVars.baseUrl + "/tickets/admin/" + this.ticket.id + "/priority",
         body,
-        this.options
+        this.options,
       )
       .subscribe(
         (response) => {
@@ -544,7 +654,7 @@ export class AdminTicketDetailComponent implements OnInit {
               text: "Muhimlikni yangilashda xatolik yuz berdi. Iltimos, qaytadan urinib ko'ring.",
             });
           }
-        }
+        },
       );
   }
 
@@ -558,7 +668,7 @@ export class AdminTicketDetailComponent implements OnInit {
       .put(
         GlobalVars.baseUrl + "/tickets/message/" + event.messageId,
         { messageText: event.newText },
-        this.options
+        this.options,
       )
       .subscribe(
         (response) => {
@@ -578,7 +688,7 @@ export class AdminTicketDetailComponent implements OnInit {
               text: "Habarni tahrirlashda xatolik!!!",
             });
           }
-        }
+        },
       );
   }
 
@@ -613,7 +723,7 @@ export class AdminTicketDetailComponent implements OnInit {
                 this.ticket.id +
                 "/reassign",
               body,
-              this.options
+              this.options,
             )
             .subscribe(
               (response) => {
@@ -635,17 +745,68 @@ export class AdminTicketDetailComponent implements OnInit {
                 if (error.status == 403) {
                   this.authService.logout();
                 } else {
-                  const errMsg = error.json?.()?.error || "Qayta biriktirishda xatolik yuz berdi";
+                  const errMsg =
+                    error.json?.()?.error ||
+                    "Qayta biriktirishda xatolik yuz berdi";
                   swal.fire({
                     icon: "error",
                     title: "Xatolik",
                     text: errMsg,
                   });
                 }
-              }
+              },
             );
         }
       });
+  }
+
+  /**
+   * Debounced lookup for the id typed in the inline reassign field. Populates
+   * `reassignLookupName` on staff match, or `reassignLookupWarning` when the
+   * id resolves to a customer (client) — so MANAGER knows to use
+   * "Mijozni O'zgartirish" instead of reassign.
+   */
+  onReassignIdChange(): void {
+    this.reassignLookupName = null;
+    this.reassignLookupWarning = null;
+    if (this.reassignLookupTimer) clearTimeout(this.reassignLookupTimer);
+
+    const raw = String(this.reassignUserId ?? "").trim();
+    if (!raw) return;
+    const parsed = parseInt(raw, 10);
+    if (isNaN(parsed) || parsed <= 0) {
+      this.reassignLookupWarning = "ID noto'g'ri";
+      return;
+    }
+
+    this.reassignLookupTimer = setTimeout(() => {
+      this.http
+        .get(GlobalVars.baseUrl + "/customer/lookup?id=" + parsed, this.options)
+        .subscribe(
+          (resp) => {
+            const body = resp.json();
+            const user = body && (body.user || body.customer || body);
+            if (!user || !user.role) {
+              this.reassignLookupWarning = "Foydalanuvchi topilmadi";
+              return;
+            }
+            const first = user.first_name || "";
+            const last = user.last_name || "";
+            const fullName =
+              `${first} ${last}`.trim() || user.username || `#${parsed}`;
+            if (AdminTicketDetailComponent.STAFF_ROLES.includes(user.role)) {
+              this.reassignLookupName = `${fullName} (${user.role})`;
+            } else {
+              this.reassignLookupWarning =
+                `${fullName} — mijoz. Biriktirib bo'lmaydi. ` +
+                `"Mijozni O'zgartirish" bo'limidan foydalaning.`;
+            }
+          },
+          () => {
+            this.reassignLookupWarning = "Foydalanuvchi topilmadi";
+          },
+        );
+    }, 350);
   }
 
   /**
@@ -653,6 +814,15 @@ export class AdminTicketDetailComponent implements OnInit {
    */
   reassignTicketDirect(): void {
     if (!this.ticket || !this.reassignUserId) return;
+    // Refuse to fire if the frontend lookup already flagged this id as non-staff.
+    if (this.reassignLookupWarning) {
+      swal.fire({
+        icon: "warning",
+        title: "Biriktirib bo'lmaydi",
+        text: this.reassignLookupWarning,
+      });
+      return;
+    }
 
     const body = { assigned_user_id: this.reassignUserId };
 
@@ -660,7 +830,7 @@ export class AdminTicketDetailComponent implements OnInit {
       .put(
         GlobalVars.baseUrl + "/tickets/admin/" + this.ticket.id + "/reassign",
         body,
-        this.options
+        this.options,
       )
       .subscribe(
         (response) => {
@@ -674,6 +844,8 @@ export class AdminTicketDetailComponent implements OnInit {
               showConfirmButton: false,
             });
             this.reassignUserId = null;
+            this.reassignLookupName = null;
+            this.reassignLookupWarning = null;
             this.loadTicketDetail();
           }
         },
@@ -682,14 +854,15 @@ export class AdminTicketDetailComponent implements OnInit {
           if (error.status == 403) {
             this.authService.logout();
           } else {
-            const errMsg = error.json?.()?.error || "Qayta biriktirishda xatolik yuz berdi";
+            const errMsg =
+              error.json?.()?.error || "Qayta biriktirishda xatolik yuz berdi";
             swal.fire({
               icon: "error",
               title: "Xatolik",
               text: errMsg,
             });
           }
-        }
+        },
       );
   }
 
@@ -785,7 +958,9 @@ export class AdminTicketDetailComponent implements OnInit {
    * Check if user can reassign (only managers)
    */
   canReassign(): boolean {
-    return this.currentUserRole === "MANAGER" || this.currentUserRole === "OWNER";
+    return (
+      this.currentUserRole === "MANAGER" || this.currentUserRole === "OWNER"
+    );
   }
 
   /**

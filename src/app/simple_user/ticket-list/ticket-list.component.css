@@ -251,8 +251,26 @@
 }
 
 .ticket-card.has-unread {
-  border-left: 4px solid #ff9800;
-  background: #fffbf0;
+  border-left: 5px solid #43a047;
+  background: #f1f8e9;
+  box-shadow: 0 2px 10px rgba(67, 160, 71, 0.18);
+}
+
+/* Green "new message" dot next to the ticket number for quick scanning. */
+.ticket-card.has-unread .ticket-number strong::after {
+  content: "";
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  margin-left: 8px;
+  border-radius: 50%;
+  background: #43a047;
+  box-shadow: 0 0 0 3px rgba(67, 160, 71, 0.2);
+  vertical-align: middle;
+}
+
+.ticket-card.has-unread .ticket-subject {
+  font-weight: 700;
 }
 
 .ticket-header {
@@ -304,7 +322,7 @@
 }
 
 .badge-unread {
-  background-color: #ff9800;
+  background-color: #43a047;
   color: white;
 }
 
