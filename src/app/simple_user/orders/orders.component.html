@@ -99,7 +99,17 @@
                       <td>{{ row.quantity }}</td>
                       <td>{{ orderTypeText[i] }}</td>
                       <td>{{ orderStatusText[i] }}</td>
-                      <td>{{ row.box_number | slice : 0 : 5 }}</td>
+                      <td>
+                        <div class="party-cell">
+                          <span class="party-name">{{ row.box_number | slice : 0 : 5 }}</span>
+                          <span class="party-type-badge"
+                            [style.color]="shippingColor(row)"
+                            [style.borderColor]="shippingColor(row)">
+                            <i class="material-icons">{{ shippingIcon(row) }}</i>
+                            {{ shippingLabel(row) }}
+                          </span>
+                        </div>
+                      </td>
                       <td>
                         <button mat-raised-button class="btn btn-link btn-info btn-just-icon visibility"
                           data-toggle="modal" data-target="#myModal">

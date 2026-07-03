@@ -55,6 +55,36 @@ export class OrdersComponent implements OnInit, AfterViewInit {
   orderTypesList: TypesOfOrder[];
   orderStatusTypeList: StatusOfOrder[];
 
+  // ── Shipping-type badge helpers (AVIA / AVTO / AVTO POCHTA) ──
+  private normalizedType(row: any): string {
+    return (row?.shipping_type || (row?.isHongKong ? "AVTO" : "AVIA"))
+      .toString()
+      .toUpperCase();
+  }
+  shippingLabel(row: any): string {
+    switch (this.normalizedType(row)) {
+      case "AVTO POCHTA":
+        return "Avto Pochta";
+      case "AVTO":
+        return "Avto";
+      default:
+        return "Avia";
+    }
+  }
+  shippingColor(row: any): string {
+    switch (this.normalizedType(row)) {
+      case "AVTO POCHTA":
+        return "#7C3AED"; // purple
+      case "AVTO":
+        return "#E67E22"; // orange
+      default:
+        return "#1976D2"; // blue
+    }
+  }
+  shippingIcon(row: any): string {
+    return this.normalizedType(row) === "AVIA" ? "flight" : "local_shipping";
+  }
+
   constructor(
     private http: Http,
     private httpClient: HttpClient,

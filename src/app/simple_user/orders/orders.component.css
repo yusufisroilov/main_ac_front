@@ -13,3 +13,32 @@
   /*visibility: collapse; */
   display: none;
 }
+
+/* Partiya (consignment) cell: name + shipping-type badge */
+.party-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+
+.party-name {
+  font-weight: 600;
+}
+
+.party-type-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 1px 7px;
+  border: 1.5px solid;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.party-type-badge .material-icons {
+  font-size: 13px;
+}
