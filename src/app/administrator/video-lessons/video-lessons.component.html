@@ -50,63 +50,103 @@
       <p class="text-muted mt-2">Natija topilmadi</p>
     </div>
 
-    <!-- Video Grid -->
-    <div *ngIf="!loading && filtered.length > 0" class="row">
-      <div *ngFor="let lesson of filtered" class="col-12 col-md-6 col-lg-4 mb-4">
-        <div class="card video-card" [class.inactive-card]="!lesson.is_active">
+    <!-- Grouped by playlist -->
+    <div *ngIf="!loading && filtered.length > 0">
+      <div *ngFor="let group of groups" class="playlist-group">
 
-          <!-- Embedded YouTube Player -->
-          <div class="video-embed" *ngIf="lesson.embedUrl">
-            <iframe [src]="lesson.embedUrl"
-              frameborder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowfullscreen>
-            </iframe>
+        <!-- Playlist header (click to collapse / expand) -->
+        <div class="playlist-header" [class.uncat]="!group.name"
+             (click)="togglePlaylist(group)">
+          <div class="playlist-header-icon">
+            <i class="material-icons">{{ group.name ? 'playlist_play' : 'video_library' }}</i>
           </div>
+          <div class="playlist-header-text">
+            <span class="playlist-title">{{ group.label }}</span>
+            <span class="playlist-sub">{{ group.lessons.length }} ta video</span>
+          </div>
+          <span class="playlist-count">{{ group.lessons.length }}</span>
+          <i class="material-icons playlist-chevron" [class.collapsed]="isCollapsed(group)">
+            expand_more
+          </i>
+        </div>
 
-          <div class="card-body">
-            <ng-container *ngIf="canManage">
-              <!-- Order badge -->
-              <span class="badge badge-pill order-badge">#{{ lesson.display_order }}</span>
+        <!-- Videos in this playlist -->
+        <div class="video-grid" *ngIf="!isCollapsed(group)">
+          <div *ngFor="let lesson of group.lessons" class="vl-card" [class.inactive]="!lesson.is_active">
 
-              <!-- Active/Inactive badge -->
-              <span class="badge ml-1" [class.badge-success]="lesson.is_active" [class.badge-secondary]="!lesson.is_active">
-                {{ lesson.is_active ? 'Faol' : 'Nofaol' }}
-              </span>
-            </ng-container>
-
-            <h6 class="card-title mt-2 mb-1" style="font-weight:700;">{{ lesson.title }}</h6>
-            <p class="card-text text-muted small mb-2" *ngIf="lesson.description">
-              {{ lesson.description }}
-            </p>
-
-            <!-- Actions -->
-            <div class="d-flex gap-2 mt-auto">
-              <a [href]="lesson.youtube_url" target="_blank" rel="noopener"
-                class="btn btn-sm btn-outline-danger flex-fill">
-                <i class="material-icons" style="font-size:16px;vertical-align:middle;">open_in_new</i>
-                YouTube
-              </a>
-              <ng-container *ngIf="canManage">
-                <button class="btn btn-sm btn-outline-primary" (click)="editLesson(lesson)" title="Tahrirlash">
-                  <i class="material-icons" style="font-size:16px;vertical-align:middle;">edit</i>
-                </button>
-                <button class="btn btn-sm" [class.btn-outline-secondary]="lesson.is_active"
-                  [class.btn-outline-success]="!lesson.is_active"
-                  (click)="toggleActive(lesson)" [title]="lesson.is_active ? 'Nofaol qilish' : 'Faol qilish'">
-                  <i class="material-icons" style="font-size:16px;vertical-align:middle;">
-                    {{ lesson.is_active ? 'visibility_off' : 'visibility' }}
-                  </i>
-                </button>
-                <button class="btn btn-sm btn-outline-danger" (click)="deleteLesson(lesson)" title="O'chirish">
-                  <i class="material-icons" style="font-size:16px;vertical-align:middle;">delete</i>
-                </button>
-              </ng-container>
+            <!-- Thumbnail with play overlay -->
+            <div class="vl-thumb" (click)="playVideo(lesson)">
+              <img *ngIf="getThumbnail(lesson.youtube_url)" [src]="getThumbnail(lesson.youtube_url)"
+                   [alt]="lesson.title" loading="lazy">
+              <div *ngIf="!getThumbnail(lesson.youtube_url)" class="vl-thumb-fallback">
+                <i class="material-icons">videocam_off</i>
+              </div>
+              <div class="vl-play"><i class="material-icons">play_arrow</i></div>
+              <span *ngIf="canManage" class="vl-order">#{{ lesson.display_order }}</span>
+              <span *ngIf="canManage && !lesson.is_active" class="vl-inactive-tag">Nofaol</span>
             </div>
+
+            <!-- Body -->
+            <div class="vl-body">
+              <h6 class="vl-title" (click)="playVideo(lesson)">{{ lesson.title }}</h6>
+              <p class="vl-desc" *ngIf="lesson.description">{{ lesson.description }}</p>
+
+              <div class="vl-actions">
+                <button class="vl-btn vl-btn-play" (click)="playVideo(lesson)">
+                  <i class="material-icons">play_circle_filled</i> Ko'rish
+                </button>
+                <a [href]="lesson.youtube_url" target="_blank" rel="noopener"
+                   class="vl-btn vl-btn-yt" title="YouTube'da ochish">
+                  <i class="material-icons">open_in_new</i>
+                </a>
+                <ng-container *ngIf="canManage">
+                  <button class="vl-btn vl-btn-edit" (click)="editLesson(lesson)" title="Tahrirlash">
+                    <i class="material-icons">edit</i>
+                  </button>
+                  <button class="vl-btn vl-btn-toggle" (click)="toggleActive(lesson)"
+                          [title]="lesson.is_active ? 'Nofaol qilish' : 'Faol qilish'">
+                    <i class="material-icons">{{ lesson.is_active ? 'visibility_off' : 'visibility' }}</i>
+                  </button>
+                  <button class="vl-btn vl-btn-del" (click)="deleteLesson(lesson)" title="O'chirish">
+                    <i class="material-icons">delete</i>
+                  </button>
+                </ng-container>
+              </div>
+            </div>
+
           </div>
         </div>
+
       </div>
     </div>
 
+  </div>
+</div>
+
+<!-- Video Player Modal -->
+<div class="vl-modal-overlay" *ngIf="playingLesson" (click)="closePlayer()">
+  <div class="vl-modal" (click)="$event.stopPropagation()">
+    <div class="vl-modal-head">
+      <span class="vl-modal-title">{{ playingLesson.title }}</span>
+      <button class="vl-modal-close" (click)="closePlayer()">
+        <i class="material-icons">close</i>
+      </button>
+    </div>
+    <div class="vl-modal-video">
+      <iframe *ngIf="playingEmbedUrl" [src]="playingEmbedUrl"
+        frameborder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowfullscreen></iframe>
+      <div *ngIf="!playingEmbedUrl" class="vl-modal-error">
+        <i class="material-icons">error_outline</i>
+        <p>Video havolasi noto'g'ri. YouTube'da oching.</p>
+        <a [href]="playingLesson.youtube_url" target="_blank" rel="noopener" class="btn btn-danger btn-sm">
+          YouTube'da ochish
+        </a>
+      </div>
+    </div>
+    <div class="vl-modal-desc" *ngIf="playingLesson.description">
+      {{ playingLesson.description }}
+    </div>
   </div>
 </div>

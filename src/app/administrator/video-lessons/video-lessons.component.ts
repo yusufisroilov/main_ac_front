@@ -9,10 +9,17 @@ interface VideoLesson {
   title: string;
   description: string | null;
   youtube_url: string;
+  playlist: string | null;
   display_order: number;
   is_active: boolean;
   created_at: string;
   embedUrl?: SafeResourceUrl;
+}
+
+interface PlaylistGroup {
+  name: string | null; // null = uncategorized
+  label: string;
+  lessons: VideoLesson[];
 }
 
 @Component({
@@ -23,9 +30,34 @@ interface VideoLesson {
 export class VideoLessonsComponent implements OnInit {
   lessons: VideoLesson[] = [];
   filtered: VideoLesson[] = [];
+  groups: PlaylistGroup[] = [];
   searchQuery = "";
   loading = false;
   canManage = !["CLIENT"].includes(localStorage.getItem("role") || "");
+
+  /** Labels of playlists the user has collapsed (persists across re-filters). */
+  collapsedPlaylists = new Set<string>();
+
+  togglePlaylist(group: PlaylistGroup) {
+    if (this.collapsedPlaylists.has(group.label)) {
+      this.collapsedPlaylists.delete(group.label);
+    } else {
+      this.collapsedPlaylists.add(group.label);
+    }
+  }
+
+  isCollapsed(group: PlaylistGroup): boolean {
+    return this.collapsedPlaylists.has(group.label);
+  }
+
+  /** Distinct playlist names across all lessons (for the create/edit datalist). */
+  get playlistNames(): string[] {
+    const set = new Set<string>();
+    for (const l of this.lessons) {
+      if (l.playlist && l.playlist.trim()) set.add(l.playlist.trim());
+    }
+    return [...set].sort();
+  }
 
   constructor(private http: HttpClient, private sanitizer: DomSanitizer) {}
 
@@ -48,10 +80,7 @@ export class VideoLessonsComponent implements OnInit {
       })
       .subscribe(
         (data) => {
-          this.lessons = (data.lessons || []).map((l: VideoLesson) => ({
-            ...l,
-            embedUrl: this.getEmbedUrl(l.youtube_url),
-          }));
+          this.lessons = data.lessons || [];
           this.applyFilter();
           this.loading = false;
         },
@@ -67,24 +96,61 @@ export class VideoLessonsComponent implements OnInit {
       this.filtered = this.lessons.filter(
         (l) =>
           l.title.toLowerCase().includes(q) ||
-          (l.description || "").toLowerCase().includes(q),
+          (l.description || "").toLowerCase().includes(q) ||
+          (l.playlist || "").toLowerCase().includes(q),
       );
     }
+    this.buildGroups();
+  }
+
+  /** Group the filtered lessons by playlist; named playlists first, uncategorized last. */
+  private buildGroups() {
+    const map = new Map<string | null, VideoLesson[]>();
+    for (const l of this.filtered) {
+      const key = l.playlist && l.playlist.trim() ? l.playlist.trim() : null;
+      if (!map.has(key)) map.set(key, []);
+      map.get(key)!.push(l);
+    }
+    const groups: PlaylistGroup[] = [];
+    for (const [name, lessons] of map.entries()) {
+      if (name === null) continue;
+      groups.push({ name, label: name, lessons });
+    }
+    groups.sort((a, b) => a.label.localeCompare(b.label));
+    if (map.has(null)) {
+      groups.push({
+        name: null,
+        label: "Boshqa (playlistsiz)",
+        lessons: map.get(null)!,
+      });
+    }
+    this.groups = groups;
   }
 
   getVideoId(url: string): string | null {
+    if (!url) return null;
     try {
-      const u = new URL(url);
-      if (u.hostname.includes("youtube.com") && u.searchParams.has("v")) {
-        return u.searchParams.get("v");
+      const u = new URL(url.trim());
+      // youtu.be/VIDEO_ID
+      if (u.hostname.includes("youtu.be")) {
+        const seg = u.pathname.split("/").filter(Boolean)[0];
+        if (seg) return seg;
       }
-      if (u.hostname.includes("youtu.be") && u.pathname.length > 1) {
-        return u.pathname.substring(1);
+      // youtube.com/watch?v=VIDEO_ID (and m.youtube.com)
+      if (u.hostname.includes("youtube.com")) {
+        if (u.searchParams.has("v")) return u.searchParams.get("v");
+        // /embed/ID , /shorts/ID , /live/ID , /v/ID
+        const parts = u.pathname.split("/").filter(Boolean);
+        const marker = parts.findIndex((p) =>
+          ["embed", "shorts", "live", "v"].includes(p),
+        );
+        if (marker !== -1 && parts[marker + 1]) return parts[marker + 1];
       }
-      if (u.pathname.includes("/embed/")) {
-        return u.pathname.split("/embed/")[1];
-      }
-    } catch (_) {}
+    } catch (_) {
+      // Not a full URL — maybe a bare 11-char video id was pasted
+      const m = url.trim().match(/^[a-zA-Z0-9_-]{11}$/);
+      if (m) return url.trim();
+    }
     return null;
   }
 
@@ -97,8 +163,22 @@ export class VideoLessonsComponent implements OnInit {
     const vid = this.getVideoId(url);
     if (!vid) return null;
     return this.sanitizer.bypassSecurityTrustResourceUrl(
-      `https://www.youtube.com/embed/${vid}`,
+      `https://www.youtube.com/embed/${vid}?autoplay=1&rel=0`,
     );
+  }
+
+  // ── Modal player ──────────────────────────────────────────────
+  playingLesson: VideoLesson | null = null;
+  playingEmbedUrl: SafeResourceUrl | null = null;
+
+  playVideo(lesson: VideoLesson) {
+    this.playingLesson = lesson;
+    this.playingEmbedUrl = this.getEmbedUrl(lesson.youtube_url);
+  }
+
+  closePlayer() {
+    this.playingLesson = null;
+    this.playingEmbedUrl = null;
   }
 
   addLesson() {
@@ -132,6 +212,16 @@ export class VideoLessonsComponent implements OnInit {
         <div>
           <label>YouTube Havola<span class="req">*</span></label>
           <input id="vl-url" type="text" class="form-control" value="${existing?.youtube_url || ""}" placeholder="https://www.youtube.com/watch?v=...">
+        </div>
+        <div>
+          <label>Playlist</label>
+          <input id="vl-playlist" type="text" class="form-control" list="vl-playlist-options"
+                 value="${(existing?.playlist || "").replace(/"/g, "&quot;")}"
+                 placeholder="Masalan: Taobao'dan qanday foydalanish">
+          <datalist id="vl-playlist-options">
+            ${this.playlistNames.map((p) => `<option value="${p.replace(/"/g, "&quot;")}"></option>`).join("")}
+          </datalist>
+          <small style="color:#888; font-size:11px;">Bir xil nom yozsangiz, videolar bitta playlistga birlashadi.</small>
         </div>
         <div>
           <label>Tartib Raqami</label>
@@ -169,6 +259,7 @@ export class VideoLessonsComponent implements OnInit {
             title,
             description: (document.getElementById("vl-desc") as HTMLTextAreaElement).value.trim() || null,
             youtube_url: url,
+            playlist: (document.getElementById("vl-playlist") as HTMLInputElement).value.trim() || null,
             display_order: parseInt((document.getElementById("vl-order") as HTMLInputElement).value) || 0,
           };
         },
