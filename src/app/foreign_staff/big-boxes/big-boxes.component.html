@@ -226,6 +226,10 @@
                         class="btn btn-success btn-link">
                         EDIT <i class="material-icons">edit</i>
                       </button>
+                      <button (click)="printBigboxLabel(box)" mat-raised-button type="button"
+                        class="btn btn-warning btn-link">
+                        BARCODE <i class="material-icons">qr_code_2</i>
+                      </button>
                       <!-- <button (click)="deleteBoxFunc(box.box_number)" mat-raised-button type="button"
                         class="btn btn-danger btn-link">
                         <i class="material-icons">delete</i>
@@ -264,6 +268,18 @@
                 <div style="margin: 2px 6px">
                   <strong>{{ quantityOfProduct }}шт</strong>
                 </div>
+              </div>
+            </div>
+
+            <!-- BigBox barcode label (printed via printBigboxLabel) -->
+            <div #bigboxLabelSection id="bigbox-label-section" *ngIf="printBigboxLabelCond"
+              style="width: 320px; text-align: center; padding: 8px; font-family: Calibri, Arial, sans-serif;">
+              <div style="font-size: 28px; font-weight: bold; letter-spacing: 1px;">
+                {{ bigboxLabelData?.bigbox_number }}
+              </div>
+              <div style="margin: 6px 0;">
+                <ngx-barcode [bc-value]="barcodeVal" [bc-height]="70" [bc-width]="2"
+                  [bc-display-value]="false"></ngx-barcode>
               </div>
             </div>
           </div>

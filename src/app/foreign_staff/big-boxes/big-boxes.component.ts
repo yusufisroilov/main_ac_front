@@ -57,6 +57,8 @@ export class BigBoxesComponent implements OnInit {
   conditionBox = false;
   conditionScan = false;
   printLabelCond = false;
+  printBigboxLabelCond = false;
+  bigboxLabelData: any;
 
   openDate: string;
   consignmentName: string;
@@ -750,5 +752,43 @@ export class BigBoxesComponent implements OnInit {
       );
 
     //this.boxNumberInSearch = boxNum;
+  }
+
+  // Prints a barcode label for a bigbox. The barcode value is the
+  // bigbox_number; when scanned by the Flutter app it fetches the full
+  // contents via GET /bigbox/scan-details?bigbox_number=...
+  printBigboxLabel(box) {
+    this.bigboxLabelData = box;
+    this.barcodeVal = box.bigbox_number;
+    this.printBigboxLabelCond = true;
+    this.changeDetectorRef.detectChanges();
+    this.printBigboxLabelDoc();
+  }
+
+  printBigboxLabelDoc(): void {
+    this.changeDetectorRef.detectChanges();
+    const contents = document.getElementById("bigbox-label-section").innerHTML;
+    this.popupWin = window.open(
+      "",
+      "_blank",
+      "top=0,left=0,height=100%,width=auto",
+    );
+    this.popupWin.document.open();
+    this.popupWin.document.write(`
+    <html>
+      <head>
+        <title>BigBox label</title>
+        <style>
+          html { font-family: Calibri, Arial, Helvetica, sans-serif; }
+          body { margin: 0; padding: 0; }
+          #wrap { text-align: center; }
+        </style>
+      </head>
+      <body onload="window.print(); window.close();">
+        <div id="wrap">${contents}</div>
+      </body>
+    </html>`);
+    this.popupWin.document.close();
+    this.printBigboxLabelCond = false;
   }
 }
