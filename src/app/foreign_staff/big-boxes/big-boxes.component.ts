@@ -14,6 +14,7 @@ import { DomSanitizer } from "@angular/platform-browser";
 import { ChangeDetectorRef } from "@angular/core";
 
 import swal from "sweetalert2";
+import * as QRCode from "qrcode";
 import { TableData } from "src/app/md/md-table/md-table.component";
 import { GlobalVars } from "src/app/global-vars";
 import { AuthService } from "src/app/pages/login/auth.service";
@@ -59,6 +60,7 @@ export class BigBoxesComponent implements OnInit {
   printLabelCond = false;
   printBigboxLabelCond = false;
   bigboxLabelData: any;
+  qrDataUrl = "";
 
   openDate: string;
   consignmentName: string;
@@ -754,12 +756,21 @@ export class BigBoxesComponent implements OnInit {
     //this.boxNumberInSearch = boxNum;
   }
 
-  // Prints a barcode label for a bigbox. The barcode value is the
-  // bigbox_number; when scanned by the Flutter app it fetches the full
-  // contents via GET /bigbox/scan-details?bigbox_number=...
-  printBigboxLabel(box) {
+  // Prints a QR label for a bigbox. The QR value is the bigbox_number; when
+  // scanned by the customs (Flutter) app it fetches the full contents via
+  // GET /bigbox/scan-details?bigbox_number=...
+  async printBigboxLabel(box) {
     this.bigboxLabelData = box;
     this.barcodeVal = box.bigbox_number;
+    try {
+      this.qrDataUrl = await QRCode.toDataURL(box.bigbox_number, {
+        width: 220,
+        margin: 1,
+        errorCorrectionLevel: "M",
+      });
+    } catch (e) {
+      this.qrDataUrl = "";
+    }
     this.printBigboxLabelCond = true;
     this.changeDetectorRef.detectChanges();
     this.printBigboxLabelDoc();

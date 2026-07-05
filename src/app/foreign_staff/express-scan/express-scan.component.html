@@ -1,143 +1,112 @@
 <div class="main-content">
-  <div class="container-fluid">
-    <div class="row">
-      <div class="card3 col-md-4">
-        <div class="" *ngIf="hideForManager">
-          <button
-            mat-raised-button=""
-            (click)="recordParcel()"
-            class="mat-focus-indicator btn btn-warning mat-raised-button mat-button-base"
-          >
-            <span class="mat-button-wrapper"
-              ><span class="btn-label">
-                <i class="material-icons">delivery_dining</i></span
-              >
-              SCAN PARCEL
-            </span>
-            <span
-              matripple=""
-              class="mat-ripple mat-button-ripple"
-              ng-reflect-disabled="false"
-              ng-reflect-centered="false"
-              ng-reflect-trigger="[object HTMLButtonElement]"
-            ></span
-            ><span class="mat-button-focus-overlay"></span>
-          </button>
-        </div>
+  <div class="es-page">
+    <!-- Top toolbar: scan button + search input + refresh, all on one row -->
+    <div class="es-toolbar">
+      <button
+        *ngIf="hideForManager"
+        class="es-scan-btn"
+        (click)="recordParcel()"
+        title="Scan a parcel">
+        <i class="material-icons">qr_code_scanner</i>
+        <span>SCAN PARCEL</span>
+      </button>
+
+      <div class="es-search">
+        <i class="material-icons es-search-icon">search</i>
+        <input
+          #searchInput
+          type="text"
+          [value]="searchQuery"
+          (input)="onSearchInput(searchInput.value)"
+          placeholder="Search tracking number…"
+        />
+        <button *ngIf="searchQuery" class="es-search-clear" (click)="clearSearch()" title="Clear">
+          <i class="material-icons">close</i>
+        </button>
+      </div>
+
+      <button class="es-icon-btn" (click)="refresh()" title="Refresh">
+        <i class="material-icons">refresh</i>
+      </button>
+    </div>
+
+    <!-- Filter chips (right-aligned) + count -->
+    <div class="es-filter-row">
+      <div class="es-count" *ngIf="totalCount > 0">
+        <ng-container *ngIf="visibleCount < totalCount; else totalOnly">
+          {{ visibleCount }} / {{ totalCount }}
+        </ng-container>
+        <ng-template #totalOnly>
+          {{ totalCount }} {{ totalCount === 1 ? 'scan' : 'scans' }}
+        </ng-template>
+      </div>
+      <div class="es-chips">
+        <button class="es-chip" [class.active]="activeFilter === 'all'" (click)="setFilter('all')">All</button>
+        <button class="es-chip" [class.active]="activeFilter === 'matched'" (click)="setFilter('matched')">Matched</button>
+        <button class="es-chip" [class.active]="activeFilter === 'unknown'" (click)="setFilter('unknown')">Unknown</button>
       </div>
     </div>
-    <div class="row">
-      <div class="col-md-12">
-        <div class="card">
-          <div
-            class="card-header row card-header-info card-header-icon"
-            style="display: inline-flex"
-          >
-            <div class="col align-self-start">
-              <div class="card-icon">
-                <i class="material-icons">assignment</i>
-              </div>
-              <h4 class="card-title">All Deliveries List</h4>
-            </div>
-          </div>
-          <div class="card-body">
-            <div class="toolbar">
-              <!-- Here you can write extra buttons/actions for the toolbar-->
-            </div>
-            <div class="material-datatables">
-              <div class="row">
-                <div class="col-sm-6 col-lg-3">
-                  <mat-form-field class="example-full-width">
-                    <input
-                      matInput
-                      type="text"
-                      style="font-size: large"
-                      placeholder="Search with Tracking Number"
-                      (input)="getListOfParcelsWithSearch($event.target.value)"
-                    />
-                  </mat-form-field>
-                </div>
-              </div>
-              <div class="table-responsive">
-                <ul class="pagination" *ngIf="needPagination">
-                  <!--  <li class="page-item">
-                                <a mat-button class="page-link" aria-label="Previous">
-                                  <span aria-hidden="true"><i class="fa fa-angle-double-left" aria-hidden="true"></i></span>
-                                </a>
-                              </li> -->
-                  <li
-                    class="page-item"
-                    [ngClass]="{ active: currentPage == i }"
-                    *ngFor="let page of mypages; index as i"
-                  >
-                    <a mat-button class="page-link" (click)="pagebyNum(i)">{{
-                      i + 1
-                    }}</a>
-                  </li>
-                  <!-- <li class="page-item">
-                                <a mat-button class="page-link" aria-label="Next">
-                                  <span aria-hidden="true"><i class="fa fa-angle-double-right" aria-hidden="true"></i></span>
-                                </a>
-                              </li> -->
-                </ul>
-                <table
-                  class="table table-striped table-no-bordered table-hover"
-                  cellspacing="0"
-                  width="100%"
-                  style="width: 100%"
-                >
-                  <thead>
-                    <tr>
-                      <th class="text-center">No</th>
-                      <th class="text-center">Tracking Number</th>
-                      <th class="text-center">Scanned Time</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr
-                      *ngFor="let row of allData; let i = index"
-                      class="text-center table-danger"
-                      [ngClass]="{
-                        'table-danger': row.orderType == 7,
-                        boldclass: i == 0
-                      }"
-                    >
-                      <td>{{ i + 1 }}</td>
-                      <td>{{ row.tracking_number }}</td>
-                      <td>{{ row.arrivedDate | slice : 0 : 16 }}</td>
-                    </tr>
-                  </tbody>
-                </table>
-                <ul class="pagination" *ngIf="needPagination">
-                  <!--  <li class="page-item">
-                                  <a mat-button class="page-link" aria-label="Previous">
-                                    <span aria-hidden="true"><i class="fa fa-angle-double-left" aria-hidden="true"></i></span>
-                                  </a>
-                                </li> -->
-                  <li
-                    class="page-item"
-                    [ngClass]="{ active: currentPage == i }"
-                    *ngFor="let page of mypages; index as i"
-                  >
-                    <a mat-button class="page-link" (click)="pagebyNum(i)">{{
-                      i + 1
-                    }}</a>
-                  </li>
-                  <!-- <li class="page-item">
-                                  <a mat-button class="page-link" aria-label="Next">
-                                    <span aria-hidden="true"><i class="fa fa-angle-double-right" aria-hidden="true"></i></span>
-                                  </a>
-                                </li> -->
-                </ul>
-              </div>
-            </div>
-          </div>
-          <!-- end content-->
-        </div>
-        <!--  end card  -->
+
+    <!-- Empty state -->
+    <div class="es-empty" *ngIf="filteredGroups.length === 0">
+      <i class="material-icons">
+        {{ searchQuery ? 'search_off' : 'inbox' }}
+      </i>
+      <div class="es-empty-title">
+        {{ searchQuery ? 'No matches for that tracking' : 'No scans yet' }}
       </div>
-      <!-- end col-md-12 -->
+      <div class="es-empty-hint" *ngIf="!searchQuery && hideForManager">
+        Tap SCAN PARCEL to start
+      </div>
     </div>
-    <!-- end row -->
+
+    <!-- Grouped list -->
+    <div class="es-list" *ngIf="filteredGroups.length > 0">
+      <ng-container *ngFor="let group of filteredGroups">
+        <div class="es-group-header">
+          <span class="es-group-label">{{ group.label }}</span>
+          <span class="es-group-date">{{ group.dateLabel }}</span>
+          <span class="es-group-line"></span>
+        </div>
+
+        <div
+          class="es-card"
+          *ngFor="let row of group.rows"
+          [class.es-card--matched]="row.matched"
+          [class.es-card--unknown]="!row.matched"
+        >
+          <div class="es-accent"></div>
+          <div class="es-icon-wrap">
+            <i class="material-icons">{{ row.matched ? 'check_circle' : 'help_outline' }}</i>
+          </div>
+          <div class="es-content">
+            <div class="es-tracking">{{ row.tracking_number }}</div>
+            <div class="es-meta">
+              <span *ngIf="row.matched" class="es-id-pill">ID {{ row.customer_id }}</span>
+              <span *ngIf="row.matched" class="es-service">{{ row.service_name }}</span>
+              <span *ngIf="!row.matched" class="es-no-decl">no pre-declaration</span>
+            </div>
+          </div>
+          <div class="es-time-inline">
+            <span class="es-time-clock">{{ fullDateTime(row.scan_date) }}</span>
+            <span class="es-time-rel">· {{ relativeTime(row.scan_date) }}</span>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+
+    <!-- Pagination -->
+    <div class="es-pagination" *ngIf="totalPages > 1">
+      <button class="es-page-btn" [disabled]="!canPrev" (click)="prevPage()" title="Previous">
+        <i class="material-icons">chevron_left</i>
+      </button>
+      <span class="es-page-info">
+        {{ pageRangeStart }}–{{ pageRangeEnd }} of {{ totalCount }}
+        <span class="es-page-of">· page {{ currentPage + 1 }} of {{ totalPages }}</span>
+      </span>
+      <button class="es-page-btn" [disabled]="!canNext" (click)="nextPage()" title="Next">
+        <i class="material-icons">chevron_right</i>
+      </button>
+    </div>
   </div>
 </div>

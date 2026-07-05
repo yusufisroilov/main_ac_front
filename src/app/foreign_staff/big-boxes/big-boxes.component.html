@@ -278,8 +278,8 @@
                 {{ bigboxLabelData?.bigbox_number }}
               </div>
               <div style="margin: 6px 0;">
-                <ngx-barcode [bc-value]="barcodeVal" [bc-height]="70" [bc-width]="2"
-                  [bc-display-value]="false"></ngx-barcode>
+                <img *ngIf="qrDataUrl" [src]="qrDataUrl" width="200" height="200"
+                  alt="QR" style="display: inline-block;" />
               </div>
             </div>
           </div>

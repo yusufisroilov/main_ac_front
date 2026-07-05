@@ -39,12 +39,20 @@ export class CustomerServicesComponent implements OnInit {
   // ── Shared ────────────────────────────────────────────
   cashAccounts: any[] = [];
 
-  categories = ["DELIVERY", "STORAGE", "CUSTOMS", "PACKAGING", "OTHER"];
+  categories = [
+    "DELIVERY",
+    "STORAGE",
+    "CUSTOMS",
+    "PACKAGING",
+    "CHINA_WAREHOUSE_SERVICE",
+    "OTHER",
+  ];
   categoryLabels: Record<string, string> = {
     DELIVERY: "Yetkazish",
     STORAGE: "Saqlash",
     CUSTOMS: "Bojxona",
     PACKAGING: "Qadoqlash",
+    CHINA_WAREHOUSE_SERVICE: "Xitoy ombori xizmati",
     OTHER: "Boshqa",
   };
 
@@ -157,7 +165,7 @@ export class CustomerServicesComponent implements OnInit {
       .filter((t) => t.is_active)
       .map(
         (t) =>
-          `<option value="${t.id}" data-price="${t.default_price}" data-currency="${t.currency}">${t.name} (${this.formatAmount(t.default_price)} ${t.currency})</option>`,
+          `<option value="${t.id}" data-price="${t.default_price}" data-currency="${t.currency}">${t.name_uz} (${this.formatAmount(t.default_price)} ${t.currency})</option>`,
       )
       .join("");
 
@@ -309,7 +317,7 @@ export class CustomerServicesComponent implements OnInit {
         (s) =>
           `<label style="display:flex;align-items:center;gap:8px;margin-bottom:6px;cursor:pointer;">
             <input type="checkbox" class="svc-chk" value="${s.id}" data-debt="${(parseFloat(s.amount_usd) - parseFloat(s.amount_paid || 0)).toFixed(2)}" checked>
-            <span>${s.serviceType?.name || "Xizmat"} — <b style="color:#e53935;font-weight:700;">${s.currency === "USD"
+            <span>${s.serviceType?.name_uz || "Xizmat"} — <b style="color:#e53935;font-weight:700;">${s.currency === "USD"
               ? (parseFloat(s.amount_usd) - parseFloat(s.amount_paid || 0)).toFixed(2) + "$"
               : this.formatAmount(parseFloat(s.amount) - parseFloat(s.amount_paid || 0) * parseFloat(s.fx_rate || 1)) + " " + s.currency
             }</b> <span style="color:#e53935;font-size:12px;font-weight:700;">(${(parseFloat(s.amount_usd) - parseFloat(s.amount_paid || 0)).toFixed(2)}$)</span></span>
@@ -723,6 +731,9 @@ export class CustomerServicesComponent implements OnInit {
       )
       .join("");
 
+    const escape = (s: string) => (s || "").replace(/"/g, "&quot;");
+    const billableChecked = existing?.is_billable !== false ? "checked" : "";
+
     const html = `
       <style>
         .st-form { display:grid; grid-template-columns:1fr 1fr; gap:12px 16px; text-align:left; }
@@ -730,11 +741,25 @@ export class CustomerServicesComponent implements OnInit {
         .st-form label { font-size:12px; font-weight:600; color:#555; display:block; margin-bottom:4px; text-transform:uppercase; }
         .st-form label .req { color:#e53935; margin-left:2px; }
         .st-form .form-control { border-radius:6px; border:1.5px solid #ddd; padding:8px 10px; font-size:14px; width:100%; box-sizing:border-box; }
+        .st-check { display:flex; align-items:center; gap:8px; padding:8px 0; }
+        .st-check input { width:18px; height:18px; }
       </style>
       <div class="st-form">
-        <div class="full">
-          <label>Nomi<span class="req">*</span></label>
-          <input id="st-name" type="text" class="form-control" value="${existing?.name || ""}" placeholder="Xizmat nomi">
+        <div>
+          <label>Nomi (UZ)<span class="req">*</span></label>
+          <input id="st-name-uz" type="text" class="form-control" value="${escape(existing?.name_uz)}" placeholder="Masalan: Quti bilan yuborish">
+        </div>
+        <div>
+          <label>Name (EN)</label>
+          <input id="st-name-en" type="text" class="form-control" value="${escape(existing?.name_en)}" placeholder="e.g. Sent with box">
+        </div>
+        <div>
+          <label>Kod</label>
+          <input id="st-code" type="text" class="form-control" value="${escape(existing?.code)}" placeholder="SENT_WITH_BOX">
+        </div>
+        <div>
+          <label>Tartib</label>
+          <input id="st-sort" type="number" class="form-control" value="${existing?.sort_order || 0}">
         </div>
         <div>
           <label>Narxi</label>
@@ -751,26 +776,34 @@ export class CustomerServicesComponent implements OnInit {
           <label>Kategoriya</label>
           <select id="st-category" class="form-control">${categoryOpts}</select>
         </div>
+        <div class="full st-check">
+          <input id="st-billable" type="checkbox" ${billableChecked}>
+          <label for="st-billable" style="margin:0;text-transform:none;font-size:14px;">Pullik xizmat (mijoz avtomatik qarz oladi)</label>
+        </div>
       </div>`;
 
     swal
       .fire({
         title: isEdit ? "Xizmatni Tahrirlash" : "Yangi Xizmat Turi",
         html,
-        width: "min(480px, 95vw)",
+        width: "min(560px, 95vw)",
         showCancelButton: true,
         confirmButtonText: isEdit ? "Saqlash" : "Qo'shish",
         cancelButtonText: "Bekor",
         customClass: { confirmButton: "btn btn-success", cancelButton: "btn btn-secondary" },
         buttonsStyling: false,
         preConfirm: () => {
-          const name = (document.getElementById("st-name") as HTMLInputElement).value.trim();
-          if (!name) { swal.showValidationMessage("Nomi majburiy"); return false; }
+          const nameUz = (document.getElementById("st-name-uz") as HTMLInputElement).value.trim();
+          if (!nameUz) { swal.showValidationMessage("Nomi (UZ) majburiy"); return false; }
           return {
-            name,
+            name_uz: nameUz,
+            name_en: (document.getElementById("st-name-en") as HTMLInputElement).value.trim() || null,
+            code: (document.getElementById("st-code") as HTMLInputElement).value.trim() || null,
+            sort_order: parseInt((document.getElementById("st-sort") as HTMLInputElement).value) || 0,
             default_price: parseFloat((document.getElementById("st-price") as HTMLInputElement).value) || 0,
             currency: (document.getElementById("st-currency") as HTMLSelectElement).value,
             category: (document.getElementById("st-category") as HTMLSelectElement).value,
+            is_billable: (document.getElementById("st-billable") as HTMLInputElement).checked,
           };
         },
       })

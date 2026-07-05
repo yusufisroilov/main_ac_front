@@ -12,8 +12,15 @@
             </div>
           </div>
           <div class="card-body">
-            <div class="toolbar">
-              <!-- Here you can write extra buttons/actions for the toolbar              -->
+            <div class="toolbar" style="display: flex; justify-content: flex-end; margin-bottom: 8px;">
+              <button
+                type="button"
+                class="btn btn-info"
+                style="display: inline-flex; align-items: center; gap: 6px; border-radius: 10px; font-weight: 600;"
+                (click)="openPreDeclareModal()">
+                <i class="material-icons" style="font-size: 18px;">qr_code_scanner</i>
+                Oldindan e'lon qilish
+              </button>
             </div>
             <div class="material-datatables">
               <div class="row">

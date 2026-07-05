@@ -76,7 +76,7 @@
               <tr *ngFor="let s of services; let i=index">
                 <td>{{ i + 1 }}</td>
                 <td>
-                  <span style="font-weight:600;">{{ s.serviceType?.name || '—' }}</span>
+                  <span style="font-weight:600;">{{ s.serviceType?.name_uz || '—' }}</span>
                   <br *ngIf="s.notes">
                   <small *ngIf="s.notes" class="text-muted">{{ s.notes }}</small>
                 </td>
@@ -180,7 +180,7 @@
                   <br><small class="text-muted">{{ s.customer?.first_name }} {{ s.customer?.last_name }}</small>
                 </td>
                 <td>
-                  <span style="font-weight:600;">{{ s.serviceType?.name || '—' }}</span>
+                  <span style="font-weight:600;">{{ s.serviceType?.name_uz || '—' }}</span>
                   <br *ngIf="s.notes">
                   <small *ngIf="s.notes" class="text-muted">{{ s.notes }}</small>
                 </td>
@@ -252,7 +252,10 @@
             <tbody>
               <tr *ngFor="let t of serviceTypes; let i=index">
                 <td>{{ i + 1 }}</td>
-                <td style="font-weight:600;">{{ t.name }}</td>
+                <td>
+                  <div style="font-weight:600;">{{ t.name_uz }}</div>
+                  <small class="text-muted" *ngIf="t.name_en">{{ t.name_en }}</small>
+                </td>
                 <td><span class="badge badge-light">{{ categoryLabels[t.category] || t.category }}</span></td>
                 <td>{{ formatAmount(t.default_price) }} {{ t.currency }}</td>
                 <td>

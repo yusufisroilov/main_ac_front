@@ -451,6 +451,182 @@ export class OrdersComponent implements OnInit, AfterViewInit {
     this.trackingNum2 = me;
   }
 
+  // ─── Express-scan pre-declare ───────────────────────────────────────────
+
+  private getAuthHeaders(): HttpHeaders {
+    return new HttpHeaders({
+      "Content-Type": "application/json",
+      Authorization: localStorage.getItem("token") || "",
+    });
+  }
+
+  openPreDeclareModal() {
+    this.httpClient
+      .get<any>(`${GlobalVars.baseUrl}/express-scan/service-types`, {
+        headers: this.getAuthHeaders(),
+      })
+      .subscribe(
+        (data) => this.showPreDeclareDialog(data.types || []),
+        (err) => {
+          if (err.status === 403) this.authService.logout();
+          swal.fire(
+            "Xatolik",
+            err.error?.error || "Xizmat turlarini olishda xatolik",
+            "error",
+          );
+        },
+      );
+  }
+
+  private showPreDeclareDialog(types: any[]) {
+    if (!types.length) {
+      swal.fire("Ma'lumot", "Hozircha xizmat turlari mavjud emas", "info");
+      return;
+    }
+
+    const formatPrice = (v: any): string => {
+      const n = parseFloat(v);
+      if (!isFinite(n)) return "0";
+      return Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+    };
+
+    const options = types
+      .filter((t) => t.code !== "UNKNOWN")
+      .map(
+        (t) =>
+          `<option value="${t.id}"
+            data-billable="${t.is_billable}"
+            data-price="${t.default_price || 0}"
+            data-currency="${t.currency || 'UZS'}">
+            ${t.name_uz}${t.is_billable ? " 💰" : ""}
+          </option>`,
+      )
+      .join("");
+
+    const html = `
+      <style>
+        .es-form { display:flex; flex-direction:column; gap:14px; text-align:left; }
+        .es-form label { font-size:12px; font-weight:700; color:#555; text-transform:uppercase; display:block; margin-bottom:6px; }
+        .es-form label .req { color:#e53935; margin-left:2px; }
+        .es-form .form-control { border-radius:8px; border:1.5px solid #ddd; padding:10px 12px; font-size:15px; width:100%; box-sizing:border-box; }
+        .es-form .form-control:focus { border-color:#1976d2; outline:none; box-shadow:0 0 0 3px rgba(25,118,210,0.12); }
+        .es-hint { font-size:12px; color:#888; margin-top:4px; }
+        .es-bill { margin-top:8px; padding:10px 12px; border-radius:8px; background:#fff4e5; border:1px solid #ffdcb0; display:none; }
+        .es-bill-row { display:flex; justify-content:space-between; align-items:center; gap:8px; }
+        .es-bill-label { font-size:12px; color:#a15c1a; font-weight:600; }
+        .es-bill-amount { font-size:18px; font-weight:800; color:#c8672a; letter-spacing:0.3px; white-space:nowrap; }
+        .es-bill-note { font-size:11px; color:#7a4715; margin-top:4px; }
+      </style>
+      <div class="es-form">
+        <div>
+          <label>Trek raqami<span class="req">*</span></label>
+          <input id="es-tracking" type="text" class="form-control" placeholder="Masalan: SF1234567890" autocomplete="off">
+        </div>
+        <div>
+          <label>Xizmat turi<span class="req">*</span></label>
+          <select id="es-service" class="form-control">
+            <option value="">-- Tanlang --</option>
+            ${options}
+          </select>
+          <div id="es-bill-warning" class="es-bill">
+            <div class="es-bill-row">
+              <span class="es-bill-label">⚠️ Xizmat narxi</span>
+              <span class="es-bill-amount" id="es-bill-amount">—</span>
+            </div>
+            <div class="es-bill-note">Ushbu summa hisobingizga qarz sifatida yoziladi.</div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    swal
+      .fire({
+        title: "Trek raqamini oldindan e'lon qilish",
+        html,
+        width: "min(460px, 95vw)",
+        showCancelButton: true,
+        confirmButtonText: "E'lon qilish",
+        cancelButtonText: "Bekor",
+        customClass: {
+          confirmButton: "btn btn-info",
+          cancelButton: "btn btn-secondary",
+        },
+        buttonsStyling: false,
+        didOpen: () => {
+          const sel = document.getElementById("es-service") as HTMLSelectElement;
+          const warn = document.getElementById("es-bill-warning") as HTMLElement;
+          const amountEl = document.getElementById("es-bill-amount") as HTMLElement;
+          sel.addEventListener("change", () => {
+            const opt = sel.options[sel.selectedIndex];
+            const billable = opt?.getAttribute("data-billable") === "true";
+            warn.style.display = billable ? "block" : "none";
+            if (billable && amountEl) {
+              const price = opt?.getAttribute("data-price") || "0";
+              const currency = opt?.getAttribute("data-currency") || "UZS";
+              amountEl.textContent = `${formatPrice(price)} ${currency}`;
+            }
+          });
+        },
+        preConfirm: () => {
+          const tracking = (
+            document.getElementById("es-tracking") as HTMLInputElement
+          ).value.trim();
+          const serviceIdRaw = (
+            document.getElementById("es-service") as HTMLSelectElement
+          ).value;
+
+          if (!tracking) {
+            swal.showValidationMessage("Trek raqamini kiriting");
+            return false;
+          }
+          if (!serviceIdRaw) {
+            swal.showValidationMessage("Xizmat turini tanlang");
+            return false;
+          }
+          return {
+            tracking_number: tracking,
+            service_type_id: parseInt(serviceIdRaw),
+          };
+        },
+      })
+      .then((result) => {
+        if (!result.isConfirmed || !result.value) return;
+
+        this.httpClient
+          .post<any>(
+            `${GlobalVars.baseUrl}/express-scan/pre-declare`,
+            result.value,
+            { headers: this.getAuthHeaders() },
+          )
+          .subscribe(
+            (res) => {
+              const svcName = res.service?.name_uz || "";
+              let msg = `Trek ro'yxatga olindi — ${svcName}`;
+              if (res.charge) {
+                const amt = parseFloat(res.charge.amount).toFixed(0);
+                msg += `. Hisobga ${amt} ${res.charge.currency} qarz qo'shildi.`;
+              }
+              swal.fire({
+                icon: "success",
+                title: "Muvaffaqiyatli",
+                text: msg,
+                timer: 3500,
+                showConfirmButton: false,
+              });
+              this.getListOfParcels();
+            },
+            (err) => {
+              if (err.status === 403) this.authService.logout();
+              swal.fire(
+                "Xatolik",
+                err.error?.error || "Saqlashda xatolik",
+                "error",
+              );
+            },
+          );
+      });
+  }
+
   ngOnInit() {
     this.dataTable = {
       headerRow: [

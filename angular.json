@@ -21,7 +21,8 @@
             "allowedCommonJsDependencies": [
               "nouislider",
               "chartist",
-              "rxjs/add/operator/filter"
+              "rxjs/add/operator/filter",
+              "qrcode"
             ],
             "assets": [
               "src/favicon.ico",
