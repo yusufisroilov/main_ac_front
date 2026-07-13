@@ -61,7 +61,7 @@ export const ROUTES: RouteInfo[] = [
     icontype: "local_shipping",
   },
   {
-    path: "/customer-tickets",
+    path: "/uzm/tickets-list",
     title: "Mening Murojaatlarim",
     type: "link",
     icontype: "cases",
@@ -273,7 +273,7 @@ export const chinaStaffROUTES: RouteInfo[] = [
     icontype: "flight_takeoff",
   },
   {
-    path: "/customer-tickets",
+    path: "/uzm/tickets-list",
     title: "My Tickets",
     type: "link",
     icontype: "cases",
@@ -510,6 +510,12 @@ export const auditorROUTES: RouteInfo[] = [
     type: "link",
     icontype: "cancel",
   },
+  {
+    path: "/uzm/tickets-list",
+    title: "Murojaatlar Ro'yxati",
+    type: "link",
+    icontype: "support_agent",
+  },
 ];
 
 export const accountantROUTES: RouteInfo[] = [
@@ -561,6 +567,12 @@ export const accountantROUTES: RouteInfo[] = [
     title: "Yangiliklar",
     type: "link",
     icontype: "campaign",
+  },
+  {
+    path: "/uzm/tickets-list",
+    title: "Murojaatlar Ro'yxati",
+    type: "link",
+    icontype: "support_agent",
   },
 ];
 

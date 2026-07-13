@@ -9,9 +9,11 @@ import {
 import { ActivatedRoute, Router } from "@angular/router";
 import { GlobalVars } from "src/app/global-vars";
 import swal from "sweetalert2";
+import { showBackendError } from "src/app/shared/backend-error";
 import { Http, RequestOptions, Headers } from "@angular/http";
 import { AuthService } from "src/app/pages/login/auth.service";
 import { NotificationService } from "src/app/services/notification.service";
+import { compressImageIfNeeded } from "src/app/shared/image-compression.util";
 
 interface TicketMessage {
   id: number;
@@ -84,6 +86,7 @@ export class CustomerTicketDetailComponent
   messageText: string = "";
   selectedFiles: FileWithPreview[] = [];
   isSubmitting: boolean = false;
+  isCompressing: boolean = false;
   maxFiles: number = 5;
   maxFileSize: number = 5 * 1024 * 1024; // 5MB
   allowedFileTypes: string[] = [
@@ -155,7 +158,7 @@ export class CustomerTicketDetailComponent
                 text: "Noto'g'ri murojaat raqami",
               })
               .then(() => {
-                this.router.navigate(["/customer-tickets"]);
+                this.router.navigate(["/uzm/tickets-list"]);
               });
           }
         });
@@ -293,7 +296,7 @@ export class CustomerTicketDetailComponent
                 text: data.message || "Murojaat ma'lumotlarini yuklab bo'lmadi",
               })
               .then(() => {
-                this.router.navigate(["/customer-tickets"]);
+                this.router.navigate(["/uzm/tickets-list"]);
               });
           }
         },
@@ -311,7 +314,7 @@ export class CustomerTicketDetailComponent
                 text: "Siz qidirayotgan murojaat mavjud emas yoki sizda unga kirish huquqi yo'q.",
               })
               .then(() => {
-                this.router.navigate(["/customer-tickets"]);
+                this.router.navigate(["/uzm/tickets-list"]);
               });
           } else {
             swal.fire({
@@ -329,9 +332,10 @@ export class CustomerTicketDetailComponent
   // ========================================
 
   /**
-   * Handle file selection
+   * Handle file selection. Compresses images over ~500KB before adding
+   * (see shared/image-compression.util). Non-images pass through untouched.
    */
-  onFileSelect(event: any): void {
+  async onFileSelect(event: any): Promise<void> {
     const files: FileList = event.target.files;
 
     if (!files || files.length === 0) {
@@ -348,68 +352,58 @@ export class CustomerTicketDetailComponent
       return;
     }
 
-    // Process each file
-    for (let i = 0; i < files.length; i++) {
-      const file = files[i];
-
-      // Validate file size
-      if (file.size > this.maxFileSize) {
-        swal.fire({
-          icon: "warning",
-          title: "Fayl juda katta",
-          text: `${
-            file.name
-          } juda katta hajmda. Maksimal fayl hajmi ${this.formatFileSize(
-            this.maxFileSize,
-          )}`,
-        });
-        continue;
-      }
-
-      // Validate file type
-      const fileExt = "." + file.name.split(".").pop()?.toLowerCase();
-      const allowedExts = [
-        ".jpg",
-        ".jpeg",
-        ".png",
-        ".gif",
-        ".pdf",
-        ".zip",
-        ".rar",
-      ];
-
-      if (
-        !this.allowedFileTypes.includes(file.type) &&
-        !allowedExts.includes(fileExt)
-      ) {
-        swal.fire({
-          icon: "warning",
-          title: "Fayl turi noto'g'ri",
-          text: `${file.name} qo'llab-quvvatlanmaydi. Ruxsat etilgan: Rasm, PDF, ZIP, RAR`,
-        });
-        continue;
-      }
-
-      // Create file preview for images
-      const fileWithPreview: FileWithPreview = {
-        file: file,
-        name: file.name,
-        size: file.size,
-      };
-
-      if (this.isImageFile(file.name)) {
-        const reader = new FileReader();
-        reader.onload = (e: any) => {
-          fileWithPreview.preview = e.target.result;
-        };
-        reader.readAsDataURL(file);
-      }
-
-      this.selectedFiles.push(fileWithPreview);
-    }
-
-    // Clear the input so the same file can be selected again
+    // Snapshot before clearing the input
+    const incoming: File[] = Array.from(files);
     event.target.value = "";
+
+    this.isCompressing = true;
+    try {
+      for (const original of incoming) {
+        // Validate type first
+        const fileExt = "." + original.name.split(".").pop()?.toLowerCase();
+        const allowedExts = [".jpg", ".jpeg", ".png", ".gif", ".pdf", ".zip", ".rar"];
+        if (
+          !this.allowedFileTypes.includes(original.type) &&
+          !allowedExts.includes(fileExt)
+        ) {
+          swal.fire({
+            icon: "warning",
+            title: "Fayl turi noto'g'ri",
+            text: `${original.name} qo'llab-quvvatlanmaydi. Ruxsat etilgan: Rasm, PDF, ZIP, RAR`,
+          });
+          continue;
+        }
+
+        const file = await compressImageIfNeeded(original);
+
+        // Post-compression size check
+        if (file.size > this.maxFileSize) {
+          swal.fire({
+            icon: "warning",
+            title: "Fayl juda katta",
+            text: `${original.name} juda katta hajmda. Maksimal fayl hajmi ${this.formatFileSize(this.maxFileSize)}`,
+          });
+          continue;
+        }
+
+        const fileWithPreview: FileWithPreview = {
+          file: file,
+          name: file.name,
+          size: file.size,
+        };
+        if (this.isImageFile(file.name)) {
+          const reader = new FileReader();
+          reader.onload = (e: any) => {
+            fileWithPreview.preview = e.target.result;
+          };
+          reader.readAsDataURL(file);
+        }
+
+        this.selectedFiles.push(fileWithPreview);
+      }
+    } finally {
+      this.isCompressing = false;
+    }
   }
 
   /**
@@ -532,10 +526,8 @@ export class CustomerTicketDetailComponent
           if (error.status == 403) {
             this.authService.logout();
           } else {
-            swal.fire({
-              icon: "error",
-              title: "Xatolik",
-              text: "Javobni yuborib bo'lmadi. Qayta urinib ko'ring.",
+            showBackendError(error, {
+              fallback: "Javobni yuborib bo'lmadi. Qayta urinib ko'ring.",
             });
           }
         },
@@ -572,12 +564,20 @@ export class CustomerTicketDetailComponent
    * Get initials from name for avatar
    */
   getInitials(name: string): string {
-    if (!name) return "?";
-    const parts = name.split(" ");
+    // Strip empty / "undefined" / "null" name parts (e.g. a staff member with a
+    // missing last_name) so the avatar never shows garbage like "KUNDEFINED".
+    const parts = (name || "")
+      .split(" ")
+      .map((p) => p.trim())
+      .filter(
+        (p) =>
+          p && p.toLowerCase() !== "undefined" && p.toLowerCase() !== "null",
+      );
+    if (parts.length === 0) return "?";
     if (parts.length >= 2) {
       return (parts[0][0] + parts[1][0]).toUpperCase();
     }
-    return name.substring(0, 2).toUpperCase();
+    return parts[0].substring(0, 2).toUpperCase();
   }
 
   /**
@@ -694,7 +694,7 @@ export class CustomerTicketDetailComponent
    * Navigate back to ticket list
    */
   goBack(): void {
-    this.router.navigate(["/customer-tickets"]);
+    this.router.navigate(["/uzm/tickets-list"]);
   }
 
   /**

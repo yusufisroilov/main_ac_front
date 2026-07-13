@@ -241,9 +241,11 @@ export class ConsignmentListComponent implements OnInit {
   }
 
   receiversReport(partyNum: any) {
+    // Backend route is /consignments/packing_list (generatePackingList).
+    // The old /consignments/receiversReport URL was never defined → 404.
     window.open(
       GlobalVars.baseUrl +
-        "/consignments/receiversReport?consignment=" +
+        "/consignments/packing_list?consignment=" +
         partyNum,
       "_blank",
     );

@@ -141,7 +141,7 @@
 
                                     <div class="file-upload-buttons">
                                         <button type="button" class="btn-choose-file" (click)="onChooseFile()"
-                                            [disabled]="isSubmitting || selectedFiles.length >= maxFiles">
+                                            [disabled]="isSubmitting || isCompressing || selectedFiles.length >= maxFiles">
                                             <mat-icon>folder</mat-icon>
                                             <ng-container *ngIf="isChinaStaff">
                                                 {{ selectedFiles.length === 0 ? 'Choose file' : 'Add more files' }}
@@ -150,13 +150,19 @@
                                                 {{ selectedFiles.length === 0 ? 'Fayl tanlash' : 'Yana fayl qo\'shish' }}
                                             </ng-container>
                                         </button>
-                                        <span class="file-count" *ngIf="selectedFiles.length > 0">
+                                        <span class="file-count" *ngIf="selectedFiles.length > 0 && !isCompressing">
                                             <ng-container *ngIf="isChinaStaff">
                                                 {{ selectedFiles.length }} / {{ maxFiles }} files selected
                                             </ng-container>
                                             <ng-container *ngIf="!isChinaStaff">
                                                 {{ selectedFiles.length }} / {{ maxFiles }} ta fayl tanlandi
                                             </ng-container>
+                                        </span>
+                                        <!-- Compression progress indicator -->
+                                        <span class="file-compressing" *ngIf="isCompressing">
+                                            <mat-spinner diameter="16"></mat-spinner>
+                                            <ng-container *ngIf="isChinaStaff">Optimizing images…</ng-container>
+                                            <ng-container *ngIf="!isChinaStaff">Rasmlar optimallashtirilmoqda…</ng-container>
                                         </span>
                                     </div>
 

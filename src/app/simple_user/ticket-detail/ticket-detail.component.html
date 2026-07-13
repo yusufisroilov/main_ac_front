@@ -66,8 +66,13 @@
                                                                 {{ getInitials(message.sender_name) }}
                                                             </div>
                                                             <div class="sender-details">
-                                                                <strong class="sender-name">{{ message.sender_name
-                                                                    }}</strong>
+                                                                <strong class="sender-name">
+                                                                    {{ message.sender_name }}
+                                                                    <span *ngIf="message.sender_id"
+                                                                          class="sender-customer-id">
+                                                                        K{{ message.sender_id }}
+                                                                    </span>
+                                                                </strong>
                                                                 <span class="message-time">{{
                                                                     formatDate(message.created_at) }}</span>
                                                             </div>
@@ -211,9 +216,10 @@
                                         <!-- Message Input Section (Telegram Style) -->
                                         <div class="message-input-section telegram-style">
                                             <button mat-icon-button (click)="fileInput.click()"
-                                                [disabled]="selectedFiles.length >= maxFiles"
+                                                [disabled]="isCompressing || selectedFiles.length >= maxFiles"
                                                 matTooltip="Fayl biriktirish" class="attach-button">
-                                                <mat-icon>attach_file</mat-icon>
+                                                <mat-spinner *ngIf="isCompressing" diameter="18"></mat-spinner>
+                                                <mat-icon *ngIf="!isCompressing">attach_file</mat-icon>
                                             </button>
                                             <input type="file" #fileInput (change)="onFileSelect($event)" multiple
                                                 accept="image/*,.pdf,.zip,.rar" style="display: none;">

@@ -1,3 +1,18 @@
+/* Image compression progress indicator */
+.file-compressing {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: 12px;
+  font-size: 0.875rem;
+  color: #666;
+  font-style: italic;
+}
+.file-compressing mat-spinner,
+.file-compressing ::ng-deep .mat-progress-spinner {
+  display: inline-block;
+}
+
 /* Page Header Navigation */
 .page-header-nav {
   display: flex;

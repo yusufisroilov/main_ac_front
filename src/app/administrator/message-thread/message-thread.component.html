@@ -25,7 +25,13 @@
                             {{ getInitials(message.sender_name) }}
                         </div>
                         <div class="sender-details">
-                            <strong class="sender-name">{{ message.sender_name }}</strong>
+                            <strong class="sender-name">
+                                {{ message.sender_name }}
+                                <span *ngIf="message.sender_id"
+                                      class="sender-customer-id">
+                                    K{{ message.sender_id }}
+                                </span>
+                            </strong>
                             <span class="message-time">
                                 {{ formatDate(message.created_at) }}
                                 <span *ngIf="message.is_edited" class="edited-label">(edited)</span>
@@ -36,8 +42,10 @@
                         <span *ngIf="message.sender_user_role === 'CHINASTAFF'" class="badge badge-warning">
                             Xitoy Hodim
                         </span>
-                        <span *ngIf="message.sender_user_role !== 'CHINASTAFF'" class="badge" [ngClass]="isCustomerMessage(message) ? 'badge-info' : 'badge-purple'">
-                            {{ isCustomerMessage(message) ? 'Customer' : 'Staff' }}
+                        <span *ngIf="message.sender_user_role !== 'CHINASTAFF'"
+                              class="role-badge"
+                              [ngClass]="isCustomerMessage(message) ? 'role-badge-customer' : 'role-badge-staff'">
+                            {{ isCustomerMessage(message) ? 'CUST' : 'STAFF' }}
                         </span>
                         <!-- Edit Button (shown on hover, only for staff messages) -->
                         <button *ngIf="canEditMessage(message) && isHovered(message.id) && !isEditing(message.id)"

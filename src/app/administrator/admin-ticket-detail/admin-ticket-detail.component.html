@@ -81,6 +81,7 @@
                         </div>
                         <div class="card-body p-0">
                             <app-message-thread [messages]="customerMessages" [ticketStatus]="ticket.status"
+                                [customerId]="ticket.customer?.id"
                                 (messageEdit)="onMessageEdit($event)">
                             </app-message-thread>
                         </div>

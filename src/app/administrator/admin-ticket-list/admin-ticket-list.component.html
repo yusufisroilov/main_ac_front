@@ -5,12 +5,18 @@
         <div class="tl-toolbar">
             <div class="tl-toolbar-left">
                 <i class="material-icons tl-toolbar-icon">support_agent</i>
-                <span class="tl-toolbar-title">So'rovlar</span>
+                <span class="tl-toolbar-title">{{ L.title }}</span>
                 <span class="tl-toolbar-count" *ngIf="totalTickets">{{ totalTickets }}</span>
                 <span class="tl-notif-badge" *ngIf="notificationCount > 0">{{ notificationCount }}</span>
             </div>
             <div class="tl-toolbar-right">
-                <input type="text" class="tl-input" placeholder="Qidirish..."
+                <button *ngIf="canCreate" class="tl-btn tl-btn-new" (click)="createNewTicket()"
+                    [title]="L.newTicket"
+                    style="width:auto; padding:0 12px; gap:4px; display:inline-flex; align-items:center; background:#7C3AED; color:#fff; border:none;">
+                    <i class="material-icons" style="font-size:18px;">add</i>
+                    <span style="font-size:13px; font-weight:600;">{{ L.newTicket }}</span>
+                </button>
+                <input type="text" class="tl-input" [placeholder]="L.search"
                     [(ngModel)]="searchQuery" (keyup.enter)="onSearch()">
                 <select class="tl-select" [(ngModel)]="selectedStatus" (change)="onFilterChange()">
                     <option *ngFor="let opt of statusOptions" [value]="opt.value">{{ opt.label }}</option>
@@ -18,15 +24,16 @@
                 <select class="tl-select" [(ngModel)]="selectedCategory" (change)="onFilterChange()">
                     <option *ngFor="let opt of categoryOptions" [value]="opt.value">{{ opt.label }}</option>
                 </select>
-                <input type="number" class="tl-input tl-input-sm" placeholder="Ishchi ID"
+                <input *ngIf="canFilterByAssignee" type="number" class="tl-input tl-input-sm"
+                    [placeholder]="L.staffId"
                     [(ngModel)]="selectedAssignedTo" (keyup.enter)="onFilterChange()">
-                <button class="tl-btn tl-btn-clear" (click)="resetFilters()" title="Tozalash">
+                <button class="tl-btn tl-btn-clear" (click)="resetFilters()" [title]="L.clear">
                     <i class="material-icons">clear</i>
                 </button>
-                <button class="tl-btn tl-btn-export" (click)="exportToExcel()" title="Yuklash">
+                <button *ngIf="canExport" class="tl-btn tl-btn-export" (click)="exportToExcel()" [title]="L.export">
                     <i class="material-icons">file_download</i>
                 </button>
-                <button class="tl-btn tl-btn-refresh" (click)="getListOfTickets()" title="Yangilash">
+                <button class="tl-btn tl-btn-refresh" (click)="getListOfTickets()" [title]="L.refresh">
                     <i class="material-icons">refresh</i>
                 </button>
             </div>
@@ -47,14 +54,14 @@
                         <table class="table table-hover tl-table" cellspacing="0" width="100%">
                             <thead>
                                 <tr>
-                                    <th class="text-center">So'rov #</th>
-                                    <th>Mavzusi</th>
-                                    <th class="text-center">Mijoz (ID)</th>
-                                    <th class="text-center">Kategoriya</th>
-                                    <th class="text-center">Status</th>
-                                    <th class="text-center">Biriktirilgan</th>
-                                    <th class="text-center">Habarlar</th>
-                                    <th class="text-center">Vaqt</th>
+                                    <th class="text-center">{{ L.colRequest }}</th>
+                                    <th>{{ L.colSubject }}</th>
+                                    <th class="text-center">{{ L.colCustomer }}</th>
+                                    <th class="text-center">{{ L.colCategory }}</th>
+                                    <th class="text-center">{{ L.colStatus }}</th>
+                                    <th class="text-center">{{ L.colAssigned }}</th>
+                                    <th class="text-center">{{ L.colMessages }}</th>
+                                    <th class="text-center">{{ L.colTime }}</th>
                                     <th class="text-center"></th>
                                 </tr>
                             </thead>
@@ -62,8 +69,7 @@
                                 <tr *ngFor="let ticket of filteredTickets; let i = index"
                                     class="text-center" style="cursor:pointer;"
                                     [ngClass]="{
-                                        'table-warning': ticket.unread_messages_count > 0,
-                                        'table-danger': ticket.status === 'unread'
+                                        'table-danger': ticket.receipt === 'unread'
                                     }" (click)="viewTicket(ticket)">
                                     <td>
                                         <strong class="text-primary">{{ ticket.ticket_number }}</strong>
@@ -79,8 +85,8 @@
                                         <span class="badge badge-secondary">{{ ticket.category }}</span>
                                     </td>
                                     <td>
-                                        <span class="badge" [ngClass]="getStatusClass(ticket.status)">
-                                            {{ getStatusLabel(ticket.status) }}
+                                        <span class="badge" [ngClass]="statusClassFor(ticket)">
+                                            {{ statusLabelFor(ticket) }}
                                         </span>
                                         <span *ngIf="ticket.unread_messages_count > 0"
                                             class="badge badge-pill badge-danger ml-1">
@@ -105,22 +111,22 @@
                                         <mat-menu #ticketMenu="matMenu">
                                             <button mat-menu-item (click)="viewTicket(ticket)">
                                                 <mat-icon>visibility</mat-icon>
-                                                <span>Detallarni Ko'rish</span>
+                                                <span>{{ L.actView }}</span>
                                             </button>
-                                            <button mat-menu-item [matMenuTriggerFor]="statusMenu">
+                                            <button *ngIf="canChangeStatus" mat-menu-item [matMenuTriggerFor]="statusMenu">
                                                 <mat-icon>edit</mat-icon>
-                                                <span>Statusni O'zgartirish</span>
+                                                <span>{{ L.actStatus }}</span>
                                             </button>
-                                            <button mat-menu-item (click)="reassignTicket(ticket)">
+                                            <button *ngIf="canReassign" mat-menu-item (click)="reassignTicket(ticket)">
                                                 <mat-icon>person</mat-icon>
-                                                <span>Qayta Biriktirish</span>
+                                                <span>{{ L.actReassign }}</span>
                                             </button>
                                         </mat-menu>
 
                                         <mat-menu #statusMenu="matMenu">
-                                            <button mat-menu-item (click)="quickUpdateStatus(ticket, 'open')">Ochiq</button>
-                                            <button mat-menu-item (click)="quickUpdateStatus(ticket, 'answered')">Javob Berilgan</button>
-                                            <button mat-menu-item (click)="quickUpdateStatus(ticket, 'closed')">Yopilgan</button>
+                                            <button mat-menu-item (click)="quickUpdateStatus(ticket, 'open')">{{ L.stOpen }}</button>
+                                            <button mat-menu-item (click)="quickUpdateStatus(ticket, 'answered')">{{ L.stAnswered }}</button>
+                                            <button mat-menu-item (click)="quickUpdateStatus(ticket, 'closed')">{{ L.stClosed }}</button>
                                         </mat-menu>
                                     </td>
                                 </tr>
@@ -131,7 +137,7 @@
                     <!-- No Results -->
                     <div *ngIf="!isLoading && filteredTickets.length === 0" class="text-center" style="padding: 40px 0;">
                         <i class="material-icons" style="font-size: 48px; color:#ccc;">inbox</i>
-                        <p style="margin-top: 8px; color: #999;">So'rovlar topilmadi</p>
+                        <p style="margin-top: 8px; color: #999;">{{ L.noResults }}</p>
                     </div>
 
                     <!-- Pagination -->
@@ -140,7 +146,7 @@
 
                     <p *ngIf="!isLoading && totalTickets > 0" class="text-center text-muted" style="padding: 8px 0; font-size: 12px;">
                         {{ (currentPage - 1) * pageSize + 1 }} — {{ Math.min(currentPage * pageSize, totalTickets) }}
-                        / {{ totalTickets }} ta
+                        / {{ totalTickets }} {{ L.counter }}
                     </p>
                 </div>
             </div>
@@ -151,7 +157,7 @@
             <div class="tl-stats-header" (click)="statsExpanded = !statsExpanded">
                 <div class="tl-stats-header-left">
                     <i class="material-icons">analytics</i>
-                    <span>Statistika</span>
+                    <span>{{ L.stats }}</span>
                 </div>
                 <i class="material-icons tl-stats-chevron" [class.rotated]="statsExpanded">expand_more</i>
             </div>
@@ -162,28 +168,28 @@
                         <i class="material-icons">notifications_active</i>
                         <div class="tl-stat-info">
                             <span class="tl-stat-value">{{ notificationCount }}</span>
-                            <span class="tl-stat-label">Etibor berish</span>
+                            <span class="tl-stat-label">{{ L.statNeedsAttention }}</span>
                         </div>
                     </div>
                     <div class="tl-stat-card blue">
                         <i class="material-icons">assignment</i>
                         <div class="tl-stat-info">
                             <span class="tl-stat-value">{{ totalTickets }}</span>
-                            <span class="tl-stat-label">Umumiy</span>
+                            <span class="tl-stat-label">{{ L.statTotal }}</span>
                         </div>
                     </div>
                     <div class="tl-stat-card green">
                         <i class="material-icons">check_circle</i>
                         <div class="tl-stat-info">
                             <span class="tl-stat-value">{{ resolvedTicketsCount }}</span>
-                            <span class="tl-stat-label">Hal bo'lgan</span>
+                            <span class="tl-stat-label">{{ L.statResolved }}</span>
                         </div>
                     </div>
                     <div class="tl-stat-card red">
                         <i class="material-icons">warning</i>
                         <div class="tl-stat-info">
                             <span class="tl-stat-value">{{ urgentTicketsCount }}</span>
-                            <span class="tl-stat-label">Shoshilinch</span>
+                            <span class="tl-stat-label">{{ L.statUrgent }}</span>
                         </div>
                     </div>
                 </div>

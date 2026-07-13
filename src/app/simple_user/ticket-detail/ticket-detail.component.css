@@ -278,6 +278,24 @@
   font-weight: 600;
 }
 
+/* Customer ID pill shown next to the sender name on customer messages.
+   Sizing kept identical to the admin-side pill so the two feel like the
+   same component when viewed side by side. */
+.sender-customer-id {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 2px 9px;
+  border-radius: 10px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #ffffff;
+  background: #00acc1;
+  vertical-align: middle;
+  letter-spacing: 0.3px;
+  line-height: 1.35;
+  white-space: nowrap;
+}
+
 .message-time {
   font-size: 0.75rem;
   color: #999;

@@ -164,6 +164,37 @@
   font-weight: 600;
 }
 
+/* Shared pill geometry — used by both the K{id} pill (inside sender-name)
+   and the role-badge (in message-actions). Keeping padding, radius and
+   font identical so the two chips render at the exact same height. */
+.sender-customer-id,
+.role-badge {
+  display: inline-block;
+  padding: 2px 9px;
+  border-radius: 10px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #ffffff;
+  vertical-align: middle;
+  letter-spacing: 0.3px;
+  line-height: 1.35;
+  white-space: nowrap;
+}
+
+/* K{id} pill — customer identity, teal */
+.sender-customer-id {
+  margin-left: 6px;
+  background: #00acc1;
+}
+
+/* Role badges — distinct hues so K8 and CUST read as different things */
+.role-badge-customer {
+  background: #3949ab; /* indigo */
+}
+.role-badge-staff {
+  background: #7b1fa2; /* purple */
+}
+
 .message-time {
   font-size: 0.75rem;
   color: #999;

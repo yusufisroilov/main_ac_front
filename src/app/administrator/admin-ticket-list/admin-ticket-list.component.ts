@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy } from "@angular/core";
 import { Router } from "@angular/router";
 import { GlobalVars } from "src/app/global-vars";
 import swal from "sweetalert2";
+import { showBackendError } from "src/app/shared/backend-error";
 import { HttpClient } from "@angular/common/http";
 import { Http, RequestOptions, Headers } from "@angular/http";
 import { AuthService } from "src/app/pages/login/auth.service";
@@ -17,6 +18,7 @@ interface Ticket {
   assigned_user_name: string;
   customer_name: string;
   unread_messages_count: number;
+  receipt?: "sent" | "replied" | "unread" | "read" | null;
   messages_count: number;
   created_at: string;
   updated_at: string;
@@ -71,6 +73,82 @@ export class AdminTicketListComponent implements OnInit, OnDestroy {
   // UI state
   statsExpanded: boolean = false;
 
+  // Role-based visibility. This list is shared by every role, but staff-only
+  // controls are gated to the roles the backend endpoints actually allow, so a
+  // non-permitted user never triggers a 403 (which would log them out).
+  role: string = localStorage.getItem("role") || "";
+  canReassign: boolean = false; // PUT /admin/:id/reassign → OWNER/MANAGER
+  canChangeStatus: boolean = false; // only OWNER/MANAGER may change ticket status
+  canExport: boolean = false; // GET /admin/export → OWNER/MANAGER/CHINASTAFF/ADMIN
+  canFilterByAssignee: boolean = false; // assigned_to filter only applies for OWNER/MANAGER
+  canCreate: boolean = false; // roles whose purpose is filing tickets
+  isChinaStaff: boolean = false; // China staff see the UI in English
+
+  // Active UI label set (Uzbek by default, English for CHINASTAFF).
+  L: any = {};
+  private readonly LABELS = {
+    uz: {
+      title: "So'rovlar",
+      search: "Qidirish...",
+      staffId: "Ishchi ID",
+      clear: "Tozalash",
+      export: "Yuklash",
+      refresh: "Yangilash",
+      newTicket: "Yangi Murojaat",
+      colRequest: "So'rov #",
+      colSubject: "Mavzusi",
+      colCustomer: "Mijoz (ID)",
+      colCategory: "Kategoriya",
+      colStatus: "Status",
+      colAssigned: "Biriktirilgan",
+      colMessages: "Habarlar",
+      colTime: "Vaqt",
+      noResults: "So'rovlar topilmadi",
+      counter: "ta",
+      stats: "Statistika",
+      statNeedsAttention: "Etibor berish",
+      statTotal: "Umumiy",
+      statResolved: "Hal bo'lgan",
+      statUrgent: "Shoshilinch",
+      actView: "Detallarni Ko'rish",
+      actStatus: "Statusni O'zgartirish",
+      actReassign: "Qayta Biriktirish",
+      stOpen: "Ochiq",
+      stAnswered: "Javob Berilgan",
+      stClosed: "Yopilgan",
+    },
+    en: {
+      title: "Requests",
+      search: "Search...",
+      staffId: "Staff ID",
+      clear: "Clear",
+      export: "Export",
+      refresh: "Refresh",
+      newTicket: "New Ticket",
+      colRequest: "Request #",
+      colSubject: "Subject",
+      colCustomer: "Customer (ID)",
+      colCategory: "Category",
+      colStatus: "Status",
+      colAssigned: "Assigned",
+      colMessages: "Messages",
+      colTime: "Time",
+      noResults: "No requests found",
+      counter: "",
+      stats: "Statistics",
+      statNeedsAttention: "Needs attention",
+      statTotal: "Total",
+      statResolved: "Resolved",
+      statUrgent: "Urgent",
+      actView: "View Details",
+      actStatus: "Change Status",
+      actReassign: "Reassign",
+      stOpen: "Open",
+      stAnswered: "Answered",
+      stClosed: "Closed",
+    },
+  };
+
   // Notification count
   notificationCount: number = 0;
 
@@ -99,15 +177,39 @@ export class AdminTicketListComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    // Resolve role-based control visibility (mirrors the backend requireRole
+    // lists so hidden = not permitted).
+    this.role = localStorage.getItem("role") || "";
+    this.canReassign = ["OWNER", "MANAGER"].includes(this.role);
+    this.canChangeStatus = ["OWNER", "MANAGER"].includes(this.role);
+    this.canExport = ["OWNER", "MANAGER", "CHINASTAFF", "ADMIN"].includes(
+      this.role
+    );
+    this.canFilterByAssignee = ["OWNER", "MANAGER"].includes(this.role);
+    this.canCreate = ["CLIENT", "CHINASTAFF", "MANAGER", "OWNER"].includes(
+      this.role
+    );
+    this.isChinaStaff = this.role === "CHINASTAFF";
+    this.L = this.isChinaStaff ? this.LABELS.en : this.LABELS.uz;
+
     // Status options
-    this.statusOptions = [
-      { value: "all", label: "Barcha Statuslar" },
-      { value: "unread", label: "O'qilmagan" },
-      { value: "open", label: "Ochiq" },
-      { value: "answered", label: "Javob Berilgan" },
-      { value: "customer-reply", label: "Mijoz Javobi" },
-      { value: "closed", label: "Yopilgan" },
-    ];
+    this.statusOptions = this.isChinaStaff
+      ? [
+          { value: "all", label: "All Statuses" },
+          { value: "unread", label: "Unread" },
+          { value: "open", label: "Open" },
+          { value: "answered", label: "Answered" },
+          { value: "customer-reply", label: "Customer Reply" },
+          { value: "closed", label: "Closed" },
+        ]
+      : [
+          { value: "all", label: "Barcha Statuslar" },
+          { value: "unread", label: "O'qilmagan" },
+          { value: "open", label: "Ochiq" },
+          { value: "answered", label: "Javob Berilgan" },
+          { value: "customer-reply", label: "Mijoz Javobi" },
+          { value: "closed", label: "Yopilgan" },
+        ];
 
     // Priority options
     this.priorityOptions = [
@@ -119,20 +221,35 @@ export class AdminTicketListComponent implements OnInit, OnDestroy {
     ];
 
     // Category options
-    this.categoryOptions = [
-      { value: "all", label: "Barcha Kategoriyalar" },
-      { value: "delivery", label: "Yetkazish Muammosi" },
-      { value: "payment", label: "To'lov Muammosi" },
-      { value: "product", label: "Zakaz Bo'yicha Savollar" },
-      { value: "customs", label: "Bojxona muammosi" },
-      { value: "damaged", label: "Shikastlangan Narsalar" },
-      { value: "lost", label: "Yo'qolgan Narsalar" },
-      { value: "pricing", label: "Narx Bo'yicha Savollar" },
-      { value: "tracking", label: "Kuzatish Bo'yicha Savollar" },
-      { value: "support", label: "Umumiya Konsultatsiya" },
-      { value: "complaint", label: "Shikoyatlar" },
-      { value: "other", label: "Boshqa" },
-    ];
+    this.categoryOptions = this.isChinaStaff
+      ? [
+          { value: "all", label: "All Categories" },
+          { value: "delivery", label: "Delivery Issue" },
+          { value: "payment", label: "Payment Issue" },
+          { value: "product", label: "Order Questions" },
+          { value: "customs", label: "Customs Issue" },
+          { value: "damaged", label: "Damaged Items" },
+          { value: "lost", label: "Lost Items" },
+          { value: "pricing", label: "Pricing Questions" },
+          { value: "tracking", label: "Tracking Questions" },
+          { value: "support", label: "General Support" },
+          { value: "complaint", label: "Complaints" },
+          { value: "other", label: "Other" },
+        ]
+      : [
+          { value: "all", label: "Barcha Kategoriyalar" },
+          { value: "delivery", label: "Yetkazish Muammosi" },
+          { value: "payment", label: "To'lov Muammosi" },
+          { value: "product", label: "Zakaz Bo'yicha Savollar" },
+          { value: "customs", label: "Bojxona muammosi" },
+          { value: "damaged", label: "Shikastlangan Narsalar" },
+          { value: "lost", label: "Yo'qolgan Narsalar" },
+          { value: "pricing", label: "Narx Bo'yicha Savollar" },
+          { value: "tracking", label: "Kuzatish Bo'yicha Savollar" },
+          { value: "support", label: "Umumiya Konsultatsiya" },
+          { value: "complaint", label: "Shikoyatlar" },
+          { value: "other", label: "Boshqa" },
+        ];
 
 
     // Initial notification count; periodic refresh is handled by startPolling().
@@ -238,10 +355,11 @@ export class AdminTicketListComponent implements OnInit, OnDestroy {
             this.authService.logout();
           } else if (!silent) {
             // Don't nag with an error dialog on background polls.
-            swal.fire({
-              icon: "error",
-              title: "Error",
-              text: "Failed to load tickets. Please try again.",
+            showBackendError(error, {
+              title: this.isChinaStaff ? "Error" : "Xatolik",
+              fallback: this.isChinaStaff
+                ? "Failed to load tickets. Please try again."
+                : "So'rovlarni yuklab bo'lmadi. Qayta urinib ko'ring.",
             });
           }
         }
@@ -312,9 +430,31 @@ export class AdminTicketListComponent implements OnInit, OnDestroy {
    * View ticket detail
    */
   viewTicket(ticket: Ticket): void {
-    this.router.navigate(["/uzm/ticket-detail"], {
+    // Staff roles reply via the admin detail (POST /tickets/admin/:id/reply).
+    // CLIENT/AUDITOR are NOT allowed there — sending would 403 and log them out
+    // — so route them to the customer detail (POST /tickets/:id/reply instead).
+    const STAFF_REPLY_ROLES = [
+      "OWNER",
+      "MANAGER",
+      "CHINASTAFF",
+      "YUKCHI",
+      "DELIVERER",
+      "ACCOUNTANT",
+      "ADMIN",
+    ];
+    const detailPath = STAFF_REPLY_ROLES.includes(this.role)
+      ? "/uzm/ticket-detail"
+      : "/customer-ticket-detail";
+    this.router.navigate([detailPath], {
       queryParams: { ticket: +ticket.id },
     });
+  }
+
+  /**
+   * Open the create-ticket page (only shown to ticket-filing roles).
+   */
+  createNewTicket(): void {
+    this.router.navigate(["/create-ticket"]);
   }
 
   /**
@@ -347,10 +487,11 @@ export class AdminTicketListComponent implements OnInit, OnDestroy {
           if (error.status == 403) {
             this.authService.logout();
           } else {
-            swal.fire({
-              icon: "error",
-              title: "Error",
-              text: "Failed to update status",
+            showBackendError(error, {
+              title: this.isChinaStaff ? "Error" : "Xatolik",
+              fallback: this.isChinaStaff
+                ? "Failed to update status"
+                : "Statusni yangilab bo'lmadi",
             });
           }
         }
@@ -386,10 +527,11 @@ export class AdminTicketListComponent implements OnInit, OnDestroy {
           if (error.status == 403) {
             this.authService.logout();
           } else {
-            swal.fire({
-              icon: "error",
-              title: "Error",
-              text: "Failed to update priority",
+            showBackendError(error, {
+              title: this.isChinaStaff ? "Error" : "Xatolik",
+              fallback: this.isChinaStaff
+                ? "Failed to update priority"
+                : "Muhimlik darajasini yangilab bo'lmadi",
             });
           }
         }
@@ -441,11 +583,11 @@ export class AdminTicketListComponent implements OnInit, OnDestroy {
                 if (error.status == 403) {
                   this.authService.logout();
                 } else {
-                  const errMsg = error.json?.()?.error || "Qayta biriktirishda xatolik";
-                  swal.fire({
-                    icon: "error",
-                    title: "Xatolik",
-                    text: errMsg,
+                  showBackendError(error, {
+                    title: this.isChinaStaff ? "Error" : "Xatolik",
+                    fallback: this.isChinaStaff
+                      ? "Reassign failed"
+                      : "Qayta biriktirishda xatolik",
                   });
                 }
               }
@@ -485,14 +627,60 @@ export class AdminTicketListComponent implements OnInit, OnDestroy {
    * Get status label
    */
   getStatusLabel(status: string): string {
-    const labels = {
-      unread: "O'qilmagan",
-      open: "Ochiq",
-      answered: "Javob berilgan",
-      "customer-reply": "Mijoz Javob Bergan",
-      closed: "Yopilgan",
-    };
+    const labels = this.isChinaStaff
+      ? {
+          unread: "Unread",
+          open: "Open",
+          answered: "Answered",
+          "customer-reply": "Customer Reply",
+          closed: "Closed",
+        }
+      : {
+          unread: "O'qilmagan",
+          open: "Ochiq",
+          answered: "Javob berilgan",
+          "customer-reply": "Mijoz Javob Bergan",
+          closed: "Yopilgan",
+        };
     return labels[status] || status;
+  }
+
+  /**
+   * Viewer-relative status. A brand-new ticket has status "unread" (support
+   * hasn't opened it) — but for the person who FILED it, with nothing unread on
+   * their side, that reads wrong. Show "Sent/Yuborilgan" instead. Once someone
+   * else replies (unread_messages_count > 0) the real "unread" status shows.
+   */
+  /**
+   * Per-viewer status label. A closed ticket always reads "Closed"; otherwise
+   * the backend `receipt` (sent / replied / unread / read — relative to the
+   * viewer and the latest message) drives it, falling back to the raw workflow
+   * status if no messages exist.
+   */
+  statusLabelFor(ticket: Ticket): string {
+    if (ticket.status === "closed") return this.getStatusLabel("closed");
+    const map: any = this.isChinaStaff
+      ? { sent: "Sent", replied: "Replied", unread: "Unread", read: "Read" }
+      : {
+          sent: "Yuborilgan",
+          replied: "Javob berildi",
+          unread: "O'qilmagan",
+          read: "O'qildi",
+        };
+    if (ticket.receipt && map[ticket.receipt]) return map[ticket.receipt];
+    return this.getStatusLabel(ticket.status);
+  }
+
+  statusClassFor(ticket: Ticket): string {
+    if (ticket.status === "closed") return this.getStatusClass("closed");
+    const cls: any = {
+      sent: "badge-info",
+      replied: "badge-primary",
+      unread: "badge-danger",
+      read: "badge-success",
+    };
+    if (ticket.receipt && cls[ticket.receipt]) return cls[ticket.receipt];
+    return this.getStatusClass(ticket.status);
   }
 
   /**
@@ -614,10 +802,11 @@ export class AdminTicketListComponent implements OnInit, OnDestroy {
           if (error.status == 403) {
             this.authService.logout();
           } else {
-            swal.fire({
-              icon: "error",
-              title: "Error",
-              text: "Failed to export tickets",
+            showBackendError(error, {
+              title: this.isChinaStaff ? "Error" : "Xatolik",
+              fallback: this.isChinaStaff
+                ? "Failed to export tickets"
+                : "Eksport qilib bo'lmadi",
             });
           }
         }

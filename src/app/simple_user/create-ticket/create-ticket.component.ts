@@ -8,8 +8,10 @@ import {
 import { Router } from "@angular/router";
 import { GlobalVars } from "src/app/global-vars";
 import swal from "sweetalert2";
+import { showBackendError } from "src/app/shared/backend-error";
 import { Http, RequestOptions, Headers } from "@angular/http";
 import { AuthService } from "src/app/pages/login/auth.service";
+import { compressImageIfNeeded } from "src/app/shared/image-compression.util";
 
 @Component({
   selector: "app-customer-create-ticket",
@@ -56,6 +58,10 @@ export class CustomerCreateTicketComponent implements OnInit, AfterViewInit {
     ".zip",
     ".rar",
   ];
+
+  // While true, the file picker shows a spinner and is disabled. Set during
+  // the async image-compression step in onFileSelected.
+  isCompressing: boolean = false;
 
   // HTTP setup
   headers12: any;
@@ -238,31 +244,31 @@ export class CustomerCreateTicketComponent implements OnInit, AfterViewInit {
               confirmButtonText: "OK",
             })
             .then(() => {
-              this.router.navigate(["/customer-tickets"]);
+              this.router.navigate(["/uzm/tickets-list"]);
             });
         }
       } else {
-        const errorData = JSON.parse(xhr.responseText);
-        swal.fire({
-          icon: "error",
+        // Surface the real backend reason (safe against non-JSON responses).
+        showBackendError(xhr, {
           title: this.isChinaStaff ? "Error" : "Xatolik",
-          text:
-            errorData.error ||
-            (this.isChinaStaff
-              ? "Failed to create ticket. Please try again."
-              : "Murojaatni yaratib bo'lmadi. Qayta urinib ko'ring."),
+          fallback: this.isChinaStaff
+            ? "Failed to create ticket. Please try again."
+            : "Murojaatni yaratib bo'lmadi. Qayta urinib ko'ring.",
         });
       }
     };
 
     xhr.onerror = () => {
+      // A network-level failure during a multipart upload is almost always the
+      // request being too large (rejected by the reverse proxy mid-stream) or a
+      // dropped connection — there's no server JSON body to read, so give an
+      // actionable hint instead of a generic message.
       this.isSubmitting = false;
-      swal.fire({
-        icon: "error",
+      showBackendError(xhr, {
         title: this.isChinaStaff ? "Error" : "Xatolik",
-        text: this.isChinaStaff
-          ? "Failed to create ticket. Please try again."
-          : "Murojaatni yaratib bo'lmadi. Qayta urinib ko'ring.",
+        fallback: this.isChinaStaff
+          ? "Upload failed. The images may be too large, or the connection dropped. Try fewer or smaller images."
+          : "Yuborib bo'lmadi. Rasmlar hajmi juda katta yoki internet aloqasi uzilgan bo'lishi mumkin. Kamroq yoki kichikroq rasm bilan urinib ko'ring.",
       });
     };
 
@@ -292,11 +298,11 @@ export class CustomerCreateTicketComponent implements OnInit, AfterViewInit {
         })
         .then((result) => {
           if (result.isConfirmed) {
-            this.router.navigate(["/customer-tickets"]);
+            this.router.navigate(["/uzm/tickets-list"]);
           }
         });
     } else {
-      this.router.navigate(["/customer-tickets"]);
+      this.router.navigate(["/uzm/tickets-list"]);
     }
   }
 
@@ -403,9 +409,12 @@ export class CustomerCreateTicketComponent implements OnInit, AfterViewInit {
   }
 
   /**
-   * Handle file selection
+   * Handle file selection.
+   * Validates each file, then compresses images that exceed COMPRESS_ABOVE_BYTES
+   * before adding them to `selectedFiles`. Non-images and small images pass
+   * through untouched.
    */
-  onFileSelected(event: any): void {
+  async onFileSelected(event: any): Promise<void> {
     const files: FileList = event.target.files;
 
     if (!files || files.length === 0) {
@@ -424,44 +433,52 @@ export class CustomerCreateTicketComponent implements OnInit, AfterViewInit {
       return;
     }
 
-    // Validate and add each file
-    for (let i = 0; i < files.length; i++) {
-      const file = files[i];
-
-      // Check file size
-      if (file.size > this.maxFileSize) {
-        swal.fire({
-          icon: "warning",
-          title: this.isChinaStaff ? "File too large" : "Fayl juda katta",
-          text: this.isChinaStaff
-            ? `${file.name} exceeds the maximum file size (5MB)`
-            : `${file.name} maksimal fayl hajmidan (5MB) oshib ketdi`,
-        });
-        continue;
-      }
-
-      // Check file extension
-      const fileExt = "." + file.name.split(".").pop()?.toLowerCase();
-      if (!this.allowedExtensions.includes(fileExt)) {
-        swal.fire({
-          icon: "warning",
-          title: this.isChinaStaff
-            ? "Invalid file type"
-            : "Fayl turi noto'g'ri",
-          text: this.isChinaStaff
-            ? `${file.name} has an invalid file type. Allowed: ${this.allowedExtensions.join(", ")}`
-            : `${file.name} fayl turi noto'g'ri. Ruxsat etilgan: ${this.allowedExtensions.join(", ")}`,
-        });
-        continue;
-      }
-
-      // Add file to selected files
-      this.selectedFiles.push(file);
-    }
-
-    // Clear input value to allow selecting the same file again
+    // Snapshot the FileList (browsers invalidate it once we clear the input)
+    const incoming: File[] = Array.from(files);
+    // Clear input value early so users can reselect the same file if they want
     event.target.value = "";
+
+    this.isCompressing = true;
+    try {
+      for (const file of incoming) {
+        // Check file extension
+        const fileExt = "." + file.name.split(".").pop()?.toLowerCase();
+        if (!this.allowedExtensions.includes(fileExt)) {
+          swal.fire({
+            icon: "warning",
+            title: this.isChinaStaff
+              ? "Invalid file type"
+              : "Fayl turi noto'g'ri",
+            text: this.isChinaStaff
+              ? `${file.name} has an invalid file type. Allowed: ${this.allowedExtensions.join(", ")}`
+              : `${file.name} fayl turi noto'g'ri. Ruxsat etilgan: ${this.allowedExtensions.join(", ")}`,
+          });
+          continue;
+        }
+
+        // Delegate compression to the shared util (skips non-images and
+        // files already under the target).
+        const finalFile = await compressImageIfNeeded(file);
+
+        // Post-compression size check against maxFileSize
+        if (finalFile.size > this.maxFileSize) {
+          swal.fire({
+            icon: "warning",
+            title: this.isChinaStaff ? "File too large" : "Fayl juda katta",
+            text: this.isChinaStaff
+              ? `${file.name} exceeds the maximum file size (5MB) even after compression`
+              : `${file.name} maksimal fayl hajmidan (5MB) oshib ketdi (siqishdan keyin ham)`,
+          });
+          continue;
+        }
+
+        this.selectedFiles.push(finalFile);
+      }
+    } finally {
+      this.isCompressing = false;
+    }
   }
+
 
   /**
    * Remove a file from selection

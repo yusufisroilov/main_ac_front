@@ -41,11 +41,16 @@
             <div class="file-upload-wrapper">
                 <input type="file" #fileInput (change)="onFileSelect($event)" multiple accept="image/*,.pdf,.zip,.rar"
                     style="display: none;">
-                <button mat-icon-button (click)="fileInput.click()" [disabled]="selectedFiles.length >= maxFiles"
+                <button mat-icon-button (click)="fileInput.click()"
+                    [disabled]="isCompressing || selectedFiles.length >= maxFiles"
                     matTooltip="Attach files (Max {{ maxFiles }})">
                     <mat-icon>attach_file</mat-icon>
                 </button>
-                <span class="file-limit-text">{{ selectedFiles.length }}/{{ maxFiles }}</span>
+                <span class="file-limit-text" *ngIf="!isCompressing">{{ selectedFiles.length }}/{{ maxFiles }}</span>
+                <span class="file-compressing" *ngIf="isCompressing">
+                    <mat-spinner diameter="14"></mat-spinner>
+                    Optimizing…
+                </span>
             </div>
 
             <!-- Character Count -->

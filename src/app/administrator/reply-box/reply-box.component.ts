@@ -8,6 +8,7 @@ import {
   ElementRef,
 } from "@angular/core";
 import swal from "sweetalert2";
+import { compressImageIfNeeded } from "src/app/shared/image-compression.util";
 
 interface FileWithPreview {
   file: File;
@@ -48,6 +49,7 @@ export class ReplyBoxComponent implements OnInit {
   messageText: string = "";
   selectedFiles: FileWithPreview[] = [];
   isSubmitting: boolean = false;
+  isCompressing: boolean = false;
 
   @ViewChild("messageInput") messageInput: ElementRef;
 
@@ -65,9 +67,10 @@ export class ReplyBoxComponent implements OnInit {
   }
 
   /**
-   * Handle file selection
+   * Handle file selection. Compresses images over ~500KB before adding
+   * them (see shared/image-compression.util). Non-images pass through untouched.
    */
-  onFileSelect(event: any): void {
+  async onFileSelect(event: any): Promise<void> {
     const files: FileList = event.target.files;
 
     if (!files || files.length === 0) {
@@ -84,68 +87,59 @@ export class ReplyBoxComponent implements OnInit {
       return;
     }
 
-    // Process each file
-    for (let i = 0; i < files.length; i++) {
-      const file = files[i];
-
-      // Validate file size
-      if (file.size > this.maxFileSize) {
-        swal.fire({
-          icon: "warning",
-          title: "Fayl Juda Katta",
-          text: `${
-            file.name
-          } juda katta. Maksimal fayl hajmi ${this.formatFileSize(
-            this.maxFileSize
-          )}`,
-        });
-        continue;
-      }
-
-      // Validate file type
-      const fileExt = "." + file.name.split(".").pop()?.toLowerCase();
-      const allowedExts = [
-        ".jpg",
-        ".jpeg",
-        ".png",
-        ".gif",
-        ".pdf",
-        ".zip",
-        ".rar",
-      ];
-
-      if (
-        !this.allowedFileTypes.includes(file.type) &&
-        !allowedExts.includes(fileExt)
-      ) {
-        swal.fire({
-          icon: "warning",
-          title: "Noto'g'ri Fayl Turi",
-          text: `${file.name} qo'llab-quvvatlanmaydigan fayl turi. Ruxsat etilgan: Rasmlar, PDF, ZIP, RAR`,
-        });
-        continue;
-      }
-
-      // Create file preview for images
-      const fileWithPreview: FileWithPreview = {
-        file: file,
-        name: file.name,
-        size: file.size,
-      };
-
-      if (this.isImageFile(file.name)) {
-        const reader = new FileReader();
-        reader.onload = (e: any) => {
-          fileWithPreview.preview = e.target.result;
-        };
-        reader.readAsDataURL(file);
-      }
-
-      this.selectedFiles.push(fileWithPreview);
-    }
-
-    // Clear the input so the same file can be selected again
+    // Snapshot the FileList — clearing input value invalidates it later
+    const incoming: File[] = Array.from(files);
     event.target.value = "";
+
+    this.isCompressing = true;
+    try {
+      for (const original of incoming) {
+        // Validate file type (extension or MIME) before spending time on compression
+        const fileExt = "." + original.name.split(".").pop()?.toLowerCase();
+        const allowedExts = [".jpg", ".jpeg", ".png", ".gif", ".pdf", ".zip", ".rar"];
+        if (
+          !this.allowedFileTypes.includes(original.type) &&
+          !allowedExts.includes(fileExt)
+        ) {
+          swal.fire({
+            icon: "warning",
+            title: "Noto'g'ri Fayl Turi",
+            text: `${original.name} qo'llab-quvvatlanmaydigan fayl turi. Ruxsat etilgan: Rasmlar, PDF, ZIP, RAR`,
+          });
+          continue;
+        }
+
+        const file = await compressImageIfNeeded(original);
+
+        // Post-compression size check
+        if (file.size > this.maxFileSize) {
+          swal.fire({
+            icon: "warning",
+            title: "Fayl Juda Katta",
+            text: `${original.name} juda katta. Maksimal fayl hajmi ${this.formatFileSize(this.maxFileSize)}`,
+          });
+          continue;
+        }
+
+        // Build preview for images
+        const fileWithPreview: FileWithPreview = {
+          file: file,
+          name: file.name,
+          size: file.size,
+        };
+        if (this.isImageFile(file.name)) {
+          const reader = new FileReader();
+          reader.onload = (e: any) => {
+            fileWithPreview.preview = e.target.result;
+          };
+          reader.readAsDataURL(file);
+        }
+
+        this.selectedFiles.push(fileWithPreview);
+      }
+    } finally {
+      this.isCompressing = false;
+    }
   }
 
   /**

@@ -557,9 +557,24 @@ export class BigBoxesComponent implements OnInit {
         },
         buttonsStyling: false,
         preConfirm: (valueB) => {
+          const scanned = (valueB || "").trim();
+
+          if (!scanned) {
+            this.playAudio();
+            swal.showValidationMessage("Please scan a box");
+            return false;
+          }
+          if (!scanned.startsWith("CU") && !scanned.startsWith("CN")) {
+            this.playAudio();
+            swal.showValidationMessage(
+              "Only CU or CN boxes are accepted in bigbox",
+            );
+            return false;
+          }
+
           this.http
             .post(
-              GlobalVars.baseUrl + "/bigbox/scan?box_number=" + valueB,
+              GlobalVars.baseUrl + "/bigbox/scan?box_number=" + scanned,
               "",
               this.options,
             )

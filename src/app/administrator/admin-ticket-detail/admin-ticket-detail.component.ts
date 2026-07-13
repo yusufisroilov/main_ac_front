@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy, ViewChild } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { GlobalVars } from "src/app/global-vars";
 import swal from "sweetalert2";
+import { showBackendError } from "src/app/shared/backend-error";
 import { Http, RequestOptions, Headers } from "@angular/http";
 import { AuthService } from "src/app/pages/login/auth.service";
 import { NotificationService } from "src/app/services/notification.service";
@@ -444,10 +445,9 @@ export class AdminTicketDetailComponent implements OnInit, OnDestroy {
           if (error.status == 403) {
             this.authService.logout();
           } else {
-            swal.fire({
-              icon: "error",
-              title: "Xatolik",
-              text: "Javob yuborishda xatolik yuz berdi. Iltimos, qaytadan urinib ko'ring.",
+            showBackendError(error, {
+              fallback:
+                "Javob yuborishda xatolik yuz berdi. Iltimos, qaytadan urinib ko'ring.",
             });
           }
         },

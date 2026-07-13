@@ -35,6 +35,10 @@ export class MessageThreadComponent
   @Input() messages: Message[] = [];
   @Input() ticketStatus: string = "";
   @Input() currentUserRole: string = localStorage.getItem("role") || "STAFF";
+  // Id of the customer who owns the ticket. Rendered as `K<id>` next to the
+  // sender name on customer-role messages so admins can identify the owner
+  // at a glance while scrolling the thread.
+  @Input() customerId?: number | string;
 
   // Logged-in user's id — drives Telegram-style left/right alignment.
   currentUserId: number = parseInt(localStorage.getItem("id") || "0", 10);
@@ -234,12 +238,20 @@ export class MessageThreadComponent
    * Get initials from name for avatar
    */
   getInitials(name: string): string {
-    if (!name) return "?";
-    const parts = name.split(" ");
+    // Strip empty / "undefined" / "null" name parts so the avatar never shows
+    // garbage like "KUNDEFINED" (e.g. a staff member with a missing last_name).
+    const parts = (name || "")
+      .split(" ")
+      .map((p) => p.trim())
+      .filter(
+        (p) =>
+          p && p.toLowerCase() !== "undefined" && p.toLowerCase() !== "null",
+      );
+    if (parts.length === 0) return "?";
     if (parts.length >= 2) {
       return (parts[0][0] + parts[1][0]).toUpperCase();
     }
-    return name.substring(0, 2).toUpperCase();
+    return parts[0].substring(0, 2).toUpperCase();
   }
 
   /**
