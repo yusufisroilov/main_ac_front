@@ -57,7 +57,7 @@ export class OaInternalTransfersComponent implements OnInit {
       },
       (error) => {
         this.loading = false;
-        if (error.status === 403) this.authService.logout();
+        if (error.status === 401) this.authService.logout();
       },
     );
   }
@@ -68,7 +68,11 @@ export class OaInternalTransfersComponent implements OnInit {
 
   addTransfer() {
     const today = new Date().toISOString().split("T")[0];
-    const accountOpts = this.cashAccounts.map((a) => `<option value="${a.id}">${a.name} (${a.currency})</option>`).join("");
+    const placeholderFrom = `<option value="" disabled selected>-- Tanlang chiqish hisobi --</option>`;
+    const placeholderTo = `<option value="" disabled selected>-- Tanlang kirish hisobi --</option>`;
+    const accountsHtml = this.cashAccounts.map((a) => `<option value="${a.id}">${a.name} (${a.currency})</option>`).join("");
+    const accountOptsFrom = placeholderFrom + accountsHtml;
+    const accountOptsTo = placeholderTo + accountsHtml;
 
     const html = `
       <style>
@@ -87,11 +91,11 @@ export class OaInternalTransfersComponent implements OnInit {
       <div class="tr-form">
         <div class="tr-field">
           <span class="tr-lbl">Chiqish hisobi (dan)<span class="req">*</span></span>
-          <select id="tr-from" class="form-control">${accountOpts}</select>
+          <select id="tr-from" class="form-control">${accountOptsFrom}</select>
         </div>
         <div class="tr-field">
           <span class="tr-lbl">Kirish hisobi (ga)<span class="req">*</span></span>
-          <select id="tr-to" class="form-control">${accountOpts}</select>
+          <select id="tr-to" class="form-control">${accountOptsTo}</select>
         </div>
         <div class="tr-field">
           <span class="tr-lbl">Summa<span class="req">*</span></span>
@@ -141,12 +145,20 @@ export class OaInternalTransfersComponent implements OnInit {
           if (parts.length > 2) parts.length = 2;
           amtEl.value = parts.join(".");
         });
-        // Mutual exclusion: disable selected account in the other dropdown
+        // Mutual exclusion: disable the account selected on one side within the
+        // other side's dropdown. The empty-value placeholders on each side stay
+        // disabled independently — never touched by this sync.
         const fromSel = document.getElementById("tr-from") as HTMLSelectElement;
         const toSel = document.getElementById("tr-to") as HTMLSelectElement;
         const syncDisabled = () => {
-          Array.from(toSel.options).forEach((o) => (o.disabled = o.value === fromSel.value));
-          Array.from(fromSel.options).forEach((o) => (o.disabled = o.value === toSel.value));
+          Array.from(toSel.options).forEach((o) => {
+            if (o.value === "") return; // keep the "Tanlang" placeholder disabled
+            o.disabled = o.value === fromSel.value && fromSel.value !== "";
+          });
+          Array.from(fromSel.options).forEach((o) => {
+            if (o.value === "") return;
+            o.disabled = o.value === toSel.value && toSel.value !== "";
+          });
         };
         fromSel.addEventListener("change", syncDisabled);
         toSel.addEventListener("change", syncDisabled);
@@ -157,8 +169,10 @@ export class OaInternalTransfersComponent implements OnInit {
         const toId = (document.getElementById("tr-to") as HTMLSelectElement).value;
         const amount = (document.getElementById("tr-amount") as HTMLInputElement).value.replace(/\s/g, "");
         const dateDisplay = (document.getElementById("tr-date") as HTMLInputElement).value;
-        if (!fromId || !toId || !amount || !dateDisplay) { swal.showValidationMessage("Barcha maydonlarni to'ldiring"); return false; }
+        if (!fromId) { swal.showValidationMessage("Chiqish hisobini tanlang"); return false; }
+        if (!toId) { swal.showValidationMessage("Kirish hisobini tanlang"); return false; }
         if (fromId === toId) { swal.showValidationMessage("Bir xil hisobga transfer qilib bo'lmaydi"); return false; }
+        if (!amount || !dateDisplay) { swal.showValidationMessage("Barcha maydonlarni to'ldiring"); return false; }
         const dateIso = this.parseDmyToIso(dateDisplay);
         if (!dateIso) { swal.showValidationMessage("Sana noto'g'ri formatda (kun.oy.yil)"); return false; }
         return {

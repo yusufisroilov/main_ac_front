@@ -126,7 +126,7 @@ export class TransactionsComponent implements OnInit {
       },
       (error) => {
         this.v2Loading = false;
-        if (error.status === 403) {
+        if (error.status === 401) {
           this.authService.logout();
         }
       },
@@ -241,7 +241,7 @@ export class TransactionsComponent implements OnInit {
         },
         (error) => {
           this.v1Loading = false;
-          if (error.status == 403) {
+          if (error.status == 401) {
             this.authService.logout();
           }
         },
@@ -326,7 +326,7 @@ export class TransactionsComponent implements OnInit {
         },
         (error) => {
           this.v1Loading = false;
-          if (error.status == 403) {
+          if (error.status == 401) {
             this.authService.logout();
           }
         },
@@ -356,7 +356,7 @@ export class TransactionsComponent implements OnInit {
         },
         (error) => {
           this.v1Loading = false;
-          if (error.status == 403) {
+          if (error.status == 401) {
             this.authService.logout();
           }
         },

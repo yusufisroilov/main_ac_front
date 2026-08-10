@@ -105,7 +105,7 @@ export class CustomerChannelNewsComponent implements OnInit, OnDestroy {
       },
       (error) => {
         this.loading = false;
-        if (error.status === 403) this.authService.logout();
+        if (error.status === 401) this.authService.logout();
       },
     );
   }

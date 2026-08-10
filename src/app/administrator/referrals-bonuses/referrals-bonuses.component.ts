@@ -83,7 +83,7 @@ export class ReferralsBonusesComponent implements OnInit {
         },
         (error) => {
           this.referralsLoading = false;
-          if (error.status === 403) {
+          if (error.status === 401) {
             this.authService.logout();
           }
         },
@@ -213,7 +213,7 @@ export class ReferralsBonusesComponent implements OnInit {
       },
       (error) => {
         this.bonusesLoading = false;
-        if (error.status === 403) {
+        if (error.status === 401) {
           this.authService.logout();
         }
       },

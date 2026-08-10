@@ -135,7 +135,7 @@ export class ArchiveOrdersComponent implements OnInit {
           }
         },
         (error) => {
-          if (error.status == 403) {
+          if (error.status == 401) {
             this.authService.logout();
           }
         }
@@ -187,7 +187,7 @@ export class ArchiveOrdersComponent implements OnInit {
           }
         },
         (error) => {
-          if (error.status == 403) {
+          if (error.status == 401) {
             this.authService.logout();
           }
         }
@@ -235,7 +235,7 @@ export class ArchiveOrdersComponent implements OnInit {
             }
           },
           (error) => {
-            if (error.status == 403) {
+            if (error.status == 401) {
               this.authService.logout();
             }
           }

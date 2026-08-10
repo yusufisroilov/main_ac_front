@@ -204,7 +204,7 @@ export class AdminRequestHandlerComponent {
             "error"
           );
           this.loadingRequests = false;
-          if (error.status == 403) {
+          if (error.status == 401) {
             this.authService.logout();
           }
         }
@@ -263,7 +263,7 @@ export class AdminRequestHandlerComponent {
             "error"
           );
           this.loadingRequests = false;
-          if (error.status == 403) {
+          if (error.status == 401) {
             this.authService.logout();
           }
         }
@@ -379,7 +379,7 @@ export class AdminRequestHandlerComponent {
           console.error("Error loading payment images:", error);
           this.paymentImageUrls = [];
           this.loadingPaymentImages = false;
-          if (error.status == 403) {
+          if (error.status == 401) {
             this.authService.logout();
           }
         }
@@ -489,7 +489,7 @@ export class AdminRequestHandlerComponent {
         (error) => {
           swal.fire("Xatolik", "To'lovni tasdiqlashda xatolik", "error");
           console.error("Payment verification error:", error);
-          if (error.status == 403) {
+          if (error.status == 401) {
             this.authService.logout();
           }
         }
@@ -542,7 +542,7 @@ export class AdminRequestHandlerComponent {
         },
         (error) => {
           console.error("Error loading request packages:", error);
-          if (error.status == 403) {
+          if (error.status == 401) {
             this.authService.logout();
           }
         }
@@ -558,7 +558,7 @@ export class AdminRequestHandlerComponent {
       },
       (error) => {
         console.error("Error loading request packages:", error);
-        if (error.status == 403) {
+        if (error.status == 401) {
           this.authService.logout();
         }
       }
@@ -705,7 +705,7 @@ export class AdminRequestHandlerComponent {
             "error"
           );
           this.processingRequest = false;
-          if (error.status == 403) {
+          if (error.status == 401) {
             this.authService.logout();
           }
         }
@@ -772,7 +772,7 @@ export class AdminRequestHandlerComponent {
             "error"
           );
           this.processingRequest = false;
-          if (error.status == 403) {
+          if (error.status == 401) {
             this.authService.logout();
           }
         }

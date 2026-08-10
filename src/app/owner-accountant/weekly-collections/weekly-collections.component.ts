@@ -45,7 +45,7 @@ export class WeeklyCollectionsComponent implements OnInit {
     }
     this.http.get<any>(url, { headers: this.getHeaders() }).subscribe(
       (data) => { this.collections = data.collections || []; this.loading = false; },
-      (error) => { this.loading = false; if (error.status === 403) this.authService.logout(); },
+      (error) => { this.loading = false; if (error.status === 401) this.authService.logout(); },
     );
   }
 

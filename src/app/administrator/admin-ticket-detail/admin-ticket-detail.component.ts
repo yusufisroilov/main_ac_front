@@ -363,7 +363,7 @@ export class AdminTicketDetailComponent implements OnInit, OnDestroy {
           console.error("Error loading ticket:", error);
           this.isLoading = false;
 
-          if (error.status == 403) {
+          if (error.status == 401) {
             this.authService.logout();
           } else {
             swal
@@ -442,7 +442,7 @@ export class AdminTicketDetailComponent implements OnInit, OnDestroy {
             this.replyBoxComponent.setSubmitting(false);
           }
 
-          if (error.status == 403) {
+          if (error.status == 401) {
             this.authService.logout();
           } else {
             showBackendError(error, {
@@ -514,7 +514,7 @@ export class AdminTicketDetailComponent implements OnInit, OnDestroy {
             this.internalNoteBox.setSubmitting(false);
           }
 
-          if (error.status == 403) {
+          if (error.status == 401) {
             this.authService.logout();
           } else {
             swal.fire({
@@ -597,7 +597,7 @@ export class AdminTicketDetailComponent implements OnInit, OnDestroy {
         },
         (error) => {
           console.error("Error updating status:", error);
-          if (error.status == 403) {
+          if (error.status == 401) {
             this.authService.logout();
           } else {
             swal.fire({
@@ -645,7 +645,7 @@ export class AdminTicketDetailComponent implements OnInit, OnDestroy {
         },
         (error) => {
           console.error("Error updating priority:", error);
-          if (error.status == 403) {
+          if (error.status == 401) {
             this.authService.logout();
           } else {
             swal.fire({
@@ -679,7 +679,7 @@ export class AdminTicketDetailComponent implements OnInit, OnDestroy {
         },
         (error) => {
           console.error("Error updating message:", error);
-          if (error.status == 403) {
+          if (error.status == 401) {
             this.authService.logout();
           } else {
             swal.fire({
@@ -742,7 +742,7 @@ export class AdminTicketDetailComponent implements OnInit, OnDestroy {
               },
               (error) => {
                 console.error("Error reassigning ticket:", error);
-                if (error.status == 403) {
+                if (error.status == 401) {
                   this.authService.logout();
                 } else {
                   const errMsg =
@@ -851,7 +851,7 @@ export class AdminTicketDetailComponent implements OnInit, OnDestroy {
         },
         (error) => {
           console.error("Error reassigning ticket:", error);
-          if (error.status == 403) {
+          if (error.status == 401) {
             this.authService.logout();
           } else {
             const errMsg =

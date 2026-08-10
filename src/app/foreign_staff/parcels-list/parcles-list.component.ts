@@ -155,7 +155,7 @@ export class ParclesListComponent implements OnInit, AfterViewInit {
           }
         },
         (error) => {
-          if (error.status == 403) {
+          if (error.status == 401) {
             this.authService.logout();
           } else if (error.status == 404) {
             this.consignmentMessage = "NO ACTIVE CONSIGNMENT";
@@ -309,7 +309,7 @@ export class ParclesListComponent implements OnInit, AfterViewInit {
           }
         },
         (error) => {
-          if (error.status == 403) {
+          if (error.status == 401) {
             this.authService.logout();
           }
         },
@@ -373,7 +373,7 @@ export class ParclesListComponent implements OnInit, AfterViewInit {
           }
         },
         (error) => {
-          if (error.status == 403) {
+          if (error.status == 401) {
             this.authService.logout();
           }
         },
@@ -420,7 +420,7 @@ export class ParclesListComponent implements OnInit, AfterViewInit {
               }
             },
             (error) => {
-              if (error.status == 403) {
+              if (error.status == 401) {
                 this.authService.logout();
               }
             },
@@ -530,7 +530,7 @@ export class ParclesListComponent implements OnInit, AfterViewInit {
                     });
                 }
 
-                if (error.status == 403) {
+                if (error.status == 401) {
                   this.authService.logout();
                 }
               },
@@ -714,7 +714,7 @@ export class ParclesListComponent implements OnInit, AfterViewInit {
                           this.recordParcelWithLabel();
                         }
                       });
-                  } else if (error.status == 403) {
+                  } else if (error.status == 401) {
                     this.authService.logout();
                   } else if (error.status == 404) {
                     let registredMessage = error.json().message;
@@ -826,7 +826,7 @@ export class ParclesListComponent implements OnInit, AfterViewInit {
               });
           }
 
-          if (error.status == 403) {
+          if (error.status == 401) {
             this.authService.logout();
           }
         },
@@ -1354,7 +1354,7 @@ export class ParclesListComponent implements OnInit, AfterViewInit {
                     });
                 }
 
-                if (error.status == 403) {
+                if (error.status == 401) {
                   this.authService.logout();
                 }
               },
@@ -1439,7 +1439,7 @@ export class ParclesListComponent implements OnInit, AfterViewInit {
                     });
                 }
 
-                if (error.status == 403) {
+                if (error.status == 401) {
                   this.authService.logout();
                 }
               },
@@ -1506,7 +1506,7 @@ export class ParclesListComponent implements OnInit, AfterViewInit {
                 this.getListOfParcels();
               },
               (error) => {
-                if (error.status == 403) {
+                if (error.status == 401) {
                   this.authService.logout();
                 } else if (error.status == 400) {
                   swal

@@ -87,7 +87,7 @@ export class OaExpensesComponent implements OnInit {
       },
       (error) => {
         this.loading = false;
-        if (error.status === 403) this.authService.logout();
+        if (error.status === 401) this.authService.logout();
       },
     );
   }
@@ -130,9 +130,11 @@ export class OaExpensesComponent implements OnInit {
       sortedCategories
         .map((c) => `<option value="${c.id}">${c.name}</option>`)
         .join("");
-    const accountOpts = this.cashAccounts
-      .map((a) => `<option value="${a.id}">${a.name} (${a.currency})</option>`)
-      .join("");
+    const accountOpts =
+      `<option value="" disabled selected>-- Tanlang hisob --</option>` +
+      this.cashAccounts
+        .map((a) => `<option value="${a.id}">${a.name} (${a.currency})</option>`)
+        .join("");
 
     const html = `
       <style>
@@ -261,7 +263,11 @@ export class OaExpensesComponent implements OnInit {
           const accountId = (
             document.getElementById("exp-account") as HTMLSelectElement
           ).value;
-          if (!amountRaw || !dateDisplay || !categoryId || !accountId) {
+          if (!accountId) {
+            swal.showValidationMessage("Hisob tanlang");
+            return false;
+          }
+          if (!amountRaw || !dateDisplay || !categoryId) {
             swal.showValidationMessage(
               "Barcha majburiy maydonlarni to'ldiring",
             );

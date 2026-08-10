@@ -90,7 +90,7 @@ export class InfoeachClientAdmin2Component implements OnInit {
         },
         (error) => {
           swal.fire("Xatolik", `BAD REQUEST: ${error.json().error}. `, "error");
-          if (error.status == 403) {
+          if (error.status == 401) {
             this.authService.logout();
           }
         },
@@ -152,7 +152,7 @@ export class InfoeachClientAdmin2Component implements OnInit {
           }
         },
         (error) => {
-          if (error.status == 403) {
+          if (error.status == 401) {
             this.authService.logout();
           }
         },
@@ -208,7 +208,7 @@ export class InfoeachClientAdmin2Component implements OnInit {
             }
           },
           (error) => {
-            if (error.status == 403) {
+            if (error.status == 401) {
               this.authService.logout();
             }
           },

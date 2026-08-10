@@ -191,7 +191,7 @@ export class AddOrdersComponent implements OnInit {
           }
         },
         (error) => {
-          if (error.status == 403) {
+          if (error.status == 401) {
             this.authService.logout();
           }
         },
@@ -331,22 +331,28 @@ export class AddOrdersComponent implements OnInit {
             <label style="font-size: 13px; font-weight: 600; color: #344767; display: block; margin-bottom: 8px;">
               Consignment Type <span style="color: #e53e3e;">*</span>
             </label>
-            <div style="display: flex; gap: 8px;" id="type-selector">
-              <div id="btn-avia" onclick="document.getElementById('consignment-type').value='AVIA'; document.getElementById('btn-avia').style.borderColor='#667eea'; document.getElementById('btn-avia').style.background='#f0f0ff'; document.getElementById('btn-avto').style.borderColor='#e2e8f0'; document.getElementById('btn-avto').style.background='#fff'; document.getElementById('consignment-type').dispatchEvent(new Event('change'));"
-                style="flex: 1; padding: 8px 8px; border: 2px solid #e2e8f0; border-radius: 8px; cursor: pointer; text-align: center; transition: all 0.2s; background: #fff;">
+            <div style="display: flex; gap: 6px; flex-wrap: wrap;" id="type-selector">
+              <div id="btn-avia" onclick="document.getElementById('consignment-type').value='AVIA'; ['btn-avia','btn-avto','btn-pochta'].forEach(function(b){var el=document.getElementById(b);if(el){el.style.borderColor='#e2e8f0';el.style.background='#fff';}}); document.getElementById('btn-avia').style.borderColor='#667eea'; document.getElementById('btn-avia').style.background='#f0f0ff'; document.getElementById('consignment-type').dispatchEvent(new Event('change'));"
+                style="flex: 1; min-width: 90px; padding: 8px 6px; border: 2px solid #e2e8f0; border-radius: 8px; cursor: pointer; text-align: center; transition: all 0.2s; background: #fff;">
                 <span style="font-size: 18px; vertical-align: middle;">&#9992;</span>
                 <span style="font-weight: 600; font-size: 13px; color: #344767; vertical-align: middle; margin-left: 4px;">AVIA</span>
               </div>
-              <div id="btn-avto" onclick="document.getElementById('consignment-type').value='AVTO'; document.getElementById('btn-avto').style.borderColor='#667eea'; document.getElementById('btn-avto').style.background='#f0f0ff'; document.getElementById('btn-avia').style.borderColor='#e2e8f0'; document.getElementById('btn-avia').style.background='#fff'; document.getElementById('consignment-type').dispatchEvent(new Event('change'));"
-                style="flex: 1; padding: 8px 8px; border: 2px solid #e2e8f0; border-radius: 8px; cursor: pointer; text-align: center; transition: all 0.2s; background: #fff;">
+              <div id="btn-avto" onclick="document.getElementById('consignment-type').value='AVTO'; ['btn-avia','btn-avto','btn-pochta'].forEach(function(b){var el=document.getElementById(b);if(el){el.style.borderColor='#e2e8f0';el.style.background='#fff';}}); document.getElementById('btn-avto').style.borderColor='#667eea'; document.getElementById('btn-avto').style.background='#f0f0ff'; document.getElementById('consignment-type').dispatchEvent(new Event('change'));"
+                style="flex: 1; min-width: 90px; padding: 8px 6px; border: 2px solid #e2e8f0; border-radius: 8px; cursor: pointer; text-align: center; transition: all 0.2s; background: #fff;">
                 <span style="font-size: 18px; vertical-align: middle;">&#128666;</span>
                 <span style="font-weight: 600; font-size: 13px; color: #344767; vertical-align: middle; margin-left: 4px;">AVTO</span>
+              </div>
+              <div id="btn-pochta" onclick="document.getElementById('consignment-type').value='POCHTA'; ['btn-avia','btn-avto','btn-pochta'].forEach(function(b){var el=document.getElementById(b);if(el){el.style.borderColor='#e2e8f0';el.style.background='#fff';}}); document.getElementById('btn-pochta').style.borderColor='#7c3aed'; document.getElementById('btn-pochta').style.background='#f5f0ff'; document.getElementById('consignment-type').dispatchEvent(new Event('change'));"
+                style="flex: 1; min-width: 110px; padding: 8px 6px; border: 2px solid #e2e8f0; border-radius: 8px; cursor: pointer; text-align: center; transition: all 0.2s; background: #fff;">
+                <span style="font-size: 18px; vertical-align: middle;">&#128238;</span>
+                <span style="font-weight: 600; font-size: 12px; color: #344767; vertical-align: middle; margin-left: 4px;">AVTO POCHTA</span>
               </div>
             </div>
             <select id="consignment-type" style="display: none;">
               <option value="" disabled selected></option>
               <option value="AVIA">AVIA</option>
               <option value="AVTO">AVTO</option>
+              <option value="POCHTA">AVTO POCHTA</option>
             </select>
           </div>`;
 
@@ -412,6 +418,12 @@ export class AddOrdersComponent implements OnInit {
                 'Sent to Truck Departure Date <span style="color: #e53e3e;">*</span>';
               dateHint.textContent =
                 "Date when shipment departs from truck station (~20 days to UZB)";
+              dateHint.style.color = "#6c757d";
+            } else if (typeSelect.value === "POCHTA") {
+              dateLabel.innerHTML =
+                'Sent to Postal Station Date <span style="color: #e53e3e;">*</span>';
+              dateHint.textContent =
+                "Date when shipment departs from postal station (~20 days to UZB)";
               dateHint.style.color = "#6c757d";
             } else if (typeSelect.value === "AVIA") {
               dateLabel.innerHTML =
@@ -483,7 +495,7 @@ export class AddOrdersComponent implements OnInit {
                 }
               },
               (error) => {
-                if (error.status == 403) {
+                if (error.status == 401) {
                   this.authService.logout();
                 }
               },
@@ -510,7 +522,7 @@ export class AddOrdersComponent implements OnInit {
           }
         },
         (error) => {
-          if (error.status == 403) {
+          if (error.status == 401) {
             this.authService.logout();
           }
         },
@@ -539,7 +551,7 @@ export class AddOrdersComponent implements OnInit {
               }
             },
             (error) => {
-              if (error.status == 403) {
+              if (error.status == 401) {
                 this.authService.logout();
               }
             },
@@ -558,7 +570,7 @@ export class AddOrdersComponent implements OnInit {
           this.currentWeight = response.json().total_weight;
         },
         (error) => {
-          if (error.status == 403) {
+          if (error.status == 401) {
             this.authService.logout();
           }
         },
@@ -644,7 +656,7 @@ export class AddOrdersComponent implements OnInit {
                   this.hideBoxLink();
                 },
                 (error) => {
-                  if (error.status == 403) {
+                  if (error.status == 401) {
                     this.authService.logout();
                   }
                 },
@@ -692,7 +704,7 @@ export class AddOrdersComponent implements OnInit {
           }
         },
         (error) => {
-          if (error.status == 403) {
+          if (error.status == 401) {
             this.authService.logout();
           }
         },
@@ -756,7 +768,7 @@ export class AddOrdersComponent implements OnInit {
                   });
               },
               (error) => {
-                if (error.status == 403) {
+                if (error.status == 401) {
                   this.authService.logout();
                 }
               },
@@ -830,7 +842,7 @@ export class AddOrdersComponent implements OnInit {
                 }
               },
               (error) => {
-                if (error.status == 403) {
+                if (error.status == 401) {
                   this.authService.logout();
                 }
               },
@@ -911,7 +923,7 @@ export class AddOrdersComponent implements OnInit {
                 }
               },
               (error) => {
-                if (error.status == 403) {
+                if (error.status == 401) {
                   this.authService.logout();
                 }
               },
@@ -1020,7 +1032,7 @@ export class AddOrdersComponent implements OnInit {
                 }
               },
               (error) => {
-                if (error.status == 403) {
+                if (error.status == 401) {
                   this.authService.logout();
                 }
               },
@@ -1066,7 +1078,7 @@ export class AddOrdersComponent implements OnInit {
           this.printButtonCond = true;
         },
         (error) => {
-          if (error.status == 403) {
+          if (error.status == 401) {
             this.authService.logout();
           }
         },
@@ -1102,7 +1114,7 @@ export class AddOrdersComponent implements OnInit {
           this.printBigDoc();
         },
         (error) => {
-          if (error.status == 403) {
+          if (error.status == 401) {
             this.authService.logout();
           }
         },
@@ -1181,7 +1193,7 @@ export class AddOrdersComponent implements OnInit {
           //this.currentWeight = response.json().total_weight;
         },
         (error) => {
-          if (error.status == 403) {
+          if (error.status == 401) {
             this.authService.logout();
           }
         },
@@ -1219,7 +1231,7 @@ export class AddOrdersComponent implements OnInit {
           this.printLabelDoc();
         },
         (error) => {
-          if (error.status == 403) {
+          if (error.status == 401) {
             this.authService.logout();
           }
         },

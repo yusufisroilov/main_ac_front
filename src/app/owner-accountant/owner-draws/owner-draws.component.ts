@@ -57,7 +57,7 @@ export class OaOwnerDrawsComponent implements OnInit {
       },
       (error) => {
         this.loading = false;
-        if (error.status === 403) this.authService.logout();
+        if (error.status === 401) this.authService.logout();
       },
     );
   }
@@ -73,7 +73,9 @@ export class OaOwnerDrawsComponent implements OnInit {
 
   addDraw() {
     const today = new Date().toISOString().split("T")[0];
-    const accountOpts = this.cashAccounts.map((a) => `<option value="${a.id}">${a.name} (${a.currency})</option>`).join("");
+    const accountOpts =
+      `<option value="" disabled selected>-- Tanlang hisob --</option>` +
+      this.cashAccounts.map((a) => `<option value="${a.id}">${a.name} (${a.currency})</option>`).join("");
     const accountsData = this.cashAccounts.map((a) => ({ id: a.id, currency: a.currency }));
 
     const html = `
@@ -167,7 +169,8 @@ export class OaOwnerDrawsComponent implements OnInit {
         const dateDisplay = (document.getElementById("od-date") as HTMLInputElement).value;
         const accountId = (document.getElementById("od-account") as HTMLSelectElement).value;
         const fxRate = (document.getElementById("od-rate") as HTMLInputElement)?.value;
-        if (!amount || !dateDisplay || !accountId) { swal.showValidationMessage("Barcha majburiy maydonlarni to'ldiring"); return false; }
+        if (!accountId) { swal.showValidationMessage("Hisob tanlang"); return false; }
+        if (!amount || !dateDisplay) { swal.showValidationMessage("Barcha majburiy maydonlarni to'ldiring"); return false; }
         if (parseFloat(amount) <= 0) { swal.showValidationMessage("Summa musbat bo'lishi kerak"); return false; }
         const dateIso = this.parseDmyToIso(dateDisplay);
         if (!dateIso) { swal.showValidationMessage("Sana noto'g'ri formatda (kun.oy.yil)"); return false; }

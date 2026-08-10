@@ -2,6 +2,7 @@ import { AfterViewInit, Component, OnInit } from "@angular/core";
 import { HttpClient, HttpHeaders } from "@angular/common/http";
 
 import swal from "sweetalert2";
+import { showBackendError } from "src/app/shared/backend-error";
 import { GlobalVars } from "src/app/global-vars";
 import { Router } from "@angular/router";
 import { AuthService } from "src/app/pages/login/auth.service";
@@ -104,7 +105,16 @@ export class ExpressScanComponent implements OnInit, AfterViewInit {
           this.rebuildGroups();
         },
         (error) => {
-          if (error.status === 403) this.authService.logout();
+          // 401 = session gone → log out. 403 = this role may not view scans;
+          // show the reason instead of silently rendering an empty table.
+          if (error.status === 401) {
+            this.authService.logout();
+          } else {
+            showBackendError(error, {
+              title: "Error",
+              fallback: "Could not load scans.",
+            });
+          }
         },
       );
   }
@@ -327,7 +337,7 @@ export class ExpressScanComponent implements OnInit, AfterViewInit {
             resolve(res);
           },
           (error) => {
-            if (error.status === 403) {
+            if (error.status === 401) {
               this.authService.logout();
               resolve(null);
               return;
@@ -337,6 +347,23 @@ export class ExpressScanComponent implements OnInit, AfterViewInit {
           },
         );
     });
+  }
+
+  /** Escape a value before interpolating it into a SweetAlert `html:` string.
+   *  Service names come from the DB (admin-editable), so they must not be
+   *  injected raw into markup shown to warehouse staff. */
+  private escapeHtml(v: any): string {
+    return String(v ?? "").replace(
+      /[&<>"']/g,
+      (c) =>
+        ({
+          "&": "&amp;",
+          "<": "&lt;",
+          ">": "&gt;",
+          '"': "&quot;",
+          "'": "&#39;",
+        })[c],
+    );
   }
 
   private showMatchedPopup(tracking: string, res: any): Promise<any> {
@@ -349,10 +376,10 @@ export class ExpressScanComponent implements OnInit, AfterViewInit {
       html: `
         <div style="text-align:center; padding: 8px;">
           <div style="font-size:13px;color:#888;text-transform:uppercase;font-weight:700;letter-spacing:0.5px;">Tracking Number</div>
-          <div style="font-size:20px;font-weight:800;color:#344767;margin:4px 0 14px;">${tracking}</div>
+          <div style="font-size:20px;font-weight:800;color:#344767;margin:4px 0 14px;">${this.escapeHtml(tracking)}</div>
           <div style="font-size:13px;color:#888;text-transform:uppercase;font-weight:700;letter-spacing:0.5px;">Service Type</div>
-          <div style="font-size:22px;font-weight:800;color:#7c3aed;margin:4px 0 8px;">${res.service.name_en || res.service.name_uz}</div>
-          <div style="font-size:12px;color:#666;">${res.service.name_uz}</div>
+          <div style="font-size:22px;font-weight:800;color:#7c3aed;margin:4px 0 8px;">${this.escapeHtml(res.service.name_en || res.service.name_uz)}</div>
+          <div style="font-size:12px;color:#666;">${this.escapeHtml(res.service.name_uz)}</div>
           ${already}
         </div>
       `,

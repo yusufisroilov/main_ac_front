@@ -103,7 +103,7 @@ export class EachboxdocComponent implements OnInit {
           this.printButtonCond = true;
         },
         (error) => {
-          if (error.status == 403) {
+          if (error.status == 401) {
             this.authService.logout();
           }
         }
@@ -136,7 +136,7 @@ export class EachboxdocComponent implements OnInit {
           this.printButtonCond = true;
         },
         (error) => {
-          if (error.status == 403) {
+          if (error.status == 401) {
             this.authService.logout();
           }
         }

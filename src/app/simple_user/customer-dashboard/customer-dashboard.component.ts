@@ -37,6 +37,7 @@ interface Consignment {
   quantity: number;
   isHongKong: boolean;
   country_id?: number;
+  is_avto_pochta?: boolean;
   shipping_type: string;
   status: number;
   rate: number;
@@ -196,7 +197,7 @@ export class CustomerDashboardComponent implements OnInit, AfterViewInit, OnDest
 
         this.loadingStats = false;
 
-        if (error.status == 403) {
+        if (error.status == 401) {
           this.authService.logout();
         }
       },
@@ -241,7 +242,7 @@ export class CustomerDashboardComponent implements OnInit, AfterViewInit, OnDest
         );
         this.loadingOrders = false;
 
-        if (error.status == 403) {
+        if (error.status == 401) {
           this.authService.logout();
         }
       },
@@ -301,7 +302,7 @@ export class CustomerDashboardComponent implements OnInit, AfterViewInit, OnDest
                   "Buyurtmani qabul qilishda xatolik",
                   "error",
                 );
-                if (error.status == 403) {
+                if (error.status == 401) {
                   this.authService.logout();
                 }
               },
@@ -345,7 +346,7 @@ export class CustomerDashboardComponent implements OnInit, AfterViewInit, OnDest
         },
         (error) => {
           this.loadingCalendar = false;
-          if (error.status === 403) {
+          if (error.status === 401) {
             this.authService.logout();
           }
         },

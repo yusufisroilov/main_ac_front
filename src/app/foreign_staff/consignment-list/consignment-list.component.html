@@ -70,7 +70,7 @@
                         </button>
                       </ng-template>
                     </td>
-                    <td *ngIf="consignment.isHongKong && consignment.country_id === 2; else notAvtoPochta"
+                    <td *ngIf="consignment.shipping_type === 'AVTO POCHTA' || consignment.is_avto_pochta || (consignment.isHongKong && consignment.country_id === 2); else notAvtoPochta"
                       style="font-weight: bold; color: rgb(198, 40, 40)">
                       AVTO POCHTA 📮
                     </td>

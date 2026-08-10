@@ -125,7 +125,7 @@ export class OwnCourierDeliveriesComponent implements OnInit {
         (error) => {
           swal.fire("Xatolik", "Yetkazishlarni yuklashda xatolik", "error");
           this.loadingDeliveries = false;
-          if (error.status == 403) {
+          if (error.status == 401) {
             this.authService.logout();
           }
         }
@@ -212,7 +212,7 @@ export class OwnCourierDeliveriesComponent implements OnInit {
         (error) => {
           swal.fire("Xatolik", "Yetkazishni qayta ishlashda xatolik", "error");
           this.processingDelivery = false;
-          if (error.status == 403) {
+          if (error.status == 401) {
             this.authService.logout();
           }
         }
@@ -276,7 +276,7 @@ export class OwnCourierDeliveriesComponent implements OnInit {
         (error) => {
           swal.fire("Xatolik", "Og'irlikni yangilashda xatolik", "error");
           this.processingDelivery = false;
-          if (error.status == 403) {
+          if (error.status == 401) {
             this.authService.logout();
           }
         }
@@ -310,7 +310,7 @@ export class OwnCourierDeliveriesComponent implements OnInit {
           },
           (error) => {
             reject("Ma'lumotlarni yuklashda xatolik");
-            if (error.status == 403) {
+            if (error.status == 401) {
               this.authService.logout();
             }
           }

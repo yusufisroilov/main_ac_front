@@ -221,7 +221,7 @@ export class Infoeachclientv2Component implements OnInit {
             `BAD REQUEST: ${error.error?.error || error.message}`,
             "error",
           );
-          if (error.status === 403) this.authService.logout();
+          if (error.status === 401) this.authService.logout();
         },
       );
   }
@@ -287,7 +287,7 @@ export class Infoeachclientv2Component implements OnInit {
           }
         },
         (error) => {
-          if (error.status === 403) this.authService.logout();
+          if (error.status === 401) this.authService.logout();
         },
       );
   }
@@ -339,7 +339,7 @@ export class Infoeachclientv2Component implements OnInit {
             }
           },
           (error) => {
-            if (error.status === 403) this.authService.logout();
+            if (error.status === 401) this.authService.logout();
           },
         );
     }
@@ -1172,7 +1172,7 @@ export class Infoeachclientv2Component implements OnInit {
         },
         (error) => {
           this.loadingCustomerPackages = false;
-          if (error.status === 403) this.authService.logout();
+          if (error.status === 401) this.authService.logout();
         },
       );
   }
@@ -1484,7 +1484,7 @@ export class Infoeachclientv2Component implements OnInit {
         (error) => {
           swal.fire("Xatolik", "Yetkazish yaratishda xatolik", "error");
           this.creatingDelivery = false;
-          if (error.status === 403) this.authService.logout();
+          if (error.status === 401) this.authService.logout();
         },
       );
   }
@@ -1594,7 +1594,7 @@ export class Infoeachclientv2Component implements OnInit {
           }
         },
         (error) => {
-          if (error.status === 403) this.authService.logout();
+          if (error.status === 401) this.authService.logout();
         },
       );
   }
@@ -1623,7 +1623,7 @@ export class Infoeachclientv2Component implements OnInit {
             }
           },
           (error) => {
-            if (error.status === 403) this.authService.logout();
+            if (error.status === 401) this.authService.logout();
           },
         );
     }
@@ -1669,7 +1669,7 @@ export class Infoeachclientv2Component implements OnInit {
                     }
                   },
                   (error) => {
-                    if (error.status === 403) this.authService.logout();
+                    if (error.status === 401) this.authService.logout();
                   },
                 );
             }
@@ -1704,7 +1704,7 @@ export class Infoeachclientv2Component implements OnInit {
           }
         },
         (error) => {
-          if (error.status === 403) this.authService.logout();
+          if (error.status === 401) this.authService.logout();
         },
       );
   }

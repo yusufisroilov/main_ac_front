@@ -304,7 +304,7 @@ export class CustomerTicketDetailComponent
           console.error("Error loading ticket:", error);
           this.isLoading = false;
 
-          if (error.status == 403) {
+          if (error.status == 401) {
             this.authService.logout();
           } else if (error.status == 404) {
             swal
@@ -523,7 +523,7 @@ export class CustomerTicketDetailComponent
           console.error("Error sending reply:", error);
           this.isSubmitting = false;
 
-          if (error.status == 403) {
+          if (error.status == 401) {
             this.authService.logout();
           } else {
             showBackendError(error, {

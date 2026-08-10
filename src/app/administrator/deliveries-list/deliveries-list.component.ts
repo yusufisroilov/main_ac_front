@@ -184,7 +184,7 @@ export class DeliveriesListComponent {
         (error) => {
           swal.fire("Xatolik", "Qutillarni yuklashda xatolik", "error");
           this.loadingCustomerPackages = false;
-          if (error.status == 403) {
+          if (error.status == 401) {
             this.authService.logout();
           }
         },
@@ -222,7 +222,7 @@ export class DeliveriesListComponent {
       },
       (error) => {
         this.loadingRegions = false;
-        if (error.status == 403) {
+        if (error.status == 401) {
           this.authService.logout();
         }
       },
@@ -254,7 +254,7 @@ export class DeliveriesListComponent {
           },
           (error) => {
             this.loadingBranches = false;
-            if (error.status == 403) {
+            if (error.status == 401) {
               this.authService.logout();
             }
           },
@@ -368,7 +368,7 @@ export class DeliveriesListComponent {
         (error) => {
           swal.fire("Xatolik", "Yetkazishlarni yuklashda xatolik", "error");
           this.loadingDeliveries = false;
-          if (error.status == 403) {
+          if (error.status == 401) {
             this.authService.logout();
           }
         },
@@ -427,7 +427,7 @@ export class DeliveriesListComponent {
         },
         (error) => {
           console.error("Error loading request packages:", error);
-          if (error.status == 403) {
+          if (error.status == 401) {
             this.authService.logout();
           }
         },
@@ -516,7 +516,7 @@ export class DeliveriesListComponent {
         (error) => {
           swal.fire("Xatolik", "Holatni yangilashda xatolik", "error");
           this.updatingStatus = false;
-          if (error.status == 403) {
+          if (error.status == 401) {
             this.authService.logout();
           }
         },
@@ -715,7 +715,7 @@ export class DeliveriesListComponent {
           } else {
             swal.fire("Xatolik", "Excel yuklab olishda xatolik", "error");
           }
-          if (error.status === 403) this.authService.logout();
+          if (error.status === 401) this.authService.logout();
         },
       );
   }
@@ -760,7 +760,7 @@ export class DeliveriesListComponent {
               },
               (error) => {
                 swal.fire("Xatolik", "So'rov yuborishda xatolik", "error");
-                if (error.status == 403) {
+                if (error.status == 401) {
                   this.authService.logout();
                 }
               },

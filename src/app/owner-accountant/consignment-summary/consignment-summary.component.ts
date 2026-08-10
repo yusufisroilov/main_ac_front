@@ -41,7 +41,7 @@ export class ConsignmentSummaryComponent implements OnInit {
         this.currentPage = data.currentPage || 0;
         this.loading = false;
       },
-      (error) => { this.loading = false; if (error.status === 403) this.authService.logout(); },
+      (error) => { this.loading = false; if (error.status === 401) this.authService.logout(); },
     );
   }
 

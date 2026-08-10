@@ -36,7 +36,7 @@ export class InfoeachClientAdminComponent implements OnInit {
 
   constructor(
     public authService: AuthService,
-    private http: Http
+    private http: Http,
   ) {
     this.orderTypeText = [];
     this.orderStatusText = [];
@@ -82,7 +82,7 @@ export class InfoeachClientAdminComponent implements OnInit {
     return this.http
       .get(
         GlobalVars.baseUrl + "/consignments/for_client?id=" + ownerid,
-        this.options
+        this.options,
       )
       .subscribe(
         (response) => {
@@ -94,10 +94,10 @@ export class InfoeachClientAdminComponent implements OnInit {
         },
         (error) => {
           swal.fire("Xatolik", `BAD REQUEST: ${error.json().error}. `, "error");
-          if (error.status == 403) {
+          if (error.status == 401) {
             this.authService.logout();
           }
-        }
+        },
       );
   }
 
@@ -126,7 +126,7 @@ export class InfoeachClientAdminComponent implements OnInit {
           this.currentID +
           "&consignment=" +
           partyNum,
-        this.options
+        this.options,
       )
       .subscribe(
         (response) => {
@@ -137,7 +137,7 @@ export class InfoeachClientAdminComponent implements OnInit {
             const element = this.allData[index];
             this.orderTypeText[index] = GlobalVars.getDescriptionWithID(
               element.order_type,
-              "uz"
+              "uz",
             );
           }
 
@@ -145,7 +145,7 @@ export class InfoeachClientAdminComponent implements OnInit {
             const element1 = this.allData[index];
             this.orderStatusText[index] = GlobalVars.getDesOrderStatusWithID(
               element1.status,
-              "uz"
+              "uz",
             );
           }
 
@@ -159,10 +159,10 @@ export class InfoeachClientAdminComponent implements OnInit {
           }
         },
         (error) => {
-          if (error.status == 403) {
+          if (error.status == 401) {
             this.authService.logout();
           }
-        }
+        },
       );
   }
 
@@ -184,7 +184,7 @@ export class InfoeachClientAdminComponent implements OnInit {
             this.currentParty +
             "&trackingNumber=" +
             searchkey,
-          this.options
+          this.options,
         )
         .subscribe(
           (response) => {
@@ -194,7 +194,7 @@ export class InfoeachClientAdminComponent implements OnInit {
               const element = this.allData[index];
               this.orderTypeText[index] = GlobalVars.getDescriptionWithID(
                 element.order_type,
-                "uz"
+                "uz",
               );
             }
 
@@ -202,7 +202,7 @@ export class InfoeachClientAdminComponent implements OnInit {
               const element1 = this.allData[index];
               this.orderStatusText[index] = GlobalVars.getDesOrderStatusWithID(
                 element1.status,
-                "uz"
+                "uz",
               );
             }
 
@@ -216,10 +216,10 @@ export class InfoeachClientAdminComponent implements OnInit {
             }
           },
           (error) => {
-            if (error.status == 403) {
+            if (error.status == 401) {
               this.authService.logout();
             }
-          }
+          },
         );
     }
   }
@@ -232,28 +232,76 @@ export class InfoeachClientAdminComponent implements OnInit {
   // ── Status helpers ──
 
   getConsignmentStatusText(status: number): string {
-    return { 1: "Kelmagan", 2: "Xitoy omborida", 4: "Xitoy aeroportida", 5: "O'zbekiston aeroportida", 6: "Bojxonada", 7: "Toshkent omborida" }[status] || "Nomalum";
+    return (
+      {
+        1: "Kelmagan",
+        2: "Xitoy omborida",
+        4: "Xitoy aeroportida",
+        5: "O'zbekiston aeroportida",
+        6: "Bojxonada",
+        7: "Toshkent omborida",
+      }[status] || "Nomalum"
+    );
   }
 
   getConsignmentStatusClass(status: number): string {
-    return { 1: "badge-warning", 2: "badge-info", 4: "badge-primary", 5: "badge-info", 6: "badge-success", 7: "badge-success" }[status] || "badge-secondary";
+    return (
+      {
+        1: "badge-warning",
+        2: "badge-info",
+        4: "badge-primary",
+        5: "badge-info",
+        6: "badge-success",
+        7: "badge-success",
+      }[status] || "badge-secondary"
+    );
   }
 
   // ── Delivery helpers ──
 
   getDeliveryBadgeClass(type: string): string {
-    return { "EMU": "badge-info", "Yandex": "badge-warning", "Own-Courier": "badge-primary", "Pick-up": "badge-success" }[type] || "badge-secondary";
+    return (
+      {
+        EMU: "badge-info",
+        Yandex: "badge-warning",
+        "Own-Courier": "badge-primary",
+        "Pick-up": "badge-success",
+      }[type] || "badge-secondary"
+    );
   }
 
   getDeliveryIcon(type: string): string {
-    return { "EMU": "local_shipping", "Yandex": "delivery_dining", "Own-Courier": "two_wheeler", "Pick-up": "store" }[type] || "local_shipping";
+    return (
+      {
+        EMU: "local_shipping",
+        Yandex: "delivery_dining",
+        "Own-Courier": "two_wheeler",
+        "Pick-up": "store",
+      }[type] || "local_shipping"
+    );
   }
 
   getDeliveryTypeLabel(type: string): string {
-    return { "EMU": "EMU", "Yandex": "Yandex", "Own-Courier": "Kuryer", "Pick-up": "Mijoz o'zi" }[type] || type;
+    return (
+      {
+        EMU: "EMU",
+        Yandex: "Yandex",
+        "Own-Courier": "Kuryer",
+        "Pick-up": "Mijoz o'zi",
+      }[type] || type
+    );
   }
 
   getDeliveryStatusLabel(status: string): string {
-    return { "created": "Yaratilgan", "sent": "Yuborilgan", "collected": "Olingan", "delivered": "Yetkazilgan", "returned": "Qaytarilgan", "cancelled": "Bekor" }[status] || status;
+    return (
+      {
+        created: "Yaratilgan",
+        sent: "Yuborilgan",
+        collected: "Olingan",
+        delivered: "Yetkazilgan",
+        returned: "Qaytarilgan",
+        cancelled: "Bekor",
+      }[status] || status
+    );
   }
 }

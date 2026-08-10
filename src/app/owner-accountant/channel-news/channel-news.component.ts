@@ -50,7 +50,7 @@ export class ChannelNewsComponent implements OnInit {
       },
       (error) => {
         this.loading = false;
-        if (error.status === 403) this.authService.logout();
+        if (error.status === 401) this.authService.logout();
       },
     );
   }

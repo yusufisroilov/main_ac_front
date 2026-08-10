@@ -64,7 +64,7 @@ export class EmployeeFinanceComponent implements OnInit {
           this.currentParty = this.activeConsignment || this.currentParty;
         },
         (error) => {
-          if (error.status == 403) this.authService.logout();
+          if (error.status == 401) this.authService.logout();
         },
       );
   }
@@ -91,7 +91,7 @@ export class EmployeeFinanceComponent implements OnInit {
           this.totalWeight = response.json().totalWeight || 0;
         },
         (error) => {
-          if (error.status == 403) this.authService.logout();
+          if (error.status == 401) this.authService.logout();
         },
       );
   }
@@ -259,7 +259,13 @@ export class EmployeeFinanceComponent implements OnInit {
   }
 
   getShippingLabel(row: any): string {
-    if (row.shipping_type === "AVTO POCHTA" || row.country_id === 2) {
+    // AVTO POCHTA is now signalled by the explicit flag / shipping_type;
+    // legacy CN-warehouse rows (country_id=2 && hong_kong) still qualify.
+    if (
+      row.shipping_type === "AVTO POCHTA" ||
+      row.is_avto_pochta ||
+      (row.isHongKong && row.country_id === 2)
+    ) {
       return "Avto Pochta";
     }
     return row.shipping_type === "AVTO" || row.isHongKong ? "Avto" : "Avia";

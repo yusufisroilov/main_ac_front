@@ -61,7 +61,7 @@ export class AllreceiversComponent implements OnInit {
         // console.log("ssss" + this.regions + " ggg" + this.regions[1].id)
       },
       (error) => {
-        if (error.status == 403) {
+        if (error.status == 401) {
           this.authService.logout();
         }
       },
@@ -122,7 +122,7 @@ export class AllreceiversComponent implements OnInit {
           }
         },
         (error) => {
-          if (error.status == 403) {
+          if (error.status == 401) {
             this.authService.logout();
           }
         },
@@ -208,7 +208,7 @@ export class AllreceiversComponent implements OnInit {
           }
         },
         (error) => {
-          if (error.status == 403) {
+          if (error.status == 401) {
             this.authService.logout();
           }
         },
@@ -289,7 +289,7 @@ export class AllreceiversComponent implements OnInit {
           }
         },
         (error) => {
-          if (error.status == 403) {
+          if (error.status == 401) {
             this.authService.logout();
           }
         },
@@ -326,7 +326,7 @@ export class AllreceiversComponent implements OnInit {
                 }
               },
               (error) => {
-                if (error.status == 403) {
+                if (error.status == 401) {
                   this.authService.logout();
                 }
               },
@@ -453,7 +453,7 @@ export class AllreceiversComponent implements OnInit {
             },
             (error) => {
               this.getListOfRecs();
-              if (error.status == 403) {
+              if (error.status == 401) {
                 this.authService.logout();
               }
             },
@@ -500,7 +500,7 @@ export class AllreceiversComponent implements OnInit {
           // console.log("222 " + this.districts);
         },
         (error) => {
-          if (error.status == 403) {
+          if (error.status == 401) {
             this.authService.logout();
           }
         },

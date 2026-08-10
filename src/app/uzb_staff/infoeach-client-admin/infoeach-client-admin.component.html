@@ -195,7 +195,7 @@
                   <tr *ngFor="let row of allDataBoxes; let i = index">
                     <td class="text-center">{{ i + 1 }}</td>
                     <td>{{ row.name }}</td>
-                    <td *ngIf="row.isHongKong && row.country_id === 2; else notAvtoPochta"
+                    <td *ngIf="row.shipping_type === 'AVTO POCHTA' || row.is_avto_pochta || (row.isHongKong && row.country_id === 2); else notAvtoPochta"
                       style="font-weight: bold; color: rgb(198, 40, 40)">
                       AVTO POCHTA
                     </td>

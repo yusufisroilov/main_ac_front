@@ -297,7 +297,7 @@ export class DeliveriesComponent implements OnInit {
           }
         },
         (error) => {
-          if (error.status == 403) {
+          if (error.status == 401) {
             this.authService.logout();
           }
         }
@@ -540,7 +540,7 @@ export class DeliveriesComponent implements OnInit {
           this.getListOfNewDeliveries();
         },
         (error) => {
-          if (error.status == 403) {
+          if (error.status == 401) {
             this.authService.logout();
           }
         }
@@ -617,7 +617,7 @@ export class DeliveriesComponent implements OnInit {
           this.getListOfNewDeliveries();
         },
         (error) => {
-          if (error.status == 403) {
+          if (error.status == 401) {
             this.authService.logout();
           }
         }
@@ -708,7 +708,7 @@ export class DeliveriesComponent implements OnInit {
               }
             },
             (error) => {
-              if (error.status == 403) {
+              if (error.status == 401) {
                 this.authService.logout();
               }
             }
@@ -777,7 +777,7 @@ export class DeliveriesComponent implements OnInit {
                 this.getListOfNewDeliveries();
               },
               (error) => {
-                if (error.status == 403) {
+                if (error.status == 401) {
                   this.authService.logout();
                 }
               }
@@ -823,7 +823,7 @@ export class DeliveriesComponent implements OnInit {
                 this.getListOfNewDeliveries();
               },
               (error) => {
-                if (error.status == 403) {
+                if (error.status == 401) {
                   this.authService.logout();
                 }
               }

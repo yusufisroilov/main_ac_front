@@ -29,7 +29,7 @@ export class TopDebtorsComponent implements OnInit {
     this.loading = true;
     this.http.get<any>(`${GlobalVars.baseUrl}/owner/top-debtors?limit=${this.limit}`, { headers: this.getHeaders() }).subscribe(
       (data) => { this.debtors = data.debtors || []; this.loading = false; },
-      (error) => { this.loading = false; if (error.status === 403) this.authService.logout(); },
+      (error) => { this.loading = false; if (error.status === 401) this.authService.logout(); },
     );
   }
 

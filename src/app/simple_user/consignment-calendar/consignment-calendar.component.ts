@@ -133,7 +133,7 @@ export class ConsignmentCalendarComponent implements OnInit {
         },
         (error) => {
           this.loading = false;
-          if (error.status === 403) {
+          if (error.status === 401) {
             this.authService.logout();
           }
         },

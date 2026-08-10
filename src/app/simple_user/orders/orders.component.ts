@@ -171,7 +171,7 @@ export class OrdersComponent implements OnInit, AfterViewInit {
           }
         },
         (error) => {
-          if (error.status == 403) {
+          if (error.status == 401) {
             this.authService.logout();
           }
         },
@@ -224,7 +224,7 @@ export class OrdersComponent implements OnInit, AfterViewInit {
           }
         },
         (error) => {
-          if (error.status == 403) {
+          if (error.status == 401) {
             this.authService.logout();
           }
         },
@@ -273,7 +273,7 @@ export class OrdersComponent implements OnInit, AfterViewInit {
             }
           },
           (error) => {
-            if (error.status == 403) {
+            if (error.status == 401) {
               this.authService.logout();
             }
           },
@@ -372,7 +372,7 @@ export class OrdersComponent implements OnInit, AfterViewInit {
                     });
                 }
 
-                if (error.status == 403) {
+                if (error.status == 401) {
                   this.authService.logout();
                 }
               },
@@ -438,7 +438,7 @@ export class OrdersComponent implements OnInit, AfterViewInit {
                 this.getListOfParcels();
               },
               (error) => {
-                if (error.status == 403) {
+                if (error.status == 401) {
                   this.authService.logout();
                 }
               },
@@ -468,7 +468,7 @@ export class OrdersComponent implements OnInit, AfterViewInit {
       .subscribe(
         (data) => this.showPreDeclareDialog(data.types || []),
         (err) => {
-          if (err.status === 403) this.authService.logout();
+          if (err.status === 401) this.authService.logout();
           swal.fire(
             "Xatolik",
             err.error?.error || "Xizmat turlarini olishda xatolik",
@@ -497,8 +497,8 @@ export class OrdersComponent implements OnInit, AfterViewInit {
           `<option value="${t.id}"
             data-billable="${t.is_billable}"
             data-price="${t.default_price || 0}"
-            data-currency="${t.currency || 'UZS'}">
-            ${t.name_uz}${t.is_billable ? " 💰" : ""}
+            data-currency="${this.escapeHtml(t.currency || "UZS")}">
+            ${this.escapeHtml(t.name_uz)}${t.is_billable ? " 💰" : ""}
           </option>`,
       )
       .join("");
@@ -616,10 +616,184 @@ export class OrdersComponent implements OnInit, AfterViewInit {
               this.getListOfParcels();
             },
             (err) => {
-              if (err.status === 403) this.authService.logout();
+              if (err.status === 401) this.authService.logout();
               swal.fire(
                 "Xatolik",
                 err.error?.error || "Saqlashda xatolik",
+                "error",
+              );
+            },
+          );
+      });
+  }
+
+  // ─── Express-scan: my declarations ──────────────────────────────────────
+
+  /** Show the customer's own pre-declarations, with cancel for unscanned ones. */
+  openMyDeclarationsModal() {
+    // Ask for a large page: the endpoint defaults to 50 and the dialog has no
+    // paging, so without this a customer with more declarations would silently
+    // see only the newest 50. totalItems is surfaced so any remainder is shown.
+    this.httpClient
+      .get<any>(
+        `${GlobalVars.baseUrl}/express-scan/my-declarations?page=0&size=200`,
+        { headers: this.getAuthHeaders() },
+      )
+      .subscribe(
+        (data) =>
+          this.showMyDeclarationsDialog(
+            data.declarations || [],
+            data.totalItems ?? (data.declarations || []).length,
+          ),
+        (err) => {
+          if (err.status === 401) this.authService.logout();
+          swal.fire(
+            "Xatolik",
+            err.error?.error || "E'lonlarni olishda xatolik",
+            "error",
+          );
+        },
+      );
+  }
+
+  /** Escape a value before it is interpolated into a SweetAlert `html:` string. */
+  private escapeHtml(v: any): string {
+    return String(v ?? "").replace(
+      /[&<>"']/g,
+      (c) =>
+        ({
+          "&": "&amp;",
+          "<": "&lt;",
+          ">": "&gt;",
+          '"': "&quot;",
+          "'": "&#39;",
+        })[c],
+    );
+  }
+
+  private showMyDeclarationsDialog(rows: any[], totalItems?: number) {
+    if (!rows.length) {
+      swal.fire(
+        "Ma'lumot",
+        "Sizda hali e'lon qilingan trek raqamlari yo'q",
+        "info",
+      );
+      return;
+    }
+
+    const esc = (v: any) => this.escapeHtml(v);
+
+    const fmt = (v: any) => {
+      const n = parseFloat(v);
+      if (!isFinite(n)) return "0";
+      return Math.round(n)
+        .toString()
+        .replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+    };
+
+    const body = rows
+      .map((r) => {
+        const scanned = !!r.scan_time;
+        const status = scanned
+          ? `<span style="color:#2e7d32;font-weight:600;">Skaner qilingan</span>`
+          : `<span style="color:#ef6c00;font-weight:600;">Kutilmoqda</span>`;
+        const cs = r.customerService;
+        const charge = cs
+          ? `${fmt(cs.amount)} ${esc(cs.currency)}`
+          : "<span style='color:#888;'>Bepul</span>";
+        // Cancellable whether or not it was scanned: an unscanned declaration
+        // is deleted, a scanned one is released back to the warehouse as
+        // unclaimed. Either way the unpaid charge is reversed.
+        const action = `<button class="decl-cancel" data-id="${this.escapeHtml(r.id)}"
+               style="border:none;background:#f44336;color:#fff;border-radius:6px;
+                      padding:3px 10px;cursor:pointer;font-size:12px;">Bekor</button>`;
+        return `<tr>
+            <td style="padding:6px 8px;font-family:monospace;">${esc(r.tracking_number)}</td>
+            <td style="padding:6px 8px;">${esc(r.serviceType?.name_uz || "—")}</td>
+            <td style="padding:6px 8px;text-align:center;">${status}</td>
+            <td style="padding:6px 8px;text-align:right;">${charge}</td>
+            <td style="padding:6px 8px;text-align:center;">${action}</td>
+          </tr>`;
+      })
+      .join("");
+
+    swal.fire({
+      title: "Mening e'lonlarim",
+      width: 720,
+      html: `
+        <div style="max-height:60vh;overflow:auto;">
+          <table style="width:100%;border-collapse:collapse;font-size:13px;">
+            <thead>
+              <tr style="background:#f5f5f5;">
+                <th style="padding:6px 8px;text-align:left;">Trek</th>
+                <th style="padding:6px 8px;text-align:left;">Xizmat</th>
+                <th style="padding:6px 8px;">Holati</th>
+                <th style="padding:6px 8px;text-align:right;">Summa</th>
+                <th style="padding:6px 8px;"></th>
+              </tr>
+            </thead>
+            <tbody>${body}</tbody>
+          </table>
+          ${
+            totalItems && totalItems > rows.length
+              ? `<p style="margin:10px 0 0;font-size:12px;color:#888;">
+                   Oxirgi ${rows.length} ta ko'rsatilmoqda (jami ${totalItems} ta).
+                 </p>`
+              : ""
+          }
+        </div>`,
+      showConfirmButton: true,
+      confirmButtonText: "Yopish",
+      didOpen: () => {
+        const popup = swal.getPopup();
+        popup?.querySelectorAll<HTMLElement>(".decl-cancel").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const id = btn.getAttribute("data-id");
+            if (id) this.cancelDeclaration(id);
+          });
+        });
+      },
+    });
+  }
+
+  private cancelDeclaration(id: string) {
+    swal
+      .fire({
+        title: "Bekor qilinsinmi?",
+        // States the actual policy: unpaid fees are cancelled, already-paid
+        // fees are NOT refunded (the service has been rendered by then).
+        // Anything vaguer reads as a refund promise the backend won't keep.
+        text:
+          "E'lon o'chiriladi. To'lanmagan xizmat haqi bekor qilinadi. " +
+          "To'langan summa qaytarilmaydi.",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Ha, bekor qilish",
+        cancelButtonText: "Yo'q",
+        confirmButtonColor: "#f44336",
+      })
+      .then((result) => {
+        if (!result.isConfirmed) return;
+        this.httpClient
+          .delete<any>(`${GlobalVars.baseUrl}/express-scan/${id}`, {
+            headers: this.getAuthHeaders(),
+          })
+          .subscribe(
+            () => {
+              swal
+                .fire({
+                  icon: "success",
+                  title: "Bekor qilindi",
+                  timer: 1500,
+                  showConfirmButton: false,
+                })
+                .then(() => this.openMyDeclarationsModal());
+            },
+            (err) => {
+              if (err.status === 401) this.authService.logout();
+              swal.fire(
+                "Xatolik",
+                err.error?.error || "Bekor qilishda xatolik",
                 "error",
               );
             },

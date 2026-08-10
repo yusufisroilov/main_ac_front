@@ -252,7 +252,7 @@ export class FinanceComponent implements OnInit {
           }
         },
         (error) => {
-          if (error.status == 403) {
+          if (error.status == 401) {
             this.authService.logout();
           }
         },
@@ -307,7 +307,7 @@ export class FinanceComponent implements OnInit {
   //         }
 
   //       }, error => {
-  //         if (error.status == 403) {
+  //         if (error.status == 401) {
 
   //           this.authService.logout();
 
@@ -379,7 +379,7 @@ export class FinanceComponent implements OnInit {
           this.activeConsignment = data.activeConsignment;
         },
         (error) => {
-          if (error.status == 403) {
+          if (error.status == 401) {
             this.authService.logout();
           }
         },
@@ -442,7 +442,7 @@ export class FinanceComponent implements OnInit {
           }
         },
         (error) => {
-          if (error.status == 403) {
+          if (error.status == 401) {
             this.authService.logout();
           }
         },
@@ -485,7 +485,7 @@ export class FinanceComponent implements OnInit {
             }
           },
           (error) => {
-            if (error.status == 403) {
+            if (error.status == 401) {
               this.authService.logout();
             }
           },
@@ -567,7 +567,7 @@ export class FinanceComponent implements OnInit {
                     });
                 }
 
-                if (error.status == 403) {
+                if (error.status == 401) {
                   this.authService.logout();
                 }
               },
@@ -658,7 +658,7 @@ export class FinanceComponent implements OnInit {
                     });
                 }
 
-                if (error.status == 403) {
+                if (error.status == 401) {
                   this.authService.logout();
                 }
               },
@@ -749,7 +749,7 @@ export class FinanceComponent implements OnInit {
                     "error",
                   );
                 }
-                if (error.status == 403) {
+                if (error.status == 401) {
                   this.authService.logout();
                 }
               },
@@ -1038,7 +1038,7 @@ export class FinanceComponent implements OnInit {
           }
         },
         (error) => {
-          if (error.status == 403) {
+          if (error.status == 401) {
             this.authService.logout();
           }
         },

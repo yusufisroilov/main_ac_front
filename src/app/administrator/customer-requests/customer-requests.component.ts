@@ -211,7 +211,7 @@ export class CustomerRequestsComponent implements OnInit {
         },
         (error) => {
           this.loadingPackages = false;
-          if (error.status == 403) {
+          if (error.status == 401) {
             this.authService.logout();
           }
         },
@@ -291,7 +291,7 @@ export class CustomerRequestsComponent implements OnInit {
       (error) => {
         swal.fire("Xatolik", "Viloyatlarni yuklashda xatolik", "error");
         this.loadingRegions = false;
-        if (error.status == 403) {
+        if (error.status == 401) {
           this.authService.logout();
         }
       },
@@ -335,7 +335,7 @@ export class CustomerRequestsComponent implements OnInit {
         (error) => {
           swal.fire("Xatolik", "Filiallarni yuklashda xatolik", "error");
           this.loadingBranches = false;
-          if (error.status == 403) {
+          if (error.status == 401) {
             this.authService.logout();
           }
         },
@@ -572,7 +572,7 @@ export class CustomerRequestsComponent implements OnInit {
           );
           this.submittingRequest = false;
           this.uploadingImages = false;
-          if (error.status == 403) {
+          if (error.status == 401) {
             this.authService.logout();
           }
         },
@@ -595,7 +595,7 @@ export class CustomerRequestsComponent implements OnInit {
         },
         (error) => {
           console.error("Error loading delivery requests:", error);
-          if (error.status == 403) {
+          if (error.status == 401) {
             this.authService.logout();
           }
         },
@@ -690,7 +690,7 @@ export class CustomerRequestsComponent implements OnInit {
               (error) => {
                 const err = error.json();
                 swal.fire("Xatolik", `${err.error}`, "error");
-                if (error.status == 403) {
+                if (error.status == 401) {
                   this.authService.logout();
                 }
               },

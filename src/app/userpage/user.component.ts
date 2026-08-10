@@ -88,7 +88,7 @@ export class UserComponent {
                 }, { type: 'danger', timer: 3000, placement: { from: 'top', align: 'center' } });
             }
         }, error => {
-            if (error.status == 403) {
+            if (error.status == 401) {
                 this.authService.logout();
             } else {
                 const msg = error.json?.()?.message || 'Parolni o\'zgartirishda xatolik';

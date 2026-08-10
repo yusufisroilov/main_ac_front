@@ -210,7 +210,7 @@ export class UzParclesListComponent implements OnInit {
           this.needPagination = this.totalPages > 1;
         },
         (error) => {
-          if (error.status == 403) {
+          if (error.status == 401) {
             this.authService.logout();
           }
         }
@@ -258,7 +258,7 @@ export class UzParclesListComponent implements OnInit {
           }
         },
         (error) => {
-          if (error.status == 403) {
+          if (error.status == 401) {
             this.authService.logout();
           }
         }
@@ -365,7 +365,7 @@ export class UzParclesListComponent implements OnInit {
                               this.needPagination = this.totalPages > 1;
                             },
                             (error) => {
-                              if (error.status == 403) {
+                              if (error.status == 401) {
                                 this.authService.logout();
                               }
                             }
@@ -509,7 +509,7 @@ export class UzParclesListComponent implements OnInit {
                       }
                     });
                 }
-                if (error.status == 403) {
+                if (error.status == 401) {
                   this.authService.logout();
                 }
               }
@@ -566,7 +566,7 @@ export class UzParclesListComponent implements OnInit {
                 this.getListOfParcels();
               },
               (error) => {
-                if (error.status == 403) {
+                if (error.status == 401) {
                   this.authService.logout();
                 }
               }

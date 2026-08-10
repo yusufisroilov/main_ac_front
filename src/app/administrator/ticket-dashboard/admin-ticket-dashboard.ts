@@ -105,7 +105,7 @@ export class AdminTicketDashboardComponent implements OnInit {
           console.error("Error loading statistics:", error);
           this.loadingStats = false;
 
-          if (error.status == 403) {
+          if (error.status == 401) {
             this.authService.logout();
           } else {
             swal.fire({
@@ -145,7 +145,7 @@ export class AdminTicketDashboardComponent implements OnInit {
           console.error("Error loading recent tickets:", error);
           this.loadingRecent = false;
 
-          if (error.status == 403) {
+          if (error.status == 401) {
             this.authService.logout();
           }
         }
@@ -173,7 +173,7 @@ export class AdminTicketDashboardComponent implements OnInit {
         },
         (error) => {
           console.error("Error loading notification count:", error);
-          if (error.status == 403) {
+          if (error.status == 401) {
             this.authService.logout();
           }
         }
@@ -211,7 +211,7 @@ export class AdminTicketDashboardComponent implements OnInit {
           },
           (error) => {
             console.error("Error polling notifications:", error);
-            if (error.status == 403) {
+            if (error.status == 401) {
               this.authService.logout();
             }
           }

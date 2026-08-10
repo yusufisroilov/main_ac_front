@@ -6,7 +6,8 @@ import { AuthService } from "./pages/login/auth.service";
 import { NgModule, LOCALE_ID } from "@angular/core";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { RouterModule } from "@angular/router";
-import { HttpClientModule } from "@angular/common/http";
+import { HttpClientModule, HTTP_INTERCEPTORS } from "@angular/common/http";
+import { HttpErrorInterceptor } from "./shared/http-error.interceptor";
 import {
   APP_BASE_HREF,
   DatePipe,
@@ -148,6 +149,13 @@ registerLocaleData(localeUz, "uz-UZ");
   ],
   declarations: [AppComponent, AdminLayoutComponent, AuthLayoutComponent],
   providers: [
+    // Shows the backend's real message on a 403 instead of failing silently.
+    // Note: only covers HttpClient calls, not legacy @angular/http.
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: HttpErrorInterceptor,
+      multi: true,
+    },
     MatNativeDateModule,
     AuthService,
     RegService,

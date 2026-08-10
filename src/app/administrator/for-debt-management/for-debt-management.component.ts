@@ -163,7 +163,7 @@ export class ForDebtManagementComponent implements OnInit {
       },
       (error) => {
         this.loadingFinances = false;
-        if (error.status === 403) {
+        if (error.status === 401) {
           this.authService.logout();
         } else {
           swal.fire("Xatolik", "Serverda xatolik yuz berdi", "error");

@@ -181,7 +181,7 @@ export class OrderBoxesComponent implements OnInit {
           this.allDataBoxes = response.json().consignments;
         },
         (error) => {
-          if (error.status == 403) {
+          if (error.status == 401) {
             this.authService.logout();
           }
         },
@@ -202,7 +202,7 @@ export class OrderBoxesComponent implements OnInit {
           }
         },
         (error) => {
-          if (error.status == 403) {
+          if (error.status == 401) {
             this.authService.logout();
           }
         },
@@ -303,7 +303,7 @@ export class OrderBoxesComponent implements OnInit {
           }
         },
         (error) => {
-          if (error.status == 403) {
+          if (error.status == 401) {
             this.authService.logout();
           }
         },
@@ -362,7 +362,7 @@ export class OrderBoxesComponent implements OnInit {
             }
           },
           (error) => {
-            if (error.status == 403) {
+            if (error.status == 401) {
               this.authService.logout();
             }
           },
@@ -415,7 +415,7 @@ export class OrderBoxesComponent implements OnInit {
                 this.getListOfParcels(this.currentParty);
               },
               (error) => {
-                if (error.status == 403) {
+                if (error.status == 401) {
                   this.authService.logout();
                 }
               },

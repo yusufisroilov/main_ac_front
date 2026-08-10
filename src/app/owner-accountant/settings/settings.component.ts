@@ -43,7 +43,7 @@ export class OaSettingsComponent implements OnInit {
       .get<any>(GlobalVars.baseUrl + "/expense-categories", { headers: this.getHeaders() })
       .subscribe(
         (data) => { this.expenseCategories = data.categories || []; this.loadingExpense = false; },
-        (error) => { this.loadingExpense = false; if (error.status === 403) this.authService.logout(); },
+        (error) => { this.loadingExpense = false; if (error.status === 401) this.authService.logout(); },
       );
   }
 
@@ -120,7 +120,7 @@ export class OaSettingsComponent implements OnInit {
       .get<any>(GlobalVars.baseUrl + "/income-categories", { headers: this.getHeaders() })
       .subscribe(
         (data) => { this.incomeCategories = data.categories || []; this.loadingIncome = false; },
-        (error) => { this.loadingIncome = false; if (error.status === 403) this.authService.logout(); },
+        (error) => { this.loadingIncome = false; if (error.status === 401) this.authService.logout(); },
       );
   }
 

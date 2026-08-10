@@ -78,7 +78,7 @@ export class Financev2Component implements OnInit {
         },
         (error) => {
           console.error("Failed to load cash accounts:", error);
-          if (error.status === 403) this.authService.logout();
+          if (error.status === 401) this.authService.logout();
         },
       );
   }
@@ -166,7 +166,7 @@ export class Financev2Component implements OnInit {
                   `BAD REQUEST: ${error.error?.error || error.message}`,
                   "error",
                 );
-                if (error.status === 403) this.authService.logout();
+                if (error.status === 401) this.authService.logout();
               },
             );
         },
@@ -228,7 +228,7 @@ export class Financev2Component implements OnInit {
           this.needPagination = this.totalPages > 1;
         },
         (error) => {
-          if (error.status === 403) this.authService.logout();
+          if (error.status === 401) this.authService.logout();
         },
       );
   }
@@ -266,7 +266,7 @@ export class Financev2Component implements OnInit {
           this.totalDebtUZS = data.totalDebtUZS || "0";
         },
         (error) => {
-          if (error.status === 403) this.authService.logout();
+          if (error.status === 401) this.authService.logout();
         },
       );
   }
@@ -305,7 +305,7 @@ export class Financev2Component implements OnInit {
           this.totalDebtUZS = data.totalDebtUZS || "0";
         },
         (error) => {
-          if (error.status === 403) this.authService.logout();
+          if (error.status === 401) this.authService.logout();
         },
       );
   }
@@ -376,7 +376,7 @@ export class Financev2Component implements OnInit {
                   .then((r) => {
                     if (r.isConfirmed) this.recordFinance();
                   });
-                if (error.status === 403) this.authService.logout();
+                if (error.status === 401) this.authService.logout();
               },
             );
         },
@@ -496,7 +496,7 @@ export class Financev2Component implements OnInit {
                   `BAD REQUEST: ${error.error?.error || error.message}`,
                   "error",
                 );
-                if (error.status === 403) this.authService.logout();
+                if (error.status === 401) this.authService.logout();
               },
             );
         },
@@ -555,7 +555,7 @@ export class Financev2Component implements OnInit {
               },
               (error) => {
                 swal.fire("Xatolik", "Yetkazishda xatolik yuz berdi", "error");
-                if (error.status === 403) this.authService.logout();
+                if (error.status === 401) this.authService.logout();
               },
             );
         }
@@ -589,7 +589,7 @@ export class Financev2Component implements OnInit {
         },
         (error) => {
           swal.fire("Xatolik", "Excel yuklab olishda xatolik", "error");
-          if (error.status === 403) this.authService.logout();
+          if (error.status === 401) this.authService.logout();
         },
       );
   }

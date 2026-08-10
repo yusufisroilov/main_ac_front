@@ -191,7 +191,7 @@ export class BigBoxesComponent implements OnInit {
           }
         },
         (error) => {
-          if (error.status == 403) {
+          if (error.status == 401) {
             this.authService.logout();
           }
         },
@@ -293,7 +293,7 @@ export class BigBoxesComponent implements OnInit {
               }
             },
             (error) => {
-              if (error.status == 403) {
+              if (error.status == 401) {
                 this.authService.logout();
               }
             },
@@ -312,7 +312,7 @@ export class BigBoxesComponent implements OnInit {
           this.currentWeight = response.json().totalRealWeight;
         },
         (error) => {
-          if (error.status == 403) {
+          if (error.status == 401) {
             this.authService.logout();
           }
         },
@@ -397,7 +397,7 @@ export class BigBoxesComponent implements OnInit {
                   this.hideBoxLink();
                 },
                 (error) => {
-                  if (error.status == 403) {
+                  if (error.status == 401) {
                     this.authService.logout();
                   }
                 },
@@ -452,7 +452,7 @@ export class BigBoxesComponent implements OnInit {
                   this.thingsInBox = response.json().boxes;
                 },
                 (error) => {
-                  if (error.status == 403) {
+                  if (error.status == 401) {
                     this.authService.logout();
                   }
                 },
@@ -463,7 +463,7 @@ export class BigBoxesComponent implements OnInit {
           }
         },
         (error) => {
-          if (error.status == 403) {
+          if (error.status == 401) {
             this.authService.logout();
           }
         },
@@ -527,7 +527,7 @@ export class BigBoxesComponent implements OnInit {
                   });
               },
               (error) => {
-                if (error.status == 403) {
+                if (error.status == 401) {
                   this.authService.logout();
                 }
               },
@@ -564,10 +564,20 @@ export class BigBoxesComponent implements OnInit {
             swal.showValidationMessage("Please scan a box");
             return false;
           }
-          if (!scanned.startsWith("CU") && !scanned.startsWith("CN")) {
+          // The box must belong to THIS staff's warehouse. Derive the expected
+          // prefix from the open party (e.g. "CU579" → "CU") instead of
+          // hard-coding a list, so new warehouses (KR, TR, …) need no code
+          // change. Mirrors the backend's warehouse-isolation check.
+          const expectedPrefix = (this.consignmentName || "").match(
+            /^[A-Z]+/,
+          )?.[0];
+          if (
+            expectedPrefix &&
+            !scanned.toUpperCase().startsWith(expectedPrefix)
+          ) {
             this.playAudio();
             swal.showValidationMessage(
-              "Only CU or CN boxes are accepted in bigbox",
+              `Only ${expectedPrefix} boxes are accepted in this bigbox`,
             );
             return false;
           }
@@ -625,7 +635,7 @@ export class BigBoxesComponent implements OnInit {
                 }
               },
               (error) => {
-                if (error.status == 403) {
+                if (error.status == 401) {
                   this.authService.logout();
                 }
               },
@@ -735,7 +745,7 @@ export class BigBoxesComponent implements OnInit {
                     });
                 }
 
-                if (error.status == 403) {
+                if (error.status == 401) {
                   this.authService.logout();
                 }
               },
@@ -762,7 +772,7 @@ export class BigBoxesComponent implements OnInit {
           this.currentVolume = response.json().totalVolumeWeight;
         },
         (error) => {
-          if (error.status == 403) {
+          if (error.status == 401) {
             this.authService.logout();
           }
         },

@@ -261,7 +261,7 @@ export class CustomerTicketListComponent
         (error) => {
           console.error("Error loading tickets:", error);
           this.isLoading = false;
-          if (error.status == 403) {
+          if (error.status == 401) {
             this.authService.logout();
           } else if (!silent) {
             // On a background poll: keep the current list, no error dialog.

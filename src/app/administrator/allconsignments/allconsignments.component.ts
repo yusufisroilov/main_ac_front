@@ -75,7 +75,7 @@ export class AllconsignmentsComponent implements OnInit {
           this.receivers = response.json().receivers;
         },
         (error) => {
-          if (error.status == 403) {
+          if (error.status == 401) {
             this.authService.logout();
           }
         }

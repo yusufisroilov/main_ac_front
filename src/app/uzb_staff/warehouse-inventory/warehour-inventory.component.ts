@@ -159,7 +159,7 @@ export class WarehouseInventoryComponent implements OnInit {
           "error"
         );
         this.loadingInventory = false;
-        if (error.status == 403) {
+        if (error.status == 401) {
           this.authService.logout();
         }
       }
@@ -220,7 +220,7 @@ export class WarehouseInventoryComponent implements OnInit {
             "error"
           );
           this.addingPackage = false;
-          if (error.status == 403) {
+          if (error.status == 401) {
             this.authService.logout();
           }
         }
@@ -273,7 +273,7 @@ export class WarehouseInventoryComponent implements OnInit {
             "error"
           );
           this.loadingPackagesToTie = false;
-          if (error.status == 403) {
+          if (error.status == 401) {
             this.authService.logout();
           }
         }
@@ -418,7 +418,7 @@ export class WarehouseInventoryComponent implements OnInit {
             "error"
           );
           this.autoTyingPackages = false;
-          if (error.status == 403) {
+          if (error.status == 401) {
             this.authService.logout();
           }
         }
@@ -468,7 +468,7 @@ export class WarehouseInventoryComponent implements OnInit {
               },
               (error) => {
                 swal.fire("Xatolik", "Qutillarni bog'lashda xatolik", "error");
-                if (error.status == 403) {
+                if (error.status == 401) {
                   this.authService.logout();
                 }
               }
@@ -602,7 +602,7 @@ export class WarehouseInventoryComponent implements OnInit {
           swal.fire("Xatolik", errorMessage, "error");
           this.autoTyingPackages = false;
 
-          if (error.status == 403) {
+          if (error.status == 401) {
             this.authService.logout();
           }
         }
@@ -659,7 +659,7 @@ export class WarehouseInventoryComponent implements OnInit {
               },
               (error) => {
                 swal.fire("Xatolik", "Qutini ajratishda xatolik", "error");
-                if (error.status == 403) {
+                if (error.status == 401) {
                   this.authService.logout();
                 }
               }

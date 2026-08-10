@@ -269,7 +269,7 @@ export class AllordersComponent implements OnInit {
           this.needPagination = this.totalPages > 1;
         },
         (error) => {
-          if (error.status == 403) {
+          if (error.status == 401) {
             this.authService.logout();
           }
         },
@@ -328,7 +328,7 @@ export class AllordersComponent implements OnInit {
               }
             },
             (error) => {
-              if (error.status == 403) {
+              if (error.status == 401) {
                 this.authService.logout();
               }
             },
@@ -483,7 +483,7 @@ export class AllordersComponent implements OnInit {
             this.needPagination = this.totalPages > 1;
           },
           (error) => {
-            if (error.status == 403) {
+            if (error.status == 401) {
               this.authService.logout();
             }
           },
@@ -578,7 +578,7 @@ export class AllordersComponent implements OnInit {
                           this.leftCountItems = leftTemps;
                         },
                         (error) => {
-                          if (error.status == 403) {
+                          if (error.status == 401) {
                             this.authService.logout();
                           }
                         },
@@ -746,7 +746,7 @@ export class AllordersComponent implements OnInit {
                       }
                     });
                 }
-                if (error.status == 403) {
+                if (error.status == 401) {
                   this.authService.logout();
                 }
               },
@@ -803,7 +803,7 @@ export class AllordersComponent implements OnInit {
                 this.getListOfParcels();
               },
               (error) => {
-                if (error.status == 403) {
+                if (error.status == 401) {
                   this.authService.logout();
                 }
               },

@@ -15,6 +15,8 @@ interface ConsignmentItem {
   name: string;
   isHongKong: boolean;
   country_id?: number;
+  is_avto_pochta?: boolean;
+  shipping_type?: string; // 'AVIA' | 'AVTO' | 'AVTO POCHTA' — served by backend
   currentStatus: number;
   currentStatusName: any;
   hasOrders: boolean;
@@ -85,7 +87,7 @@ export class ConsignmentTrackingComponent implements OnInit {
       },
       (error) => {
         this.loading = false;
-        if (error.status === 403) {
+        if (error.status === 401) {
           this.authService.logout();
         }
       },

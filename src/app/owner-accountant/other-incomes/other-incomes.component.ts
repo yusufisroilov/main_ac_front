@@ -77,7 +77,7 @@ export class OaOtherIncomesComponent implements OnInit {
       },
       (error) => {
         this.loading = false;
-        if (error.status === 403) this.authService.logout();
+        if (error.status === 401) this.authService.logout();
       },
     );
   }
@@ -101,9 +101,11 @@ export class OaOtherIncomesComponent implements OnInit {
 
   addIncome() {
     const today = new Date().toISOString().split("T")[0];
-    const accountOpts = this.cashAccounts
-      .map((a) => `<option value="${a.id}">${a.name} (${a.currency})</option>`)
-      .join("");
+    const accountOpts =
+      `<option value="" disabled selected>-- Tanlang hisob --</option>` +
+      this.cashAccounts
+        .map((a) => `<option value="${a.id}">${a.name} (${a.currency})</option>`)
+        .join("");
     const categoryOpts = this.incomeCategories
       .map((c) => `<option value="${c.id}">${c.name}</option>`)
       .join("");
@@ -211,7 +213,11 @@ export class OaOtherIncomesComponent implements OnInit {
           const accountId = (
             document.getElementById("inc-account") as HTMLSelectElement
           ).value;
-          if (!amount || !dateDisplay || !accountId) {
+          if (!accountId) {
+            swal.showValidationMessage("Hisob tanlang");
+            return false;
+          }
+          if (!amount || !dateDisplay) {
             swal.showValidationMessage(
               "Barcha majburiy maydonlarni to'ldiring",
             );

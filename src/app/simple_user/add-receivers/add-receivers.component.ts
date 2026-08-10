@@ -168,7 +168,7 @@ export class AddReceiversComponent implements OnInit, OnChanges, AfterViewInit {
             return false;
           },
           (error) => {
-            if (error.status == 403) {
+            if (error.status == 401) {
               this.authService.logout();
               return;
             }
@@ -194,7 +194,7 @@ export class AddReceiversComponent implements OnInit, OnChanges, AfterViewInit {
           }
         },
         (error) => {
-          if (error.status == 403) {
+          if (error.status == 401) {
             this.authService.logout();
             return;
           }
@@ -528,7 +528,7 @@ export class AddReceiversComponent implements OnInit, OnChanges, AfterViewInit {
             // this.regions = response.json().regions;
           },
           (error) => {
-            if (error.status == 403) {
+            if (error.status == 401) {
               this.authService.logout();
             }
           }
@@ -553,7 +553,7 @@ export class AddReceiversComponent implements OnInit, OnChanges, AfterViewInit {
           this.regions = response.json().regions;
         },
         (error) => {
-          if (error.status == 403) {
+          if (error.status == 401) {
             this.authService.logout();
           }
         }
@@ -617,7 +617,7 @@ export class AddReceiversComponent implements OnInit, OnChanges, AfterViewInit {
           //   console.log("districts ", this.districts);
         },
         (error) => {
-          if (error.status == 403) {
+          if (error.status == 401) {
             this.authService.logout();
           }
         }
@@ -641,7 +641,7 @@ export class AddReceiversComponent implements OnInit, OnChanges, AfterViewInit {
           this.districts = response.json().towns;
         },
         (error) => {
-          if (error.status == 403) {
+          if (error.status == 401) {
             this.authService.logout();
           }
         }

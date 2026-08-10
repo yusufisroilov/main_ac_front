@@ -316,7 +316,7 @@ export class CustomerServicesComponent implements OnInit {
       .map(
         (s) =>
           `<label style="display:flex;align-items:center;gap:8px;margin-bottom:6px;cursor:pointer;">
-            <input type="checkbox" class="svc-chk" value="${s.id}" data-debt="${(parseFloat(s.amount_usd) - parseFloat(s.amount_paid || 0)).toFixed(2)}" checked>
+            <input type="checkbox" class="svc-chk" value="${s.id}" data-debt="${(parseFloat(s.amount_usd) - parseFloat(s.amount_paid || 0)).toFixed(2)}" data-cur="${s.currency}" data-fx="${s.fx_rate || ""}" checked>
             <span>${s.serviceType?.name_uz || "Xizmat"} — <b style="color:#e53935;font-weight:700;">${s.currency === "USD"
               ? (parseFloat(s.amount_usd) - parseFloat(s.amount_paid || 0)).toFixed(2) + "$"
               : this.formatAmount(parseFloat(s.amount) - parseFloat(s.amount_paid || 0) * parseFloat(s.fx_rate || 1)) + " " + s.currency
@@ -380,7 +380,11 @@ export class CustomerServicesComponent implements OnInit {
         <div class="pay-field" id="pay-fx-div">
           <label>Kurs (UZS uchun)</label>
           <input id="pay-fx" type="number" class="form-control" placeholder="12800">
+          <div id="pay-fx-note" style="font-size:11px;color:#888;margin-top:3px;"></div>
         </div>
+        <!-- Live conversion preview: makes any rate mismatch visible BEFORE
+             confirming, instead of silently turning the difference into a bonus. -->
+        <div id="pay-preview" style="background:#f5f7fa;border:1px solid #e3e7ec;border-radius:8px;padding:10px 12px;font-size:13px;line-height:1.7;"></div>
         <div class="pay-field">
           <label>Ortiqcha to'lov</label>
           <select id="pay-overpayment" class="form-control">
@@ -415,13 +419,106 @@ export class CustomerServicesComponent implements OnInit {
           const currTag = document.getElementById("pd-curr-tag")!;
           const fxDiv = document.getElementById("pay-fx-div")!;
 
-          // Auto-fill fx rate
-          this.http.get<any>(`${GlobalVars.baseUrl}/fx-rate`).subscribe((d) => {
-            if (d.rate) {
-              const el = document.getElementById("pay-fx") as HTMLInputElement;
-              if (el && !el.value) el.value = String(d.rate);
+          const fxInput = document.getElementById("pay-fx") as HTMLInputElement;
+          const fxNote = document.getElementById("pay-fx-note")!;
+          const preview = document.getElementById("pay-preview")!;
+          // Today's CBU rate — only a FALLBACK now (see pickServiceFx).
+          let todayRate: number | null = null;
+          let fxTouched = false; // true once the operator edits the rate by hand
+
+          const checkedBoxes = () =>
+            Array.from(
+              document.querySelectorAll<HTMLInputElement>(".svc-chk:checked"),
+            );
+
+          /**
+           * The rate to charge at. A UZS service stored its debt in USD using a
+           * rate frozen at creation time; converting the payment with TODAY's
+           * rate instead makes "12 000 sum in" ≠ "12 000 sum out", and the
+           * difference silently became a bonus. So we pay at the service's OWN
+           * rate. If several selected services disagree, there is no single
+           * correct rate — fall back to today's and say so.
+           */
+          const pickServiceFx = (): { rate: number | null; note: string } => {
+            const rates = checkedBoxes()
+              .filter((b) => b.dataset["cur"] === "UZS")
+              .map((b) => parseFloat(b.dataset["fx"] || ""))
+              .filter((r) => isFinite(r) && r > 0);
+            const distinct = Array.from(new Set(rates));
+
+            if (distinct.length === 1) {
+              return {
+                rate: distinct[0],
+                note: `Xizmat kursi (yaratilgandagi): ${distinct[0]}`,
+              };
             }
+            if (distinct.length > 1) {
+              return {
+                rate: todayRate,
+                note: `⚠️ Tanlangan xizmatlarda turli kurslar (${distinct.join(", ")}). Bugungi kurs ishlatilmoqda — farq bonus/qoldiq bo'ladi.`,
+              };
+            }
+            return {
+              rate: todayRate,
+              note: todayRate ? `Bugungi kurs: ${todayRate}` : "",
+            };
+          };
+
+          const fmt2 = (n: number) => (isFinite(n) ? n.toFixed(2) : "0.00");
+
+          const recalc = () => {
+            const boxes = checkedBoxes();
+            const debtUsd = boxes.reduce(
+              (s, b) => s + (parseFloat(b.dataset["debt"] || "0") || 0),
+              0,
+            );
+
+            const isUzs = currTag.textContent === "UZS";
+            // Keep the rate in sync with the selection unless hand-edited.
+            const picked = pickServiceFx();
+            if (isUzs && !fxTouched && picked.rate) {
+              fxInput.value = String(picked.rate);
+            }
+            fxNote.textContent = isUzs ? picked.note : "";
+
+            const amount =
+              parseFloat((amtInput.value || "").replace(/\s/g, "")) || 0;
+            const rate = parseFloat(fxInput.value) || 0;
+            const payUsd = isUzs ? (rate > 0 ? amount / rate : 0) : amount;
+            const diff = payUsd - debtUsd;
+
+            let diffLine: string;
+            if (Math.abs(diff) < 0.005) {
+              diffLine = `<span style="color:#2e7d32;font-weight:700;">✓ Aniq to'lanadi</span>`;
+            } else if (diff > 0) {
+              diffLine = `<span style="color:#ef6c00;font-weight:700;">Ortiqcha: $${fmt2(diff)}</span> <span style="color:#888;">(bonus/qaytarish)</span>`;
+            } else {
+              diffLine = `<span style="color:#c62828;font-weight:700;">Yetmaydi: $${fmt2(Math.abs(diff))}</span> <span style="color:#888;">(qarz qoladi)</span>`;
+            }
+
+            preview.innerHTML =
+              `<div>Tanlangan qarz: <b>$${fmt2(debtUsd)}</b></div>` +
+              `<div>To'lov: <b>${amount ? amount.toLocaleString("ru-RU") : 0} ${isUzs ? "UZS" : "USD"}</b>` +
+              (isUzs && rate > 0 ? ` ÷ ${rate} = <b>$${fmt2(payUsd)}</b>` : "") +
+              `</div><div>${diffLine}</div>`;
+          };
+
+          // Today's rate is fetched only as a fallback for the no-rate case.
+          this.http.get<any>(`${GlobalVars.baseUrl}/fx-rate`).subscribe(
+            (d) => {
+              if (d.rate) todayRate = parseFloat(d.rate);
+              recalc();
+            },
+            () => recalc(),
+          );
+
+          fxInput.addEventListener("input", () => {
+            fxTouched = true;
+            recalc();
           });
+          document
+            .querySelectorAll<HTMLInputElement>(".svc-chk")
+            .forEach((b) => b.addEventListener("change", recalc));
 
           const attachChipListeners = () => {
             chipsDiv.querySelectorAll(".pd-acc-chip").forEach((chip) => {
@@ -446,6 +543,7 @@ export class CustomerServicesComponent implements OnInit {
               usdBtn.classList.add("active");
               uzsBtn.classList.remove("active");
             }
+            recalc();
           };
 
           uzsBtn.addEventListener("click", () => switchCurrency("UZS"));
@@ -458,7 +556,11 @@ export class CustomerServicesComponent implements OnInit {
             parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, " ");
             if (parts.length > 2) parts.length = 2;
             amtInput.value = parts.join(".");
+            recalc();
           });
+
+          // Initial paint (also fills the rate from the pre-checked services).
+          recalc();
         },
         preConfirm: () => {
           const selectedIds: number[] = [];

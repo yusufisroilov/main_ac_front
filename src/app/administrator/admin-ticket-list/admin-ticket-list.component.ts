@@ -351,7 +351,7 @@ export class AdminTicketListComponent implements OnInit, OnDestroy {
         (error) => {
           console.error("Error loading tickets:", error);
           this.isLoading = false;
-          if (error.status == 403) {
+          if (error.status == 401) {
             this.authService.logout();
           } else if (!silent) {
             // Don't nag with an error dialog on background polls.
@@ -484,7 +484,7 @@ export class AdminTicketListComponent implements OnInit, OnDestroy {
         },
         (error) => {
           console.error("Error updating status:", error);
-          if (error.status == 403) {
+          if (error.status == 401) {
             this.authService.logout();
           } else {
             showBackendError(error, {
@@ -524,7 +524,7 @@ export class AdminTicketListComponent implements OnInit, OnDestroy {
         },
         (error) => {
           console.error("Error updating priority:", error);
-          if (error.status == 403) {
+          if (error.status == 401) {
             this.authService.logout();
           } else {
             showBackendError(error, {
@@ -580,7 +580,7 @@ export class AdminTicketListComponent implements OnInit, OnDestroy {
               },
               (error) => {
                 console.error("Error reassigning ticket:", error);
-                if (error.status == 403) {
+                if (error.status == 401) {
                   this.authService.logout();
                 } else {
                   showBackendError(error, {
@@ -736,7 +736,7 @@ export class AdminTicketListComponent implements OnInit, OnDestroy {
         },
         (error) => {
           console.error("Error fetching notification count:", error);
-          if (error.status == 403) {
+          if (error.status == 401) {
             this.authService.logout();
           }
         }
@@ -799,7 +799,7 @@ export class AdminTicketListComponent implements OnInit, OnDestroy {
         },
         (error) => {
           console.error("Error exporting tickets:", error);
-          if (error.status == 403) {
+          if (error.status == 401) {
             this.authService.logout();
           } else {
             showBackendError(error, {

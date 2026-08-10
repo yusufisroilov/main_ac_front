@@ -159,7 +159,7 @@ export class ConsignmentListComponent implements OnInit {
                     .then((result) => {});
                 }
 
-                if (error.status == 403) {
+                if (error.status == 401) {
                   this.authService.logout();
                 }
               },
@@ -315,7 +315,7 @@ export class ConsignmentListComponent implements OnInit {
           this.printManifestCond = false;
         },
         (error) => {
-          if (error.status == 403) {
+          if (error.status == 401) {
             this.authService.logout();
           }
         },
@@ -350,7 +350,7 @@ export class ConsignmentListComponent implements OnInit {
           }
         },
         (error) => {
-          if (error.status == 403) {
+          if (error.status == 401) {
             this.authService.logout();
           }
         },
@@ -406,7 +406,7 @@ export class ConsignmentListComponent implements OnInit {
                 }
               },
               (error) => {
-                if (error.status == 403) {
+                if (error.status == 401) {
                   this.authService.logout();
                 }
               },
@@ -468,7 +468,7 @@ export class ConsignmentListComponent implements OnInit {
                 }
               },
               (error) => {
-                if (error.status == 403) {
+                if (error.status == 401) {
                   this.authService.logout();
                 }
               },
@@ -520,7 +520,7 @@ export class ConsignmentListComponent implements OnInit {
                 }
               },
               (error) => {
-                if (error.status == 403) {
+                if (error.status == 401) {
                   this.authService.logout();
                 }
               },
@@ -571,7 +571,7 @@ export class ConsignmentListComponent implements OnInit {
                 }
               },
               (error) => {
-                if (error.status == 403) {
+                if (error.status == 401) {
                   this.authService.logout();
                 }
               },
@@ -624,7 +624,12 @@ export class ConsignmentListComponent implements OnInit {
   // ── Manager: edit consignment dates (Sanalarni tahrirlash) ──
   editConsignmentDates(consignment: any) {
     const isHongKong = !!consignment.isHongKong;
-    const isPochta = isHongKong && consignment.country_id === 2;
+    // AVTO POCHTA identity now comes from the explicit flag / shipping_type;
+    // legacy CN-warehouse rows (country_id=2 && hong_kong) still qualify.
+    const isPochta =
+      consignment.shipping_type === "AVTO POCHTA" ||
+      !!consignment.is_avto_pochta ||
+      (isHongKong && consignment.country_id === 2);
     const currentStatus = Number(consignment.journeyStatus) || 0;
 
     type Step = {
@@ -860,7 +865,7 @@ export class ConsignmentListComponent implements OnInit {
           }
         },
         (error) => {
-          if (error?.status === 403) {
+          if (error?.status === 401) {
             this.authService.logout();
             return;
           }
