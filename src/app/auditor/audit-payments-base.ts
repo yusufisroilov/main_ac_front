@@ -64,6 +64,49 @@ export abstract class AuditPaymentsBase {
   clearFilters() { this.filterStartDate = ""; this.filterEndDate = ""; this.filterCashAccountId = ""; this.filterCustomerId = ""; this.currentPage = 0; this.loadPayments(); }
   onPageChanged(page: number) { this.currentPage = page; this.loadPayments(); }
 
+  // Excel export — respects the same filters as the on-screen list. Fetched as
+  // a blob (not a plain <a> download) so we can send the JWT in the header,
+  // matching how every other authenticated call in the app works.
+  downloadExcel() {
+    let url = `${GlobalVars.baseUrl}/audit/payments/export.xlsx?audit_status=${this.auditStatus}`;
+    if (this.filterStartDate) url += `&start_date=${this.filterStartDate}`;
+    if (this.filterEndDate) url += `&end_date=${this.filterEndDate}`;
+    if (this.filterCashAccountId) url += `&cash_account_id=${this.filterCashAccountId}`;
+    if (this.filterCustomerId) url += `&customer_id=${this.filterCustomerId}`;
+
+    this.http
+      .get(url, {
+        headers: new HttpHeaders({ Authorization: localStorage.getItem("token") || "" }),
+        responseType: "blob",
+      })
+      .subscribe(
+        (blob: Blob) => {
+          const objectUrl = window.URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          const today = new Date().toISOString().slice(0, 10);
+          a.href = objectUrl;
+          a.download = `payments_${this.auditStatus.toLowerCase()}_${today}.xlsx`;
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          window.URL.revokeObjectURL(objectUrl);
+        },
+        (error) => {
+          if (error.status === 401) this.authService.logout();
+          else swal.fire("Xatolik", "Excel yuklab olishda xatolik", "error");
+        },
+      );
+  }
+
+  // For bulk payments (finance_id is null on the backend row) the API returns
+  // bulk_consignments — the list of consignments the payment actually covered,
+  // pulled from ledger_v2. Fall back to "BULK" if that list is empty.
+  getPartiya(p: any): string {
+    if (p.finance?.consignment) return p.finance.consignment;
+    if (p.bulk_consignments && p.bulk_consignments.length) return p.bulk_consignments.join(", ");
+    return "BULK";
+  }
+
   changeStatus(paymentId: number, newStatus: string) {
     const labels: any = { PENDING: "PENDING", APPROVED: "APPROVED", SUSPICIOUS: "SUSPICIOUS", REJECTED: "REJECTED" };
     swal.fire({
@@ -96,6 +139,21 @@ export abstract class AuditPaymentsBase {
   formatAmount(value: number): string {
     if (value == null) return "0";
     return Math.floor(Math.abs(value)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+  }
+
+  // USD keeps 2 decimals — 5.6 must display as "5.60", not "6" (audit needs
+  // the exact figure that hit the ledger).
+  formatUsd(value: number): string {
+    if (value == null) return "0.00";
+    const abs = Math.abs(value);
+    const [intPart, decPart] = abs.toFixed(2).split(".");
+    return intPart.replace(/\B(?=(\d{3})+(?!\d))/g, " ") + "." + decPart;
+  }
+
+  // FX rate shown as an integer (rates are always whole UZS-per-USD).
+  formatFxRate(value: number): string {
+    if (value == null) return "";
+    return Math.round(value).toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
   }
 
   getMethodLabel(method: string): string {
