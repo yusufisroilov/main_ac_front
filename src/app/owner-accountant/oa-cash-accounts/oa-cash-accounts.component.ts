@@ -45,6 +45,26 @@ export class OaCashAccountsComponent implements OnInit {
   ledgerLoading = false;
   readonly ledgerPageSize = 50;
 
+  // Harakatlar Tarixi filters — kept on the component (not per-account) so the
+  // accountant's last-used filter carries across accounts they open in the same
+  // session.
+  filterType = "";
+  filterStartDate = "";
+  filterEndDate = "";
+
+  // Type options for the dropdown — must match cash_account_ledger.type ENUM
+  // exactly. cash_account_ledger has 6 movement types (PAYMENT_IN, EXPENSE,
+  // INCOME, OWNER_DRAW, TRANSFER_IN, TRANSFER_OUT). REFUND / ADJUSTMENT / BONUS
+  // live on ledger_v2 (customer accounting) and would 500 if picked here.
+  readonly LEDGER_TYPES: { value: string; label: string }[] = [
+    { value: "PAYMENT_IN",   label: "Mijoz to'lovi" },
+    { value: "EXPENSE",      label: "Xarajat" },
+    { value: "OWNER_DRAW",   label: "Owner Draw" },
+    { value: "TRANSFER_IN",  label: "Transfer Kirim" },
+    { value: "TRANSFER_OUT", label: "Transfer Chiqim" },
+    { value: "INCOME",       label: "Boshqa Daromad" },
+  ];
+
   private baseUrl = GlobalVars.baseUrl;
 
   constructor(private http: HttpClient) {}
@@ -170,7 +190,10 @@ export class OaCashAccountsComponent implements OnInit {
   loadLedger() {
     if (!this.selectedAccount) return;
     this.ledgerLoading = true;
-    const url = `${this.baseUrl}/cash-accounts/${this.selectedAccount.id}/ledger?page=${this.ledgerPage}&size=${this.ledgerPageSize}`;
+    const url =
+      `${this.baseUrl}/cash-accounts/${this.selectedAccount.id}/ledger` +
+      `?page=${this.ledgerPage}&size=${this.ledgerPageSize}` +
+      this.buildFilterQuery();
     this.http.get<any>(url, { headers: this.getHeaders() }).subscribe(
       (res) => {
         this.ledgerEntries = res.entries || [];
@@ -185,6 +208,66 @@ export class OaCashAccountsComponent implements OnInit {
   onLedgerPageChanged(page: number) {
     this.ledgerPage = page;
     this.loadLedger();
+  }
+
+  // Shared query-string builder for the list + export endpoints — one place to
+  // touch when adding a new filter so the two never drift apart.
+  private buildFilterQuery(): string {
+    let q = "";
+    if (this.filterType) q += `&type=${encodeURIComponent(this.filterType)}`;
+    if (this.filterStartDate) q += `&start_date=${this.filterStartDate}`;
+    if (this.filterEndDate) q += `&end_date=${this.filterEndDate}`;
+    return q;
+  }
+
+  applyLedgerFilters() {
+    this.ledgerPage = 0;
+    this.loadLedger();
+  }
+
+  clearLedgerFilters() {
+    this.filterType = "";
+    this.filterStartDate = "";
+    this.filterEndDate = "";
+    this.ledgerPage = 0;
+    this.loadLedger();
+  }
+
+  // Excel download — blob response, JWT via Authorization header (same pattern
+  // as the auditor pages). Server-side filename is authoritative; we only fall
+  // back to a client name if the header parse fails.
+  downloadLedgerExcel() {
+    if (!this.selectedAccount) return;
+    const url =
+      `${this.baseUrl}/cash-accounts/${this.selectedAccount.id}/ledger/export.xlsx` +
+      `?_=${Date.now()}` + this.buildFilterQuery();
+
+    this.http
+      .get(url, { headers: this.getHeaders(), responseType: "blob", observe: "response" })
+      .subscribe(
+        (resp) => {
+          const blob = resp.body as Blob;
+          const cd = resp.headers.get("content-disposition") || "";
+          const match = cd.match(/filename="?([^"]+)"?/);
+          const safeName = (this.selectedAccount?.name || "cash_account")
+            .replace(/[\\/?*\[\]:<>"|]/g, "-")
+            .replace(/\s+/g, "_");
+          const fallback = `${safeName}_${new Date().toISOString().slice(0, 10)}.xlsx`;
+          const filename = (match && match[1]) || fallback;
+
+          const objectUrl = window.URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = objectUrl;
+          a.download = filename;
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          window.URL.revokeObjectURL(objectUrl);
+        },
+        () => {
+          Swal.fire("Xatolik", "Excel yuklab olishda xatolik", "error");
+        },
+      );
   }
 
   private static readonly LDG_LABEL: Record<string, string> = {

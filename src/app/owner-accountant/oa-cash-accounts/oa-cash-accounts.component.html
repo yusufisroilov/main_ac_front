@@ -113,6 +113,27 @@
             class="material-icons">close</i></button>
       </div>
 
+      <!-- Filter bar: Turi / from / to / clear / Excel -->
+      <div class="ledger-filter-bar">
+        <select class="form-control form-control-sm" [(ngModel)]="filterType"
+                (change)="applyLedgerFilters()">
+          <option value="">Barcha turlar</option>
+          <option *ngFor="let t of LEDGER_TYPES" [value]="t.value">{{ t.label }}</option>
+        </select>
+        <input type="date" class="form-control form-control-sm" [(ngModel)]="filterStartDate"
+               (change)="applyLedgerFilters()" placeholder="Dan"/>
+        <input type="date" class="form-control form-control-sm" [(ngModel)]="filterEndDate"
+               (change)="applyLedgerFilters()" placeholder="Gacha"/>
+        <button class="btn btn-sm btn-warning" (click)="clearLedgerFilters()"
+                title="Tozalash">
+          <i class="material-icons" style="font-size: 16px;">clear</i>
+        </button>
+        <button class="btn btn-sm btn-success" (click)="downloadLedgerExcel()"
+                title="Excel yuklab olish">
+          <i class="material-icons" style="font-size: 16px;">file_download</i> Excel
+        </button>
+      </div>
+
       <div class="ledger-loading" *ngIf="ledgerLoading">
         <div class="spinner-border spinner-border-sm text-info" role="status"></div>
       </div>

@@ -88,6 +88,25 @@
 .ledger-close-btn:hover { color: #333; background: #eee; }
 .ledger-close-btn .material-icons { font-size: 20px; }
 
+/* Filter bar inside the ledger panel — sits above the table, right under the
+   panel header. Wraps on narrow viewports so it never blows out the layout. */
+.ledger-filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-bottom: 1px solid #f0f0f0;
+  background: #fafcfd;
+}
+.ledger-filter-bar select.form-control-sm,
+.ledger-filter-bar input.form-control-sm {
+  width: auto;
+  min-width: 140px;
+  font-size: 13px;
+}
+.ledger-filter-bar .btn-sm { display: inline-flex; align-items: center; gap: 4px; }
+
 .ledger-loading { display: flex; justify-content: center; padding: 32px; }
 
 .ledger-empty { text-align: center; padding: 40px 20px; color: #aaa; }
