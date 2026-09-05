@@ -416,13 +416,10 @@ export class UsersListComponent implements OnInit {
 
         preConfirm: (valueB) => {
           this.http
+            // Body, not query string - see the note in user.component.ts.
             .post(
-              GlobalVars.baseUrl +
-                "/change_password?newPassword=" +
-                valueB +
-                "&id=" +
-                iddd,
-              "",
+              GlobalVars.baseUrl + "/change_password",
+              JSON.stringify({ newPassword: valueB, id: iddd }),
               this.options
             )
             .subscribe(

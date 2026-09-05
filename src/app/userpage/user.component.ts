@@ -75,7 +75,10 @@ export class UserComponent {
         headers12.append('Authorization', localStorage.getItem('token'));
         let options = new RequestOptions({ headers: headers12 });
 
-        this.http.post(GlobalVars.baseUrl + '/profile/edit?password=' + credentials.password, '', options)
+        // Password goes in the body, not the URL. As a query parameter it was
+        // written verbatim into the server's access log on every change, and
+        // any password containing `&`, `#` or `+` was silently truncated there.
+        this.http.post(GlobalVars.baseUrl + '/profile/edit', JSON.stringify({ password: credentials.password }), options)
         .subscribe(response => {
             if(response.json().status == "ok") {
                 this.registredMessage = response.json().message;

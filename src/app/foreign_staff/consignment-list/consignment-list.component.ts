@@ -218,52 +218,91 @@ export class ConsignmentListComponent implements OnInit {
       });
   }
 
+  // These three endpoints are role-guarded on the backend, so they can no
+  // longer be fetched with window.open — a raw browser tab cannot attach the
+  // JWT from localStorage. Download as a blob through HttpClient (which does
+  // send the Authorization header), then hand the file to the browser.
+  private downloadConsignmentFile(
+    endpoint: string,
+    partyNum: any,
+    fallbackName: string,
+  ) {
+    const url =
+      GlobalVars.baseUrl + endpoint + "?consignment=" + encodeURIComponent(partyNum);
+
+    this.httpClient
+      .get(url, {
+        headers: new HttpHeaders({
+          Authorization: localStorage.getItem("token") || "",
+        }),
+        responseType: "blob",
+        observe: "response",
+      })
+      .subscribe(
+        (resp) => {
+          const blob = resp.body as Blob;
+          // Prefer the filename the server set; fall back to our own.
+          const cd = resp.headers.get("content-disposition") || "";
+          const match = cd.match(/filename=\"?([^\";]+)\"?/);
+          const filename = (match && match[1]) || fallbackName;
+
+          const objectUrl = window.URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = objectUrl;
+          a.download = filename;
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          window.URL.revokeObjectURL(objectUrl);
+        },
+        (error) => {
+          if (error.status === 401) {
+            this.authService.logout();
+            return;
+          }
+          swal.fire(
+            "Xatolik",
+            error.status === 403
+              ? "Sizda bu faylni yuklab olish huquqi yo'q"
+              : "Faylni yuklab olishda xatolik",
+            "error",
+          );
+        },
+      );
+  }
+
   takeSNK(partyNum: any) {
-    window.open(
-      GlobalVars.baseUrl + "/consignments/generate_snk?consignment=" + partyNum,
-      "_blank",
+    this.downloadConsignmentFile(
+      "/consignments/generate_snk",
+      partyNum,
+      `snk_${partyNum}.xlsx`,
     );
-    // this.http.get(GlobalVars.baseUrl + '/consignments/generate_snk?consignment=' + partyNum, this.options)
-    // .subscribe(response => {
-    // // this.consignments=response.json().consignments;
-    // })
   }
 
   takePackingcList(partyNum: any) {
-    window.open(
-      GlobalVars.baseUrl + "/consignments/packing_list?consignment=" + partyNum,
-      "_blank",
+    this.downloadConsignmentFile(
+      "/consignments/packing_list",
+      partyNum,
+      `packing_list_${partyNum}.xlsx`,
     );
-    // this.http.get(GlobalVars.baseUrl + '/consignments/packing_list?consignment=' + partyNum, this.options)
-    //  .subscribe(response => {
-    // this.consignments=response.json().consignments;
-    // })
   }
 
   receiversReport(partyNum: any) {
     // Backend route is /consignments/packing_list (generatePackingList).
     // The old /consignments/receiversReport URL was never defined → 404.
-    window.open(
-      GlobalVars.baseUrl +
-        "/consignments/packing_list?consignment=" +
-        partyNum,
-      "_blank",
+    this.downloadConsignmentFile(
+      "/consignments/packing_list",
+      partyNum,
+      `packing_list_${partyNum}.xlsx`,
     );
-    // this.http.get(GlobalVars.baseUrl + '/consignments/packing_list?consignment=' + partyNum, this.options)
-    //  .subscribe(response => {
-    // this.consignments=response.json().consignments;
-    // })
   }
 
   takeManifestExcel(partyNum: any) {
-    window.open(
-      GlobalVars.baseUrl + "/consignments/manifest?consignment=" + partyNum,
-      "_blank",
+    this.downloadConsignmentFile(
+      "/consignments/manifest",
+      partyNum,
+      `manifest_${partyNum}.xlsx`,
     );
-    // this.http.get(GlobalVars.baseUrl + '/consignments/packing_list?consignment=' + partyNum, this.options)
-    //  .subscribe(response => {
-    // this.consignments=response.json().consignments;
-    // })
   }
 
   tranc(openDate) {

@@ -448,6 +448,7 @@ export class ParclesListComponent implements OnInit, AfterViewInit {
           '<input  id="input-weight" type="text" class="form-control m-2" placeholder="Weight" />' +
           " </div>" +
           '<select class="custom-select m-2" id="types" name="types" >  </select> ' +
+          '<div id="bl-hint" class="m-2" style="display:none;font-size:13px;text-align:left;"></div>' +
           "</div>",
 
         customClass: {
@@ -469,6 +470,109 @@ export class ParclesListComponent implements OnInit, AfterViewInit {
           }
 
           $("#types").html(options.join(""));
+
+          // ── BerryLink parcels ──────────────────────────────────────
+          // A BerryLink box carries no clue as to whose it is: the customer,
+          // the product and the quantity live in BerryLink, not on the
+          // label. Scanning the tracking number fills them in so the
+          // operator is not asked to invent values they cannot know.
+          //
+          // Everything below is best-effort. A tracking number we have not
+          // been told about, a failed request, or a cargo-only parcel all
+          // leave the form exactly as it has always behaved — nothing is
+          // cleared, nothing is blocked, and the operator types as before.
+          //
+          // The weight is pre-filled from BerryLink's estimate as a starting
+          // value, and stays editable — the scale reading is what should be
+          // saved. For a catalog parcel the estimate is the summed product
+          // weights and should be close; for a proxy parcel it is what the
+          // operator guessed from photos, and can be well out. The hint says
+          // so, so nobody mistakes a filled box for a measured one.
+          let lookupDebounce: any = null;
+          let lastLookedUp = "";
+          const lookupBerryLinkParcel = () => {
+            const tn = String($("#input-trnum").val() || "").trim();
+            const hint = $("#bl-hint");
+            if (!tn) {
+              hint.hide();
+              return;
+            }
+            // Don't re-ask for a number we have already resolved — `input`
+            // fires per keystroke, and a scanner delivers a dozen in a burst.
+            if (tn === lastLookedUp) return;
+            lastLookedUp = tn;
+            hint.css("color", "#666").text("Checking…").show();
+            this.http
+              .get(
+                GlobalVars.baseUrl +
+                  "/orders/pre-declared/lookup?tracking_number=" +
+                  encodeURIComponent(tn),
+                this.options,
+              )
+              .subscribe(
+                (response) => {
+                  let parcel = null;
+                  try {
+                    parcel = response.json().parcel;
+                  } catch (e) {
+                    parcel = null;
+                  }
+                  if (!parcel) {
+                    hint.hide();
+                    return;
+                  }
+
+                  $("#input-owid").val(parcel.owner_id);
+                  $("#input-cnname").val(parcel.product_name);
+                  $("#input-qnty").val(parcel.quantity);
+                  if (
+                    parcel.estimated_weight_kg !== null &&
+                    parcel.estimated_weight_kg !== undefined
+                  ) {
+                    // Trim trailing zeros so "0.450" reads as "0.45".
+                    $("#input-weight").val(
+                      String(parseFloat(parcel.estimated_weight_kg)),
+                    );
+                  }
+
+                  const who = parcel.customer_name || parcel.customer_phone || "";
+                  hint
+                    .css("color", "#1b7f3b")
+                    .text(
+                      "BerryLink parcel — " +
+                        who +
+                        ". Weight is an estimate — correct it from the scale.",
+                    )
+                    .show();
+                },
+                () => {
+                  // 404 means simply "not a BerryLink parcel", which is the
+                  // ordinary case for everything else this warehouse handles.
+                  hint.hide();
+                },
+              );
+          };
+
+          // `input` rather than `change` alone. `change` only fires when the
+          // field loses focus or the operator presses Enter — so a scanner
+          // without a trailing Enter, or someone who types the number and
+          // then reaches for the mouse, would never trigger it and the form
+          // would sit there looking broken. `input` fires on every keystroke,
+          // debounced so a scanner's burst results in one request, with
+          // `lastLookedUp` guarding against repeats.
+          $("#input-trnum").on("input", () => {
+            clearTimeout(lookupDebounce);
+            lookupDebounce = setTimeout(lookupBerryLinkParcel, 350);
+          });
+          // Still worth keeping: Enter and blur should resolve immediately
+          // rather than waiting out the debounce.
+          $("#input-trnum").on("change", lookupBerryLinkParcel);
+          $("#input-trnum").on("keyup", (e: any) => {
+            if (e.key === "Enter" || e.keyCode === 13) {
+              clearTimeout(lookupDebounce);
+              lookupBerryLinkParcel();
+            }
+          });
         },
         preConfirm: (result) => {
           let trackingNum2 = $("#input-trnum").val();
@@ -584,6 +688,110 @@ export class ParclesListComponent implements OnInit, AfterViewInit {
             }
 
             $("#types").html(options.join(""));
+
+            // ── BerryLink parcels ──────────────────────────────────────
+            // A BerryLink box carries no clue as to whose it is: the customer,
+            // the product and the quantity live in BerryLink, not on the
+            // label. Scanning the tracking number fills them in so the
+            // operator is not asked to invent values they cannot know.
+            //
+            // Everything below is best-effort. A tracking number we have not
+            // been told about, a failed request, or a cargo-only parcel all
+            // leave the form exactly as it has always behaved — nothing is
+            // cleared, nothing is blocked, and the operator types as before.
+            //
+            // The weight is pre-filled from BerryLink's estimate as a starting
+            // value, and stays editable — the scale reading is what should be
+            // saved. For a catalog parcel the estimate is the summed product
+            // weights and should be close; for a proxy parcel it is what the
+            // operator guessed from photos, and can be well out. The hint says
+            // so, so nobody mistakes a filled box for a measured one.
+            let lookupDebounce: any = null;
+            let lastLookedUp = "";
+            const lookupBerryLinkParcel = () => {
+              const tn = String($("#input-trnum").val() || "").trim();
+              const hint = $("#bl-hint");
+              if (!tn) {
+                hint.hide();
+                return;
+              }
+              // Don't re-ask for a number we have already resolved — `input`
+              // fires per keystroke, and a scanner delivers a dozen in a burst.
+              if (tn === lastLookedUp) return;
+              lastLookedUp = tn;
+              hint.css("color", "#666").text("Checking…").show();
+              this.http
+                .get(
+                  GlobalVars.baseUrl +
+                    "/orders/pre-declared/lookup?tracking_number=" +
+                    encodeURIComponent(tn),
+                  this.options,
+                )
+                .subscribe(
+                  (response) => {
+                    let parcel = null;
+                    try {
+                      parcel = response.json().parcel;
+                    } catch (e) {
+                      parcel = null;
+                    }
+                    if (!parcel) {
+                      hint.hide();
+                      return;
+                    }
+
+                    $("#input-owid").val(parcel.owner_id);
+                    $("#input-cnname").val(parcel.product_name);
+                    $("#input-qnty").val(parcel.quantity);
+                    if (
+                      parcel.estimated_weight_kg !== null &&
+                      parcel.estimated_weight_kg !== undefined
+                    ) {
+                      // Trim trailing zeros so "0.450" reads as "0.45".
+                      $("#input-weight").val(
+                        String(parseFloat(parcel.estimated_weight_kg)),
+                      );
+                    }
+
+                    const who = parcel.customer_name || parcel.customer_phone || "";
+                    hint
+                      .css("color", "#1b7f3b")
+                      .text(
+                        "BerryLink parcel — " +
+                          who +
+                          ". Weight is an estimate — correct it from the scale.",
+                      )
+                      .show();
+                  },
+                  () => {
+                    // 404 means simply "not a BerryLink parcel", which is the
+                    // ordinary case for everything else this warehouse handles.
+                    hint.hide();
+                  },
+                );
+            };
+
+            // `input` rather than `change` alone. `change` only fires when the
+            // field loses focus or the operator presses Enter — so a scanner
+            // without a trailing Enter, or someone who types the number and
+            // then reaches for the mouse, would never trigger it and the form
+            // would sit there looking broken. `input` fires on every keystroke,
+            // debounced so a scanner's burst results in one request, with
+            // `lastLookedUp` guarding against repeats.
+            $("#input-trnum").on("input", () => {
+              clearTimeout(lookupDebounce);
+              lookupDebounce = setTimeout(lookupBerryLinkParcel, 350);
+            });
+            // Still worth keeping: Enter and blur should resolve immediately
+            // rather than waiting out the debounce.
+            $("#input-trnum").on("change", lookupBerryLinkParcel);
+            $("#input-trnum").on("keyup", (e: any) => {
+              if (e.key === "Enter" || e.keyCode === 13) {
+                clearTimeout(lookupDebounce);
+                lookupBerryLinkParcel();
+              }
+            });
+
           },
           preConfirm: (result) => {
             this.isLastOrderLText = "";
