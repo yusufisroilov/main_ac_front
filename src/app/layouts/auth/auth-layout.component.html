@@ -1,8 +1,24 @@
 <nav class="navbar navbar-expand-lg bg-primary navbar-transparent navbar-absolute " color-on-scroll="500">
   <div class="container">
     <div class="navbar-wrapper">
-      <a class="navbar-brand d-none d-sm-none d-md-block">ActiveCargo</a>
-      <a class="navbar-brand d-block d-sm-block d-md-none">ActiveCargo</a>
+      <!-- Real mark plus live wordmark, linked to the public site. Was two
+           identical dead <a> tags toggled by display classes.
+
+           The mark is navy-and-red and this navbar is transparent over a
+           dark photo, so the navy half needs a light ground behind it -
+           the same treatment acargo.uz uses in its footer, not the bare
+           mark it uses on its white navbar.
+
+           Same tab on purpose: someone on a logged-out page who clicks the
+           logo wants the public site, not a second window. -->
+      <a class="brand" href="https://acargo.uz" aria-label="ActiveCargo">
+        <span class="brand__badge">
+          <img src="./assets/img/acargo-mark.png" alt="" width="180" height="152" />
+        </span>
+        <span class="brand__word" aria-hidden="true">
+          <span>ACTIVE</span><span class="brand__word--accent">CARGO</span>
+        </span>
+      </a>
     </div>
     <button mat-button class="navbar-toggler" type="button" (click)="sidebarToggle()">
       <span class="sr-only">Toggle navigation</span>
@@ -19,7 +35,7 @@
         </li> -->
         <li class="nav-item" routerLinkActive="active">
           <a class="nav-link" [routerLink]="['/pages/lock']">
-            <i class="material-icons">description</i> Xizmatlar va Shartlar
+            <i class="material-icons">local_shipping</i> Yukni Kuzatish
           </a>
         </li>
         <li class="nav-item" routerLinkActive="active">

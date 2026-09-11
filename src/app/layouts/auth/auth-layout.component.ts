@@ -5,7 +5,8 @@ import swal from 'sweetalert2';
 
 @Component({
   selector: 'app-layout',
-  templateUrl: './auth-layout.component.html'
+  templateUrl: './auth-layout.component.html',
+  styleUrls: ['./auth-layout.component.css']
 })
 export class AuthLayoutComponent implements OnInit {
   private toggleButton: any;

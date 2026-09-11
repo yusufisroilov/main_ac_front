@@ -1,0 +1,66 @@
+/* Brand lockup for the logged-out pages (login, register, lock, pricing,
+   checkdelivery - all of them share this layout).
+
+   The navbar is transparent over a dark, filtered photo. acargo.uz renders
+   the mark bare on its white navbar, which would hide the navy half here, so
+   this follows its footer instead: light badge behind the mark, white
+   wordmark, and a lighter red for CARGO. */
+/* Sized against the nav items, not against the brand slot it replaced. The
+   material-dashboard .navbar-brand it used to be is 18px type in a 50px box,
+   while .navbar-nav .nav-link is 12px uppercase on a 20px line - so the old
+   lockup towered over the links it sits beside. */
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.2rem 0;
+  line-height: 20px;
+  text-decoration: none;
+}
+
+.brand:hover,
+.brand:focus {
+  text-decoration: none;
+}
+
+.brand__badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: #fff;
+  flex-shrink: 0;
+}
+
+.brand__badge img {
+  display: block;
+  width: 18px;
+  height: auto;
+}
+
+/* 12px to match .nav-link exactly. Weight and letter-spacing carry the brand
+   at that size instead of scale. */
+.brand__word {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  line-height: 20px;
+  color: #fff;
+  white-space: nowrap;
+}
+
+/* The brand red #C12626 runs about 2.6:1 on a dark ground. This is the
+   lighter red acargo.uz already uses for the same reason in its footer. */
+.brand__word--accent {
+  color: #ff6b6b;
+}
+
+/* The wordmark goes first when the bar gets tight; the mark still identifies
+   the site. Replaces the two duplicate anchors this used to need. */
+@media (max-width: 575px) {
+  .brand__word {
+    display: none;
+  }
+}
