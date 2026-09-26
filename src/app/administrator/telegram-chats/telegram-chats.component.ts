@@ -16,6 +16,7 @@ import {
   TgSegment,
 } from "../../services/telegram-chat.service";
 import { showBackendError } from "../../shared/backend-error";
+import swal from "sweetalert2";
 
 @Component({
   selector: "app-telegram-chats",
@@ -520,9 +521,12 @@ export class TelegramChatsComponent implements OnInit, OnDestroy {
         this.suggestionLoading = false;
         if (this.openChat?.id !== chatId) return;
         this.suggestion = res.draft;
-        // No match is a normal outcome, not a failure: the question is now
-        // recorded as a gap for someone to write an answer to.
-        if (!res.draft && res.message) showBackendError(res.message, { title: "Taklif" });
+        // No suggestion is a normal outcome, not a failure -- a thank-you
+        // needing no reply, an answer already sent -- so it is said as
+        // information. The error popup made "no reply needed" look broken.
+        if (!res.draft && res.message) {
+          swal.fire({ icon: "info", title: "Taklif", text: res.message });
+        }
       },
       error: (err) => {
         this.suggestionLoading = false;
