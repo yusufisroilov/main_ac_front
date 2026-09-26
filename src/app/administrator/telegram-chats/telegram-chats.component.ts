@@ -558,10 +558,14 @@ export class TelegramChatsComponent implements OnInit, OnDestroy {
     this.chatService.sendMessage(chatId, text).subscribe({
       next: () => {
         this.sending = false;
-        this.chatService.decideDraft(draftId, "sent", text).subscribe({
-          next: () => {},
-          error: () => {},
-        });
+        // A suggestion without an id cannot be recorded; asking anyway sent
+        // "id = NaN" to the server. The backend now always returns one.
+        if (draftId) {
+          this.chatService.decideDraft(draftId, "sent", text).subscribe({
+            next: () => {},
+            error: () => {},
+          });
+        }
         this.suggestion = null;
         this.loadMessagesTail();
       },
@@ -576,6 +580,7 @@ export class TelegramChatsComponent implements OnInit, OnDestroy {
     if (!this.suggestion) return;
     const draftId = this.suggestion.id;
     this.suggestion = null;
+    if (!draftId) return;
     this.chatService.decideDraft(draftId, "dismissed").subscribe({
       next: () => {},
       error: () => {},
