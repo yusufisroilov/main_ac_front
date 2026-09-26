@@ -220,6 +220,19 @@ export class TelegramAnalyticsComponent implements OnInit {
     ];
   }
 
+  /** Why the AI judged a message needed no reply, in the panel's words. */
+  noReplyLabel(because: string | null): string {
+    const labels: Record<string, string> = {
+      info_given: "ma’lumot yubordi",
+      will_do: "keyinroq qiladi",
+      understood: "tushundi",
+      update: "xabar berdi, savol yo‘q",
+      already_answered: "allaqachon javob berilgan",
+      not_to_us: "bizga emas",
+    };
+    return (because && labels[because]) || "savol yo‘q";
+  }
+
   /** The unanswered card leads to the people still waiting. */
   showWaiting(): void {
     document.getElementById("ta-waiting")?.scrollIntoView({ behavior: "smooth", block: "start" });

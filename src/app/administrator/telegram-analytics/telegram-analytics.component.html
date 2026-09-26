@@ -48,8 +48,12 @@
           <span class="lbl">Javobsiz</span>
           <span class="val">{{ report.totals.unanswered }}</span>
           <span class="sub">
-            {{ percent(report.totals.unanswered_rate) }} — hali hech kim javob bermagan
+            {{ percent(report.totals.unanswered_rate) }} — javob kutib qolgan
             <b *ngIf="report.totals.unanswered > 0">· ro‘yxatni ko‘rish ↓</b>
+          </span>
+          <!-- Not answered, and rightly so -- counted apart, not hidden. -->
+          <span class="sub" *ngIf="report.totals.no_reply_needed > 0">
+            + {{ report.totals.no_reply_needed }} tasiga javob shart emas (AI)
           </span>
         </button>
 
@@ -156,14 +160,21 @@
 
       <section class="ta-box" id="ta-waiting" *ngIf="report.attention.length">
         <h5>E’tibor talab qiladi
-          <small>— javobsiz qolganlar, keyin ish vaqtida 1 soatdan ko‘p kutganlar</small>
+          <small>— javob kutib qolganlar, keyin ish vaqtida 1 soatdan ko‘p kutganlar</small>
         </h5>
+        <p class="ta-note" *ngIf="report.verdicts && !report.verdicts.available">
+          AI tekshiruvi hali yoqilmagan (migratsiya ishga tushirilmagan) — javob
+          berilmagan hamma xabar “javobsiz” deb hisoblanmoqda.
+        </p>
+        <p class="ta-note" *ngIf="report.verdicts?.pending > 0">
+          Yana {{ report.verdicts.pending }} ta xabar AI tomonidan keyingi ochilishda tekshiriladi.
+        </p>
         <table class="ta-table">
           <thead>
             <tr><th>Suhbat</th><th>Yozgan vaqti</th><th>Kutgan (ish vaqtida)</th><th>Holat</th></tr>
           </thead>
           <tbody>
-            <tr *ngFor="let a of report.attention">
+            <tr *ngFor="let a of report.attention" [class.settled]="a.no_reply_needed">
               <td class="k">
                 <a class="ta-chat-link" [routerLink]="['/uzm/telegram-chats']"
                    [queryParams]="{ chat: a.chat_id }" title="Suhbatni ochish">
@@ -179,7 +190,12 @@
               <td>{{ a.asked_at | date: 'dd.MM HH:mm' : '+0500' }}</td>
               <td>{{ duration(a.working_seconds) }}</td>
               <td>
-                <span class="ta-pill bad" *ngIf="!a.replied_at">Javobsiz</span>
+                <span class="ta-pill bad" *ngIf="!a.replied_at && !a.no_reply_needed">Javobsiz</span>
+                <!-- The AI's call, shown with its reason so staff can disagree. -->
+                <span class="ta-pill quiet" *ngIf="a.no_reply_needed"
+                      [title]="a.verdict_reason || ''">
+                  Javob shart emas · {{ noReplyLabel(a.no_reply_because) }}
+                </span>
                 <span class="ta-pill warn" *ngIf="a.replied_at">Sekin</span>
               </td>
             </tr>

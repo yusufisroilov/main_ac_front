@@ -163,6 +163,25 @@
   color: #9aa5b1;
 }
 
+/* Waits the AI judged needed no reply: kept on the list, stepped back. */
+.ta-table tr.settled td {
+  color: #9aa5b1;
+}
+.ta-table tr.settled .ta-chat-link {
+  color: #64707d;
+  font-weight: 500;
+}
+.ta-pill.quiet {
+  background: #eef1f4;
+  color: #64707d;
+  white-space: normal;
+}
+.ta-note {
+  margin: -4px 0 10px;
+  font-size: 12px;
+  color: #8a95a1;
+}
+
 /* Plain sentences in the in-hours / after-hours pair. */
 .ta-line {
   margin: 0 0 6px;
