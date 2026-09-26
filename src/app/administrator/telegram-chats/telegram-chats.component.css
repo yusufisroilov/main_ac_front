@@ -1355,3 +1355,17 @@
   border-color: rgba(51, 144, 236, 0.25);
   border-top-color: #3390ec;
 }
+
+/* Owed a reply with no approved answer: amber, so it reads as "your turn",
+   not as a suggestion to send. */
+.tg-draft.tg-needs {
+  border-left-color: #e0a100;
+  background: #fffaf0;
+}
+.tg-draft.tg-needs .tg-draft-head > i {
+  color: #c48a00;
+}
+.tg-draft.tg-needs .tg-draft-body b {
+  font-weight: 600;
+  color: #8a5a00;
+}

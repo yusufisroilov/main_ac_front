@@ -26,6 +26,7 @@ import swal from "sweetalert2";
 })
 export class TelegramChatsComponent implements OnInit, OnDestroy {
   @ViewChild("thread") threadRef!: ElementRef<HTMLDivElement>;
+  @ViewChild("composer") composerRef?: ElementRef<HTMLTextAreaElement>;
 
   chats: TgChat[] = [];
   chatsLoading = false;
@@ -246,6 +247,12 @@ export class TelegramChatsComponent implements OnInit, OnDestroy {
           /* the next event will try again */
         },
       });
+    }, (payload) => {
+      // The automatic draft for the open chat, shown as it is made -- before,
+      // it appeared only when the chat was opened again.
+      if (this.openChat && payload.chat_id === this.openChat.id) {
+        this.loadSuggestion(this.openChat.id);
+      }
     });
   }
 
@@ -609,6 +616,24 @@ export class TelegramChatsComponent implements OnInit, OnDestroy {
         showBackendError(err);
       },
     });
+  }
+
+  /** A reply is owed and no approved answer exists: staff write it. */
+  get needsAnswer(): boolean {
+    return this.suggestion?.kind === "needs_answer";
+  }
+
+  /** Straight to the message box, for a reply no template covers. */
+  writeAnswer(): void {
+    this.composerRef?.nativeElement.focus();
+  }
+
+  /**
+   * Hides the "needs an answer" notice without recording a verdict: it is not
+   * a suggestion staff can reject. It expires on its own once staff reply.
+   */
+  hideNotice(): void {
+    this.suggestion = null;
   }
 
   dismissSuggestion(): void {

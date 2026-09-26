@@ -331,7 +331,25 @@
       <!-- ───── assistant suggestion ─────
            Never sent on its own. The assistant picks an approved answer; a
            person decides whether it goes out, and can rewrite it first. -->
-      <div class="tg-draft" *ngIf="suggestion">
+      <!-- Owed a reply, nothing approved gives it: a notice for staff to
+           answer themselves, never a message to send. -->
+      <div class="tg-draft tg-needs" *ngIf="suggestion && needsAnswer" role="status">
+        <div class="tg-draft-head">
+          <i class="material-icons">priority_high</i>
+          <span class="tg-draft-label">Javob kerak — tayyor javob yo‘q</span>
+        </div>
+        <div class="tg-draft-body"><b>Mijoz so‘rayapti:</b> {{ suggestion.suggested_text }}</div>
+        <div class="tg-draft-actions">
+          <button type="button" class="ok" (click)="writeAnswer()">
+            <i class="material-icons">edit</i> Javob yozish
+          </button>
+          <button type="button" class="no" (click)="hideNotice()">
+            <i class="material-icons">close</i> Yopish
+          </button>
+        </div>
+      </div>
+
+      <div class="tg-draft" *ngIf="suggestion && !needsAnswer">
         <div class="tg-draft-head">
           <i class="material-icons">smart_toy</i>
           <span class="tg-draft-label">
@@ -382,6 +400,7 @@
 
         <div class="tg-composer-row" *ngIf="canReply">
           <textarea
+            #composer
             rows="1"
             placeholder="Xabar yozing…"
             [(ngModel)]="draft"

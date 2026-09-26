@@ -261,6 +261,7 @@ export class TelegramChatService {
   openStream(
     mediaToken: string,
     onMessage: (payload: any) => void,
+    onDraft?: (payload: any) => void,
   ): EventSource {
     const source = new EventSource(
       `${this.apiUrl}/telegram/stream?t=${encodeURIComponent(mediaToken)}`,
@@ -273,6 +274,18 @@ export class TelegramChatService {
         /* a malformed frame is not worth breaking the stream over */
       }
     });
+    // A suggestion made while the chat is open: automatic drafts land a
+    // minute after the client stops typing, when staff may be looking.
+    if (onDraft) {
+      source.addEventListener("draft", (event: any) => {
+        try {
+          const payload = JSON.parse(event.data);
+          this.zone.run(() => onDraft(payload));
+        } catch (e) {
+          /* as above */
+        }
+      });
+    }
     return source;
   }
 }
