@@ -99,8 +99,14 @@ export class TelegramAnalyticsComponent implements OnInit {
       });
   }
 
+  /**
+   * Running the analysis spends money, so the server allows the owner alone.
+   * Mirrored here so the button says so instead of failing with "Access denied".
+   */
+  readonly canGenerate = localStorage.getItem("role") === "OWNER";
+
   generateTopics(): void {
-    if (this.generating) return;
+    if (this.generating || !this.canGenerate) return;
     this.generating = true;
     const to = new Date();
     const from = new Date(to.getTime() - this.days * 86400000);

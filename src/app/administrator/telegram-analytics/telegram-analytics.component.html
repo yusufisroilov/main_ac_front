@@ -217,7 +217,7 @@
           <!-- The sample size is shown before the button, not after: nobody
                should pay to discover the sample was forty messages. -->
           <p *ngIf="preview">
-            Tanlangan davrda <b>{{ preview.sample_size }}</b> ta savol topildi.
+            Tanlangan davrda <b>{{ preview.sample_size }}</b> ta mijoz xabari topildi.
             <span class="warn" *ngIf="!preview.is_meaningful">
               Bu xulosa chiqarish uchun kam — natija taxmin bo‘ladi.
             </span>
@@ -231,9 +231,13 @@
             Tahlil sun’iy intellekt orqali bajariladi va har safar pul turadi,
             shuning uchun faqat tugma bosilganda ishlaydi.
           </p>
+          <!-- Said before the click, not after: the server refuses anyone else. -->
+          <p class="warn" *ngIf="!canGenerate">
+            Tahlilni faqat egasi (OWNER) ishga tushira oladi — natijani esa siz ham ko‘rasiz.
+          </p>
         </div>
         <button type="button" class="ta-gen-btn"
-                [disabled]="generating || !preview?.sample_size"
+                [disabled]="generating || !preview?.sample_size || !canGenerate"
                 (click)="generateTopics()">
           <ng-container *ngIf="generating">Tahlil qilinmoqda…</ng-container>
           <ng-container *ngIf="!generating">
