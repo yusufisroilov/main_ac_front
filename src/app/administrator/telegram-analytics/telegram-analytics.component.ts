@@ -226,6 +226,37 @@ export class TelegramAnalyticsComponent implements OnInit {
     ];
   }
 
+  severityLabel(sev: string): string {
+    return ({ high: "Jiddiy", medium: "O‘rtacha", low: "Kichik" } as Record<string, string>)[sev] || sev;
+  }
+
+  severityClass(sev: string): string {
+    return sev === "high" ? "bad" : sev === "medium" ? "warn" : "quiet";
+  }
+
+  /** What a problem costs, as the report names it. */
+  impactLabel(impact: string): string {
+    const labels: Record<string, string> = {
+      lost_client: "Mijoz yo‘qotiladi",
+      money: "Pul yo‘qotiladi",
+      repeat_questions: "Takroriy savollar",
+      staff_time: "Xodimlar vaqti ketadi",
+      reputation: "Obro‘ga zarar",
+    };
+    return labels[impact] || impact;
+  }
+
+  /** Worked out on the server from shares, so runs of different sizes compare. */
+  trendLabel(change: string): string {
+    const labels: Record<string, string> = {
+      up: "↑ ko‘paydi",
+      down: "↓ kamaydi",
+      same: "o‘zgarmadi",
+      new: "yangi",
+    };
+    return labels[change] || "";
+  }
+
   /** Why the AI judged a message needed no reply, in the panel's words. */
   noReplyLabel(because: string | null): string {
     const labels: Record<string, string> = {

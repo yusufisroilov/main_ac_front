@@ -275,6 +275,38 @@
           <p class="ta-summary">{{ rep.result.summary }}</p>
         </section>
 
+        <!-- What to fix, before what to film: a problem can be too small to
+             be a topic and still cost more than all of them. -->
+        <section class="ta-box" *ngIf="rep.result?.problems as problems">
+          <h5>Muammolar <small>— nima noto‘g‘ri ketyapti va nima qilish kerak</small></h5>
+          <p class="muted" *ngIf="!problems.length">Bu davrdagi xabarlarda takrorlanuvchi muammo topilmadi.</p>
+
+          <div class="ta-problem" *ngFor="let p of problems" [ngClass]="'sev-' + p.severity">
+            <div class="ta-problem-head">
+              <span class="ta-problem-name">{{ p.name }}</span>
+              <span class="ta-pill" [ngClass]="severityClass(p.severity)">{{ severityLabel(p.severity) }}</span>
+              <span class="ta-problem-count">{{ p.message_count }} ta xabar · {{ p.share_percent }}%</span>
+              <span class="ta-trend" *ngIf="p.trend" [ngClass]="'t-' + p.trend.change"
+                    [title]="p.trend.previous_share !== undefined
+                      ? 'Oldingi tahlilda: ' + p.trend.previous_share + '%'
+                      : ''">
+                {{ trendLabel(p.trend.change) }}
+              </span>
+            </div>
+            <p class="ta-topic-desc">{{ p.description }}</p>
+            <div class="ta-topic-examples">
+              <span *ngFor="let ex of p.examples">“{{ ex }}”</span>
+            </div>
+            <p class="ta-problem-impact">
+              <b>{{ impactLabel(p.impact) }}:</b> {{ p.impact_note }}
+            </p>
+            <div class="ta-problem-fix">
+              <i class="material-icons">build</i>
+              <span><b>Nima qilish kerak:</b> {{ p.fix }}</span>
+            </div>
+          </div>
+        </section>
+
         <div class="ta-topic" *ngFor="let t of rep.result?.topics">
           <div class="ta-topic-head">
             <span class="ta-topic-name">{{ t.name }}</span>
