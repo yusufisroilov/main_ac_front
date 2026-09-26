@@ -464,6 +464,9 @@ export class Financev2Component implements OnInit {
           cancelButton: "btn btn-danger",
         },
         buttonsStyling: false,
+        // Promise-returning preConfirm keeps buttons disabled until the request settles (blocks double-submit).
+        showLoaderOnConfirm: true,
+        allowOutsideClick: () => !swal.isLoading(),
         didOpen: () => {
           $("#input-weight").val(weight);
         },
@@ -478,27 +481,29 @@ export class Financev2Component implements OnInit {
 
           if (!weight2 && !rate2) return;
 
-          this.httpClient
-            .post<any>(GlobalVars.baseUrl + "/finance-v2/edit", body, {
-              headers: this.getHeaders(),
-            })
-            .subscribe(
-              (data) => {
-                if (data.status === "error") {
-                  swal.fire("Xatolik", data.message || data.error, "error");
-                } else {
-                  this.getListOfFinance();
-                }
-              },
-              (error) => {
-                swal.fire(
-                  "Xatolik",
-                  `BAD REQUEST: ${error.error?.error || error.message}`,
-                  "error",
-                );
-                if (error.status === 401) this.authService.logout();
-              },
-            );
+          return new Promise((resolve) => {
+            this.httpClient
+              .post<any>(GlobalVars.baseUrl + "/finance-v2/edit", body, {
+                headers: this.getHeaders(),
+              })
+              .subscribe(
+                (data) => {
+                  if (data.status === "error") {
+                    swal.showValidationMessage(data.message || data.error);
+                    resolve(false);
+                  } else {
+                    resolve(true);
+                  }
+                },
+                (error) => {
+                  if (error.status === 401) this.authService.logout();
+                  swal.showValidationMessage(
+                    `BAD REQUEST: ${error.error?.error || error.message}`,
+                  );
+                  resolve(false);
+                },
+              );
+          });
         },
       })
       .then((result) => {

@@ -166,6 +166,9 @@ export class EmployeeFinanceComponent implements OnInit {
         cancelButtonText: "Bekor",
         customClass: { confirmButton: "btn btn-success", cancelButton: "btn btn-danger" },
         buttonsStyling: false,
+        // Promise-returning preConfirm keeps buttons disabled until the request settles (blocks double-submit).
+        showLoaderOnConfirm: true,
+        allowOutsideClick: () => !swal.isLoading(),
         didOpen: () => {
           $("#input-weight").val(weight);
         },
@@ -182,26 +185,35 @@ export class EmployeeFinanceComponent implements OnInit {
           if (newWeight && parseFloat(newWeight) !== weight) body.weight = newWeight;
           if (newRate) body.perKg = newRate;
 
-          this.httpClient
-            .post<any>(GlobalVars.baseUrl + "/finance-v2/edit", body, {
-              headers: this.getHeaders(),
-            })
-            .subscribe(
-              (data) => {
-                if (data.status === "error") {
-                  swal.fire("Xatolik", data.message || data.error, "error");
-                } else {
-                  swal.fire({ icon: "success", title: "O'zgartirildi!", timer: 1500, showConfirmButton: false });
-                  this.getListOfFinance();
-                }
-              },
-              (error) => {
-                swal.fire("Xatolik", error.error?.error || error.error?.message || "Xatolik yuz berdi", "error");
-              },
-            );
-
-          return false;
+          return new Promise((resolve) => {
+            this.httpClient
+              .post<any>(GlobalVars.baseUrl + "/finance-v2/edit", body, {
+                headers: this.getHeaders(),
+              })
+              .subscribe(
+                (data) => {
+                  if (data.status === "error") {
+                    swal.showValidationMessage(data.message || data.error);
+                    resolve(false);
+                  } else {
+                    resolve(true);
+                  }
+                },
+                (error) => {
+                  swal.showValidationMessage(
+                    error.error?.error || error.error?.message || "Xatolik yuz berdi",
+                  );
+                  resolve(false);
+                },
+              );
+          });
         },
+      })
+      .then((result) => {
+        if (result.isConfirmed) {
+          swal.fire({ icon: "success", title: "O'zgartirildi!", timer: 1500, showConfirmButton: false });
+          this.getListOfFinance();
+        }
       });
   }
 

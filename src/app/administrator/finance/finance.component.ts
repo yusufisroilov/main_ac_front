@@ -707,6 +707,9 @@ export class FinanceComponent implements OnInit {
           cancelButton: "btn btn-danger",
         },
         buttonsStyling: false,
+        // Promise-returning preConfirm keeps buttons disabled until the request settles (blocks double-submit).
+        showLoaderOnConfirm: true,
+        allowOutsideClick: () => !swal.isLoading(),
         didOpen: () => {
           $("#input-weight").val(weight);
         },
@@ -724,36 +727,38 @@ export class FinanceComponent implements OnInit {
 
           if (!weight2 && !rate2) return;
 
-          this.http
-            .post(
-              GlobalVars.baseUrl + "/finance-v2/edit",
-              JSON.stringify(body),
-              this.options,
-            )
-            .subscribe(
-              (response) => {
-                this.getListOfFinance();
-                if (response.json().status == "error") {
-                  swal.fire(
-                    "Not Added",
-                    response.json().message || response.json().error,
-                    "error",
-                  );
-                }
-              },
-              (error) => {
-                if (error) {
-                  swal.fire(
-                    "Not Added",
-                    `BAD REQUEST: ${error.json().error}`,
-                    "error",
-                  );
-                }
-                if (error.status == 401) {
-                  this.authService.logout();
-                }
-              },
-            );
+          return new Promise((resolve) => {
+            this.http
+              .post(
+                GlobalVars.baseUrl + "/finance-v2/edit",
+                JSON.stringify(body),
+                this.options,
+              )
+              .subscribe(
+                (response) => {
+                  if (response.json().status == "error") {
+                    swal.showValidationMessage(
+                      response.json().message || response.json().error,
+                    );
+                    resolve(false);
+                  } else {
+                    resolve(true);
+                  }
+                },
+                (error) => {
+                  if (error.status == 401) {
+                    this.authService.logout();
+                  }
+                  // error.json() throws on non-JSON bodies (network failure); resolve must still run.
+                  let message = "Xatolik yuz berdi";
+                  try {
+                    message = error.json().error || message;
+                  } catch (e) {}
+                  swal.showValidationMessage(`BAD REQUEST: ${message}`);
+                  resolve(false);
+                },
+              );
+          });
         },
       })
       .then((result) => {
@@ -761,7 +766,7 @@ export class FinanceComponent implements OnInit {
         if (result.isConfirmed) {
           swal.fire({
             icon: "success",
-            html: $("#input-trnum").val() + " is SUCCESSFULLY CHANGED!",
+            html: "MUVAFFAQIYATLI O'ZGARTIRILDI!",
             customClass: {
               confirmButton: "btn btn-success",
             },
