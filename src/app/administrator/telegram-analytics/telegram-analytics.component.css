@@ -138,6 +138,31 @@
   font-weight: 600;
 }
 
+/* Attention rows: the name opens the chat; the preview says which message. */
+.ta-chat-link {
+  color: #1f2933;
+  font-weight: 600;
+  text-decoration: none;
+}
+.ta-chat-link:hover,
+.ta-chat-link:focus-visible {
+  color: #2f8ae8;
+  text-decoration: underline;
+}
+.ta-preview {
+  display: block;
+  margin-top: 3px;
+  max-width: 520px;
+  font-size: 12.5px;
+  font-weight: 400;
+  color: #64707d;
+  white-space: normal;
+  line-height: 1.4;
+}
+.ta-preview small {
+  color: #9aa5b1;
+}
+
 /* Plain sentences in the in-hours / after-hours pair. */
 .ta-line {
   margin: 0 0 6px;

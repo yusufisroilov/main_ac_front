@@ -165,8 +165,16 @@
           <tbody>
             <tr *ngFor="let a of report.attention">
               <td class="k">
-                {{ a.name }}
+                <a class="ta-chat-link" [routerLink]="['/uzm/telegram-chats']"
+                   [queryParams]="{ chat: a.chat_id }" title="Suhbatni ochish">
+                  {{ a.name }}
+                </a>
                 <em *ngIf="a.is_first_contact">birinchi murojaat</em>
+                <!-- Which message: what the client wrote while waiting. -->
+                <span class="ta-preview" *ngIf="a.preview">
+                  “{{ a.preview }}”
+                  <small *ngIf="a.message_count > 1">({{ a.message_count }} ta xabar)</small>
+                </span>
               </td>
               <td>{{ a.asked_at | date: 'dd.MM HH:mm' : '+0500' }}</td>
               <td>{{ duration(a.working_seconds) }}</td>

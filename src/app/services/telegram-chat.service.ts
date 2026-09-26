@@ -129,8 +129,11 @@ export class TelegramChatService {
     archived?: boolean;
     limit?: number;
     offset?: number;
+    /** One chat by id, whatever page of the list it would fall on. */
+    id?: number;
   } = {}): Observable<any> {
     let params = new HttpParams();
+    if (options.id) params = params.set("id", String(options.id));
     if (options.search) params = params.set("search", options.search);
     if (options.archived) params = params.set("archived", "1");
     if (options.limit) params = params.set("limit", String(options.limit));

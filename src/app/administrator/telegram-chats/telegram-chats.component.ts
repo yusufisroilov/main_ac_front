@@ -5,6 +5,7 @@ import {
   ViewChild,
   ElementRef,
 } from "@angular/core";
+import { ActivatedRoute } from "@angular/router";
 import { Subject } from "rxjs";
 import { debounceTime, distinctUntilChanged } from "rxjs/operators";
 
@@ -48,9 +49,17 @@ export class TelegramChatsComponent implements OnInit, OnDestroy {
   // not fire again for the same top edge and request the same page twice.
   private anchorScroll = false;
 
-  constructor(private chatService: TelegramChatService) {}
+  /** A chat another page asked to open, via ?chat=<id>. */
+  private linkedChatId: number | null = null;
+
+  constructor(
+    private chatService: TelegramChatService,
+    private route: ActivatedRoute,
+  ) {}
 
   ngOnInit(): void {
+    const linked = Number(this.route.snapshot.queryParamMap.get("chat"));
+    this.linkedChatId = Number.isInteger(linked) && linked > 0 ? linked : null;
     this.loadChats();
 
     this.searchChanged
@@ -74,11 +83,37 @@ export class TelegramChatsComponent implements OnInit, OnDestroy {
       next: (res: any) => {
         this.chats = res.chats || [];
         this.chatsLoading = false;
+        this.openLinkedChat();
       },
       error: (err) => {
         this.chatsLoading = false;
         showBackendError(err);
       },
+    });
+  }
+
+  /**
+   * Opens the chat named in the link, once. It may be older than the first
+   * hundred in the list, so it is fetched on its own when not already there.
+   */
+  private openLinkedChat(): void {
+    const id = this.linkedChatId;
+    if (!id) return;
+    this.linkedChatId = null;
+
+    const listed = this.chats.find((c) => c.id === id);
+    if (listed) {
+      this.selectChat(listed);
+      return;
+    }
+    this.chatService.listChats({ id }).subscribe({
+      next: (res: any) => {
+        const chat = (res.chats || [])[0];
+        if (!chat) return;
+        this.chats = [chat, ...this.chats];
+        this.selectChat(chat);
+      },
+      error: (err) => showBackendError(err),
     });
   }
 
