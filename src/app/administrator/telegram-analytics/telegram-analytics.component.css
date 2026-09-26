@@ -114,12 +114,50 @@
   color: #64707d;
   font-size: 22px;
 }
+/* The unanswered card is a way to the list, so it behaves like a button. */
+.ta-card.link {
+  border: 0;
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
+}
+.ta-card.link:hover:not(:disabled) {
+  box-shadow: 0 4px 16px rgba(16, 32, 56, 0.13);
+  transform: translateY(-1px);
+}
+.ta-card.link:focus-visible {
+  outline: 2px solid #2f8ae8;
+  outline-offset: 2px;
+}
+.ta-card.link:disabled {
+  cursor: default;
+}
+.ta-card.link .sub b {
+  color: #2f8ae8;
+  font-weight: 600;
+}
+
+/* Plain sentences in the in-hours / after-hours pair. */
+.ta-line {
+  margin: 0 0 6px;
+  font-size: 13.5px;
+  color: #46525f;
+  line-height: 1.45;
+}
+.ta-line b {
+  color: #1f2933;
+  font-variant-numeric: tabular-nums;
+}
+.ta-line.bad b {
+  color: #c0392b;
+}
 
 /* ── panels ── */
 
 .ta-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(340px, 100%), 1fr));
   gap: 14px;
 }
 .ta-box {

@@ -30,89 +30,109 @@
 
     <ng-container *ngIf="tab === 'speed' && !loading && report">
 
-      <!-- Zero working time everywhere usually means the configured hours are
-           wrong, not that the team is instant. Said out loud rather than left
-           to look like a bug. -->
-      <div class="ta-warn" *ngIf="trafficOutsideHours">
-        <i class="material-icons">schedule</i>
-        <span>
-          Murojaatlarning deyarli barchasi belgilangan ish vaqtidan tashqarida
-          kelgan, shuning uchun “ish vaqti” ustuni 0 ko‘rsatmoqda.
-          <b>SUPPORT_HOURS_START / SUPPORT_HOURS_END</b> ni haqiqiy ish vaqtiga
-          moslang.
-        </span>
-      </div>
-
+      <!-- Every figure on this tab is clock time, as the client lived it.
+           Working time alone read "0 s": a 21:00 message answered at 21:05
+           has no working seconds in it. -->
       <div class="ta-cards">
         <div class="ta-card">
-          <span class="lbl">Kutishlar</span>
+          <span class="lbl">Murojaatlar</span>
           <span class="val">{{ report.totals.turns }}</span>
-          <span class="sub">mijoz javob kutgan holat</span>
+          <span class="sub">mijoz yozib, javob kutgan holatlar (ketma-ket xabarlar — bitta)</span>
         </div>
 
         <!-- The headline number: someone wrote and nobody came back. -->
-        <div class="ta-card danger" [class.ok]="report.totals.unanswered === 0">
+        <button type="button" class="ta-card danger link"
+                [class.ok]="report.totals.unanswered === 0"
+                [disabled]="report.totals.unanswered === 0"
+                (click)="showWaiting()">
           <span class="lbl">Javobsiz</span>
           <span class="val">{{ report.totals.unanswered }}</span>
-          <span class="sub">{{ percent(report.totals.unanswered_rate) }} murojaatlardan</span>
-        </div>
+          <span class="sub">
+            {{ percent(report.totals.unanswered_rate) }} — hali hech kim javob bermagan
+            <b *ngIf="report.totals.unanswered > 0">· ro‘yxatni ko‘rish ↓</b>
+          </span>
+        </button>
 
         <div class="ta-card">
-          <span class="lbl">Median (ish vaqti)</span>
-          <span class="val">{{ duration(report.totals.median_working_seconds) }}</span>
-          <span class="sub">yarmi shundan tez javob oldi</span>
-        </div>
-
-        <div class="ta-card">
-          <span class="lbl">P90 (ish vaqti)</span>
-          <span class="val">{{ duration(report.totals.p90_working_seconds) }}</span>
-          <span class="sub">eng sekin 10% shundan uzoq kutdi</span>
-        </div>
-
-        <div class="ta-card muted">
-          <span class="lbl">Median (soat bo‘yicha)</span>
+          <span class="lbl">Odatdagi javob vaqti</span>
           <span class="val">{{ duration(report.totals.median_wall_seconds) }}</span>
-          <span class="sub">mijoz his qilgan real vaqt</span>
+          <span class="sub">mijozlarning yarmi shundan tezroq javob oldi</span>
+        </div>
+
+        <div class="ta-card">
+          <span class="lbl">10 tadan 9 tasi</span>
+          <span class="val">{{ duration(report.totals.p90_wall_seconds) }}</span>
+          <span class="sub">ichida javob oldi — qolgan 1 tasi bundan uzoq kutdi</span>
         </div>
       </div>
 
+      <!-- When the client wrote decides what "fast" means, so the two are
+           shown side by side instead of blended into one figure. -->
       <div class="ta-grid">
+        <section class="ta-box">
+          <h5>Ish vaqtida yozganlar <small>({{ hoursLabel }})</small></h5>
+          <p class="ta-line"><b>{{ report.totals.in_hours.turns }}</b> ta murojaat</p>
+          <p class="ta-line" *ngIf="report.totals.in_hours.median_wall_seconds !== null">
+            Yarmi <b>{{ duration(report.totals.in_hours.median_wall_seconds) }}</b> ichida,
+            10 tadan 9 tasi <b>{{ duration(report.totals.in_hours.p90_wall_seconds) }}</b> ichida javob oldi
+          </p>
+          <p class="ta-line" [class.bad]="report.totals.in_hours.unanswered > 0">
+            Javobsiz: <b>{{ report.totals.in_hours.unanswered }}</b>
+          </p>
+        </section>
 
         <section class="ta-box">
-          <h5>Mijoz turi bo‘yicha</h5>
+          <h5>Ish vaqtidan tashqari yozganlar</h5>
+          <p class="ta-line"><b>{{ report.totals.off_hours.turns }}</b> ta murojaat</p>
+          <p class="ta-line">
+            Shundan <b>{{ report.totals.off_hours.answered_before_opening }}</b> tasiga
+            ish vaqti boshlanmasdan javob berildi
+          </p>
+          <p class="ta-line" [class.bad]="report.totals.off_hours.unanswered > 0">
+            Javobsiz: <b>{{ report.totals.off_hours.unanswered }}</b>
+          </p>
+        </section>
+      </div>
+
+      <!-- Two separate questions, so two tables: the old single table listed
+           four rows that were really two pairs of the same waits. -->
+      <div class="ta-grid">
+        <section class="ta-box" *ngFor="let group of segmentGroups">
+          <h5>{{ group.title }}</h5>
           <table class="ta-table">
             <thead>
-              <tr><th></th><th>Kutish</th><th>Median</th><th>P90</th><th>Javobsiz</th></tr>
+              <tr><th></th><th>Murojaat</th><th>Yarmi</th><th>10 tadan 9</th><th>Javobsiz</th></tr>
             </thead>
             <tbody>
-              <tr *ngFor="let row of segmentRows">
+              <tr *ngFor="let row of group.rows">
                 <td class="k">{{ row.key }}</td>
                 <td>{{ row.data.turns }}</td>
-                <td>{{ duration(row.data.median_working_seconds) }}</td>
-                <td>{{ duration(row.data.p90_working_seconds) }}</td>
+                <td>{{ duration(row.data.median_wall_seconds) }}</td>
+                <td>{{ duration(row.data.p90_wall_seconds) }}</td>
                 <td [class.bad]="row.data.unanswered > 0">{{ row.data.unanswered }}</td>
               </tr>
             </tbody>
           </table>
         </section>
-
-        <section class="ta-box">
-          <h5>Xodimlar bo‘yicha</h5>
-          <table class="ta-table">
-            <thead>
-              <tr><th>Hisob</th><th>Kutish</th><th>Median</th><th>Javobsiz</th></tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let a of report.by_admin">
-                <td class="k">{{ a.admin }}</td>
-                <td>{{ a.turns }}</td>
-                <td>{{ duration(a.median_working_seconds) }}</td>
-                <td [class.bad]="a.unanswered > 0">{{ a.unanswered }}</td>
-              </tr>
-            </tbody>
-          </table>
-        </section>
       </div>
+
+      <section class="ta-box">
+        <h5>Xodimlar bo‘yicha</h5>
+        <table class="ta-table">
+          <thead>
+            <tr><th>Hisob</th><th>Murojaat</th><th>Yarmi</th><th>10 tadan 9</th><th>Javobsiz</th></tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let a of report.by_admin">
+              <td class="k">{{ a.admin }}</td>
+              <td>{{ a.turns }}</td>
+              <td>{{ duration(a.median_wall_seconds) }}</td>
+              <td>{{ duration(a.p90_wall_seconds) }}</td>
+              <td [class.bad]="a.unanswered > 0">{{ a.unanswered }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
 
       <!-- Where slowness is a staffing gap rather than a people problem. -->
       <section class="ta-box">
@@ -122,7 +142,7 @@
             <div class="ta-hour-bar-wrap">
               <div class="ta-hour-bar" [class.closed]="!isOpenHour(h.hour)"
                    [style.height.%]="hourBar(h)"
-                   [title]="h.turns + ' murojaat · median ' + duration(h.median_working_seconds)"></div>
+                   [title]="h.turns + ' murojaat · yarmi ' + duration(h.median_wall_seconds) + ' ichida javob oldi'"></div>
             </div>
             <span class="ta-hour-n">{{ h.turns }}</span>
             <span class="ta-hour-l" [class.closed]="!isOpenHour(h.hour)">{{ h.hour }}</span>
@@ -134,11 +154,13 @@
         </div>
       </section>
 
-      <section class="ta-box" *ngIf="report.attention.length">
-        <h5>E’tibor talab qiladi</h5>
+      <section class="ta-box" id="ta-waiting" *ngIf="report.attention.length">
+        <h5>E’tibor talab qiladi
+          <small>— javobsiz qolganlar, keyin ish vaqtida 1 soatdan ko‘p kutganlar</small>
+        </h5>
         <table class="ta-table">
           <thead>
-            <tr><th>Suhbat</th><th>Yozgan vaqti</th><th>Kutgan (ish vaqti)</th><th>Holat</th></tr>
+            <tr><th>Suhbat</th><th>Yozgan vaqti</th><th>Kutgan (ish vaqtida)</th><th>Holat</th></tr>
           </thead>
           <tbody>
             <tr *ngFor="let a of report.attention">
@@ -176,6 +198,11 @@
               Bu xulosa chiqarish uchun kam — natija taxmin bo‘ladi.
             </span>
           </p>
+          <!-- The price before the button, for the same reason as the sample. -->
+          <p *ngIf="preview?.cost as c">
+            Taxminiy narx: <b>≈ ${{ c.typical_usd }}</b>, ko‘pi bilan ${{ c.max_usd }}
+            <span class="muted">({{ c.model }}, {{ c.input_tokens | number }} token o‘qiydi)</span>
+          </p>
           <p class="muted">
             Tahlil sun’iy intellekt orqali bajariladi va har safar pul turadi,
             shuning uchun faqat tugma bosilganda ishlaydi.
@@ -184,7 +211,10 @@
         <button type="button" class="ta-gen-btn"
                 [disabled]="generating || !preview?.sample_size"
                 (click)="generateTopics()">
-          {{ generating ? "Tahlil qilinmoqda…" : "Tahlil qilish" }}
+          <ng-container *ngIf="generating">Tahlil qilinmoqda…</ng-container>
+          <ng-container *ngIf="!generating">
+            Tahlil qilish<span *ngIf="preview?.cost"> · ≈ ${{ preview.cost.typical_usd }}</span>
+          </ng-container>
         </button>
       </section>
 

@@ -189,29 +189,39 @@ export class TelegramAnalyticsComponent implements OnInit {
     return hour >= wh.start && hour < wh.end;
   }
 
-  /**
-   * True when effectively all the traffic arrives outside the configured
-   * hours. That makes every working-time figure zero, which looks like a bug
-   * and is actually a misconfiguration worth saying out loud.
-   */
-  get trafficOutsideHours(): boolean {
-    const hours = this.busiestHours;
-    if (!hours.length) return false;
-    const inside = hours
-      .filter((h) => this.isOpenHour(h.hour))
-      .reduce((sum, h) => sum + h.turns, 0);
-    const total = hours.reduce((sum, h) => sum + h.turns, 0);
-    return total > 0 && inside / total < 0.2;
+  /** "9:00–18:00", from the hours the server measured with. */
+  get hoursLabel(): string {
+    const wh = this.report?.working_hours;
+    return wh ? `${wh.start}:00–${wh.end}:00` : "";
   }
 
-  get segmentRows(): any[] {
+  /**
+   * The same waits split two different ways, so two tables. One table of four
+   * rows read as four groups when it was two pairs, each adding up to the total.
+   */
+  get segmentGroups(): { title: string; rows: { key: string; data: any }[] }[] {
     const s = this.report?.segments;
     if (!s) return [];
     return [
-      { key: "Birinchi murojaat", data: s.first_contact },
-      { key: "Takroriy murojaat", data: s.returning },
-      { key: "Mijoz bog‘langan", data: s.known_client },
-      { key: "Noma’lum", data: s.unknown },
+      {
+        title: "Yangi yoki takroriy mijoz",
+        rows: [
+          { key: "Birinchi marta yozgan", data: s.first_contact },
+          { key: "Avval ham yozgan", data: s.returning },
+        ],
+      },
+      {
+        title: "Bazadagi mijozmi",
+        rows: [
+          { key: "Bazadagi mijoz", data: s.known_client },
+          { key: "Bazada topilmagan", data: s.unknown },
+        ],
+      },
     ];
+  }
+
+  /** The unanswered card leads to the people still waiting. */
+  showWaiting(): void {
+    document.getElementById("ta-waiting")?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 }
