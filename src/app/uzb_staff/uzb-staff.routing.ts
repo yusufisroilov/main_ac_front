@@ -4,6 +4,7 @@ import { UzParclesListComponent } from "./parcles-list/parcles-list.component";
 
 import { Routes } from "@angular/router";
 import { ManagerAuthGuardService } from "../services/manager-auth-guard.service";
+import { ManagerOwnerAuthGuardService } from "../services/manager-owner-auth-guard.service";
 import { DeliveriesComponent } from "./deliveries/deliveries.component";
 import { AdminAuthGuard } from "../services/admin-auth-guard.service";
 import { EmployeeAuthGuardService } from "../services/employee-auth-guard.service";
@@ -96,7 +97,7 @@ export const UzbStaffRoutes: Routes = [
       },
       {
         path: "cargo-tariffs",
-        canActivate: [ManagerAuthGuardService],
+        canActivate: [ManagerOwnerAuthGuardService],
         component: CargoTariffsComponent,
         data: {
           title: "Kargo Tariflari",

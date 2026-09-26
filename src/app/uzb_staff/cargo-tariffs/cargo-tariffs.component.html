@@ -201,6 +201,200 @@
       </div>
     </div>
 
+    <!-- ═══ Mamlakatlar ════════════════════════════════════════════════════
+         MANAGER + OWNER can add and edit. No delete by design: country_id is
+         referenced by consignments, customers, orders, tariffs, express scans. -->
+    <div class="row country-section">
+      <div class="col-12">
+        <div class="card">
+
+          <div class="card-header card-header-primary card-header-icon header-container">
+            <div class="header-title">
+              <div class="card-icon">
+                <i class="material-icons">public</i>
+              </div>
+              <div>
+                <h4 class="card-title">Mamlakatlar</h4>
+                <p class="card-category">Omborlar, partiya prefikslari va tarjima tili</p>
+              </div>
+            </div>
+
+            <div class="header-add-btn" *ngIf="canManageCountries">
+              <button type="button" mat-raised-button (click)="openAddCountryModal()" class="btn btn-success btn-sm">
+                <i class="material-icons">add</i>
+                <span>Yangi Mamlakat</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="card-body">
+            <ng-template #noValue><span class="text-muted">—</span></ng-template>
+
+            <!-- Loading -->
+            <div *ngIf="isLoadingCountries" class="text-center py-4">
+              <i class="fa fa-spinner fa-spin fa-2x"></i>
+              <p>Yuklanmoqda...</p>
+            </div>
+
+            <!-- Desktop Table View -->
+            <div class="table-responsive d-none d-lg-block" *ngIf="!isLoadingCountries">
+              <table class="table table-hover country-table">
+                <thead>
+                  <tr>
+                    <th class="text-center">ID</th>
+                    <th>Nomi</th>
+                    <th class="text-center">Prefiks</th>
+                    <th class="text-center">Hisoblagich</th>
+                    <th class="text-center">Til</th>
+                    <th>Kompaniya</th>
+                    <th class="text-center">Partiyalar</th>
+                    <th class="text-center">Tariflar</th>
+                    <th class="text-center" *ngIf="canManageCountries">Amallar</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let country of countries; trackBy: trackCountry">
+                    <td class="text-center country-id">{{ country.id }}</td>
+                    <td>
+                      <div class="country-name">{{ country.name }}</div>
+                      <div class="country-sub" *ngIf="country.name_ru">{{ country.name_ru }}</div>
+                    </td>
+                    <td class="text-center">
+                      <span class="prefix-badge" *ngIf="country.prefix; else noValue">
+                        {{ country.prefix }}
+                        <i class="material-icons lock-icon" *ngIf="country.numbering_locked"
+                          title="Partiyalar ochilgan — prefiks va hisoblagich qulflangan">lock</i>
+                      </span>
+                    </td>
+                    <td class="text-center">
+                      <div class="counter-value">
+                        {{ country.counter || 0 }}
+                        <i class="material-icons lock-icon" *ngIf="country.numbering_locked"
+                          title="Partiyalar ochilgan — hisoblagich qulflangan">lock</i>
+                      </div>
+                      <div class="country-sub" *ngIf="country.next_consignment_name">
+                        Keyingi: {{ country.next_consignment_name }}
+                      </div>
+                    </td>
+                    <td class="text-center">
+                      <span class="lang-chip" [class.lang-auto]="!country.lang_code">{{ country.lang_label }}</span>
+                    </td>
+                    <td>
+                      <ng-container *ngIf="country.company || country.company_street || country.company_index; else noValue">
+                        <div class="country-name" *ngIf="country.company">{{ country.company }}</div>
+                        <div class="country-sub" *ngIf="country.company_street">{{ country.company_street }}</div>
+                        <div class="country-sub" *ngIf="country.company_index">Indeks: {{ country.company_index }}</div>
+                      </ng-container>
+                    </td>
+                    <td class="text-center">
+                      <span class="count-pill">{{ country.consignment_count || 0 }}</span>
+                    </td>
+                    <td class="text-center">
+                      <span class="tariff-warn" *ngIf="!country.tariff_count"
+                        title="Faol tarif yo'q — bu mamlakat yuklari standart 9.5$/kg bo'yicha hisoblanadi">
+                        <i class="material-icons">warning</i> Tarif yo'q
+                      </span>
+                      <div class="type-mini-row" *ngIf="country.tariff_count">
+                        <span class="type-badge type-mini" *ngFor="let t of country.tariff_types"
+                          [ngClass]="getTypeBadgeClass(t)">{{ t }}</span>
+                      </div>
+                    </td>
+                    <td class="text-center" *ngIf="canManageCountries">
+                      <button class="btn btn-link btn-info btn-just-icon" (click)="openEditCountryModal(country)"
+                        title="Tahrirlash">
+                        <i class="material-icons">edit</i>
+                      </button>
+                    </td>
+                  </tr>
+
+                  <!-- Empty state -->
+                  <tr *ngIf="countries.length === 0">
+                    <td [attr.colspan]="canManageCountries ? 9 : 8" class="text-center py-4">
+                      <i class="material-icons empty-icon">public_off</i>
+                      <p class="empty-text">Mamlakatlar topilmadi</p>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Mobile/Tablet Card View -->
+            <div class="tariff-cards d-lg-none" *ngIf="!isLoadingCountries">
+              <div *ngIf="countries.length === 0" class="text-center py-4">
+                <i class="material-icons empty-icon">public_off</i>
+                <p class="empty-text">Mamlakatlar topilmadi</p>
+              </div>
+
+              <div class="tariff-card" *ngFor="let country of countries; trackBy: trackCountry">
+                <div class="tariff-card-header">
+                  <div class="tariff-card-title">
+                    <span class="tariff-number">#{{ country.id }}</span>
+                    <span class="country-badge">{{ country.name }}</span>
+                  </div>
+                  <span class="prefix-badge" *ngIf="country.prefix">
+                    {{ country.prefix }}
+                    <i class="material-icons lock-icon" *ngIf="country.numbering_locked">lock</i>
+                  </span>
+                </div>
+
+                <div class="tariff-card-body">
+                  <div class="tariff-info-row">
+                    <div class="tariff-info-item">
+                      <span class="info-label">Ruscha nomi</span>
+                      <span>{{ country.name_ru || '—' }}</span>
+                    </div>
+                    <div class="tariff-info-item">
+                      <span class="info-label">Til</span>
+                      <span class="lang-chip" [class.lang-auto]="!country.lang_code">{{ country.lang_label }}</span>
+                    </div>
+                  </div>
+                  <div class="tariff-info-row">
+                    <div class="tariff-info-item">
+                      <span class="info-label">Hisoblagich</span>
+                      <span>{{ country.counter || 0 }}</span>
+                      <small class="text-muted" *ngIf="country.next_consignment_name">Keyingi: {{ country.next_consignment_name }}</small>
+                    </div>
+                    <div class="tariff-info-item">
+                      <span class="info-label">Partiyalar</span>
+                      <span class="count-pill">{{ country.consignment_count || 0 }}</span>
+                    </div>
+                  </div>
+                  <div class="tariff-info-row">
+                    <div class="tariff-info-item full-width">
+                      <span class="info-label">Kompaniya</span>
+                      <span>{{ country.company || '—' }}</span>
+                      <small class="text-muted" *ngIf="country.company_street">{{ country.company_street }}</small>
+                      <small class="text-muted" *ngIf="country.company_index">Indeks: {{ country.company_index }}</small>
+                    </div>
+                  </div>
+                  <div class="tariff-info-row">
+                    <div class="tariff-info-item full-width">
+                      <span class="info-label">Tariflar</span>
+                      <span class="tariff-warn" *ngIf="!country.tariff_count">
+                        <i class="material-icons">warning</i> Tarif yo'q — standart 9.5$/kg
+                      </span>
+                      <div class="type-mini-row" *ngIf="country.tariff_count">
+                        <span class="type-badge type-mini" *ngFor="let t of country.tariff_types"
+                          [ngClass]="getTypeBadgeClass(t)">{{ t }}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="tariff-card-actions" *ngIf="canManageCountries">
+                  <button class="btn btn-info btn-sm" (click)="openEditCountryModal(country)">
+                    <i class="material-icons">edit</i>
+                    Tahrirlash
+                  </button>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -286,6 +480,117 @@
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Bekor qilish</button>
         <button type="button" class="btn btn-primary" (click)="saveTariff()">
           {{ isEditing ? 'Saqlash' : 'Qo\'shish' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Country Add/Edit Modal -->
+<div class="modal fade" id="countryModal" tabindex="-1" role="dialog" aria-labelledby="countryModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="countryModalLabel">
+          {{ isEditingCountry ? 'Mamlakatni Tahrirlash' : 'Yangi Mamlakat Qo\'shish' }}
+        </h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label>Nomi <span class="req">*</span></label>
+                <input type="text" class="form-control" [(ngModel)]="countryForm.name" name="countryName"
+                  maxlength="100" placeholder="masalan, South Korea">
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label>Ruscha nomi</label>
+                <input type="text" class="form-control" [(ngModel)]="countryForm.name_ru" name="countryNameRu"
+                  maxlength="100" placeholder="например, Южная Корея">
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label>Prefiks <span class="req" *ngIf="!numberingLocked">*</span></label>
+                <input #prefixInput type="text" class="form-control prefix-input" name="countryPrefix"
+                  [value]="countryForm.prefix" (input)="onPrefixInput(prefixInput)" [disabled]="numberingLocked"
+                  maxlength="5" autocomplete="off" placeholder="KR">
+                <small class="text-muted" *ngIf="!numberingLocked">
+                  2–5 ta lotin bosh harf. Partiya nomlari shu bilan boshlanadi. Birinchi partiya ochilgach o'zgartirib bo'lmaydi.
+                </small>
+                <small class="lock-hint" *ngIf="numberingLocked">
+                  <i class="material-icons">lock</i>
+                  Bu mamlakatda {{ editingCountry?.consignment_count }} ta partiya ochilgan — prefiksni o'zgartirib bo'lmaydi.
+                </small>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label>Hisoblagich</label>
+                <input *ngIf="!numberingLocked" type="number" class="form-control" [(ngModel)]="countryForm.counter"
+                  name="countryCounter" min="0" step="1">
+                <input *ngIf="numberingLocked" type="text" class="form-control" name="countryCounterReadonly"
+                  [value]="editingCountry?.counter || 0" disabled>
+                <small class="text-muted" *ngIf="!numberingLocked">
+                  Keyingi partiya: <strong>{{ nextConsignmentPreview }}</strong>. Birinchi partiya ochilgach o'zgartirib bo'lmaydi.
+                </small>
+                <small class="lock-hint" *ngIf="numberingLocked">
+                  <i class="material-icons">lock</i>
+                  Partiyalar ochilgan — o'zgartirib bo'lmaydi. Keyingi partiya: <strong>{{ editingCountry?.next_consignment_name }}</strong>
+                </small>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Mahsulot nomlari tili (tarjima uchun)</label>
+            <select class="form-control" [(ngModel)]="countryForm.lang_code" name="countryLang">
+              <option [ngValue]="''">Avto aniqlash</option>
+              <option *ngFor="let opt of countryLangChoices" [ngValue]="opt.code">{{ opt.label }}</option>
+            </select>
+            <small class="text-muted">
+              Ombor xodimlari kiritgan mahsulot nomi shu tildan rus tiliga tarjima qilinadi.
+            </small>
+          </div>
+
+          <div class="form-group">
+            <label>Kompaniya</label>
+            <input type="text" class="form-control" [(ngModel)]="countryForm.company" name="countryCompany"
+              maxlength="255">
+          </div>
+
+          <div class="row">
+            <div class="col-md-8">
+              <div class="form-group">
+                <label>Kompaniya manzili</label>
+                <input type="text" class="form-control" [(ngModel)]="countryForm.company_street"
+                  name="countryStreet" maxlength="255">
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-group">
+                <label>Pochta indeksi</label>
+                <input type="text" class="form-control" [(ngModel)]="countryForm.company_index" name="countryIndex"
+                  maxlength="50">
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Bekor qilish</button>
+        <button type="button" class="btn btn-primary" (click)="saveCountry()" [disabled]="isSavingCountry">
+          {{ isSavingCountry ? 'Saqlanmoqda...' : (isEditingCountry ? 'Saqlash' : 'Qo\'shish') }}
         </button>
       </div>
     </div>

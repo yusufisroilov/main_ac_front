@@ -10,11 +10,46 @@
             <h4 class="card-title">Consignments</h4>
           </div>
           <div class="card-body">
-            <div class="row">
+            <!-- One toolbar: merge action on the left, filters on the right.
+                 Filters are managers-only (CHINASTAFF keeps the page as it was);
+                 the two *ngIf blocks are independent so either can be absent. -->
+            <div class="cl-toolbar">
               <button *ngIf="!showOnlyManagers631" (click)="joinConsignments()" mat-raised-button type="button"
-                class="col-sm-3 col-lg-2 btn btn-danger">
+                class="btn btn-danger cl-merge-btn">
                 Partiyalarni birlashtirish<i class="material-icons">join_inner</i>
               </button>
+
+              <div *ngIf="showOnlyForManagers" class="cl-filters">
+                <button type="button" class="cl-chip"
+                        [class.active]="!selectedCountry"
+                        (click)="clearCountry()"
+                        title="Barcha yo'nalishlar">
+                  Hammasi <span class="cl-count">{{ consignments.length }}</span>
+                </button>
+                <button type="button" class="cl-chip" *ngFor="let opt of countryOptions"
+                        [class.active]="selectedCountry === opt.value"
+                        (click)="selectCountry(opt.value)"
+                        [title]="opt.label">
+                  {{ opt.label }} <span class="cl-count">{{ opt.count }}</span>
+                </button>
+
+                <span class="cl-sep"></span>
+
+                <button type="button" class="cl-chip" *ngFor="let opt of typeOptions"
+                        [class.active]="selectedType === opt.value"
+                        [style.background]="selectedType === opt.value ? typeColor(opt.value) : null"
+                        [style.borderColor]="selectedType === opt.value ? typeColor(opt.value) : null"
+                        (click)="selectType(opt.value)"
+                        [title]="opt.label">
+                  {{ opt.label }} <span class="cl-count">{{ opt.count }}</span>
+                </button>
+
+                <button type="button" class="cl-clear" *ngIf="hasActiveFilters"
+                        (click)="clearFilters()"
+                        [title]="filteredConsignments.length + ' / ' + consignments.length">
+                  <i class="material-icons">close</i>{{ filteredConsignments.length }}/{{ consignments.length }}
+                </button>
+              </div>
             </div>
 
             <div class="table-responsive">
@@ -36,7 +71,7 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr *ngFor="let consignment of consignments">
+                  <tr *ngFor="let consignment of filteredConsignments">
                     <td class="text-center">
                       <a *ngIf="showOnlyForManagers; else nameOnly"
                          (click)="editConsignmentDates(consignment)"

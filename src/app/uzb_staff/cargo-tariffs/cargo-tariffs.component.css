@@ -587,3 +587,90 @@
   padding-top: 2rem;
   padding-bottom: 2rem;
 }
+
+/* ─── Countries section ─────────────────────────────────────────────────── */
+.country-section .card-category {
+  margin: 2px 0 0;
+  font-size: 12px;
+  opacity: 0.8;
+}
+.country-section .country-table td { vertical-align: middle; }
+.country-section .country-id { color: #8b97a6; font-weight: 600; }
+.country-section .country-name { font-weight: 600; color: #2d3748; }
+.country-section .country-sub { font-size: 12px; color: #8b97a6; line-height: 1.4; }
+.country-section .prefix-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 3px 10px;
+  border-radius: 6px;
+  background: #edf2f7;
+  color: #2d3748;
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+.country-section .lock-icon { font-size: 14px; color: #a0aec0; }
+.country-section .counter-value { font-weight: 700; color: #2d3748; }
+.country-section .lang-chip {
+  display: inline-block;
+  padding: 3px 9px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  background: #e6fffa;
+  color: #2c7a7b;
+  white-space: nowrap;
+}
+.country-section .lang-chip.lang-auto { background: #f7fafc; color: #a0aec0; }
+.country-section .count-pill {
+  display: inline-block;
+  min-width: 28px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: #ebf4ff;
+  color: #3b5bdb;
+  font-weight: 700;
+  font-size: 12px;
+}
+.country-section .tariff-warn {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 3px 9px;
+  border-radius: 12px;
+  background: #fff5f5;
+  color: #c53030;
+  border: 1px solid #fed7d7;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: help;
+}
+.country-section .tariff-warn .material-icons { font-size: 14px; }
+.country-section .type-mini-row {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  justify-content: center;
+}
+.country-section .type-mini { padding: 2px 8px; font-size: 11px; }
+.country-section .tariff-info-item small { display: block; }
+
+/* Country modal */
+#countryModal .req { color: #e53e3e; }
+#countryModal .prefix-input {
+  text-transform: uppercase;
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+#countryModal .lock-hint {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 4px;
+  font-size: 12px;
+  color: #b7791f;
+}
+#countryModal .lock-hint .material-icons { font-size: 14px; }

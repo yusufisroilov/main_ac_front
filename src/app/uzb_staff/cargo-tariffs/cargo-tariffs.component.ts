@@ -2,6 +2,7 @@ import { Component, OnInit } from "@angular/core";
 import { HttpClient, HttpHeaders } from "@angular/common/http";
 import swal from "sweetalert2";
 import { GlobalVars } from "src/app/global-vars";
+import { showBackendError } from "src/app/shared/backend-error";
 
 interface CargoTariff {
   id: number;
@@ -21,7 +22,21 @@ interface CargoTariff {
 interface Country {
   id: number;
   name: string;
-  name_ru: string;
+  name_ru: string | null;
+  prefix: string | null;
+  counter: number | null;
+  company: string | null;
+  company_street: string | null;
+  company_index: string | null;
+  lang_code: string | null;
+  // Computed by GET /countries
+  consignment_count?: number;
+  numbering_locked?: boolean; // prefix + counter locked (country has consignments)
+  tariff_count?: number;
+  tariff_types?: string[];
+  next_consignment_name?: string | null;
+  // Resolved client-side once, so the template doesn't call a function per row
+  lang_label?: string;
 }
 
 @Component({
@@ -52,6 +67,30 @@ export class CargoTariffsComponent implements OnInit {
   // Tariff types
   tariffTypes: string[] = ["AVIA", "AVTO", "POTCHA"];
 
+  // ─── Countries ─────────────────────────────────────────────────────────
+  // The page is MANAGER/OWNER-only (ManagerOwnerAuthGuardService); this flag
+  // is a second, cheap line of defence so edit controls never render for
+  // anyone else.
+  canManageCountries: boolean = ["MANAGER", "OWNER"].includes(
+    localStorage.getItem("role") || "",
+  );
+  isLoadingCountries: boolean = false;
+  isSavingCountry: boolean = false;
+  isEditingCountry: boolean = false;
+  editingCountry: Country | null = null;
+  countryForm = this.emptyCountryForm();
+  countryLangChoices: { code: string; label: string }[] = [];
+
+  /** Product-name source languages offered for translation into Russian. */
+  readonly langOptions: { code: string; label: string }[] = [
+    { code: "zh", label: "Xitoy tili (zh)" },
+    { code: "ko", label: "Koreys tili (ko)" },
+    { code: "tr", label: "Turk tili (tr)" },
+    { code: "en", label: "Ingliz tili (en)" },
+    { code: "ja", label: "Yapon tili (ja)" },
+    { code: "de", label: "Nemis tili (de)" },
+  ];
+
   constructor(private http: HttpClient) {}
 
   ngOnInit() {
@@ -67,19 +106,24 @@ export class CargoTariffsComponent implements OnInit {
   }
 
   loadCountries() {
-    // Load countries from existing endpoint
+    this.isLoadingCountries = true;
     this.http
-      .get<any>(`${GlobalVars.baseUrl}/consignments/countries`, {
+      .get<any>(`${GlobalVars.baseUrl}/countries`, {
         headers: this.getHeaders(),
       })
       .subscribe(
         (res) => {
-          if (res.data && res.data.countries) {
-            this.countries = res.data.countries;
-          }
+          this.isLoadingCountries = false;
+          const list: Country[] = res?.data?.countries || [];
+          this.countries = list.map((c) => ({
+            ...c,
+            lang_label: this.langLabel(c.lang_code),
+          }));
         },
         (err) => {
+          this.isLoadingCountries = false;
           console.error("Error loading countries:", err);
+          showBackendError(err, { fallback: "Mamlakatlarni yuklashda xatolik" });
         },
       );
   }
@@ -258,6 +302,170 @@ export class CargoTariffsComponent implements OnInit {
             );
         }
       });
+  }
+
+  // ─── Country add / edit ────────────────────────────────────────────────
+
+  private emptyCountryForm() {
+    return {
+      name: "",
+      name_ru: "",
+      prefix: "",
+      counter: 0 as number | string,
+      lang_code: "",
+      company: "",
+      company_street: "",
+      company_index: "",
+    };
+  }
+
+  /**
+   * Prefix and counter are editable on create and while the country has no
+   * consignments; both lock after the first one (also enforced server-side).
+   */
+  get numberingLocked(): boolean {
+    return this.isEditingCountry && !!this.editingCountry?.numbering_locked;
+  }
+
+  /** Name the next consignment would get, previewed while creating a country. */
+  get nextConsignmentPreview(): string {
+    const counter = Number(this.countryForm.counter);
+    const next = Number.isInteger(counter) && counter >= 0 ? counter + 1 : 1;
+    return `${this.countryForm.prefix || "??"}${next}`;
+  }
+
+  langLabel(code: string | null | undefined): string {
+    if (!code) return "Avto aniqlash";
+    const opt = this.langOptions.find((o) => o.code === code);
+    return opt ? opt.label : code;
+  }
+
+  /** Language dropdown, keeping a stored code that isn't in the standard list. */
+  private buildLangChoices(current: string | null | undefined) {
+    const choices = [...this.langOptions];
+    if (current && !choices.some((o) => o.code === current)) {
+      choices.unshift({ code: current, label: current });
+    }
+    return choices;
+  }
+
+  openAddCountryModal() {
+    if (!this.canManageCountries) return;
+    this.isEditingCountry = false;
+    this.editingCountry = null;
+    this.countryForm = this.emptyCountryForm();
+    this.countryLangChoices = this.buildLangChoices(null);
+    // @ts-ignore
+    $("#countryModal").modal("show");
+  }
+
+  openEditCountryModal(country: Country) {
+    if (!this.canManageCountries) return;
+    this.isEditingCountry = true;
+    this.editingCountry = country;
+    this.countryForm = {
+      name: country.name || "",
+      name_ru: country.name_ru || "",
+      prefix: country.prefix || "",
+      counter: country.counter || 0,
+      lang_code: country.lang_code || "",
+      company: country.company || "",
+      company_street: country.company_street || "",
+      company_index: country.company_index || "",
+    };
+    this.countryLangChoices = this.buildLangChoices(country.lang_code);
+    // @ts-ignore
+    $("#countryModal").modal("show");
+  }
+
+  /** Uppercase Latin letters only, max 5 — normalised as the user types. */
+  onPrefixInput(input: HTMLInputElement) {
+    const value = (input.value || "")
+      .toUpperCase()
+      .replace(/[^A-Z]/g, "")
+      .slice(0, 5);
+    input.value = value;
+    this.countryForm.prefix = value;
+  }
+
+  saveCountry() {
+    if (this.isSavingCountry || !this.canManageCountries) return;
+
+    const f = this.countryForm;
+    const name = (f.name || "").trim();
+    if (!name) {
+      swal.fire("Diqqat", "Mamlakat nomini kiriting", "warning");
+      return;
+    }
+
+    const payload: any = {
+      name,
+      name_ru: f.name_ru,
+      lang_code: f.lang_code || null,
+      company: f.company,
+      company_street: f.company_street,
+      company_index: f.company_index,
+    };
+
+    // Locked prefix/counter aren't sent at all, so a legacy value that doesn't
+    // match today's format can't block editing the other fields.
+    if (!this.numberingLocked) {
+      const prefix = (f.prefix || "").trim().toUpperCase();
+      if (!/^[A-Z]{2,5}$/.test(prefix)) {
+        swal.fire(
+          "Diqqat",
+          "Prefiks 2–5 ta lotin bosh harfidan iborat bo'lishi kerak (masalan, CU, KR)",
+          "warning",
+        );
+        return;
+      }
+      payload.prefix = prefix;
+    }
+
+    // Counter is sent on create and while unlocked; never once consignments exist.
+    if (!this.numberingLocked) {
+      const counter = Number(f.counter);
+      if (f.counter === "" || !Number.isInteger(counter) || counter < 0) {
+        swal.fire("Diqqat", "Hisoblagich 0 yoki musbat butun son bo'lishi kerak", "warning");
+        return;
+      }
+      payload.counter = counter;
+    }
+
+    const editingId =
+      this.isEditingCountry && this.editingCountry ? this.editingCountry.id : null;
+    const request = editingId
+      ? this.http.put<any>(`${GlobalVars.baseUrl}/countries/${editingId}`, payload, {
+          headers: this.getHeaders(),
+        })
+      : this.http.post<any>(`${GlobalVars.baseUrl}/countries`, payload, {
+          headers: this.getHeaders(),
+        });
+
+    this.isSavingCountry = true;
+    request.subscribe(
+      () => {
+        this.isSavingCountry = false;
+        // @ts-ignore
+        $("#countryModal").modal("hide");
+        swal.fire(
+          "Muvaffaqiyat!",
+          editingId ? "Mamlakat yangilandi" : "Yangi mamlakat qo'shildi",
+          "success",
+        );
+        this.loadCountries();
+        // Tariff rows show the country name, so refresh them too.
+        this.loadTariffs();
+      },
+      (err) => {
+        this.isSavingCountry = false;
+        showBackendError(err, { fallback: "Mamlakatni saqlashda xatolik" });
+      },
+    );
+  }
+
+  trackCountry(_index: number, country: Country): number {
+    return country.id;
   }
 
   getCountryName(countryId: number): string {

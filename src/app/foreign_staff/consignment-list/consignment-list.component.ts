@@ -23,7 +23,129 @@ declare const $: any;
 })
 export class ConsignmentListComponent implements OnInit {
   public tableData1: TableData;
-  consignments: any[];
+  // ─── Consignment list + filters ────────────────────────────────────────
+  //
+  // `consignments` is a getter/setter over `_consignments`. The list is
+  // reloaded from ~10 different places (after open, close, edit, refinance,
+  // merge, …) and every one of them just assigns `this.consignments = ...`.
+  // Routing those through a setter means the filters re-apply automatically
+  // after any reload, with no change to the call sites.
+  private _consignments: any[] = [];
+  get consignments(): any[] {
+    return this._consignments;
+  }
+  set consignments(value: any[]) {
+    this._consignments = value || [];
+    this.rebuildFilterOptions();
+    this.applyFilters();
+  }
+
+  /** What the table actually renders. */
+  filteredConsignments: any[] = [];
+
+  // Selected filters. "" = no restriction.
+  selectedCountry: string = "";
+  selectedType: string = "";
+
+  // Chip options, derived from the loaded data — never hard-coded, so a new
+  // warehouse (Turkey, …) or a new shipping type appears on its own.
+  countryOptions: { value: string; label: string; count: number }[] = [];
+  typeOptions: { value: string; label: string; count: number }[] = [];
+
+  /** Shipping type of a row, tolerant of older rows without `shipping_type`. */
+  private typeOf(c: any): string {
+    if (c?.shipping_type) return c.shipping_type;
+    if (c?.is_avto_pochta || (c?.isHongKong && c?.country_id === 2))
+      return "AVTO POCHTA";
+    return c?.isHongKong ? "AVTO" : "AVIA";
+  }
+
+  /** Country label of a row; falls back to the id if the name is missing. */
+  private countryOf(c: any): string {
+    return c?.country_name || (c?.country_id ? `#${c.country_id}` : "—");
+  }
+
+  private rebuildFilterOptions(): void {
+    const countries = new Map<string, number>();
+    const types = new Map<string, number>();
+
+    for (const c of this._consignments) {
+      const country = this.countryOf(c);
+      const type = this.typeOf(c);
+      countries.set(country, (countries.get(country) || 0) + 1);
+      types.set(type, (types.get(type) || 0) + 1);
+    }
+
+    const toOptions = (m: Map<string, number>) =>
+      Array.from(m.entries())
+        .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+        .map(([value, count]) => ({ value, label: value, count }));
+
+    this.countryOptions = toOptions(countries);
+    this.typeOptions = toOptions(types);
+
+    // A selection that no longer exists in the data would hide every row with
+    // no way back, so drop it.
+    if (
+      this.selectedCountry &&
+      !this.countryOptions.some((o) => o.value === this.selectedCountry)
+    ) {
+      this.selectedCountry = "";
+    }
+    if (
+      this.selectedType &&
+      !this.typeOptions.some((o) => o.value === this.selectedType)
+    ) {
+      this.selectedType = "";
+    }
+  }
+
+  applyFilters(): void {
+    this.filteredConsignments = this._consignments.filter((c) => {
+      if (this.selectedCountry && this.countryOf(c) !== this.selectedCountry)
+        return false;
+      if (this.selectedType && this.typeOf(c) !== this.selectedType)
+        return false;
+      return true;
+    });
+  }
+
+  selectCountry(value: string): void {
+    this.selectedCountry = this.selectedCountry === value ? "" : value;
+    this.applyFilters();
+  }
+
+  selectType(value: string): void {
+    this.selectedType = this.selectedType === value ? "" : value;
+    this.applyFilters();
+  }
+
+  clearCountry(): void {
+    this.selectedCountry = "";
+    this.applyFilters();
+  }
+
+  clearType(): void {
+    this.selectedType = "";
+    this.applyFilters();
+  }
+
+  clearFilters(): void {
+    this.selectedCountry = "";
+    this.selectedType = "";
+    this.applyFilters();
+  }
+
+  get hasActiveFilters(): boolean {
+    return !!(this.selectedCountry || this.selectedType);
+  }
+
+  /** Colour for a shipping-type chip — matches the badges used in the table. */
+  typeColor(type: string): string {
+    if (type === "AVTO POCHTA") return "#7C3AED";
+    if (type === "AVTO") return "#E67E22";
+    return "#2196F3";
+  }
   options: any;
   showOnlyManagers: boolean;
   showOnlyManagers631: boolean = false;

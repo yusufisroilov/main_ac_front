@@ -259,3 +259,81 @@
   background: rgba(255,255,255,0.25);
   color: #fff;
 }
+
+/* ─── Toolbar: merge action + compact filters on one line ───────────────── */
+.cl-toolbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.cl-merge-btn {
+  flex: 0 0 auto;
+  margin: 0 !important;
+}
+/* Filters sit to the right of the action and take the remaining width. */
+.cl-filters {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-left: auto;
+}
+.cl-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.35;
+  color: #4a5663;
+  background: #fff;
+  border: 1px solid #dfe5ec;
+  border-radius: 14px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+.cl-chip:hover { border-color: #aab6c4; }
+.cl-chip.active {
+  color: #fff;
+  background: #1976d2;
+  border-color: #1976d2;
+}
+.cl-count {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 0 5px;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.07);
+}
+.cl-chip.active .cl-count { background: rgba(255, 255, 255, 0.28); }
+/* Divider between the country group and the type group. */
+.cl-sep {
+  width: 1px;
+  height: 18px;
+  margin: 0 3px;
+  background: #dfe5ec;
+}
+.cl-clear {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 4px 9px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #d3455b;
+  background: #fdf3f4;
+  border: 1px solid #f3c7ce;
+  border-radius: 14px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.cl-clear:hover { background: #fbe7ea; }
+.cl-clear .material-icons { font-size: 13px; }
+/* Narrow screens: filters drop to their own line, aligned left. */
+@media (max-width: 991px) {
+  .cl-filters { margin-left: 0; width: 100%; }
+}
