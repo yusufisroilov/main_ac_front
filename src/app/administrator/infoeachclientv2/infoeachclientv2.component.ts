@@ -1,6 +1,6 @@
 import { TableData } from "src/app/md/md-table/md-table.component";
 import { ChangeDetectorRef, Component, OnInit } from "@angular/core";
-import { Router } from "@angular/router";
+import { ActivatedRoute, Router } from "@angular/router";
 import { GlobalVars, StatusOfOrder, TypesOfOrder } from "src/app/global-vars";
 import swal from "sweetalert2";
 import { HttpClient, HttpHeaders } from "@angular/common/http";
@@ -124,6 +124,7 @@ export class Infoeachclientv2Component implements OnInit {
     private changeDetectorRef: ChangeDetectorRef,
     private httpClient: HttpClient,
     private router: Router,
+    private route: ActivatedRoute,
   ) {
     this.orderTypeText = [];
     this.orderStatusText = [];
@@ -170,6 +171,14 @@ export class Infoeachclientv2Component implements OnInit {
 
     this.loadRegions();
     this.loadCashAccounts();
+
+    // Arriving from somewhere that already knows which client this is -- the
+    // Telegram chat panel, for one -- so open on them instead of making the
+    // staff member search for a client they just had on screen.
+    const linkedId = Number(this.route.snapshot.queryParamMap.get("customer_id"));
+    if (linkedId) {
+      this.getListOfPartyBoxes(linkedId);
+    }
   }
 
   // ─── Cash Accounts (V2) ───

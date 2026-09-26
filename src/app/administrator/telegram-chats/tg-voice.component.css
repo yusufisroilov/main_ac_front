@@ -1,0 +1,123 @@
+/* Voice message player.
+   Sized to sit inside a chat bubble rather than stretch it: the native
+   <audio controls> widget is roughly twice as wide and looks different in
+   every browser. */
+
+.v-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 230px;
+  max-width: 280px;
+  padding: 2px 0;
+}
+
+.v-play {
+  flex: 0 0 auto;
+  width: 38px;
+  height: 38px;
+  border: 0;
+  border-radius: 50%;
+  background: #3390ec;
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, transform 0.08s;
+}
+.v-play:hover {
+  background: #2481da;
+}
+.v-play:active {
+  transform: scale(0.93);
+}
+.v-play i {
+  font-size: 22px;
+}
+/* Outgoing bubbles are green, so the control follows them. */
+.v-wrap.out .v-play {
+  background: #4fae4e;
+}
+.v-wrap.out .v-play:hover {
+  background: #429641;
+}
+
+.v-body {
+  flex: 1;
+  min-width: 0;
+}
+
+/* ── waveform ── */
+
+.v-bars {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  height: 26px;
+  cursor: pointer;
+}
+.v-bar {
+  flex: 1;
+  min-width: 2px;
+  min-height: 3px;
+  border-radius: 1.5px;
+  background: #c3ccd5;
+  transition: background 0.1s;
+}
+/* Everything before the playhead, so progress is readable at a glance without
+   watching the clock. */
+.v-bar.played {
+  background: #3390ec;
+}
+.v-wrap.out .v-bar {
+  background: #b5d4ae;
+}
+.v-wrap.out .v-bar.played {
+  background: #4fae4e;
+}
+.v-bars:hover .v-bar:not(.played) {
+  background: #aeb9c4;
+}
+.v-wrap.out .v-bars:hover .v-bar:not(.played) {
+  background: #a3c79b;
+}
+
+/* ── time + speed ── */
+
+.v-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 3px;
+}
+.v-time {
+  font-size: 11.5px;
+  color: #8a95a1;
+  font-variant-numeric: tabular-nums;
+}
+.v-wrap.out .v-time {
+  color: #6fa672;
+}
+
+.v-speed {
+  border: 0;
+  background: rgba(0, 0, 0, 0.06);
+  color: #64707d;
+  border-radius: 9px;
+  padding: 1px 7px;
+  font-size: 10.5px;
+  font-weight: 600;
+  cursor: pointer;
+  line-height: 1.5;
+}
+.v-speed:hover {
+  background: rgba(0, 0, 0, 0.11);
+}
+.v-speed.on {
+  background: #3390ec;
+  color: #fff;
+}
+.v-wrap.out .v-speed.on {
+  background: #4fae4e;
+}

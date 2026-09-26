@@ -178,6 +178,12 @@ export const EmployeeROUTE: RouteInfo[] = [
 
 export const adminROUTES: RouteInfo[] = [
   {
+    path: "/uzm/telegram-chats",
+    title: "Telegram Suhbatlar",
+    type: "link",
+    icontype: "forum",
+  },
+  {
     path: "/dashboard",
     title: "Dashboard",
     type: "link",
@@ -293,6 +299,24 @@ export const chinaStaffROUTES: RouteInfo[] = [
 ];
 
 export const managerROUTES: RouteInfo[] = [
+  {
+    path: "/uzm/telegram-faq",
+    title: "AI Javoblari",
+    type: "link",
+    icontype: "smart_toy",
+  },
+  {
+    path: "/uzm/telegram-analytics",
+    title: "Telegram Tahlil",
+    type: "link",
+    icontype: "query_stats",
+  },
+  {
+    path: "/uzm/telegram-chats",
+    title: "Telegram Suhbatlar",
+    type: "link",
+    icontype: "forum",
+  },
   {
     path: "/dashboard",
     title: "Dashboard",
@@ -577,6 +601,24 @@ export const accountantROUTES: RouteInfo[] = [
 ];
 
 export const ownerROUTES: RouteInfo[] = [
+  {
+    path: "/uzm/telegram-faq",
+    title: "AI Javoblari",
+    type: "link",
+    icontype: "smart_toy",
+  },
+  {
+    path: "/uzm/telegram-analytics",
+    title: "Telegram Tahlil",
+    type: "link",
+    icontype: "query_stats",
+  },
+  {
+    path: "/uzm/telegram-chats",
+    title: "Telegram Suhbatlar",
+    type: "link",
+    icontype: "forum",
+  },
   {
     path: "/oa/dashboard",
     title: "Dashboard",

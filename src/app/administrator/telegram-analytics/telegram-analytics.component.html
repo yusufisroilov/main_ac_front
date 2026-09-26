@@ -1,0 +1,263 @@
+<div class="main-content">
+  <div class="container-fluid">
+
+    <div class="ta-head">
+      <div>
+        <h4>Javob berish tezligi</h4>
+        <small *ngIf="report">
+          Ish vaqti {{ report.working_hours.start }}:00–{{ report.working_hours.end }}:00
+          · {{ report.working_hours.timezone }}
+        </small>
+      </div>
+      <div class="ta-ranges">
+        <button type="button" *ngFor="let r of ranges"
+                [class.on]="days === r.days" (click)="setRange(r.days)">
+          {{ r.label }}
+        </button>
+      </div>
+    </div>
+
+    <div class="ta-tabs">
+      <button type="button" [class.on]="tab === 'speed'" (click)="setTab('speed')">
+        Javob tezligi
+      </button>
+      <button type="button" [class.on]="tab === 'topics'" (click)="setTab('topics')">
+        So&#8216;ralgan mavzular
+      </button>
+    </div>
+
+    <div class="ta-loading" *ngIf="loading && tab === 'speed'">Yuklanmoqda…</div>
+
+    <ng-container *ngIf="tab === 'speed' && !loading && report">
+
+      <!-- Zero working time everywhere usually means the configured hours are
+           wrong, not that the team is instant. Said out loud rather than left
+           to look like a bug. -->
+      <div class="ta-warn" *ngIf="trafficOutsideHours">
+        <i class="material-icons">schedule</i>
+        <span>
+          Murojaatlarning deyarli barchasi belgilangan ish vaqtidan tashqarida
+          kelgan, shuning uchun “ish vaqti” ustuni 0 ko‘rsatmoqda.
+          <b>SUPPORT_HOURS_START / SUPPORT_HOURS_END</b> ni haqiqiy ish vaqtiga
+          moslang.
+        </span>
+      </div>
+
+      <div class="ta-cards">
+        <div class="ta-card">
+          <span class="lbl">Kutishlar</span>
+          <span class="val">{{ report.totals.turns }}</span>
+          <span class="sub">mijoz javob kutgan holat</span>
+        </div>
+
+        <!-- The headline number: someone wrote and nobody came back. -->
+        <div class="ta-card danger" [class.ok]="report.totals.unanswered === 0">
+          <span class="lbl">Javobsiz</span>
+          <span class="val">{{ report.totals.unanswered }}</span>
+          <span class="sub">{{ percent(report.totals.unanswered_rate) }} murojaatlardan</span>
+        </div>
+
+        <div class="ta-card">
+          <span class="lbl">Median (ish vaqti)</span>
+          <span class="val">{{ duration(report.totals.median_working_seconds) }}</span>
+          <span class="sub">yarmi shundan tez javob oldi</span>
+        </div>
+
+        <div class="ta-card">
+          <span class="lbl">P90 (ish vaqti)</span>
+          <span class="val">{{ duration(report.totals.p90_working_seconds) }}</span>
+          <span class="sub">eng sekin 10% shundan uzoq kutdi</span>
+        </div>
+
+        <div class="ta-card muted">
+          <span class="lbl">Median (soat bo‘yicha)</span>
+          <span class="val">{{ duration(report.totals.median_wall_seconds) }}</span>
+          <span class="sub">mijoz his qilgan real vaqt</span>
+        </div>
+      </div>
+
+      <div class="ta-grid">
+
+        <section class="ta-box">
+          <h5>Mijoz turi bo‘yicha</h5>
+          <table class="ta-table">
+            <thead>
+              <tr><th></th><th>Kutish</th><th>Median</th><th>P90</th><th>Javobsiz</th></tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let row of segmentRows">
+                <td class="k">{{ row.key }}</td>
+                <td>{{ row.data.turns }}</td>
+                <td>{{ duration(row.data.median_working_seconds) }}</td>
+                <td>{{ duration(row.data.p90_working_seconds) }}</td>
+                <td [class.bad]="row.data.unanswered > 0">{{ row.data.unanswered }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section class="ta-box">
+          <h5>Xodimlar bo‘yicha</h5>
+          <table class="ta-table">
+            <thead>
+              <tr><th>Hisob</th><th>Kutish</th><th>Median</th><th>Javobsiz</th></tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let a of report.by_admin">
+                <td class="k">{{ a.admin }}</td>
+                <td>{{ a.turns }}</td>
+                <td>{{ duration(a.median_working_seconds) }}</td>
+                <td [class.bad]="a.unanswered > 0">{{ a.unanswered }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+      </div>
+
+      <!-- Where slowness is a staffing gap rather than a people problem. -->
+      <section class="ta-box">
+        <h5>Murojaatlar soat bo‘yicha <small>(Toshkent vaqti)</small></h5>
+        <div class="ta-hours">
+          <div class="ta-hour" *ngFor="let h of busiestHours">
+            <div class="ta-hour-bar-wrap">
+              <div class="ta-hour-bar" [class.closed]="!isOpenHour(h.hour)"
+                   [style.height.%]="hourBar(h)"
+                   [title]="h.turns + ' murojaat · median ' + duration(h.median_working_seconds)"></div>
+            </div>
+            <span class="ta-hour-n">{{ h.turns }}</span>
+            <span class="ta-hour-l" [class.closed]="!isOpenHour(h.hour)">{{ h.hour }}</span>
+          </div>
+        </div>
+        <div class="ta-legend">
+          <span><i class="dot open"></i> ish vaqti</span>
+          <span><i class="dot closed"></i> ish vaqtidan tashqari</span>
+        </div>
+      </section>
+
+      <section class="ta-box" *ngIf="report.attention.length">
+        <h5>E’tibor talab qiladi</h5>
+        <table class="ta-table">
+          <thead>
+            <tr><th>Suhbat</th><th>Yozgan vaqti</th><th>Kutgan (ish vaqti)</th><th>Holat</th></tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let a of report.attention">
+              <td class="k">
+                {{ a.name }}
+                <em *ngIf="a.is_first_contact">birinchi murojaat</em>
+              </td>
+              <td>{{ a.asked_at | date: 'dd.MM HH:mm' : '+0500' }}</td>
+              <td>{{ duration(a.working_seconds) }}</td>
+              <td>
+                <span class="ta-pill bad" *ngIf="!a.replied_at">Javobsiz</span>
+                <span class="ta-pill warn" *ngIf="a.replied_at">Sekin</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <div class="ta-empty" *ngIf="report.totals.turns === 0">
+        Bu davrda murojaat bo‘lmagan.
+      </div>
+    </ng-container>
+
+    <!-- ─────────────────────────  topics  ───────────────────────── -->
+    <ng-container *ngIf="tab === 'topics'">
+
+      <section class="ta-box ta-gen">
+        <div class="ta-gen-text">
+          <h5>Yangi tahlil</h5>
+          <!-- The sample size is shown before the button, not after: nobody
+               should pay to discover the sample was forty messages. -->
+          <p *ngIf="preview">
+            Tanlangan davrda <b>{{ preview.sample_size }}</b> ta savol topildi.
+            <span class="warn" *ngIf="!preview.is_meaningful">
+              Bu xulosa chiqarish uchun kam — natija taxmin bo‘ladi.
+            </span>
+          </p>
+          <p class="muted">
+            Tahlil sun’iy intellekt orqali bajariladi va har safar pul turadi,
+            shuning uchun faqat tugma bosilganda ishlaydi.
+          </p>
+        </div>
+        <button type="button" class="ta-gen-btn"
+                [disabled]="generating || !preview?.sample_size"
+                (click)="generateTopics()">
+          {{ generating ? "Tahlil qilinmoqda…" : "Tahlil qilish" }}
+        </button>
+      </section>
+
+      <div class="ta-loading" *ngIf="topicsLoading">Yuklanmoqda…</div>
+
+      <div class="ta-empty" *ngIf="!topicsLoading && !topicReport">
+        Hali tahlil qilinmagan. Yuqoridagi tugmani bosing.
+      </div>
+
+      <ng-container *ngIf="!topicsLoading && topicReport as rep">
+        <div class="ta-meta-bar">
+          <span>{{ rep.generated_at | date: 'dd.MM.yyyy HH:mm' : '+0500' }}</span>
+          <span>{{ rep.sampled_messages }} ta xabar</span>
+          <span>{{ rep.model }}</span>
+          <span *ngIf="rep.input_tokens">
+            {{ rep.input_tokens }} + {{ rep.output_tokens }} token
+          </span>
+        </div>
+
+        <div class="ta-warn" *ngIf="rep.result?.is_meaningful === false">
+          <i class="material-icons">info_outline</i>
+          <span>
+            Namuna kichik ({{ rep.sampled_messages }} ta xabar). Bu ro‘yxatni
+            yo‘nalish sifatida ko‘ring, statistika sifatida emas.
+          </span>
+        </div>
+
+        <section class="ta-box" *ngIf="rep.result?.summary">
+          <h5>Umumiy xulosa</h5>
+          <p class="ta-summary">{{ rep.result.summary }}</p>
+        </section>
+
+        <div class="ta-topic" *ngFor="let t of rep.result?.topics">
+          <div class="ta-topic-head">
+            <span class="ta-topic-name">{{ t.name }}</span>
+            <span class="ta-topic-en">{{ t.name_en }}</span>
+            <span class="ta-topic-count">{{ t.message_count }}</span>
+            <span class="ta-topic-share">{{ t.share_percent }}%</span>
+          </div>
+          <div class="ta-topic-bar">
+            <div [style.width.%]="t.share_percent"></div>
+          </div>
+          <p class="ta-topic-desc">{{ t.description }}</p>
+
+          <div class="ta-topic-examples">
+            <span *ngFor="let ex of t.examples">“{{ ex }}”</span>
+          </div>
+
+          <!-- The reason this screen exists: a pain point many clients share
+               is a video worth making. -->
+          <div class="ta-topic-idea">
+            <i class="material-icons">lightbulb</i>
+            <span>{{ t.content_idea }}</span>
+          </div>
+
+          <span class="ta-ai-flag" *ngIf="t.answerable_by_ai">
+            <i class="material-icons">smart_toy</i> AI javob bera oladi
+          </span>
+        </div>
+
+        <!-- Feeds the next phase directly. -->
+        <section class="ta-box" *ngIf="aiAnswerable.length">
+          <h5>Keyingi bosqich uchun</h5>
+          <p class="muted">
+            Quyidagi {{ aiAnswerable.length }} ta mavzuga AI yordamchisi javob
+            bera oladi — narx aytmasdan va muddat va’da qilmasdan.
+          </p>
+          <ul class="ta-ai-list">
+            <li *ngFor="let t of aiAnswerable">{{ t.name }}</li>
+          </ul>
+        </section>
+      </ng-container>
+    </ng-container>
+
+  </div>
+</div>

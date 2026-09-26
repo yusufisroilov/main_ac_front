@@ -1,0 +1,1357 @@
+/* Telegram-style two-pane chat panel.
+   Sized against the viewport rather than the content, so the two columns scroll
+   independently the way a mail or chat client does. */
+
+/* The dashboard shell supplies .main-content and .container-fluid; without
+   them this sat under the navbar and pushed the page sideways. The container's
+   own gutters are dropped so the panel reaches the full column width. */
+.tg-page .container-fluid {
+  padding-left: 0;
+  padding-right: 0;
+  max-width: 100%;
+}
+
+.tg-wrap {
+  display: flex;
+  /* Fills what is left below the navbar. min-height keeps it usable on a short
+     window; max-width stops a long unbroken message widening the page. */
+  height: calc(100vh - 210px);
+  min-height: 460px;
+  max-width: 100%;
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 22px rgba(16, 32, 56, 0.1);
+  font-size: 14px;
+  color: #1f2933;
+}
+
+/* Scrollbars: thin and quiet, so they do not compete with the content. */
+.tg-chat-list::-webkit-scrollbar,
+.tg-thread::-webkit-scrollbar {
+  width: 8px;
+}
+.tg-chat-list::-webkit-scrollbar-thumb,
+.tg-thread::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.16);
+  border-radius: 4px;
+}
+.tg-chat-list::-webkit-scrollbar-thumb:hover,
+.tg-thread::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.28);
+}
+
+/* ───────────────────────────── chat list ───────────────────────────── */
+
+.tg-sidebar {
+  flex: 0 0 auto;
+  width: 330px;
+  min-width: 250px;
+  border-right: 1px solid #e9edf2;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+}
+
+.tg-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 14px;
+  border-bottom: 1px solid #eef1f5;
+}
+.tg-search i {
+  color: #9aa5b1;
+  font-size: 20px;
+}
+.tg-search input {
+  flex: 1;
+  border: 0;
+  outline: 0;
+  background: #f1f4f8;
+  border-radius: 18px;
+  padding: 8px 14px;
+  font-size: 13.5px;
+  transition: background 0.15s;
+}
+.tg-search input:focus {
+  background: #e8eef7;
+}
+.tg-clear {
+  cursor: pointer;
+}
+
+.tg-chat-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 4px 0;
+}
+
+.tg-chat-row {
+  display: flex;
+  gap: 11px;
+  width: 100%;
+  padding: 9px 14px;
+  border: 0;
+  border-left: 3px solid transparent;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.12s;
+}
+.tg-chat-row:hover {
+  background: #f6f8fb;
+}
+.tg-chat-row.active {
+  background: #eaf2fd;
+  border-left-color: #3390ec;
+}
+
+.tg-avatar {
+  flex: 0 0 auto;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  color: #fff;
+  font-weight: 600;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: inset 0 -12px 20px rgba(0, 0, 0, 0.07);
+}
+.tg-avatar.sm {
+  width: 38px;
+  height: 38px;
+  font-size: 15px;
+}
+
+.tg-chat-body {
+  flex: 1;
+  min-width: 0;
+  display: block;
+}
+.tg-chat-top,
+.tg-chat-bottom {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.tg-chat-name {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 600;
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.tg-chat-row.unread .tg-chat-name {
+  font-weight: 700;
+}
+.tg-saved {
+  font-size: 13px;
+  color: #3390ec;
+  opacity: 0.75;
+}
+.tg-chat-time {
+  font-size: 11.5px;
+  color: #9aa5b1;
+  white-space: nowrap;
+}
+.tg-chat-preview {
+  flex: 1;
+  color: #707c8a;
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.tg-chat-row.unread .tg-chat-preview {
+  color: #46525f;
+}
+.tg-badge {
+  background: #3390ec;
+  color: #fff;
+  border-radius: 11px;
+  min-width: 21px;
+  height: 21px;
+  padding: 0 6px;
+  font-size: 11.5px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 3px rgba(51, 144, 236, 0.4);
+}
+.tg-chat-client {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 3px;
+  font-size: 11px;
+  color: #2f8f4e;
+}
+.tg-chat-client i {
+  font-size: 13px;
+}
+.tg-chat-client em {
+  font-style: normal;
+  color: #9aa5b1;
+}
+
+/* ─────────────────────────────── header ─────────────────────────────── */
+
+.tg-main {
+  flex: 1;
+  /* min-width:0 lets a flex child shrink below its content width; without it a
+     long message makes the whole panel wider than the page. */
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  background: #eceef2;
+}
+
+.tg-header {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 10px 18px;
+  background: #fff;
+  border-bottom: 1px solid #e9edf2;
+  z-index: 3;
+}
+.tg-header-text {
+  flex: 1;
+  min-width: 0;
+}
+.tg-header-name {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  font-size: 15px;
+}
+.tg-rename-btn {
+  border: 0;
+  background: none;
+  padding: 2px;
+  cursor: pointer;
+  color: #b3bcc6;
+  display: flex;
+  opacity: 0;
+  transition: opacity 0.15s, color 0.15s;
+}
+.tg-header:hover .tg-rename-btn {
+  opacity: 1;
+}
+.tg-rename-btn:hover {
+  color: #3390ec;
+}
+.tg-rename-btn i {
+  font-size: 16px;
+}
+.tg-header-sub {
+  font-size: 12px;
+  color: #8a95a1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.tg-sub-client {
+  color: #2f8f4e;
+}
+
+.tg-rename {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.tg-rename input {
+  flex: 1;
+  min-width: 160px;
+  border: 1px solid #3390ec;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 14px;
+  outline: 0;
+}
+.tg-rename small {
+  flex-basis: 100%;
+  font-size: 11px;
+  color: #9aa5b1;
+}
+.tg-rename-ok,
+.tg-rename-cancel {
+  border: 0;
+  border-radius: 6px;
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.tg-rename-ok {
+  background: #3390ec;
+  color: #fff;
+}
+.tg-rename-cancel {
+  background: #eef1f5;
+  color: #64707d;
+}
+.tg-rename-ok i,
+.tg-rename-cancel i {
+  font-size: 17px;
+}
+
+.tg-account-chip {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: #f1f4f8;
+  color: #64707d;
+  border-radius: 12px;
+  padding: 3px 10px;
+  font-size: 11.5px;
+  white-space: nowrap;
+}
+.tg-account-chip i {
+  font-size: 13px;
+}
+
+/* ─────────────────────────────── thread ─────────────────────────────── */
+
+/* A faint pattern instead of flat grey: it is what makes the bubbles read as a
+   conversation rather than a list of boxes. */
+.tg-thread {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 22px 10px;
+  display: flex;
+  flex-direction: column;
+  background-color: #eceef2;
+  background-image: radial-gradient(
+    rgba(255, 255, 255, 0.75) 1px,
+    transparent 1px
+  );
+  background-size: 22px 22px;
+}
+
+/* Pushes a short conversation to the bottom of the thread, where a chat client
+   starts reading, rather than leaving it stranded at the top. */
+.tg-thread > :first-child {
+  margin-top: auto;
+}
+
+.tg-date-sep {
+  text-align: center;
+  margin: 14px 0 8px;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+.tg-date-sep span {
+  background: rgba(96, 110, 128, 0.82);
+  color: #fff;
+  border-radius: 13px;
+  padding: 4px 13px;
+  font-size: 12px;
+  font-weight: 500;
+  backdrop-filter: blur(2px);
+}
+
+.tg-msg {
+  display: flex;
+  margin-bottom: 2px;
+}
+.tg-msg.out {
+  justify-content: flex-end;
+}
+/* Space between bursts, not between every bubble. */
+.tg-msg.group-start {
+  margin-top: 8px;
+}
+.tg-msg.group-end {
+  margin-bottom: 2px;
+}
+
+.tg-bubble {
+  position: relative;
+  max-width: 64%;
+  min-width: 78px;
+  background: #fff;
+  border-radius: 14px;
+  padding: 6px 11px 5px;
+  box-shadow: 0 1px 2px rgba(16, 32, 56, 0.12);
+}
+.tg-msg.out .tg-bubble {
+  background: #e8fdd4;
+}
+
+/* Square off the inner corners of a group so a burst reads as one block. */
+.tg-msg:not(.group-start) .tg-bubble {
+  border-top-left-radius: 6px;
+}
+.tg-msg:not(.group-end) .tg-bubble {
+  border-bottom-left-radius: 6px;
+}
+.tg-msg.out:not(.group-start) .tg-bubble {
+  border-top-left-radius: 14px;
+  border-top-right-radius: 6px;
+}
+.tg-msg.out:not(.group-end) .tg-bubble {
+  border-bottom-left-radius: 14px;
+  border-bottom-right-radius: 6px;
+}
+
+/* The tail belongs on the last bubble of a burst only. */
+.tg-msg.group-end .tg-bubble::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  width: 0;
+  height: 0;
+  border: 7px solid transparent;
+}
+.tg-msg.group-end:not(.out) .tg-bubble::after {
+  left: -6px;
+  border-right-color: #fff;
+  border-bottom-color: #fff;
+  border-left: 0;
+  border-bottom-width: 5px;
+}
+.tg-msg.group-end.out .tg-bubble::after {
+  right: -6px;
+  border-left-color: #e8fdd4;
+  border-bottom-color: #e8fdd4;
+  border-right: 0;
+  border-bottom-width: 5px;
+}
+
+.tg-bubble.deleted {
+  opacity: 0.5;
+}
+
+.tg-text {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow-wrap: anywhere;
+  line-height: 1.38;
+  font-size: 14px;
+}
+.tg-text a {
+  color: #3390ec;
+  text-decoration: none;
+}
+.tg-text a:hover {
+  text-decoration: underline;
+}
+.tg-text code,
+.tg-text pre {
+  background: rgba(0, 0, 0, 0.06);
+  border-radius: 4px;
+  padding: 1px 4px;
+  font-family: "SF Mono", Consolas, monospace;
+  font-size: 12.5px;
+}
+.tg-text pre {
+  display: block;
+  padding: 8px 10px;
+  overflow-x: auto;
+  margin: 4px 0;
+}
+.tg-spoiler {
+  background: #a8b0b8;
+  color: transparent;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+.tg-spoiler:hover {
+  background: transparent;
+  color: inherit;
+}
+.tg-muted {
+  color: #9aa5b1;
+  font-style: italic;
+}
+
+.tg-meta {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 5px;
+  margin-top: 1px;
+  font-size: 11px;
+  color: #9aa5b1;
+  line-height: 1;
+}
+.tg-msg.out .tg-meta {
+  color: #6fa672;
+}
+.tg-tick {
+  font-size: 15px;
+  color: #4fae4e;
+}
+.tg-failed {
+  font-size: 15px;
+  color: #d93025;
+}
+.tg-edited,
+.tg-deleted {
+  font-style: italic;
+}
+
+.tg-reply-ref,
+.tg-forward {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: #3390ec;
+  border-left: 2.5px solid #3390ec;
+  padding-left: 7px;
+  margin-bottom: 4px;
+}
+.tg-reply-ref i,
+.tg-forward i {
+  font-size: 14px;
+}
+
+/* ─────────────────────────────── media ──────────────────────────────── */
+
+.tg-photo {
+  margin: -1px -6px 4px;
+  cursor: pointer;
+  line-height: 0;
+}
+.tg-photo img,
+.tg-photo video {
+  display: block;
+  max-width: 320px;
+  max-height: 340px;
+  border-radius: 10px;
+}
+/* Stickers sit on the wallpaper with no bubble behind them, as in Telegram. */
+.tg-photo.sticker {
+  cursor: default;
+}
+.tg-photo.sticker img {
+  max-width: 150px;
+  max-height: 150px;
+}
+
+.tg-videonote video {
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #000;
+  display: block;
+}
+
+.tg-video {
+  width: 290px;
+}
+.tg-video-thumb {
+  position: relative;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #d4d9e0;
+  min-height: 150px;
+}
+.tg-video-thumb img {
+  display: block;
+  width: 100%;
+}
+.tg-play {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.46);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.tg-duration {
+  position: absolute;
+  right: 7px;
+  bottom: 7px;
+  background: rgba(0, 0, 0, 0.58);
+  color: #fff;
+  font-size: 11px;
+  border-radius: 4px;
+  padding: 1px 6px;
+}
+.tg-video-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 5px;
+  font-size: 12px;
+  color: #707c8a;
+}
+.tg-video-meta i {
+  font-size: 16px;
+}
+.tg-video-meta em {
+  margin-left: auto;
+  font-style: normal;
+  color: #c0392b;
+}
+
+.tg-audio {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 250px;
+  padding: 2px 0;
+}
+.tg-audio i {
+  color: #3390ec;
+}
+.tg-audio audio {
+  flex: 1;
+  height: 34px;
+}
+
+.tg-doc {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 5px 2px;
+  color: inherit;
+  text-decoration: none;
+}
+.tg-doc i {
+  font-size: 32px;
+  color: #3390ec;
+}
+.tg-doc-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.tg-doc-name {
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 230px;
+}
+.tg-doc-size {
+  font-size: 12px;
+  color: #9aa5b1;
+}
+.tg-doc-size em {
+  font-style: normal;
+  color: #c0392b;
+}
+.tg-doc.disabled {
+  pointer-events: none;
+  opacity: 0.65;
+}
+.tg-media-note {
+  font-size: 12px;
+  color: #c0392b;
+}
+
+/* ────────────────────────────── composer ────────────────────────────── */
+
+.tg-composer {
+  background: #fff;
+  border-top: 1px solid #e9edf2;
+  padding: 10px 16px;
+}
+.tg-composer-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+}
+.tg-composer textarea {
+  flex: 1;
+  resize: none;
+  border: 1px solid #e3e8ee;
+  border-radius: 20px;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-family: inherit;
+  line-height: 1.35;
+  max-height: 130px;
+  outline: 0;
+  background: #f7f9fb;
+  transition: border-color 0.15s, background 0.15s;
+}
+.tg-composer textarea:focus {
+  border-color: #3390ec;
+  background: #fff;
+}
+.tg-send {
+  width: 42px;
+  height: 42px;
+  flex: 0 0 auto;
+  border: 0;
+  border-radius: 50%;
+  background: #3390ec;
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, transform 0.1s;
+}
+.tg-send:hover:not(:disabled) {
+  background: #2481da;
+}
+.tg-send:active:not(:disabled) {
+  transform: scale(0.94);
+}
+.tg-send:disabled {
+  background: #c9d2dc;
+  cursor: default;
+}
+
+.tg-no-reply {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  background: #fff8e8;
+  border: 1px solid #ffe0a3;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 13px;
+  color: #8a5a00;
+  line-height: 1.4;
+}
+.tg-no-reply i {
+  font-size: 19px;
+  flex: 0 0 auto;
+}
+
+/* ─────────────────────────── states / misc ──────────────────────────── */
+
+.tg-placeholder,
+.tg-empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  color: #9aa5b1;
+  padding: 30px;
+  text-align: center;
+}
+.tg-placeholder i,
+.tg-empty i {
+  font-size: 52px;
+  opacity: 0.4;
+}
+.tg-placeholder small {
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+.tg-loading-older,
+.tg-thread-start {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  font-size: 12px;
+  color: #8a95a1;
+  padding: 8px 0;
+}
+
+.tg-spin {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.45);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: tg-rotate 0.7s linear infinite;
+  display: inline-block;
+}
+.tg-loading-older .tg-spin,
+.tg-empty .tg-spin {
+  border-color: rgba(0, 0, 0, 0.14);
+  border-top-color: #3390ec;
+}
+.tg-spin.big {
+  width: 28px;
+  height: 28px;
+  border-width: 3px;
+}
+@keyframes tg-rotate {
+  to { transform: rotate(360deg); }
+}
+
+.tg-skeleton {
+  padding: 10px 14px;
+}
+.tg-skel-row {
+  height: 56px;
+  border-radius: 10px;
+  margin-bottom: 9px;
+  background: linear-gradient(90deg, #f2f4f7 25%, #e8ebef 37%, #f2f4f7 63%);
+  background-size: 400% 100%;
+  animation: tg-shimmer 1.3s ease-in-out infinite;
+}
+@keyframes tg-shimmer {
+  0%   { background-position: 100% 50%; }
+  100% { background-position: 0 50%; }
+}
+
+.tg-lightbox {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.88);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1050;
+  animation: tg-fade 0.15s ease-out;
+}
+@keyframes tg-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+.tg-lightbox img {
+  max-width: 92vw;
+  max-height: 92vh;
+  border-radius: 8px;
+}
+.tg-lightbox-close {
+  position: absolute;
+  top: 20px;
+  right: 24px;
+  color: #fff;
+  font-size: 34px;
+  cursor: pointer;
+  opacity: 0.8;
+}
+.tg-lightbox-close:hover {
+  opacity: 1;
+}
+
+/* The sidebar narrows before the thread does: on a small screen reading the
+   conversation matters more than seeing the list beside it. */
+@media (max-width: 1100px) {
+  .tg-bubble {
+    max-width: 76%;
+  }
+}
+@media (max-width: 900px) {
+  .tg-wrap {
+    height: calc(100vh - 110px);
+  }
+  .tg-sidebar {
+    width: 250px;
+    min-width: 210px;
+  }
+  .tg-bubble {
+    max-width: 84%;
+  }
+  .tg-chat-client,
+  .tg-account-chip {
+    display: none;
+  }
+  .tg-thread {
+    padding: 12px 14px 8px;
+  }
+}
+
+/* ────────────────────── client identity & panel ─────────────────────── */
+
+/* Telegram identifies nobody: no phone, and not the contact name saved on a
+   staff member's own phone. Which client this is gets stated once by someone
+   who knows, and everything below hangs off that link. */
+
+.tg-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 0 0 auto;
+}
+
+.tg-client-chip,
+.tg-link-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  border: 1px solid transparent;
+  border-radius: 14px;
+  padding: 5px 11px;
+  font-size: 12px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s, border-color 0.15s;
+}
+.tg-client-chip {
+  background: #e9f7ee;
+  color: #226c40;
+  border-color: #c5e8d2;
+}
+.tg-client-chip:hover,
+.tg-client-chip.on {
+  background: #d7f0e2;
+}
+.tg-link-btn {
+  background: #f1f4f8;
+  color: #5a6672;
+  border-color: #e2e8ef;
+}
+.tg-link-btn:hover {
+  background: #e7edf5;
+  color: #3390ec;
+}
+.tg-client-chip i,
+.tg-link-btn i {
+  font-size: 15px;
+}
+
+/* ── search bar ── */
+
+.tg-linkbar {
+  background: #fff;
+  border-bottom: 1px solid #e9edf2;
+  padding: 10px 16px 12px;
+  max-height: 320px;
+  overflow-y: auto;
+}
+.tg-linkbar-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.tg-linkbar-row i {
+  color: #9aa5b1;
+  font-size: 19px;
+}
+.tg-linkbar-row input {
+  flex: 1;
+  border: 1px solid #3390ec;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 14px;
+  outline: 0;
+}
+.tg-linkbar-hint {
+  font-size: 12px;
+  color: #9aa5b1;
+  padding: 7px 2px 2px;
+}
+.tg-linkbar-hint b {
+  color: #5a6672;
+}
+
+.tg-client-result {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  padding: 8px 10px;
+  margin-top: 2px;
+  cursor: pointer;
+  text-align: left;
+  font-size: 13px;
+}
+.tg-client-result:hover {
+  background: #eaf2fd;
+}
+.tg-cr-id {
+  font-weight: 700;
+  color: #3390ec;
+  min-width: 42px;
+}
+.tg-cr-name {
+  flex: 1;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.tg-cr-phone {
+  color: #707c8a;
+  font-variant-numeric: tabular-nums;
+}
+.tg-cr-bal {
+  color: #226c40;
+  font-weight: 600;
+  min-width: 68px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── the panel ── */
+
+.tg-client-panel {
+  flex: 0 0 auto;
+  width: 280px;
+  border-left: 1px solid #e9edf2;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  padding: 0 0 14px;
+}
+.tg-cp-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid #eef1f5;
+  font-weight: 600;
+  font-size: 13px;
+  color: #5a6672;
+}
+.tg-cp-head i {
+  cursor: pointer;
+  font-size: 18px;
+  color: #9aa5b1;
+}
+.tg-cp-head i:hover {
+  color: #46525f;
+}
+.tg-cp-loading,
+.tg-cp-empty {
+  padding: 14px 16px;
+  font-size: 12.5px;
+  color: #9aa5b1;
+}
+
+.tg-cp-name {
+  padding: 14px 16px 0;
+  font-weight: 600;
+  font-size: 15px;
+}
+.tg-cp-id {
+  padding: 0 16px;
+  font-size: 12px;
+  color: #9aa5b1;
+}
+.tg-cp-phone {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 8px 16px 0;
+  color: #3390ec;
+  font-size: 13.5px;
+  text-decoration: none;
+  font-variant-numeric: tabular-nums;
+}
+.tg-cp-phone i {
+  font-size: 16px;
+}
+
+.tg-cp-balances {
+  display: flex;
+  gap: 8px;
+  margin: 14px 16px 0;
+}
+.tg-cp-bal {
+  flex: 1;
+  background: #f6f8fb;
+  border-radius: 8px;
+  padding: 8px 10px;
+}
+.tg-cp-bal .lbl {
+  display: block;
+  font-size: 10.5px;
+  color: #9aa5b1;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+.tg-cp-bal .val {
+  display: block;
+  font-weight: 700;
+  font-size: 14px;
+  color: #226c40;
+  font-variant-numeric: tabular-nums;
+}
+/* Debt is the thing someone is usually writing about, so it has to be
+   impossible to misread as credit. */
+.tg-cp-bal .val.neg {
+  color: #c0392b;
+}
+
+.tg-cp-section {
+  margin: 18px 16px 6px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #9aa5b1;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.tg-parcel {
+  margin: 0 10px;
+  padding: 7px 8px;
+  border-radius: 7px;
+}
+.tg-parcel:hover {
+  background: #f6f8fb;
+}
+.tg-parcel-top {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.tg-parcel-track {
+  flex: 1;
+  font-size: 12.5px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.tg-parcel-party {
+  font-size: 10.5px;
+  background: #eef1f5;
+  color: #64707d;
+  border-radius: 4px;
+  padding: 1px 5px;
+}
+.tg-parcel-status {
+  font-size: 11.5px;
+  color: #707c8a;
+}
+
+.tg-cp-full,
+.tg-cp-unlink {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  margin: 14px 16px 0;
+  border: 0;
+  border-radius: 8px;
+  padding: 9px;
+  font-size: 13px;
+  cursor: pointer;
+  text-decoration: none;
+}
+.tg-cp-full {
+  background: #3390ec;
+  color: #fff;
+}
+.tg-cp-full:hover {
+  background: #2481da;
+  color: #fff;
+}
+.tg-cp-full i {
+  font-size: 16px;
+}
+.tg-cp-unlink {
+  background: none;
+  color: #9aa5b1;
+  margin-top: 6px;
+}
+.tg-cp-unlink:hover {
+  color: #c0392b;
+}
+.tg-cp-unlink i {
+  font-size: 15px;
+}
+
+/* The client panel is the first thing to go when space runs out: the
+   conversation is the reason the page exists. */
+@media (max-width: 1250px) {
+  .tg-client-panel {
+    width: 250px;
+  }
+}
+@media (max-width: 1050px) {
+  .tg-client-panel {
+    display: none;
+  }
+}
+
+/* ─────────────────────── assistant suggestion ───────────────────────
+   Sits above the composer, visibly not a message. Nothing here is sent
+   until a person presses Yuborish, so it must never be mistaken for
+   something already on its way to the client. */
+
+.tg-draft {
+  margin: 0 16px 8px;
+  border: 1px solid #cfe3f7;
+  border-left: 3px solid #3390ec;
+  border-radius: 10px;
+  background: #f7fbff;
+  padding: 10px 13px 11px;
+}
+
+.tg-draft-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 7px;
+}
+.tg-draft-head > i {
+  font-size: 17px;
+  color: #3390ec;
+}
+.tg-draft-label {
+  flex: 1;
+  font-size: 12px;
+  font-weight: 600;
+  color: #1c5fa8;
+}
+.tg-draft-label em {
+  font-style: normal;
+  font-weight: 400;
+  color: #8a95a1;
+  margin-left: 5px;
+}
+
+.tg-draft-conf {
+  font-size: 10.5px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  background: #e9f7ee;
+  color: #226c40;
+  border-radius: 9px;
+  padding: 2px 8px;
+}
+/* Anything short of a confident match is worth a second look before it goes. */
+.tg-draft-conf.low {
+  background: #fff4e0;
+  color: #9a6400;
+}
+
+.tg-draft-gated {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 10.5px;
+  font-weight: 600;
+  background: #fdecea;
+  color: #c0392b;
+  border-radius: 9px;
+  padding: 2px 8px;
+}
+.tg-draft-gated i {
+  font-size: 12px;
+}
+
+.tg-draft-body {
+  font-size: 13.5px;
+  line-height: 1.45;
+  color: #1f2933;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  max-height: 180px;
+  overflow-y: auto;
+}
+
+.tg-draft-edit {
+  width: 100%;
+  border: 1px solid #3390ec;
+  border-radius: 8px;
+  padding: 8px 11px;
+  font-size: 13.5px;
+  font-family: inherit;
+  line-height: 1.45;
+  resize: vertical;
+  outline: 0;
+}
+
+/* Why this answer was picked, so a wrong match can be understood rather than
+   just noticed. */
+.tg-draft-why {
+  margin-top: 6px;
+  font-size: 11px;
+  color: #8a95a1;
+  font-style: italic;
+}
+
+.tg-draft-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 9px;
+}
+.tg-draft-actions button {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  border: 1px solid #d6e3f0;
+  background: #fff;
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 12.5px;
+  color: #46525f;
+  cursor: pointer;
+  transition: background 0.12s, border-color 0.12s;
+}
+.tg-draft-actions button:hover {
+  background: #eef5fd;
+}
+.tg-draft-actions button i {
+  font-size: 15px;
+}
+.tg-draft-actions button.ok {
+  background: #3390ec;
+  border-color: #3390ec;
+  color: #fff;
+}
+.tg-draft-actions button.ok:hover:not(:disabled) {
+  background: #2481da;
+}
+.tg-draft-actions button.ok:disabled {
+  background: #c9d2dc;
+  border-color: #c9d2dc;
+  cursor: default;
+}
+.tg-draft-actions button.no {
+  margin-left: auto;
+  border-color: transparent;
+  color: #9aa5b1;
+}
+.tg-draft-actions button.no:hover {
+  background: #fdecea;
+  color: #c0392b;
+}
+
+/* Asking for a suggestion costs a model call, so it is a deliberate press
+   rather than something that happens on its own. */
+.tg-suggest {
+  width: 42px;
+  height: 42px;
+  flex: 0 0 auto;
+  border: 1px solid #d6e3f0;
+  border-radius: 50%;
+  background: #fff;
+  color: #3390ec;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+}
+.tg-suggest:hover:not(:disabled) {
+  background: #eef5fd;
+}
+.tg-suggest:disabled {
+  color: #c9d2dc;
+  cursor: default;
+}
+.tg-suggest .tg-spin {
+  border-color: rgba(51, 144, 236, 0.25);
+  border-top-color: #3390ec;
+}

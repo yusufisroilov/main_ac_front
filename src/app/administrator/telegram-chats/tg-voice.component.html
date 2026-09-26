@@ -1,0 +1,26 @@
+<div class="v-wrap" [class.out]="outgoing">
+
+  <button type="button" class="v-play" (click)="toggle()"
+          [attr.aria-label]="playing ? 'Pauza' : 'Tinglash'">
+    <i class="material-icons">{{ playing ? 'pause' : 'play_arrow' }}</i>
+  </button>
+
+  <div class="v-body">
+    <!-- Click anywhere on the waveform to seek, the way a chat client does. -->
+    <div class="v-bars" #bars (click)="seek($event)">
+      <span
+        class="v-bar"
+        *ngFor="let level of levels; let i = index; trackBy: trackBar"
+        [class.played]="isPlayed(i)"
+        [style.height.%]="level * 100"></span>
+    </div>
+
+    <div class="v-meta">
+      <span class="v-time">{{ format(current) }} / {{ format(total) }}</span>
+      <!-- Long voice notes are common and often rambling; being able to speed
+           them up is the single most useful control here. -->
+      <button type="button" class="v-speed" [class.on]="speed !== 1"
+              (click)="cycleSpeed()">{{ speed }}x</button>
+    </div>
+  </div>
+</div>

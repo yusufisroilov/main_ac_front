@@ -38,6 +38,10 @@ import { Infoeachclientv2Component } from "./infoeachclientv2/infoeachclientv2.c
 import { CashAccountsComponent } from "./cash-accounts/cash-accounts.component";
 import { CustomerServicesModule } from "../uzb_staff/customer-services/customer-services.module";
 import { SharedModule } from "src/app/shared/shared.module";
+import { TelegramChatsComponent } from "./telegram-chats/telegram-chats.component";
+import { TgVoiceComponent } from "./telegram-chats/tg-voice.component";
+import { TelegramAnalyticsComponent } from "./telegram-analytics/telegram-analytics.component";
+import { TelegramFaqComponent } from "./telegram-faq/telegram-faq.component";
 import { VideoLessonsComponent } from "./video-lessons/video-lessons.component";
 
 // import { FlexLayoutModule } from '@angular/flex-layout';
@@ -83,6 +87,10 @@ import { VideoLessonsComponent } from "./video-lessons/video-lessons.component";
     Infoeachclientv2Component,
     CashAccountsComponent,
     VideoLessonsComponent,
+    TelegramChatsComponent,
+    TgVoiceComponent,
+    TelegramAnalyticsComponent,
+    TelegramFaqComponent,
   ],
 })
 export class AdminstratorModule {}

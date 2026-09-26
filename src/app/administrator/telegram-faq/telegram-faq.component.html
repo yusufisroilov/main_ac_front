@@ -1,0 +1,151 @@
+<div class="main-content">
+  <div class="container-fluid">
+
+    <div class="fq-head">
+      <div>
+        <h4>AI javoblari</h4>
+        <small>
+          Bu yerdagi matnlar mijozga <b>aynan shu holda</b> yuboriladi.
+          AI faqat mos javobni tanlaydi — o‘zi matn yozmaydi.
+        </small>
+      </div>
+      <button type="button" class="fq-new" (click)="newEntry()">
+        <i class="material-icons">add</i> Yangi javob
+      </button>
+    </div>
+
+    <div class="fq-stats" *ngIf="!loading">
+      <span><b>{{ visibleEntries.length }}</b> ta faol javob</span>
+      <span><b>{{ lockedCount }}</b> ta qulflangan</span>
+      <span><b>{{ gaps.length }}</b> ta javobsiz savol</span>
+      <label class="fq-toggle">
+        <input type="checkbox" [(ngModel)]="showRetired" />
+        o‘chirilganlarni ko‘rsatish
+      </label>
+    </div>
+
+    <div class="fq-loading" *ngIf="loading">Yuklanmoqda…</div>
+
+    <!-- ───────────────────────── editor ───────────────────────── -->
+    <section class="fq-editor" *ngIf="editing">
+      <h5>
+        {{ editing.id ? 'Javobni tahrirlash' : (fromGapId ? 'Savolga javob yozish' : 'Yangi javob') }}
+      </h5>
+
+      <label class="fq-label">Kalit so‘z <em>(ichki nom, mijoz ko‘rmaydi)</em></label>
+      <input
+        type="text"
+        class="fq-input"
+        placeholder="masalan: price_avia"
+        [(ngModel)]="editing.category"
+        [disabled]="!!editing.id" />
+      <small class="fq-hint" *ngIf="editing.id">
+        Kalit so‘z o‘zgartirilmaydi — u yozuvning doimiy nomi.
+      </small>
+
+      <label class="fq-label">
+        Savol variantlari <em>(har bir qatorda bittadan)</em>
+      </label>
+      <!-- These are what the matcher compares against; the answer text is never
+           used for matching. More phrasings means more clients are understood. -->
+      <textarea
+        class="fq-input fq-variants"
+        rows="6"
+        placeholder="avia narxi&#10;samolyot narxi qancha&#10;машиной сколько"
+        [(ngModel)]="editing.variantText"></textarea>
+      <small class="fq-hint">
+        Mijozlar qanday yozsa, shunday yozing — o‘zbekcha, ruscha, xato imlo bilan ham.
+      </small>
+
+      <label class="fq-label">Javob matni <em>(mijozga aynan shu boradi)</em></label>
+      <textarea
+        class="fq-input fq-answer"
+        rows="8"
+        [(ngModel)]="editing.answer"></textarea>
+
+      <label class="fq-check">
+        <input type="checkbox" [(ngModel)]="editing.never_auto_send" />
+        <span>
+          <b>Qulflash</b> — bu javob har doim odam tomonidan tekshirilsin
+          <em>(narx hisoblash, aniq buyurtma holati kabi xatosi pul turadigan savollar uchun)</em>
+        </span>
+      </label>
+
+      <div class="fq-actions">
+        <button type="button" class="ok" [disabled]="saving" (click)="save()">
+          {{ saving ? 'Saqlanmoqda…' : 'Saqlash' }}
+        </button>
+        <button type="button" (click)="cancel()">Bekor qilish</button>
+      </div>
+    </section>
+
+    <!-- ───────────────────────── entries ───────────────────────── -->
+    <div class="fq-entry" *ngFor="let e of visibleEntries; trackBy: trackEntry"
+         [class.off]="!e.is_active">
+      <div class="fq-entry-head">
+        <span class="fq-cat">{{ e.category }}</span>
+
+        <span class="fq-badge lock" *ngIf="e.never_auto_send">
+          <i class="material-icons">lock</i> qulflangan
+        </span>
+        <!-- 'learned' means a person edited it here, so the seed file no longer
+             owns it. Worth showing: it explains why re-seeding will not change it. -->
+        <span class="fq-badge learned" *ngIf="e.source === 'learned'">
+          panel orqali
+        </span>
+        <span class="fq-badge off" *ngIf="!e.is_active">o‘chirilgan</span>
+
+        <span class="fq-meta">
+          {{ variantCount(e) }} variant
+          <em *ngIf="e.used_count">· {{ e.used_count }} marta ishlatilgan</em>
+        </span>
+
+        <span class="fq-entry-actions">
+          <button type="button" (click)="edit(e)" title="Tahrirlash">
+            <i class="material-icons">edit</i>
+          </button>
+          <button type="button" (click)="toggleLock(e)"
+                  [title]="e.never_auto_send ? 'Qulfni ochish' : 'Qulflash'">
+            <i class="material-icons">{{ e.never_auto_send ? 'lock' : 'lock_open' }}</i>
+          </button>
+          <button type="button" (click)="toggleActive(e)"
+                  [title]="e.is_active ? 'O‘chirish' : 'Yoqish'">
+            <i class="material-icons">{{ e.is_active ? 'visibility_off' : 'visibility' }}</i>
+          </button>
+        </span>
+      </div>
+
+      <div class="fq-answer-text">{{ e.answer }}</div>
+
+      <div class="fq-variants-list">
+        <span *ngFor="let v of e.variants">{{ v }}</span>
+      </div>
+    </div>
+
+    <!-- ───────────────────────── gaps ───────────────────────── -->
+    <section class="fq-gaps" *ngIf="gaps.length">
+      <h5>
+        Javobsiz savollar
+        <small>mijozlar so‘radi, lekin hech bir javob to‘g‘ri kelmadi</small>
+      </h5>
+
+      <div class="fq-gap" *ngFor="let g of gaps; trackBy: trackGap">
+        <span class="fq-gap-count" [class.hot]="g.occurrences > 2">
+          {{ g.occurrences }}×
+        </span>
+        <span class="fq-gap-text">{{ g.question_text }}</span>
+        <button type="button" class="ok" (click)="answerGap(g)">
+          Javob yozish
+        </button>
+        <button type="button" (click)="dismissGap(g)" title="Kerak emas">
+          <i class="material-icons">close</i>
+        </button>
+      </div>
+    </section>
+
+    <div class="fq-empty" *ngIf="!loading && !gaps.length && !visibleEntries.length">
+      Hali javoblar yo‘q.
+    </div>
+
+  </div>
+</div>

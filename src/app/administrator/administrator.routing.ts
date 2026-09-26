@@ -33,6 +33,9 @@ import { Infoeachclientv2Component } from "./infoeachclientv2/infoeachclientv2.c
 import { CashAccountsComponent } from "./cash-accounts/cash-accounts.component";
 import { CustomerServicesComponent } from "../uzb_staff/customer-services/customer-services.component";
 import { VideoLessonsComponent } from "./video-lessons/video-lessons.component";
+import { TelegramChatsComponent } from "./telegram-chats/telegram-chats.component";
+import { TelegramAnalyticsComponent } from "./telegram-analytics/telegram-analytics.component";
+import { TelegramFaqComponent } from "./telegram-faq/telegram-faq.component";
 
 export const AdminstratorRoutes: Routes = [
   {
@@ -258,6 +261,30 @@ export const AdminstratorRoutes: Routes = [
         component: CustomerServicesComponent,
         data: {
           title: "Mijoz Xizmatlari",
+        },
+      },
+      {
+        path: "telegram-faq",
+        canActivate: [ManagerAuthGuardService],
+        component: TelegramFaqComponent,
+        data: {
+          title: "AI Javoblari",
+        },
+      },
+      {
+        path: "telegram-analytics",
+        canActivate: [ManagerAuthGuardService],
+        component: TelegramAnalyticsComponent,
+        data: {
+          title: "Telegram Tahlil",
+        },
+      },
+      {
+        path: "telegram-chats",
+        canActivate: [AdminAuthGuard],
+        component: TelegramChatsComponent,
+        data: {
+          title: "Telegram Suhbatlar",
         },
       },
       {

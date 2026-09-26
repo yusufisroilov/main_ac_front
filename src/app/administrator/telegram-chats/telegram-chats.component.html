@@ -1,0 +1,475 @@
+<div class="main-content tg-page">
+  <div class="container-fluid">
+
+<div class="tg-wrap">
+
+  <!-- ─────────────────────────────  chat list  ───────────────────────────── -->
+  <aside class="tg-sidebar">
+    <div class="tg-search">
+      <i class="material-icons">search</i>
+      <input
+        type="text"
+        placeholder="Ism yoki xabar bo‘yicha qidirish…"
+        [ngModel]="search"
+        (ngModelChange)="onSearchChange($event)" />
+      <i class="material-icons tg-clear" *ngIf="search" (click)="onSearchChange('')">close</i>
+    </div>
+
+    <div class="tg-chat-list">
+      <div class="tg-empty" *ngIf="!chatsLoading && chats.length === 0">
+        <i class="material-icons">forum</i>
+        <p>{{ search ? 'Hech narsa topilmadi' : 'Hozircha suhbatlar yo‘q' }}</p>
+      </div>
+
+      <div class="tg-skeleton" *ngIf="chatsLoading && chats.length === 0">
+        <div class="tg-skel-row" *ngFor="let i of [1,2,3,4,5,6]"></div>
+      </div>
+
+      <button
+        type="button"
+        class="tg-chat-row"
+        *ngFor="let chat of chats; trackBy: trackChat"
+        [class.active]="openChat?.id === chat.id"
+        [class.unread]="chat.unread_count > 0"
+        (click)="selectChat(chat)">
+
+        <span class="tg-avatar" [style.background]="avatarColor(chat)">
+          {{ initials(chat) }}
+        </span>
+
+        <span class="tg-chat-body">
+          <span class="tg-chat-top">
+            <span class="tg-chat-name">
+              {{ chat.name }}
+              <!-- A saved name replaces the Telegram one, so mark that it is
+                   ours rather than letting it look like Telegram's. -->
+              <i class="material-icons tg-saved" *ngIf="chat.display_name"
+                 title="Saqlangan nom">bookmark</i>
+            </span>
+            <span class="tg-chat-time" *ngIf="chat.last_message_at">
+              {{ chat.last_message_at | date: 'HH:mm' : tz }}
+            </span>
+          </span>
+
+          <span class="tg-chat-bottom">
+            <span class="tg-chat-preview">{{ chat.last_message_preview || '—' }}</span>
+            <span class="tg-badge" *ngIf="chat.unread_count > 0">{{ chat.unread_count }}</span>
+          </span>
+
+          <span class="tg-chat-client" *ngIf="chat.customer">
+            <i class="material-icons">badge</i>
+            {{ chat.customer.first_name }} {{ chat.customer.last_name }}
+            <em>#{{ chat.customer.id }}</em>
+          </span>
+        </span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ──────────────────────────────  thread  ─────────────────────────────── -->
+  <section class="tg-main">
+
+    <div class="tg-placeholder" *ngIf="!openChat">
+      <i class="material-icons">chat_bubble_outline</i>
+      <p>Suhbatni tanlang</p>
+      <small>Telegramdagi yozishmalar shu yerda ko‘rinadi</small>
+    </div>
+
+    <ng-container *ngIf="openChat">
+      <header class="tg-header">
+        <span class="tg-avatar sm" [style.background]="avatarColor(openChat)">
+          {{ initials(openChat) }}
+        </span>
+
+        <div class="tg-header-text" *ngIf="!renaming">
+          <div class="tg-header-name">
+            {{ openChat.name }}
+            <button type="button" class="tg-rename-btn" (click)="startRename()"
+                    title="Nomni saqlash">
+              <i class="material-icons">edit</i>
+            </button>
+          </div>
+          <div class="tg-header-sub">
+            <!-- When a name was saved, what Telegram calls them is shown here
+                 rather than hidden, so the two can be told apart. -->
+            <span *ngIf="openChat.display_name && openChat.telegram_name">
+              Telegram: {{ openChat.telegram_name }}
+            </span>
+            <span *ngIf="openChat.username">&#64;{{ openChat.username }}</span>
+            <span *ngIf="openChat.customer" class="tg-sub-client">
+              · {{ openChat.customer.first_name }} {{ openChat.customer.last_name }}
+              (#{{ openChat.customer.id }})
+            </span>
+          </div>
+        </div>
+
+        <div class="tg-rename" *ngIf="renaming">
+          <input
+            type="text"
+            placeholder="Nom kiriting…"
+            [(ngModel)]="renameDraft"
+            (keydown)="onRenameKeydown($event)"
+            autofocus />
+          <button type="button" class="tg-rename-ok" (click)="saveRename()">
+            <i class="material-icons">check</i>
+          </button>
+          <button type="button" class="tg-rename-cancel" (click)="cancelRename()">
+            <i class="material-icons">close</i>
+          </button>
+          <small>Bo‘sh qoldirsangiz, Telegramdagi nom qaytadi</small>
+        </div>
+
+        <div class="tg-header-actions" *ngIf="!renaming">
+          <!-- Telegram identifies nobody, so which client this is has to be
+               stated once by someone who knows. -->
+          <button
+            type="button"
+            class="tg-client-chip"
+            *ngIf="openChat.customer"
+            [class.on]="clientPanelOpen"
+            (click)="toggleClientPanel()">
+            <i class="material-icons">badge</i>
+            <span>{{ openChat.customer.first_name }} #{{ openChat.customer.id }}</span>
+          </button>
+
+          <button
+            type="button"
+            class="tg-link-btn"
+            *ngIf="!openChat.customer"
+            (click)="startLinking()">
+            <i class="material-icons">person_add</i> Mijozni biriktirish
+          </button>
+        </div>
+      </header>
+
+      <!-- ───── client search ───── -->
+      <div class="tg-linkbar" *ngIf="linking">
+        <div class="tg-linkbar-row">
+          <i class="material-icons">search</i>
+          <input
+            type="text"
+            placeholder="ID, telefon yoki ism bo‘yicha qidiring…"
+            [ngModel]="clientQuery"
+            (ngModelChange)="onClientQueryChange($event)"
+            autofocus />
+          <button type="button" class="tg-rename-cancel" (click)="cancelLinking()">
+            <i class="material-icons">close</i>
+          </button>
+        </div>
+
+        <div class="tg-linkbar-hint" *ngIf="!clientQuery">
+          Masalan: <b>9</b> (mijoz ID), <b>998942818404</b> (telefon) yoki <b>Ali</b>
+        </div>
+        <div class="tg-linkbar-hint" *ngIf="clientSearching">Qidirilmoqda…</div>
+        <div class="tg-linkbar-hint" *ngIf="clientQuery && !clientSearching && !clientResults.length">
+          Topilmadi
+        </div>
+
+        <button
+          type="button"
+          class="tg-client-result"
+          *ngFor="let c of clientResults"
+          (click)="linkClient(c.id)">
+          <span class="tg-cr-id">#{{ c.id }}</span>
+          <span class="tg-cr-name">{{ clientName(c) }}</span>
+          <span class="tg-cr-phone">{{ c.username }}</span>
+          <span class="tg-cr-bal">{{ c.balance_usd | number: '1.2-2' }} $</span>
+        </button>
+      </div>
+
+      <div class="tg-thread" #thread (scroll)="onThreadScroll()">
+
+        <div class="tg-loading-older" *ngIf="loadingOlder">
+          <span class="tg-spin"></span> Yuklanmoqda…
+        </div>
+        <div class="tg-thread-start" *ngIf="!hasMore && !messagesLoading && messages.length">
+          Suhbat boshlanishi
+        </div>
+
+        <div class="tg-empty" *ngIf="messagesLoading && !messages.length">
+          <span class="tg-spin big"></span>
+        </div>
+
+        <ng-container *ngFor="let m of messages; let i = index; trackBy: trackMessage">
+
+          <div class="tg-date-sep" *ngIf="showDateSeparator(i)">
+            <span>{{ dayLabel(m.tg_date) || (m.tg_date | date: 'd MMMM y' : tz) }}</span>
+          </div>
+
+          <div
+            class="tg-msg"
+            [class.out]="m.direction === 'out'"
+            [class.group-start]="isGroupStart(i)"
+            [class.group-end]="isGroupEnd(i)">
+
+            <div class="tg-bubble" [class.deleted]="m.deleted_at">
+
+              <div class="tg-reply-ref" *ngIf="m.reply_to_tg_message_id">
+                <i class="material-icons">reply</i> Javob
+              </div>
+
+              <div class="tg-forward" *ngIf="m.forward_from">
+                <i class="material-icons">forward</i> {{ m.forward_from }}
+              </div>
+
+              <!-- ───── media ───── -->
+              <ng-container *ngIf="m.media as media">
+
+                <div
+                  class="tg-photo"
+                  *ngIf="(media.kind === 'photo' || media.kind === 'sticker') && media.url"
+                  [class.sticker]="media.kind === 'sticker'"
+                  (click)="media.kind === 'photo' && openLightbox(mediaUrl(media.url))">
+                  <img [src]="mediaUrl(media.url)" [alt]="media.kind" loading="lazy" />
+                </div>
+
+                <!-- Never downloaded, so the thumbnail and the facts are what
+                     make this a card rather than a grey box. -->
+                <div class="tg-video" *ngIf="media.kind === 'video'">
+                  <div class="tg-video-thumb" [class.no-thumb]="!media.thumb_url">
+                    <img *ngIf="media.thumb_url" [src]="mediaUrl(media.thumb_url)" alt="video" loading="lazy" />
+                    <span class="tg-play"><i class="material-icons">play_arrow</i></span>
+                    <span class="tg-duration" *ngIf="media.duration">
+                      {{ formatDuration(media.duration) }}
+                    </span>
+                  </div>
+                  <div class="tg-video-meta">
+                    <i class="material-icons">videocam</i>
+                    <span>Video · {{ formatSize(media.file_size) }}</span>
+                    <em>{{ mediaNote(m) }}</em>
+                  </div>
+                </div>
+
+                <div class="tg-videonote" *ngIf="media.kind === 'video_note' && media.url">
+                  <video [src]="mediaUrl(media.url)" controls playsinline preload="metadata"></video>
+                </div>
+
+                <!-- A purpose-built player: the native <audio controls>
+                     widget is twice as wide, unstyleable, and different in
+                     every browser. -->
+                <app-tg-voice
+                  *ngIf="media.kind === 'voice' && media.url"
+                  [src]="mediaUrl(media.url)"
+                  [duration]="media.duration"
+                  [outgoing]="m.direction === 'out'"></app-tg-voice>
+
+                <!-- Music keeps the standard control: it has a title, may be
+                     long, and is not a voice note. -->
+                <div class="tg-audio" *ngIf="media.kind === 'audio'">
+                  <i class="material-icons">audiotrack</i>
+                  <audio *ngIf="media.url" [src]="mediaUrl(media.url)" controls preload="none"></audio>
+                  <span class="tg-media-note" *ngIf="!media.url">{{ mediaNote(m) }}</span>
+                </div>
+
+                <div class="tg-audio" *ngIf="media.kind === 'voice' && !media.url">
+                  <i class="material-icons">mic</i>
+                  <span class="tg-media-note">{{ mediaNote(m) }}</span>
+                </div>
+
+                <div class="tg-photo" *ngIf="media.kind === 'animation' && media.url">
+                  <video [src]="mediaUrl(media.url)" autoplay loop muted playsinline></video>
+                </div>
+
+                <a
+                  class="tg-doc"
+                  *ngIf="media.kind === 'document'"
+                  [href]="mediaUrl(media.url)"
+                  [attr.download]="media.file_name"
+                  [class.disabled]="!media.url"
+                  target="_blank"
+                  rel="noopener">
+                  <i class="material-icons">insert_drive_file</i>
+                  <span class="tg-doc-text">
+                    <span class="tg-doc-name">{{ media.file_name || 'Fayl' }}</span>
+                    <span class="tg-doc-size">
+                      {{ formatSize(media.file_size) }}
+                      <em *ngIf="!media.url">· {{ mediaNote(m) }}</em>
+                    </span>
+                  </span>
+                </a>
+              </ng-container>
+
+              <!-- ───── text / caption ─────
+                   Rendered as real elements, never [innerHTML]. The text comes
+                   from whoever messaged the staff member, so Angular's own
+                   escaping and its [href] sanitiser both need to stay on. -->
+              <div class="tg-text" *ngIf="m.text">
+                <ng-container *ngFor="let seg of m.segments" [ngSwitch]="seg.kind">
+                  <b        *ngSwitchCase="'bold'">{{ seg.text }}</b>
+                  <i        *ngSwitchCase="'italic'">{{ seg.text }}</i>
+                  <u        *ngSwitchCase="'underline'">{{ seg.text }}</u>
+                  <s        *ngSwitchCase="'strike'">{{ seg.text }}</s>
+                  <code     *ngSwitchCase="'code'">{{ seg.text }}</code>
+                  <pre      *ngSwitchCase="'pre'">{{ seg.text }}</pre>
+                  <span     *ngSwitchCase="'spoiler'" class="tg-spoiler">{{ seg.text }}</span>
+                  <a        *ngSwitchCase="'link'"
+                            [href]="seg.href"
+                            target="_blank"
+                            rel="noopener noreferrer">{{ seg.text }}</a>
+                  <span     *ngSwitchDefault>{{ seg.text }}</span>
+                </ng-container>
+              </div>
+
+              <div class="tg-text tg-muted" *ngIf="!m.text && !m.media">{{ m.type }}</div>
+
+              <!-- Only the last bubble of a burst carries a time, so a run of
+                   quick replies does not repeat the same minute five times. -->
+              <div class="tg-meta" *ngIf="isGroupEnd(i) || m.edited_at || m.deleted_at">
+                <span class="tg-edited" *ngIf="m.edited_at">tahrirlangan</span>
+                <span class="tg-deleted" *ngIf="m.deleted_at">o‘chirilgan</span>
+                <span class="tg-time">{{ m.tg_date | date: 'HH:mm' : tz }}</span>
+                <i class="material-icons tg-tick"
+                   *ngIf="m.direction === 'out' && !m.send_error">done_all</i>
+                <i class="material-icons tg-failed"
+                   *ngIf="m.send_error" [title]="m.send_error">error_outline</i>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+
+      <!-- ───── assistant suggestion ─────
+           Never sent on its own. The assistant picks an approved answer; a
+           person decides whether it goes out, and can rewrite it first. -->
+      <div class="tg-draft" *ngIf="suggestion">
+        <div class="tg-draft-head">
+          <i class="material-icons">smart_toy</i>
+          <span class="tg-draft-label">
+            Taklif
+            <em *ngIf="suggestion.category">{{ suggestion.category }}</em>
+          </span>
+          <span class="tg-draft-conf" [class.low]="suggestion.confidence !== 'high'">
+            {{ suggestion.confidence }}
+          </span>
+          <span class="tg-draft-gated" *ngIf="suggestion.never_auto_send">
+            <i class="material-icons">lock</i> tekshirilsin
+          </span>
+        </div>
+
+        <div class="tg-draft-body" *ngIf="!suggestion.editing">{{ suggestion.suggested_text }}</div>
+        <textarea
+          class="tg-draft-edit"
+          *ngIf="suggestion.editing"
+          rows="3"
+          [(ngModel)]="suggestion.editText"></textarea>
+
+        <div class="tg-draft-why" *ngIf="suggestion.match_reason">{{ suggestion.match_reason }}</div>
+
+        <div class="tg-draft-actions">
+          <button type="button" class="ok" [disabled]="sending" (click)="sendSuggestion()">
+            <i class="material-icons">send</i> Yuborish
+          </button>
+          <button type="button" *ngIf="!suggestion.editing" (click)="editSuggestion()">
+            <i class="material-icons">edit</i> Tahrirlash
+          </button>
+          <button type="button" class="no" (click)="dismissSuggestion()">
+            <i class="material-icons">close</i> Kerak emas
+          </button>
+        </div>
+      </div>
+
+      <!-- ───── composer ───── -->
+      <footer class="tg-composer">
+        <!-- Telegram refuses the send outright without this permission, so the
+             reason is shown here rather than as an error after the attempt. -->
+        <div class="tg-no-reply" *ngIf="!canReply">
+          <i class="material-icons">lock_outline</i>
+          <span>
+            Javob berish ruxsati yo‘q. Telegram → Settings → Business →
+            Chatbots → <b>Manage Messages</b> bo‘limidan yoqing.
+          </span>
+        </div>
+
+        <div class="tg-composer-row" *ngIf="canReply">
+          <textarea
+            rows="1"
+            placeholder="Xabar yozing…"
+            [(ngModel)]="draft"
+            (keydown)="onComposerKeydown($event)"
+            [disabled]="sending"></textarea>
+          <button
+            type="button"
+            class="tg-suggest"
+            [disabled]="suggestionLoading"
+            title="AI taklifini so'rash"
+            (click)="requestSuggestion()">
+            <span class="tg-spin" *ngIf="suggestionLoading"></span>
+            <i class="material-icons" *ngIf="!suggestionLoading">smart_toy</i>
+          </button>
+          <button
+            type="button"
+            class="tg-send"
+            [disabled]="!draft.trim() || sending"
+            (click)="send()">
+            <span class="tg-spin" *ngIf="sending"></span>
+            <i class="material-icons" *ngIf="!sending">send</i>
+          </button>
+        </div>
+      </footer>
+    </ng-container>
+  </section>
+
+  <!-- ─────────────────────────  client panel  ───────────────────────── -->
+  <aside class="tg-client-panel" *ngIf="clientPanelOpen && openChat">
+    <div class="tg-cp-head">
+      <span>Mijoz</span>
+      <i class="material-icons" (click)="toggleClientPanel()">close</i>
+    </div>
+
+    <div class="tg-cp-loading" *ngIf="clientLoading">Yuklanmoqda…</div>
+
+    <ng-container *ngIf="!clientLoading && client">
+      <div class="tg-cp-name">{{ client.first_name }} {{ client.last_name }}</div>
+      <div class="tg-cp-id">#{{ client.id }}</div>
+
+      <a class="tg-cp-phone" [href]="'tel:' + client.phone">
+        <i class="material-icons">phone</i> {{ client.phone }}
+      </a>
+
+      <div class="tg-cp-balances">
+        <div class="tg-cp-bal">
+          <span class="lbl">Balans USD</span>
+          <span class="val" [class.neg]="client.balance_usd < 0">
+            {{ client.balance_usd | number: '1.2-2' }} $
+          </span>
+        </div>
+        <div class="tg-cp-bal">
+          <span class="lbl">Balans UZS</span>
+          <span class="val" [class.neg]="client.balance_uzs < 0">
+            {{ client.balance_uzs | number: '1.0-0' }}
+          </span>
+        </div>
+      </div>
+
+      <div class="tg-cp-section">Oxirgi jo‘natmalar</div>
+      <div class="tg-cp-empty" *ngIf="!parcels.length">Jo‘natma yo‘q</div>
+      <div class="tg-parcel" *ngFor="let p of parcels">
+        <div class="tg-parcel-top">
+          <span class="tg-parcel-track">{{ p.tracking_number }}</span>
+          <span class="tg-parcel-party" *ngIf="p.consignment">{{ p.consignment }}</span>
+        </div>
+        <div class="tg-parcel-status">{{ p.status_text || '—' }}</div>
+      </div>
+
+      <a class="tg-cp-full" [routerLink]="clientPageLink()"
+         [queryParams]="{ customer_id: client.id }">
+        Mijoz sahifasi <i class="material-icons">arrow_forward</i>
+      </a>
+
+      <button type="button" class="tg-cp-unlink" (click)="linkClient(null)">
+        <i class="material-icons">link_off</i> Bog‘lanishni uzish
+      </button>
+    </ng-container>
+  </aside>
+</div>
+
+  </div>
+</div>
+
+<!-- Outside the layout containers on purpose: it is position:fixed and must
+     cover the whole window, not the content column. -->
+<!-- ─────────────────────────────  lightbox  ─────────────────────────────── -->
+<div class="tg-lightbox" *ngIf="lightboxUrl" (click)="closeLightbox()">
+  <i class="material-icons tg-lightbox-close">close</i>
+  <img [src]="lightboxUrl" (click)="$event.stopPropagation()" alt="" />
+</div>
