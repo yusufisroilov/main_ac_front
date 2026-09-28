@@ -156,6 +156,12 @@
   color: #3390ec;
   opacity: 0.75;
 }
+/* Marks a row whose AI is switched off, so it can be told apart at a glance
+   without opening the chat. */
+.tg-ai-off-icon {
+  font-size: 13px;
+  color: #9aa5b1;
+}
 .tg-chat-time {
   font-size: 11.5px;
   color: #9aa5b1;
@@ -262,6 +268,19 @@
 }
 .tg-sub-client {
   color: #2f8f4e;
+}
+/* Muted, not an alarm: the assistant is simply switched off, not broken. */
+.tg-ai-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  color: #8a95a1;
+  background: #f1f4f8;
+  border-radius: 9px;
+  padding: 1px 7px;
+}
+.tg-ai-badge i {
+  font-size: 12px;
 }
 
 .tg-rename {
@@ -919,6 +938,40 @@
 .tg-client-chip i,
 .tg-link-btn i {
   font-size: 15px;
+}
+
+/* Switches the assistant off for one chat -- staff use it on their own
+   private conversations that the business connection mirrors in here too. */
+.tg-ai-toggle {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  border: 1px solid #e2e8ef;
+  border-radius: 14px;
+  padding: 5px 11px;
+  font-size: 12px;
+  background: #f1f4f8;
+  color: #5a6672;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s, border-color 0.15s;
+}
+.tg-ai-toggle:hover {
+  background: #e7edf5;
+  color: #3390ec;
+}
+.tg-ai-toggle i {
+  font-size: 15px;
+}
+/* Off is the state worth noticing -- it costs nothing, but a client waiting
+   on a reply staff forgot about does. */
+.tg-ai-toggle.off {
+  background: #fdecea;
+  color: #c0392b;
+  border-color: #f6c8c2;
+}
+.tg-ai-toggle.off:hover {
+  background: #fbdedb;
 }
 
 /* ── search bar ── */

@@ -37,6 +37,9 @@ export interface TgChat {
   display_name: string | null;
   /** What Telegram calls them, kept so it can be shown under a saved name. */
   telegram_name: string | null;
+  /** Staff switched the assistant off for this chat -- it neither reads
+   * messages here nor drafts automatic replies. The 🤖 button still works. */
+  ai_disabled: boolean;
 }
 
 export interface TgMedia {
@@ -498,6 +501,19 @@ export class TelegramChatService {
     return this.http.patch(
       `${this.apiUrl}/telegram/chats/${chatId}`,
       { customer_id: customerId },
+      { headers: this.getHeaders() },
+    );
+  }
+
+  /**
+   * Switches the assistant off (or back on) for one chat -- for a staff
+   * member's own private conversation that the business connection mirrors
+   * in here too, so nothing in it is read by a model or costs a draft.
+   */
+  setAiDisabled(chatId: number, disabled: boolean): Observable<any> {
+    return this.http.patch(
+      `${this.apiUrl}/telegram/chats/${chatId}`,
+      { ai_disabled: disabled },
       { headers: this.getHeaders() },
     );
   }

@@ -587,6 +587,49 @@ export class TelegramChatsComponent implements OnInit, OnDestroy {
     });
   }
 
+  // ----------------------------------------------------------- AI on/off
+
+  /**
+   * Staff use this for their own private chats that the business connection
+   * mirrors in here too -- the assistant has no business reading those, and
+   * every read costs a model call. Switching off asks first; the 🤖 button
+   * still works either way.
+   */
+  toggleAi(): void {
+    if (!this.openChat) return;
+    const chat = this.openChat;
+
+    if (chat.ai_disabled) {
+      this.saveAiDisabled(chat.id, false);
+      return;
+    }
+
+    swal
+      .fire({
+        icon: "warning",
+        title: "AI'ni o'chirish",
+        text:
+          "Bu suhbatda AI avtomatik javob tayyorlamaydi va xabarlarni o'qimaydi. 🤖 tugmasi baribir ishlaydi.",
+        showCancelButton: true,
+        confirmButtonText: "O'chirish",
+        cancelButtonText: "Bekor qilish",
+      })
+      .then((result) => {
+        if (result.isConfirmed) this.saveAiDisabled(chat.id, true);
+      });
+  }
+
+  private saveAiDisabled(chatId: number, disabled: boolean): void {
+    this.chatService.setAiDisabled(chatId, disabled).subscribe({
+      next: () => {
+        if (this.openChat?.id === chatId) this.openChat.ai_disabled = disabled;
+        const listed = this.chats.find((c) => c.id === chatId);
+        if (listed) listed.ai_disabled = disabled;
+      },
+      error: (err) => showBackendError(err),
+    });
+  }
+
   // ------------------------------------------------------------- assistant
 
   /** Assistant A's pending suggestion -- unchanged from before B existed. */

@@ -45,6 +45,8 @@
                    ours rather than letting it look like Telegram's. -->
               <i class="material-icons tg-saved" *ngIf="chat.display_name"
                  title="Saqlangan nom">bookmark</i>
+              <i class="material-icons tg-ai-off-icon" *ngIf="chat.ai_disabled"
+                 title="AI o'chirilgan">block</i>
             </span>
             <span class="tg-chat-time" *ngIf="chat.last_message_at">
               {{ chat.last_message_at | date: 'HH:mm' : tz }}
@@ -100,6 +102,9 @@
               · {{ openChat.customer.first_name }} {{ openChat.customer.last_name }}
               (#{{ openChat.customer.id }})
             </span>
+            <span *ngIf="openChat.ai_disabled" class="tg-ai-badge">
+              <i class="material-icons">block</i> AI o'chirilgan
+            </span>
           </div>
         </div>
 
@@ -138,6 +143,18 @@
             *ngIf="!openChat.customer"
             (click)="startLinking()">
             <i class="material-icons">person_add</i> Mijozni biriktirish
+          </button>
+
+          <!-- Staff members' own private chats that the business connection
+               mirrors in here too -- the assistant has no business reading
+               those. -->
+          <button
+            type="button"
+            class="tg-ai-toggle"
+            [class.off]="openChat.ai_disabled"
+            (click)="toggleAi()">
+            <i class="material-icons">smart_toy</i>
+            <span>{{ openChat.ai_disabled ? "AI'ni yoqish" : "AI'ni o'chirish (shaxsiy suhbat)" }}</span>
           </button>
         </div>
       </header>
