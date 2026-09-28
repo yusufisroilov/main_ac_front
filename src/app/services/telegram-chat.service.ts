@@ -328,6 +328,100 @@ export interface TgKnowledgeStylesResponse {
   styles: TgKnowledgeStyle[];
 }
 
+// ------------------------------------------------------------ assistant comparison (plan B)
+
+/** How many of a variant's decided drafts ended in each outcome. */
+export interface TgAssistantStatusCounts {
+  sent: number;
+  edited: number;
+  dismissed: number;
+  not_chosen: number;
+  expired: number;
+  pending: number;
+  shadow: number;
+}
+
+/**
+ * One assistant's numbers over the compared window: how its drafts were
+ * decided, the plan's B-vs-A measure (`unchanged_or_light_pct`, staff-seen
+ * drafts only) and the same measure taken silently against what staff wrote
+ * back on their own (`shadow_*`, for while B ran unseen), plus speed,
+ * fact-check blocks and cost.
+ */
+export interface TgAssistantSummary {
+  drafts: number;
+  replies: number;
+  notices: number;
+  status: TgAssistantStatusCounts;
+  unchanged_or_light_pct: number | null;
+  decided: number;
+  median_edit_similarity: number | null;
+  shadow_compared: number;
+  shadow_light_pct: number | null;
+  shadow_median_similarity: number | null;
+  median_draft_seconds: number | null;
+  blocked: number;
+  /** A blocked text sent anyway -- staff can only do this by typing it themselves. */
+  sent_after_block: number;
+  no_reply: number;
+  no_reply_overridden: number;
+  cost_usd: number | null;
+  cost_per_draft_usd: number | null;
+}
+
+export interface TgAssistantComparisonSummary {
+  A: TgAssistantSummary;
+  B: TgAssistantSummary;
+  /** B minus A, in percentage points; null when either side has nothing decided. */
+  difference_points: number | null;
+  /** The similarity that counts as "unchanged or lightly edited" (0.8). */
+  light_threshold: number;
+}
+
+export type TgAssistantBKind = "b_reply" | "b_ask" | "b_handover" | "b_blocked" | "b_no_reply";
+export type TgAssistantDraftStatus =
+  | "pending"
+  | "sent"
+  | "edited"
+  | "dismissed"
+  | "not_chosen"
+  | "expired"
+  | "shadow";
+
+export interface TgAssistantExampleB {
+  kind: TgAssistantBKind;
+  status: TgAssistantDraftStatus;
+  text: string | null;
+  cost_usd: number | string | null;
+}
+
+/** A's kinds/statuses are its own (faq, needs_answer, ...) -- not the fixed B set above. */
+export interface TgAssistantExampleA {
+  kind: string;
+  status: string;
+  text: string | null;
+}
+
+/** One message where B drafted, A's draft for the same message beside it (if
+ * any), and what staff actually sent -- newest first, up to 40. */
+export interface TgAssistantExample {
+  at: string;
+  chat_name: string;
+  client_text: string | null;
+  b: TgAssistantExampleB;
+  a: TgAssistantExampleA | null;
+  staff_text: string | null;
+  b_similarity: number | null;
+  a_similarity: number | null;
+}
+
+export interface TgAssistantComparisonResponse {
+  status: string;
+  days: number;
+  summary: TgAssistantComparisonSummary;
+  examples: TgAssistantExample[];
+}
+
 /**
  * Reads the Telegram conversations mirrored from staff accounts.
  *
@@ -599,6 +693,20 @@ export class TelegramChatService {
       `${this.apiUrl}/telegram/knowledge/styles/${id}`,
       { is_active: isActive },
       { headers: this.getHeaders() },
+    );
+  }
+
+  // ------------------------------------------------------------ analytics
+
+  /**
+   * Assistant A vs B over the last `days` (1-60, default 7): the plan's
+   * success measure and the latest examples side by side, for the owner's
+   * one-week side-by-side test.
+   */
+  getAssistantComparison(days = 7): Observable<TgAssistantComparisonResponse> {
+    return this.http.get<TgAssistantComparisonResponse>(
+      `${this.apiUrl}/telegram/analytics/assistants`,
+      { headers: this.getHeaders(), params: new HttpParams().set("days", String(days)) },
     );
   }
 

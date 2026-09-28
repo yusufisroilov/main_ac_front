@@ -41,6 +41,7 @@ import { SharedModule } from "src/app/shared/shared.module";
 import { TelegramChatsComponent } from "./telegram-chats/telegram-chats.component";
 import { TgVoiceComponent } from "./telegram-chats/tg-voice.component";
 import { TelegramAnalyticsComponent } from "./telegram-analytics/telegram-analytics.component";
+import { AssistantCompareComponent } from "./telegram-analytics/assistant-compare.component";
 import { TelegramFaqComponent } from "./telegram-faq/telegram-faq.component";
 import { KnowledgeBaseComponent } from "./telegram-faq/knowledge-base/knowledge-base.component";
 import { LearningInboxComponent } from "./telegram-faq/knowledge-base/learning-inbox/learning-inbox.component";
@@ -92,6 +93,7 @@ import { VideoLessonsComponent } from "./video-lessons/video-lessons.component";
     TelegramChatsComponent,
     TgVoiceComponent,
     TelegramAnalyticsComponent,
+    AssistantCompareComponent,
     TelegramFaqComponent,
     KnowledgeBaseComponent,
     LearningInboxComponent,
