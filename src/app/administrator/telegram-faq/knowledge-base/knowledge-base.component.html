@@ -1,5 +1,19 @@
 <div class="kb-root">
 
+  <div class="kb-subtabs">
+    <button type="button" class="kb-subtab-btn" [class.active]="kbTab === 'facts'"
+            (click)="switchKbTab('facts')">
+      Faktlar
+    </button>
+    <button type="button" class="kb-subtab-btn" [class.active]="kbTab === 'inbox'"
+            (click)="switchKbTab('inbox')">
+      O'rganish
+      <span class="kb-subtab-badge" *ngIf="pendingProposalsCount > 0">{{ pendingProposalsCount }}</span>
+    </button>
+  </div>
+
+  <ng-container *ngIf="kbTab === 'facts'">
+
   <div class="kb-loading" *ngIf="loading">Yuklanmoqda…</div>
 
   <ng-container *ngIf="!loading">
@@ -144,6 +158,19 @@
     </section>
 
   </ng-container>
+
+  </ng-container>
+
+  <!-- ───────────────────────── learning inbox ─────────────────────────
+       Always mounted (hidden, not removed) so its pending count keeps the
+       sub-tab badge live even while "Faktlar" is the visible tab, and so
+       switching tabs never re-fetches proposals or resets an open edit. -->
+  <app-learning-inbox
+    [hidden]="kbTab !== 'inbox'"
+    [sections]="sections"
+    (decided)="onProposalDecided($event)"
+    (pendingCountChange)="pendingProposalsCount = $event">
+  </app-learning-inbox>
 
   <!-- ───────────────────────── history modal ───────────────────────── -->
   <div class="kb-modal-overlay" *ngIf="historyFact" (click)="closeHistory()">

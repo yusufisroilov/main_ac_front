@@ -262,6 +262,72 @@ export interface TgKnowledgeTestResult {
   handbook_version: number | string;
 }
 
+// -------------------------------------------------------- learning inbox
+
+export type TgKnowledgeProposalKind = "fact" | "correction" | "style";
+export type TgKnowledgeProposalStatus = "pending" | "approved" | "rejected";
+
+/** One real exchange the daily review used as evidence for a proposal. */
+export interface TgKnowledgeProposalEvidence {
+  type: "edited" | "answered" | "unchanged";
+  chat_id: number;
+  chat_name: string;
+  at: string;
+  client_text: string;
+  suggested_text: string | null;
+  staff_text: string | null;
+}
+
+/**
+ * A suggestion from the daily review of real admin replies, waiting on the
+ * owner's decision. Nothing here reaches assistant B until approved.
+ */
+export interface TgKnowledgeProposal {
+  id: number;
+  kind: TgKnowledgeProposalKind;
+  section: string | null;
+  /** The fact this is a correction of; null for a new fact or a style example. */
+  fact_id: number | null;
+  proposed_text: string;
+  /** The fact's text at the moment this proposal was made (correction only). */
+  current_text: string | null;
+  /** The fact's text right now -- may have moved on since the proposal was made. */
+  fact_text_now: string | null;
+  /** Why the model suggested this -- written in English, one sentence. */
+  reason: string;
+  /** True when the evidence looks specific to one client rather than a general rule. */
+  personal: boolean;
+  status: TgKnowledgeProposalStatus;
+  created_at: string;
+  decided_at: string | null;
+  decided_by_name: string | null;
+  result_fact_id: number | null;
+  result_style_id: number | null;
+  evidence: TgKnowledgeProposalEvidence[];
+}
+
+export interface TgKnowledgeProposalsResponse {
+  proposals: TgKnowledgeProposal[];
+}
+
+export interface TgKnowledgeProposalDecideResult {
+  fact_id: number | null;
+  style_id: number | null;
+}
+
+/** An approved tone example -- style only, never facts or prices. */
+export interface TgKnowledgeStyle {
+  id: number;
+  text: string;
+  is_active: boolean;
+  created_at: string;
+  created_by_name: string | null;
+}
+
+export interface TgKnowledgeStylesResponse {
+  styles: TgKnowledgeStyle[];
+}
+
 /**
  * Reads the Telegram conversations mirrored from staff accounts.
  *
@@ -484,6 +550,54 @@ export class TelegramChatService {
     return this.http.post<{ status: string; result: TgKnowledgeTestResult }>(
       `${this.apiUrl}/telegram/knowledge/test`,
       { text },
+      { headers: this.getHeaders() },
+    );
+  }
+
+  // -------------------------------------------------------- learning inbox
+
+  /** Pending/decided suggestions from the daily review of real admin replies. */
+  getKnowledgeProposals(
+    status: TgKnowledgeProposalStatus,
+  ): Observable<TgKnowledgeProposalsResponse> {
+    return this.http.get<TgKnowledgeProposalsResponse>(
+      `${this.apiUrl}/telegram/knowledge/proposals`,
+      { headers: this.getHeaders(), params: new HttpParams().set("status", status) },
+    );
+  }
+
+  /** Approve (optionally with the owner's edited text/section) or reject one proposal. */
+  decideKnowledgeProposal(
+    id: number,
+    action: "approve" | "reject",
+    text?: string,
+    section?: string,
+  ): Observable<TgKnowledgeProposalDecideResult> {
+    const body: { action: string; text?: string; section?: string } = { action };
+    if (text != null) body.text = text;
+    if (section != null) body.section = section;
+    return this.http.post<TgKnowledgeProposalDecideResult>(
+      `${this.apiUrl}/telegram/knowledge/proposals/${id}/decide`,
+      body,
+      { headers: this.getHeaders() },
+    );
+  }
+
+  /** Approved tone examples the owner curates for assistant B. */
+  getKnowledgeStyles(): Observable<TgKnowledgeStylesResponse> {
+    return this.http.get<TgKnowledgeStylesResponse>(
+      `${this.apiUrl}/telegram/knowledge/styles`,
+      { headers: this.getHeaders() },
+    );
+  }
+
+  updateKnowledgeStyle(
+    id: number,
+    isActive: boolean,
+  ): Observable<{ style: TgKnowledgeStyle }> {
+    return this.http.patch<{ style: TgKnowledgeStyle }>(
+      `${this.apiUrl}/telegram/knowledge/styles/${id}`,
+      { is_active: isActive },
       { headers: this.getHeaders() },
     );
   }

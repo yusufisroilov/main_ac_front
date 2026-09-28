@@ -15,6 +15,44 @@
   box-shadow: 0 2px 10px rgba(16, 32, 56, 0.07);
 }
 
+/* ───────────────────────────── sub-tabs ───────────────────────────── */
+
+.kb-subtabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 16px;
+  border-bottom: 2px solid #eef1f5;
+}
+.kb-subtab-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border: none;
+  background: none;
+  padding: 10px 16px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #8a95a1;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+}
+.kb-subtab-btn:hover {
+  color: #46525f;
+}
+.kb-subtab-btn.active {
+  color: #1c5fa8;
+  border-bottom-color: #3390ec;
+}
+.kb-subtab-badge {
+  background: #e0342f;
+  color: #fff;
+  border-radius: 9px;
+  padding: 1px 7px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
 /* ───────────────────────────── header stats ───────────────────────────── */
 
 .kb-stats {

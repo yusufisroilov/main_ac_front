@@ -1,0 +1,136 @@
+<div class="li-root">
+
+  <div class="li-filter">
+    <button type="button" class="li-filter-btn" [class.active]="statusFilter === 'pending'"
+            (click)="setFilter('pending')">Kutilmoqda</button>
+    <button type="button" class="li-filter-btn" [class.active]="statusFilter === 'approved'"
+            (click)="setFilter('approved')">Tasdiqlangan</button>
+    <button type="button" class="li-filter-btn" [class.active]="statusFilter === 'rejected'"
+            (click)="setFilter('rejected')">Rad etilgan</button>
+  </div>
+
+  <div class="li-loading" *ngIf="loading">Yuklanmoqda…</div>
+
+  <ng-container *ngIf="!loading">
+
+    <div class="li-card" *ngFor="let p of proposals; trackBy: trackProposal" [class.personal]="p.personal">
+
+      <div class="li-card-head">
+        <span class="li-kind">{{ kindLabel(p) }}</span>
+        <span class="li-chip" *ngIf="p.section">{{ p.section }}</span>
+        <span class="li-date">{{ p.created_at | date: 'dd.MM.yyyy HH:mm' : '+0500' }}</span>
+      </div>
+
+      <div class="li-warn" *ngIf="p.personal" role="note">
+        <i class="material-icons">warning_amber</i>
+        <span>
+          Diqqat: bitta mijozga tegishli ma'lumot bo'lishi mumkin — umumiy qoida
+          bo'lmasa, rad eting.
+        </span>
+      </div>
+
+      <ng-container *ngIf="p.kind === 'correction'; else liPlainText">
+        <div class="li-diff">
+          <div class="li-diff-row"><b>Hozir:</b> <span>{{ factNow(p) }}</span></div>
+          <div class="li-diff-row"><b>Taklif:</b> <span>{{ p.proposed_text }}</span></div>
+        </div>
+        <small class="li-changed-note" *ngIf="factChangedSince(p)">
+          Fakt taklifdan keyin o'zgargan
+        </small>
+      </ng-container>
+      <ng-template #liPlainText>
+        <p class="li-text">{{ p.proposed_text }}</p>
+      </ng-template>
+
+      <p class="li-reason"><span>Sabab:</span> {{ p.reason }}</p>
+
+      <!-- ───────── inline edit ───────── -->
+      <div class="li-edit" *ngIf="editingId === p.id">
+        <div class="li-section-row" *ngIf="p.kind !== 'style'">
+          <select class="li-input li-select"
+                  [ngModel]="editDraft.customSection ? custom : editDraft.section"
+                  (ngModelChange)="onSectionPick($event)">
+            <option value="" disabled>Bo'limni tanlang</option>
+            <option *ngFor="let s of sections; trackBy: trackSection" [value]="s.id">{{ s.title }}</option>
+            <option [value]="custom">+ Yangi bo'lim…</option>
+          </select>
+          <input *ngIf="editDraft.customSection" type="text" class="li-input li-section-id"
+                 placeholder="MASALAN_BOLIM" [(ngModel)]="editDraft.section" />
+        </div>
+        <textarea class="li-input li-textarea" rows="3" maxlength="1000"
+                  [(ngModel)]="editDraft.text"></textarea>
+        <div class="li-actions">
+          <button type="button" class="ok" [disabled]="busyId === p.id" (click)="saveEdit(p)">
+            {{ busyId === p.id ? 'Saqlanmoqda…' : 'Saqlash' }}
+          </button>
+          <button type="button" [disabled]="busyId === p.id" (click)="cancelEdit()">Bekor qilish</button>
+        </div>
+      </div>
+
+      <!-- ───────── decision actions ───────── -->
+      <div class="li-actions" *ngIf="p.status === 'pending' && editingId !== p.id">
+        <button type="button" class="ok" [disabled]="busyId === p.id" (click)="approve(p)">
+          {{ busyId === p.id ? 'Saqlanmoqda…' : "Qo'shish" }}
+        </button>
+        <button type="button" [disabled]="busyId === p.id" (click)="startEdit(p)">Tahrirlash</button>
+        <button type="button" class="danger" [disabled]="busyId === p.id" (click)="reject(p)">Yo'q</button>
+      </div>
+
+      <div class="li-decided" *ngIf="p.status !== 'pending'">
+        <span class="li-badge" [class.approved]="p.status === 'approved'" [class.rejected]="p.status === 'rejected'">
+          {{ statusLabel(p) }}
+        </span>
+        <span class="li-decided-by">
+          {{ changedBy(p.decided_by_name) }} · {{ p.decided_at | date: 'dd.MM.yyyy HH:mm' : '+0500' }}
+        </span>
+      </div>
+
+      <!-- ───────── evidence ───────── -->
+      <button type="button" class="li-evidence-toggle" *ngIf="p.evidence?.length"
+              (click)="toggleEvidence(p.id)">
+        Dalillar ({{ p.evidence.length }})
+        <i class="material-icons">{{ isEvidenceOpen(p.id) ? 'expand_less' : 'expand_more' }}</i>
+      </button>
+
+      <div class="li-evidence" *ngIf="isEvidenceOpen(p.id)">
+        <div class="li-ev-item" *ngFor="let ev of p.evidence; let i = index; trackBy: trackEvidence">
+          <div class="li-ev-head">{{ ev.chat_name }} · {{ ev.at | date: 'dd.MM.yyyy HH:mm' : '+0500' }}</div>
+          <div class="li-ev-body" [class.clamped]="!isEvExpanded(p.id, i)">
+            <div class="li-ev-row"><b>Mijoz:</b> {{ ev.client_text }}</div>
+            <div class="li-ev-row" *ngIf="ev.suggested_text"><b>AI taklif qildi:</b> {{ ev.suggested_text }}</div>
+            <div class="li-ev-row" *ngIf="ev.staff_text"><b>Admin yubordi:</b> {{ ev.staff_text }}</div>
+          </div>
+          <button type="button" class="li-ev-more" (click)="toggleEvExpanded(p.id, i)">
+            {{ isEvExpanded(p.id, i) ? 'Kamroq' : "Ko'proq" }}
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="li-empty" *ngIf="!proposals.length">
+      <ng-container *ngIf="statusFilter === 'pending'; else liOtherEmpty">
+        Hozircha taklif yo'q. Kunlik tahlil har kuni 22:00 da ishlaydi.
+      </ng-container>
+      <ng-template #liOtherEmpty>Bu bo'limda hali yozuv yo'q.</ng-template>
+    </div>
+
+  </ng-container>
+
+  <!-- ───────────────────────── style examples ───────────────────────── -->
+  <section class="li-card li-styles">
+    <h5>Uslub namunalari</h5>
+    <small class="li-hint">Faqat ohang uchun — AI ulardan narx yoki faktlarni olmaydi.</small>
+
+    <div class="li-loading" *ngIf="stylesLoading">Yuklanmoqda…</div>
+
+    <label class="li-style-row" *ngFor="let s of styles; trackBy: trackStyle" [class.off]="!s.is_active">
+      <input type="checkbox" [checked]="s.is_active" [disabled]="togglingStyleId === s.id"
+             (change)="toggleStyle(s)" />
+      <span class="li-style-text">{{ s.text }}</span>
+    </label>
+
+    <div class="li-empty" *ngIf="!stylesLoading && !styles.length">Hali uslub namunalari yo'q.</div>
+  </section>
+
+</div>

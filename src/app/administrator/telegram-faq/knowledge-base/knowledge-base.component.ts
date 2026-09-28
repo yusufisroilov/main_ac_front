@@ -79,6 +79,11 @@ export class KnowledgeBaseComponent implements OnInit {
 
   showActiveOnly = true;
 
+  /** "Faktlar" (the list above) or "O'rganish" (proposals + tone examples). */
+  kbTab: "facts" | "inbox" = "facts";
+  /** Kept live by the inbox child so the sub-tab badge shows without opening it. */
+  pendingProposalsCount = 0;
+
   sourceLabel = SOURCE_LABEL;
   actionLabel = ACTION_LABEL;
   testActionLabel = TEST_ACTION_LABEL;
@@ -171,6 +176,15 @@ export class KnowledgeBaseComponent implements OnInit {
   setActiveOnly(value: boolean): void {
     this.showActiveOnly = value;
     this.applyFilter();
+  }
+
+  switchKbTab(tab: "facts" | "inbox"): void {
+    this.kbTab = tab;
+  }
+
+  /** An approval that created or edited a fact -- reload the list and handbook stats. */
+  onProposalDecided(event: { factsChanged: boolean }): void {
+    if (event.factsChanged) this.load();
   }
 
   /** Shared by the "new fact" section select and the inline editor's. */
