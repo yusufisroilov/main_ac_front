@@ -135,8 +135,10 @@ export class TelegramChatsComponent implements OnInit, OnDestroy {
     this.client = null;
     this.parcels = [];
     this.suggestion = null;
+    this.linkHint = null;
     if (this.clientPanelOpen) this.loadClient();
     this.loadSuggestion(chat.id);
+    this.loadLinkHint(chat);
     this.loadMessages();
 
     if (chat.unread_count > 0) {
@@ -226,6 +228,8 @@ export class TelegramChatsComponent implements OnInit, OnDestroy {
       this.loadChats();
 
       if (!this.openChat || payload.chat_id !== this.openChat.id) return;
+      // A tracking number just sent may say whose chat this is.
+      if (!this.openChat.customer) this.loadLinkHint(this.openChat);
 
       // Refetch the newest page rather than trusting the event's contents:
       // it carries only ids, and an edit or a deletion changes a message that
@@ -513,6 +517,51 @@ export class TelegramChatsComponent implements OnInit, OnDestroy {
       },
       error: () => (this.clientSearching = false),
     });
+  }
+
+  /**
+   * "Bu yuk K10550 ga tegishli — biriktirasizmi?" The server finds the one
+   * client this unlinked chat's tracking numbers belong to; linking stays a
+   * person's click, since a shared or mistyped number could point elsewhere.
+   */
+  linkHint: { customer_id: number; code: string; name: string } | null = null;
+
+  private loadLinkHint(chat: TgChat): void {
+    if ((chat as any).customer) return;
+    this.chatService.getLinkSuggestion(chat.id).subscribe({
+      next: (res: any) => {
+        const s = res.suggestion;
+        if (this.openChat?.id !== chat.id) return;
+        this.linkHint = s && !this.hintDismissed(chat.id, s.customer_id) ? s : null;
+      },
+      error: () => (this.linkHint = null),
+    });
+  }
+
+  acceptLinkHint(): void {
+    if (!this.linkHint) return;
+    const customerId = this.linkHint.customer_id;
+    this.linkHint = null;
+    this.linkClient(customerId);
+  }
+
+  /** "No" is remembered per chat and client in this browser, so it is not asked again. */
+  dismissLinkHint(): void {
+    if (!this.linkHint || !this.openChat) return;
+    try {
+      localStorage.setItem(`tg-link-hint-no:${this.openChat.id}:${this.linkHint.customer_id}`, "1");
+    } catch (e) {
+      /* storage unavailable: it will simply be asked again */
+    }
+    this.linkHint = null;
+  }
+
+  private hintDismissed(chatId: number, customerId: number): boolean {
+    try {
+      return localStorage.getItem(`tg-link-hint-no:${chatId}:${customerId}`) === "1";
+    } catch (e) {
+      return false;
+    }
   }
 
   linkClient(customerId: number | null): void {

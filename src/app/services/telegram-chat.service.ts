@@ -187,6 +187,13 @@ export class TelegramChatService {
    * in transit. Fetched separately from the thread so opening a chat stays
    * cheap and an unlinked one costs nothing.
    */
+  /** The client this unlinked chat's tracking numbers belong to, if exactly one. */
+  getLinkSuggestion(chatId: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/telegram/chats/${chatId}/link-suggestion`, {
+      headers: this.getHeaders(),
+    });
+  }
+
   getChatClient(chatId: number): Observable<any> {
     return this.http.get(`${this.apiUrl}/telegram/chats/${chatId}/client`, {
       headers: this.getHeaders(),

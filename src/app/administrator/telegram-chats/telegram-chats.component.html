@@ -142,6 +142,20 @@
         </div>
       </header>
 
+      <!-- ───── link suggestion ─────
+           The chat's tracking numbers all belong to one client. A suggestion,
+           never an automatic link. -->
+      <div class="tg-link-hint" *ngIf="linkHint && !openChat.customer && !linking" role="status">
+        <i class="material-icons">link</i>
+        <span>
+          Bu chatdagi trek raqami <b>{{ linkHint.code }}</b>
+          <ng-container *ngIf="linkHint.name">({{ linkHint.name }})</ng-container>
+          mijozga tegishli — biriktirasizmi?
+        </span>
+        <button type="button" class="ok" (click)="acceptLinkHint()">Biriktirish</button>
+        <button type="button" (click)="dismissLinkHint()">Yo‘q</button>
+      </div>
+
       <!-- ───── client search ───── -->
       <div class="tg-linkbar" *ngIf="linking">
         <div class="tg-linkbar-row">

@@ -1369,3 +1369,43 @@
   font-weight: 600;
   color: #8a5a00;
 }
+
+/* "This chat's parcels belong to K10550 -- link it?" A quiet bar under the
+   header: a suggestion to accept or wave off, not an alarm. */
+.tg-link-hint {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 10px;
+  margin: 8px 16px 0;
+  padding: 8px 12px;
+  border: 1px solid #cfe3f7;
+  border-radius: 10px;
+  background: #f3f8fe;
+  font-size: 13px;
+  color: #33404d;
+}
+.tg-link-hint > i {
+  font-size: 18px;
+  color: #3390ec;
+}
+.tg-link-hint > span {
+  flex: 1 1 220px;
+}
+.tg-link-hint button {
+  border: 1px solid #d6dde5;
+  background: #fff;
+  border-radius: 8px;
+  padding: 4px 12px;
+  font-size: 12.5px;
+  cursor: pointer;
+}
+.tg-link-hint button.ok {
+  background: #3390ec;
+  border-color: #3390ec;
+  color: #fff;
+}
+.tg-link-hint button:focus-visible {
+  outline: 2px solid #3390ec;
+  outline-offset: 2px;
+}
