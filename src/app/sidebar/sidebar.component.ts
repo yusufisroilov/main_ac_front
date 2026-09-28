@@ -177,11 +177,18 @@ export const EmployeeROUTE: RouteInfo[] = [
 ];
 
 export const adminROUTES: RouteInfo[] = [
+  // Everything Telegram in one place, for the three roles that work with it.
   {
-    path: "/uzm/telegram-chats",
-    title: "Telegram Suhbatlar",
-    type: "link",
+    path: "/uzm",
+    title: "Telegram",
+    type: "sub-abs",
     icontype: "forum",
+    collapse: "telegram",
+    children: [
+      { path: "/uzm/telegram-chats", title: "Telegram Suhbatlar", ab: "TS" },
+      { path: "/uzm/telegram-analytics", title: "Telegram Tahlil", ab: "TT" },
+      { path: "/uzm/telegram-faq", title: "AI Javoblari", ab: "AJ" },
+    ],
   },
   {
     path: "/dashboard",
@@ -299,23 +306,18 @@ export const chinaStaffROUTES: RouteInfo[] = [
 ];
 
 export const managerROUTES: RouteInfo[] = [
+  // Everything Telegram in one place, for the three roles that work with it.
   {
-    path: "/uzm/telegram-faq",
-    title: "AI Javoblari",
-    type: "link",
-    icontype: "smart_toy",
-  },
-  {
-    path: "/uzm/telegram-analytics",
-    title: "Telegram Tahlil",
-    type: "link",
-    icontype: "query_stats",
-  },
-  {
-    path: "/uzm/telegram-chats",
-    title: "Telegram Suhbatlar",
-    type: "link",
+    path: "/uzm",
+    title: "Telegram",
+    type: "sub-abs",
     icontype: "forum",
+    collapse: "telegram",
+    children: [
+      { path: "/uzm/telegram-chats", title: "Telegram Suhbatlar", ab: "TS" },
+      { path: "/uzm/telegram-analytics", title: "Telegram Tahlil", ab: "TT" },
+      { path: "/uzm/telegram-faq", title: "AI Javoblari", ab: "AJ" },
+    ],
   },
   {
     path: "/dashboard",
@@ -601,23 +603,18 @@ export const accountantROUTES: RouteInfo[] = [
 ];
 
 export const ownerROUTES: RouteInfo[] = [
+  // Everything Telegram in one place, for the three roles that work with it.
   {
-    path: "/uzm/telegram-faq",
-    title: "AI Javoblari",
-    type: "link",
-    icontype: "smart_toy",
-  },
-  {
-    path: "/uzm/telegram-analytics",
-    title: "Telegram Tahlil",
-    type: "link",
-    icontype: "query_stats",
-  },
-  {
-    path: "/uzm/telegram-chats",
-    title: "Telegram Suhbatlar",
-    type: "link",
+    path: "/uzm",
+    title: "Telegram",
+    type: "sub-abs",
     icontype: "forum",
+    collapse: "telegram",
+    children: [
+      { path: "/uzm/telegram-chats", title: "Telegram Suhbatlar", ab: "TS" },
+      { path: "/uzm/telegram-analytics", title: "Telegram Tahlil", ab: "TT" },
+      { path: "/uzm/telegram-faq", title: "AI Javoblari", ab: "AJ" },
+    ],
   },
   {
     path: "/oa/dashboard",

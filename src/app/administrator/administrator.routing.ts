@@ -265,7 +265,7 @@ export const AdminstratorRoutes: Routes = [
       },
       {
         path: "telegram-faq",
-        canActivate: [ManagerAuthGuardService],
+        canActivate: [AdminAuthGuard],
         component: TelegramFaqComponent,
         data: {
           title: "AI Javoblari",
@@ -273,7 +273,7 @@ export const AdminstratorRoutes: Routes = [
       },
       {
         path: "telegram-analytics",
-        canActivate: [ManagerAuthGuardService],
+        canActivate: [AdminAuthGuard],
         component: TelegramAnalyticsComponent,
         data: {
           title: "Telegram Tahlil",
