@@ -86,6 +86,7 @@ export class TelegramFaqComponent implements OnInit {
 
   newEntry(): void {
     this.fromGapId = null;
+    this.fromAdminReply = false;
     this.editing = {
       id: null,
       category: "",
@@ -98,6 +99,7 @@ export class TelegramFaqComponent implements OnInit {
 
   edit(entry: any): void {
     this.fromGapId = null;
+    this.fromAdminReply = false;
     this.editing = {
       ...entry,
       // One phrasing per line is far easier to scan and edit than a JSON array.
@@ -105,24 +107,51 @@ export class TelegramFaqComponent implements OnInit {
     };
   }
 
-  /** Open the editor prefilled from a question nobody could answer. */
-  answerGap(gap: any): void {
+  /** Set while the editor holds a reply taken from a chat, to show the warning. */
+  fromAdminReply = false;
+
+  /**
+   * Open the editor prefilled from a question nobody could answer. With
+   * `useReply`, the answer staff actually gave in the chat is the starting
+   * text -- to be read and cleaned before it is saved for everyone.
+   */
+  answerGap(gap: any, useReply = false): void {
+    const reply = useReply ? gap.admin_reply : null;
     this.fromGapId = gap.id;
+    this.fromAdminReply = !!reply;
+    // The client's own wording is kept: it is better matching material than
+    // anything invented afterwards -- and with a reply, what they literally wrote.
+    const variants = [gap.question_text, reply?.client_text]
+      .filter((v: string | null) => v && v.trim())
+      .filter((v: string, i: number, all: string[]) => all.indexOf(v) === i);
     this.editing = {
       id: null,
-      category: "",
-      answer: "",
-      // The client's own wording is kept: it is better matching material than
-      // anything invented afterwards.
-      variantText: gap.question_text,
+      category: reply ? this.suggestCategory(gap.question_text) : "",
+      answer: reply ? reply.text : "",
+      variantText: variants.join("\n"),
       never_auto_send: false,
       is_active: true,
     };
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  /** "Yuk ko'p bo'lsa chegirma bormi" -> "yuk_kop_bolsa_chegirma": a starting name, editable. */
+  private suggestCategory(text: string): string {
+    return (text || "")
+      .toLowerCase()
+      .replace(/[ʻʼ'`‘’]/g, "")
+      .replace(/[^a-z0-9]+/g, "_")
+      .replace(/^_+|_+$/g, "")
+      .split("_")
+      .slice(0, 4)
+      .join("_")
+      .slice(0, 40);
   }
 
   cancel(): void {
     this.editing = null;
     this.fromGapId = null;
+    this.fromAdminReply = false;
   }
 
   private variantsFromText(): string[] {
@@ -160,6 +189,7 @@ export class TelegramFaqComponent implements OnInit {
       this.saving = false;
       this.editing = null;
       this.fromGapId = null;
+      this.fromAdminReply = false;
       // The server decides whether an edit took ownership from the seed file;
       // saying so here stops a manager being surprised later.
       if (res?.took_ownership) {

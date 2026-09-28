@@ -57,6 +57,17 @@
         Mijozlar qanday yozsa, shunday yozing — o‘zbekcha, ruscha, xato imlo bilan ham.
       </small>
 
+      <!-- Taken from one client's chat: it may name them, their weight, their
+           price. Every future client would be told the same, so it is said. -->
+      <div class="fq-learn-warn" *ngIf="fromAdminReply" role="note">
+        <i class="material-icons">warning_amber</i>
+        <span>
+          Bu matn bitta mijozga yozilgan javobdan olindi. Saqlashdan oldin shu mijozga
+          xos ma'lumotlarni (ismi, yuk vazni, narxi, sanasi) olib tashlang — endi u
+          <b>barcha mijozlarga</b> shu holda yuboriladi.
+        </span>
+      </div>
+
       <label class="fq-label">Javob matni <em>(mijozga aynan shu boradi)</em></label>
       <textarea
         class="fq-input fq-answer"
@@ -140,6 +151,20 @@
         <button type="button" (click)="dismissGap(g)" title="Kerak emas">
           <i class="material-icons">close</i>
         </button>
+
+        <!-- How staff actually answered it in the chat: one click turns it
+             into an approved answer, after a person has read it. -->
+        <div class="fq-gap-reply" *ngIf="g.admin_reply as r">
+          <div class="fq-gap-reply-head">
+            <i class="material-icons">forum</i>
+            Admin javob berdi
+            <em>{{ r.chat_name }} · {{ r.at | date: 'dd.MM HH:mm' : '+0500' }}</em>
+          </div>
+          <div class="fq-gap-reply-text">{{ r.text }}</div>
+          <button type="button" class="ok" (click)="answerGap(g, true)">
+            <i class="material-icons">school</i> Shu javobdan foydalanish
+          </button>
+        </div>
       </div>
     </section>
 

@@ -367,3 +367,62 @@
   font-size: 16px;
   display: block;
 }
+
+/* How staff answered a gap in the chat: set apart under the question. */
+.fq-gap {
+  flex-wrap: wrap;
+}
+.fq-gap-reply {
+  flex-basis: 100%;
+  margin: 8px 0 2px 36px;
+  padding: 10px 12px;
+  border-left: 3px solid #3390ec;
+  border-radius: 8px;
+  background: #f3f8fe;
+}
+.fq-gap-reply-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #2f6fb8;
+  margin-bottom: 4px;
+}
+.fq-gap-reply-head i {
+  font-size: 16px;
+}
+.fq-gap-reply-head em {
+  font-style: normal;
+  font-weight: 400;
+  color: #8a95a1;
+}
+.fq-gap-reply-text {
+  white-space: pre-line;
+  font-size: 13px;
+  color: #33404d;
+  margin-bottom: 8px;
+}
+.fq-gap-reply button i {
+  font-size: 16px;
+  vertical-align: -3px;
+}
+
+/* A reply from one client's chat is about to become everyone's answer. */
+.fq-learn-warn {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  margin: 12px 0 4px;
+  padding: 10px 12px;
+  border: 1px solid #ffe0a3;
+  border-radius: 8px;
+  background: #fff8e8;
+  font-size: 12.5px;
+  color: #8a5a00;
+  line-height: 1.45;
+}
+.fq-learn-warn i {
+  font-size: 18px;
+}
+
