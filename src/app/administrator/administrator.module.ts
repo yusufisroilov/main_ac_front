@@ -42,6 +42,7 @@ import { TelegramChatsComponent } from "./telegram-chats/telegram-chats.componen
 import { TgVoiceComponent } from "./telegram-chats/tg-voice.component";
 import { TelegramAnalyticsComponent } from "./telegram-analytics/telegram-analytics.component";
 import { TelegramFaqComponent } from "./telegram-faq/telegram-faq.component";
+import { KnowledgeBaseComponent } from "./telegram-faq/knowledge-base/knowledge-base.component";
 import { VideoLessonsComponent } from "./video-lessons/video-lessons.component";
 
 // import { FlexLayoutModule } from '@angular/flex-layout';
@@ -91,6 +92,7 @@ import { VideoLessonsComponent } from "./video-lessons/video-lessons.component";
     TgVoiceComponent,
     TelegramAnalyticsComponent,
     TelegramFaqComponent,
+    KnowledgeBaseComponent,
   ],
 })
 export class AdminstratorModule {}

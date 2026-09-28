@@ -34,7 +34,14 @@ export class TelegramFaqComponent implements OnInit {
 
   showRetired = false;
 
+  /** "Javoblar" (today's approved answers) or "Bilimlar bazasi" (facts assistant B reads). */
+  activeTab: "faq" | "kb" = "faq";
+
   constructor(private http: HttpClient) {}
+
+  switchTab(tab: "faq" | "kb"): void {
+    this.activeTab = tab;
+  }
 
   ngOnInit(): void {
     this.load();

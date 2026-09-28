@@ -175,6 +175,93 @@ export interface TgDraftResponse {
   b_mode: "off" | "shadow" | "cards";
 }
 
+// ------------------------------------------------------------ knowledge base
+
+/** One heading in the fixed, Uzbek-titled display order for the handbook. */
+export interface TgKnowledgeSection {
+  id: string;
+  title: string;
+}
+
+/** seed = shipped with the app; owner = the business owner wrote it by hand;
+ * learned = taken from an approved chat answer. */
+export type TgKnowledgeFactSource = "seed" | "owner" | "learned";
+
+/** One statement assistant B is allowed to tell clients, word for word. */
+export interface TgKnowledgeFact {
+  id: number;
+  section: string;
+  text: string;
+  is_active: boolean;
+  source: TgKnowledgeFactSource;
+  created_at: string;
+  updated_at: string;
+  changed_at: string | null;
+  /** Who last changed it; null means the seed script (shown as "Tizim"). */
+  changed_by: string | null;
+}
+
+export interface TgKnowledgeHandbookStats {
+  version: number | string;
+  approx_tokens: number;
+  facts: number;
+}
+
+export interface TgKnowledgeFactsResponse {
+  status: string;
+  facts: TgKnowledgeFact[];
+  sections: TgKnowledgeSection[];
+  handbook: TgKnowledgeHandbookStats;
+}
+
+export type TgKnowledgeAction = "create" | "edit" | "activate" | "deactivate" | "restore";
+
+/** The shape of a fact at one point in time, as kept in its audit trail. */
+export interface TgKnowledgeFactState {
+  section: string;
+  text: string;
+  is_active: boolean;
+}
+
+export interface TgKnowledgeHistoryEntry {
+  id: number;
+  action: TgKnowledgeAction;
+  before: TgKnowledgeFactState | null;
+  after: TgKnowledgeFactState | null;
+  at: string;
+  /** Who made the change; null means the system (shown as "Tizim"). */
+  user_name: string | null;
+}
+
+/** The compiled text assistant B actually reads, for the read-only preview. */
+export interface TgKnowledgeHandbook {
+  text: string;
+  version: number | string;
+  approx_tokens: number;
+  sections: number;
+  skipped_answers: number;
+}
+
+export type TgKnowledgeTestAction = "reply" | "ask" | "handover" | "no_reply";
+
+/** What a real model call decided for one tried-out customer question. */
+export interface TgKnowledgeTestResult {
+  action: TgKnowledgeTestAction;
+  text: string;
+  client_wants: string | null;
+  /** Why the model chose this action -- written in English by the model itself. */
+  reason: string;
+  confidence: string | number;
+  sections_used: string[];
+  facts_used: string[];
+  blocked_text: string | null;
+  failures: string[];
+  cost_usd: string | number | null;
+  ms: number;
+  trace: TgDraftTraceStep[] | null;
+  handbook_version: number | string;
+}
+
 /**
  * Reads the Telegram conversations mirrored from staff accounts.
  *
@@ -317,6 +404,86 @@ export class TelegramChatService {
     return this.http.post<{ status: string; edited?: boolean; not_chosen?: boolean }>(
       `${this.apiUrl}/telegram/drafts/${draftId}/decide`,
       { action, text },
+      { headers: this.getHeaders() },
+    );
+  }
+
+  // -------------------------------------------------------- knowledge base
+
+  /**
+   * Facts assistant B reads, grouped for the "Bilimlar bazasi" screen, plus a
+   * summary of the handbook they compile into. `sections` carries the fixed
+   * display order and Uzbek titles; a fact whose section isn't listed there
+   * still comes back, to be shown under its raw id.
+   */
+  getKnowledgeFacts(): Observable<TgKnowledgeFactsResponse> {
+    return this.http.get<TgKnowledgeFactsResponse>(
+      `${this.apiUrl}/telegram/knowledge/facts`,
+      { headers: this.getHeaders() },
+    );
+  }
+
+  createKnowledgeFact(
+    section: string,
+    text: string,
+  ): Observable<{ status: string; fact: TgKnowledgeFact }> {
+    return this.http.post<{ status: string; fact: TgKnowledgeFact }>(
+      `${this.apiUrl}/telegram/knowledge/facts`,
+      { section, text },
+      { headers: this.getHeaders() },
+    );
+  }
+
+  /** Used for both an edit and the on/off switch -- send only the fields that changed. */
+  updateKnowledgeFact(
+    id: number,
+    patch: { section?: string; text?: string; is_active?: boolean },
+  ): Observable<{ status: string; fact: TgKnowledgeFact; unchanged?: boolean }> {
+    return this.http.patch<{ status: string; fact: TgKnowledgeFact; unchanged?: boolean }>(
+      `${this.apiUrl}/telegram/knowledge/facts/${id}`,
+      patch,
+      { headers: this.getHeaders() },
+    );
+  }
+
+  getKnowledgeFactHistory(
+    id: number,
+  ): Observable<{ status: string; history: TgKnowledgeHistoryEntry[] }> {
+    return this.http.get<{ status: string; history: TgKnowledgeHistoryEntry[] }>(
+      `${this.apiUrl}/telegram/knowledge/facts/${id}/history`,
+      { headers: this.getHeaders() },
+    );
+  }
+
+  /** Puts the fact back to one audit entry's `after` state. */
+  restoreKnowledgeFact(
+    id: number,
+    auditId: number,
+  ): Observable<{ status: string; fact: TgKnowledgeFact; unchanged?: boolean }> {
+    return this.http.post<{ status: string; fact: TgKnowledgeFact; unchanged?: boolean }>(
+      `${this.apiUrl}/telegram/knowledge/facts/${id}/restore`,
+      { audit_id: auditId },
+      { headers: this.getHeaders() },
+    );
+  }
+
+  /** The compiled text assistant B actually reads. `all` includes switched-off facts too. */
+  getKnowledgeHandbook(all = false): Observable<TgKnowledgeHandbook> {
+    let params = new HttpParams();
+    if (all) params = params.set("all", "1");
+    return this.http.get<TgKnowledgeHandbook>(
+      `${this.apiUrl}/telegram/knowledge/handbook`,
+      { headers: this.getHeaders(), params },
+    );
+  }
+
+  /** Runs a real model call against the current handbook for one tried-out question -- costs money. */
+  testKnowledge(
+    text: string,
+  ): Observable<{ status: string; result: TgKnowledgeTestResult }> {
+    return this.http.post<{ status: string; result: TgKnowledgeTestResult }>(
+      `${this.apiUrl}/telegram/knowledge/test`,
+      { text },
       { headers: this.getHeaders() },
     );
   }

@@ -4,15 +4,33 @@
     <div class="fq-head">
       <div>
         <h4>AI javoblari</h4>
-        <small>
+        <small *ngIf="activeTab === 'faq'">
           Bu yerdagi matnlar mijozga <b>aynan shu holda</b> yuboriladi.
           AI faqat mos javobni tanlaydi — o‘zi matn yozmaydi.
         </small>
+        <small *ngIf="activeTab === 'kb'">
+          Bu yerdagi faktlarni yordamchi B o‘qiydi va shulardan javob tuzadi.
+        </small>
       </div>
-      <button type="button" class="fq-new" (click)="newEntry()">
+      <button type="button" class="fq-new" *ngIf="activeTab === 'faq'" (click)="newEntry()">
         <i class="material-icons">add</i> Yangi javob
       </button>
     </div>
+
+    <div class="fq-tabs">
+      <button type="button" class="fq-tab-btn" [class.active]="activeTab === 'faq'"
+              (click)="switchTab('faq')">
+        Javoblar
+      </button>
+      <button type="button" class="fq-tab-btn" [class.active]="activeTab === 'kb'"
+              (click)="switchTab('kb')">
+        Bilimlar bazasi
+      </button>
+    </div>
+
+    <app-knowledge-base *ngIf="activeTab === 'kb'"></app-knowledge-base>
+
+    <ng-container *ngIf="activeTab === 'faq'">
 
     <div class="fq-stats" *ngIf="!loading">
       <span><b>{{ visibleEntries.length }}</b> ta faol javob</span>
@@ -171,6 +189,8 @@
     <div class="fq-empty" *ngIf="!loading && !gaps.length && !visibleEntries.length">
       Hali javoblar yo‘q.
     </div>
+
+    </ng-container>
 
   </div>
 </div>

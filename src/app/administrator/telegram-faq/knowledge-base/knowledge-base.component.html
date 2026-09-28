@@ -1,0 +1,211 @@
+<div class="kb-root">
+
+  <div class="kb-loading" *ngIf="loading">Yuklanmoqda…</div>
+
+  <ng-container *ngIf="!loading">
+
+    <div class="kb-stats" *ngIf="handbookStats">
+      <span>
+        Qo'llanma: <b>{{ handbookStats.facts }}</b> fakt · ≈<b>{{ handbookStats.approx_tokens }}</b> token
+        · versiya <b>{{ handbookStats.version }}</b>
+      </span>
+      <button type="button" class="kb-btn-outline" (click)="openHandbook()">
+        <i class="material-icons">visibility</i> Qo'llanmani ko'rish
+      </button>
+    </div>
+
+    <!-- ───────────────────────── new fact ───────────────────────── -->
+    <section class="kb-card kb-new">
+      <h5>Yangi fakt</h5>
+      <div class="kb-section-row">
+        <select class="kb-input kb-select"
+                [ngModel]="newFact.customSection ? custom : newFact.section"
+                (ngModelChange)="onSectionPick(newFact, $event)">
+          <option value="" disabled>Bo'limni tanlang</option>
+          <option *ngFor="let s of sections; trackBy: trackSection" [value]="s.id">{{ s.title }}</option>
+          <option [value]="custom">+ Yangi bo'lim…</option>
+        </select>
+        <input *ngIf="newFact.customSection" type="text" class="kb-input kb-section-id"
+               placeholder="MASALAN_BOLIM" [(ngModel)]="newFact.section" />
+      </div>
+      <textarea class="kb-input kb-textarea" rows="3" maxlength="1000"
+                placeholder="Faktni yozing…" [(ngModel)]="newFact.text"></textarea>
+      <small class="kb-hint">
+        Narxlar bu yerda emas — ular Kargo Tariflari sahifasidan olinadi.
+      </small>
+      <div class="kb-actions">
+        <button type="button" class="ok" [disabled]="creating" (click)="createFact()">
+          {{ creating ? 'Saqlanmoqda…' : "Qo'shish" }}
+        </button>
+      </div>
+    </section>
+
+    <!-- ───────────────────────── filter ───────────────────────── -->
+    <div class="kb-filter">
+      <label class="kb-toggle">
+        <input type="checkbox" [ngModel]="showActiveOnly" (ngModelChange)="setActiveOnly($event)" />
+        Faqat yoqilganlar
+      </label>
+    </div>
+
+    <!-- ───────────────────────── fact groups ───────────────────────── -->
+    <section class="kb-group" *ngFor="let g of visibleGroups; trackBy: trackGroup">
+      <h6 class="kb-group-title">{{ g.title }}</h6>
+
+      <div class="kb-card kb-fact" *ngFor="let f of g.facts; trackBy: trackFact" [class.off]="!f.is_active">
+
+        <ng-container *ngIf="editingId !== f.id">
+          <div class="kb-fact-head">
+            <span class="kb-fact-id">F{{ f.id }}</span>
+            <span class="kb-badge" [class]="'src-' + f.source">{{ sourceLabel[f.source] }}</span>
+            <span class="kb-badge off" *ngIf="!f.is_active">o'chirilgan</span>
+            <span class="kb-fact-meta">
+              {{ f.changed_at | date: 'dd.MM.yyyy HH:mm' : '+0500' }} · {{ changedByLabel(f.changed_by) }}
+            </span>
+            <span class="kb-fact-actions">
+              <button type="button" (click)="startEdit(f)" title="Tahrirlash">
+                <i class="material-icons">edit</i>
+              </button>
+              <button type="button" (click)="openHistory(f)" title="Tarix">
+                <i class="material-icons">history</i>
+              </button>
+              <button type="button" [disabled]="togglingId === f.id" (click)="toggleActive(f)"
+                      [title]="toggleTitle(f)">
+                <i class="material-icons">{{ f.is_active ? 'visibility' : 'visibility_off' }}</i>
+              </button>
+            </span>
+          </div>
+          <p class="kb-fact-text">{{ f.text }}</p>
+        </ng-container>
+
+        <div class="kb-fact-edit" *ngIf="editingId === f.id">
+          <div class="kb-section-row">
+            <select class="kb-input kb-select"
+                    [ngModel]="editDraft.customSection ? custom : editDraft.section"
+                    (ngModelChange)="onSectionPick(editDraft, $event)">
+              <option *ngFor="let s of sections; trackBy: trackSection" [value]="s.id">{{ s.title }}</option>
+              <option [value]="custom">+ Yangi bo'lim…</option>
+            </select>
+            <input *ngIf="editDraft.customSection" type="text" class="kb-input kb-section-id"
+                   placeholder="MASALAN_BOLIM" [(ngModel)]="editDraft.section" />
+          </div>
+          <textarea class="kb-input kb-textarea" rows="3" maxlength="1000"
+                    [(ngModel)]="editDraft.text"></textarea>
+          <div class="kb-actions">
+            <button type="button" class="ok" [disabled]="saving" (click)="saveEdit(f)">
+              {{ saving ? 'Saqlanmoqda…' : 'Saqlash' }}
+            </button>
+            <button type="button" (click)="cancelEdit()">Bekor qilish</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="kb-empty" *ngIf="!visibleGroups.length">
+      Hali faktlar yo'q.
+    </div>
+
+    <!-- ───────────────────────── test box ───────────────────────── -->
+    <section class="kb-card kb-test">
+      <h5>Savolni sinab ko'rish</h5>
+      <label class="kb-label">Mijoz savoli</label>
+      <textarea class="kb-input kb-textarea" rows="3" [disabled]="testRunning"
+                placeholder="Masalan: avia bilan narxi qancha?"
+                [(ngModel)]="testText"></textarea>
+      <div class="kb-actions">
+        <button type="button" class="ok" [disabled]="testRunning" (click)="runTest()">
+          {{ testRunning ? 'Yuborilmoqda…' : "Sinab ko'rish (~1¢)" }}
+        </button>
+      </div>
+
+      <div class="kb-test-result" *ngIf="testResult">
+        <div class="kb-test-row">
+          <span class="kb-badge action">{{ testActionLabel[testResult.action] || testResult.action }}</span>
+          <span class="kb-test-cost" *ngIf="testResult.cost_usd != null || testResult.ms">
+            <ng-container *ngIf="testResult.cost_usd != null">${{ testResult.cost_usd }}</ng-container>
+            <ng-container *ngIf="testResult.ms"> · {{ testResult.ms }} ms</ng-container>
+          </span>
+        </div>
+        <p class="kb-test-text">
+          {{ testResult.action === 'handover' ? testResult.client_wants : testResult.text }}
+        </p>
+        <div class="kb-chips" *ngIf="testResult.sections_used?.length || testResult.facts_used?.length">
+          <span class="kb-chip" *ngFor="let s of testResult.sections_used">{{ s }}</span>
+          <span class="kb-chip fact" *ngFor="let f of testResult.facts_used">{{ f }}</span>
+        </div>
+        <div class="kb-test-fail" *ngIf="testResult.failures?.length">
+          <i class="material-icons">warning_amber</i>
+          <span>{{ testResult.failures.join('; ') }}</span>
+        </div>
+        <div class="kb-test-blocked" *ngIf="testResult.blocked_text">
+          <b>Yuborilmaydi:</b> {{ testResult.blocked_text }}
+        </div>
+      </div>
+    </section>
+
+  </ng-container>
+
+  <!-- ───────────────────────── history modal ───────────────────────── -->
+  <div class="kb-modal-overlay" *ngIf="historyFact" (click)="closeHistory()">
+    <div class="kb-modal" (click)="$event.stopPropagation()">
+      <div class="kb-modal-head">
+        <span class="kb-modal-title">F{{ historyFact.id }} tarixi</span>
+        <button type="button" class="kb-modal-close" (click)="closeHistory()" title="Yopish">
+          <i class="material-icons">close</i>
+        </button>
+      </div>
+      <div class="kb-modal-body">
+        <div class="kb-loading" *ngIf="historyLoading">Yuklanmoqda…</div>
+
+        <div class="kb-history-entry" *ngFor="let h of history; trackBy: trackHistory">
+          <div class="kb-history-head">
+            <b>{{ actionLabel[h.action] || h.action }}</b>
+            <span>{{ changedByLabel(h.user_name) }} · {{ h.at | date: 'dd.MM.yyyy HH:mm' : '+0500' }}</span>
+          </div>
+
+          <div class="kb-history-diff" *ngIf="!h.before && h.after">
+            <span class="to">{{ h.after.text }}</span>
+          </div>
+
+          <ng-container *ngIf="h.before && h.after">
+            <div class="kb-history-diff" *ngIf="h.before.text !== h.after.text">
+              <span class="from">{{ h.before.text }}</span>
+              <i class="material-icons">east</i>
+              <span class="to">{{ h.after.text }}</span>
+            </div>
+            <div class="kb-history-line" *ngIf="h.before.section !== h.after.section">
+              Bo'lim: {{ h.before.section }} → {{ h.after.section }}
+            </div>
+            <div class="kb-history-line" *ngIf="h.before.is_active !== h.after.is_active">
+              Holat: {{ activeLabel(h.before.is_active) }} → {{ activeLabel(h.after.is_active) }}
+            </div>
+          </ng-container>
+
+          <button type="button" class="kb-restore" *ngIf="h.after"
+                  [disabled]="restoringEntryId === h.id" (click)="restore(h)">
+            Shu holatga qaytarish
+          </button>
+        </div>
+
+        <div class="kb-empty" *ngIf="!historyLoading && !history.length">Tarix yo'q.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ───────────────────────── handbook preview modal ───────────────────────── -->
+  <div class="kb-modal-overlay" *ngIf="handbookOpen" (click)="closeHandbook()">
+    <div class="kb-modal kb-modal-wide" (click)="$event.stopPropagation()">
+      <div class="kb-modal-head">
+        <span class="kb-modal-title">Qo'llanma</span>
+        <button type="button" class="kb-modal-close" (click)="closeHandbook()" title="Yopish">
+          <i class="material-icons">close</i>
+        </button>
+      </div>
+      <div class="kb-modal-body">
+        <div class="kb-loading" *ngIf="handbookLoading">Yuklanmoqda…</div>
+        <pre class="kb-handbook-text" *ngIf="!handbookLoading">{{ handbookText }}</pre>
+      </div>
+    </div>
+  </div>
+
+</div>
