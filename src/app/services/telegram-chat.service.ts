@@ -103,6 +103,79 @@ export interface TgMessagesResponse {
 }
 
 /**
+ * One step of how assistant B produced its draft, shown to staff so a wrong
+ * or blocked answer can be understood rather than just distrusted. Which
+ * fields are set depends on `step`; the rest are absent.
+ */
+export interface TgDraftTraceStep {
+  step: "route" | "inputs" | "model" | "tool" | "fact_check" | "decision";
+  at?: string;
+  ms?: number;
+  /** route */
+  to?: string;
+  why?: string;
+  /** inputs */
+  handbook?: boolean;
+  context?: boolean;
+  linked?: boolean;
+  /** model */
+  turn?: number;
+  stop?: string;
+  cache_read?: boolean;
+  /** tool */
+  name?: string;
+  ok?: boolean;
+  error?: string;
+  /** fact_check */
+  failures?: string[];
+  /** decision */
+  action?: string;
+  attempts?: number;
+  cost_usd?: string | number | null;
+  blocked_text?: string | null;
+}
+
+/**
+ * A pending suggestion for the open chat's newest unanswered message, from
+ * either assistant. `variant` tells the two apart; B additionally carries how
+ * it got there. Never sent on its own -- a person decides.
+ */
+export interface TgDraft {
+  id: string;
+  variant: "A" | "B";
+  message_id: string;
+  kind: string;
+  suggested_text: string;
+  confidence: string;
+  match_reason: string | null;
+  requires_human: boolean;
+  created_at: string;
+  category: string | null;
+  never_auto_send: boolean | null;
+  cost_usd?: string | number | null;
+  trace?: TgDraftTraceStep[] | null;
+  /** Filled in by the component once, rather than on every change detection. */
+  traceLines?: string[];
+  /** UI-only: whether the composer holds this draft's edited text. */
+  editing?: boolean;
+  editText?: string;
+  /** UI-only: whether B's "Qanday tayyorlandi?" panel is expanded. */
+  traceOpen?: boolean;
+  /** UI-only: the text B generated but did not send, when a decision step blocked it. */
+  blockedText?: string | null;
+}
+
+export interface TgDraftResponse {
+  status: string;
+  /** Assistant A's pending draft, or null when there is none. */
+  draft: TgDraft | null;
+  /** Assistant B's pending draft. Present only when B is enabled at all. */
+  draft_b: TgDraft | null;
+  /** Whether B's card should be shown to staff at all. */
+  b_mode: "off" | "shadow" | "cards";
+}
+
+/**
  * Reads the Telegram conversations mirrored from staff accounts.
  *
  * Media and the event stream carry their own short-lived token in the query
@@ -208,19 +281,23 @@ export class TelegramChatService {
     });
   }
 
-  /** The pending suggestion for a chat, if one was already produced. Free. */
-  getDraft(chatId: number): Observable<any> {
-    return this.http.get(`${this.apiUrl}/telegram/chats/${chatId}/draft`, {
-      headers: this.getHeaders(),
-    });
+  /** The pending suggestion(s) for a chat, if any were already produced. Free. */
+  getDraft(chatId: number): Observable<TgDraftResponse> {
+    return this.http.get<TgDraftResponse>(
+      `${this.apiUrl}/telegram/chats/${chatId}/draft`,
+      { headers: this.getHeaders() },
+    );
   }
 
   /**
    * Ask for a suggestion for the newest unanswered message. Costs a model call,
-   * so it is only ever triggered by a person pressing something.
+   * so it is only ever triggered by a person pressing something. Always
+   * produces assistant A's draft only.
    */
-  makeDraft(chatId: number): Observable<any> {
-    return this.http.post(
+  makeDraft(
+    chatId: number,
+  ): Observable<{ status: string; draft: TgDraft | null; message?: string }> {
+    return this.http.post<{ status: string; draft: TgDraft | null; message?: string }>(
       `${this.apiUrl}/telegram/chats/${chatId}/draft`,
       {},
       { headers: this.getHeaders() },
@@ -229,10 +306,15 @@ export class TelegramChatService {
 
   /**
    * Record what the human did. Sending edited text stores the edit, which is
-   * the clearest signal of where the assistant is wrong.
+   * the clearest signal of where the assistant is wrong. Sending one variant
+   * closes the other's pending draft for the same message on the server.
    */
-  decideDraft(draftId: string, action: "sent" | "dismissed", text?: string): Observable<any> {
-    return this.http.post(
+  decideDraft(
+    draftId: string,
+    action: "sent" | "dismissed",
+    text?: string,
+  ): Observable<{ status: string; edited?: boolean; not_chosen?: boolean }> {
+    return this.http.post<{ status: string; edited?: boolean; not_chosen?: boolean }>(
       `${this.apiUrl}/telegram/drafts/${draftId}/decide`,
       { action, text },
       { headers: this.getHeaders() },

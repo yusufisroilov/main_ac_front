@@ -342,63 +342,149 @@
         </ng-container>
       </div>
 
-      <!-- ───── assistant suggestion ─────
+      <!-- ───── assistant suggestions ─────
            Never sent on its own. The assistant picks an approved answer; a
-           person decides whether it goes out, and can rewrite it first. -->
-      <!-- Owed a reply, nothing approved gives it: a notice for staff to
-           answer themselves, never a message to send. -->
-      <div class="tg-draft tg-needs" *ngIf="suggestion && needsAnswer" role="status">
-        <div class="tg-draft-head">
-          <i class="material-icons">priority_high</i>
-          <span class="tg-draft-label">Javob kerak — tayyor javob yo‘q</span>
-        </div>
-        <div class="tg-draft-body"><b>Mijoz so‘rayapti:</b> {{ suggestion.suggested_text }}</div>
-        <div class="tg-draft-actions">
-          <button type="button" class="ok" (click)="writeAnswer()">
-            <i class="material-icons">edit</i> Javob yozish
-          </button>
-          <button type="button" class="no" (click)="hideNotice()">
-            <i class="material-icons">close</i> Yopish
-          </button>
-        </div>
-      </div>
-
-      <div class="tg-draft" *ngIf="suggestion && !needsAnswer">
-        <div class="tg-draft-head">
-          <i class="material-icons">smart_toy</i>
-          <span class="tg-draft-label">
-            Taklif
-            <em *ngIf="suggestion.category">{{ suggestion.category }}</em>
-          </span>
-          <span class="tg-draft-conf" [class.low]="suggestion.confidence !== 'high'">
-            {{ suggestion.confidence }}
-          </span>
-          <span class="tg-draft-gated" *ngIf="suggestion.never_auto_send">
-            <i class="material-icons">lock</i> tekshirilsin
-          </span>
+           person decides whether it goes out, and can rewrite it first.
+           B appears beside A only when the backend turns on side-by-side
+           cards; otherwise only A ever renders here, exactly as before. -->
+      <ng-container *ngIf="suggestionA">
+        <!-- Owed a reply, nothing approved gives it: a notice for staff to
+             answer themselves, never a message to send. -->
+        <div class="tg-draft tg-needs" *ngIf="isNotice(suggestionA)" role="status">
+          <div class="tg-draft-head">
+            <i class="material-icons">priority_high</i>
+            <span class="tg-draft-label">Javob kerak — tayyor javob yo‘q</span>
+            <span class="tg-draft-variant" *ngIf="suggestionB">A</span>
+          </div>
+          <div class="tg-draft-body"><b>Mijoz so‘rayapti:</b> {{ suggestionA.suggested_text }}</div>
+          <div class="tg-draft-actions">
+            <button type="button" class="ok" (click)="writeAnswer()">
+              <i class="material-icons">edit</i> Javob yozish
+            </button>
+            <button type="button" class="no" (click)="hideNotice(suggestionA)">
+              <i class="material-icons">close</i> Yopish
+            </button>
+          </div>
         </div>
 
-        <div class="tg-draft-body" *ngIf="!suggestion.editing">{{ suggestion.suggested_text }}</div>
-        <textarea
-          class="tg-draft-edit"
-          *ngIf="suggestion.editing"
-          rows="3"
-          [(ngModel)]="suggestion.editText"></textarea>
+        <div class="tg-draft" *ngIf="!isNotice(suggestionA)">
+          <div class="tg-draft-head">
+            <i class="material-icons">smart_toy</i>
+            <span class="tg-draft-label">
+              Taklif
+              <em *ngIf="suggestionA.category">{{ suggestionA.category }}</em>
+            </span>
+            <span class="tg-draft-variant" *ngIf="suggestionB">A</span>
+            <span class="tg-draft-conf" [class.low]="suggestionA.confidence !== 'high'">
+              {{ suggestionA.confidence }}
+            </span>
+            <span class="tg-draft-gated" *ngIf="suggestionA.never_auto_send">
+              <i class="material-icons">lock</i> tekshirilsin
+            </span>
+          </div>
 
-        <div class="tg-draft-why" *ngIf="suggestion.match_reason">{{ suggestion.match_reason }}</div>
+          <div class="tg-draft-body" *ngIf="!suggestionA.editing">{{ suggestionA.suggested_text }}</div>
+          <textarea
+            class="tg-draft-edit"
+            *ngIf="suggestionA.editing"
+            rows="3"
+            [(ngModel)]="suggestionA.editText"></textarea>
 
-        <div class="tg-draft-actions">
-          <button type="button" class="ok" [disabled]="sending" (click)="sendSuggestion()">
-            <i class="material-icons">send</i> Yuborish
-          </button>
-          <button type="button" *ngIf="!suggestion.editing" (click)="editSuggestion()">
-            <i class="material-icons">edit</i> Tahrirlash
-          </button>
-          <button type="button" class="no" (click)="dismissSuggestion()">
-            <i class="material-icons">close</i> Kerak emas
-          </button>
+          <div class="tg-draft-why" *ngIf="suggestionA.match_reason">{{ suggestionA.match_reason }}</div>
+
+          <div class="tg-draft-actions">
+            <button type="button" class="ok" [disabled]="sending" (click)="sendSuggestion(suggestionA)">
+              <i class="material-icons">send</i> Yuborish
+            </button>
+            <button type="button" *ngIf="!suggestionA.editing" (click)="editSuggestion(suggestionA)">
+              <i class="material-icons">edit</i> Tahrirlash
+            </button>
+            <button type="button" class="no" (click)="dismissSuggestion(suggestionA)">
+              <i class="material-icons">close</i> Kerak emas
+            </button>
+          </div>
         </div>
-      </div>
+      </ng-container>
+
+      <!-- Assistant B, "plan B, phase 4": its own draft, compared side by
+           side with A's so either can be sent, edited or dismissed. -->
+      <ng-container *ngIf="suggestionB">
+        <div class="tg-draft tg-needs" *ngIf="isNotice(suggestionB)" role="status">
+          <div class="tg-draft-head">
+            <i class="material-icons">priority_high</i>
+            <span class="tg-draft-label">Javob kerak — tayyor javob yo‘q</span>
+            <span class="tg-draft-variant b">B</span>
+          </div>
+          <div class="tg-draft-body"><b>Mijoz so‘rayapti:</b> {{ suggestionB.suggested_text }}</div>
+          <div class="tg-draft-actions">
+            <button type="button" class="no" (click)="hideNotice(suggestionB)">
+              <i class="material-icons">close</i> Yopish
+            </button>
+          </div>
+
+          <button type="button" class="tg-trace-toggle" (click)="toggleTrace(suggestionB)"
+                  [attr.aria-expanded]="suggestionB.traceOpen">
+            <i class="material-icons">{{ suggestionB.traceOpen ? 'expand_less' : 'expand_more' }}</i>
+            Qanday tayyorlandi?
+          </button>
+          <ul class="tg-trace" *ngIf="suggestionB.traceOpen">
+            <li *ngFor="let line of suggestionB.traceLines; trackBy: trackTraceLine">{{ line }}</li>
+            <li class="tg-trace-blocked" *ngIf="suggestionB.blockedText">
+              Yuborilmadi: “{{ suggestionB.blockedText }}”
+            </li>
+          </ul>
+        </div>
+
+        <div class="tg-draft" *ngIf="!isNotice(suggestionB)">
+          <div class="tg-draft-head">
+            <i class="material-icons">smart_toy</i>
+            <span class="tg-draft-label">
+              Taklif
+              <em *ngIf="suggestionB.category">{{ suggestionB.category }}</em>
+            </span>
+            <span class="tg-draft-variant b">B</span>
+            <span class="tg-draft-conf" [class.low]="suggestionB.confidence !== 'high'">
+              {{ suggestionB.confidence }}
+            </span>
+            <span class="tg-draft-gated" *ngIf="suggestionB.never_auto_send">
+              <i class="material-icons">lock</i> tekshirilsin
+            </span>
+          </div>
+
+          <div class="tg-draft-body" *ngIf="!suggestionB.editing">{{ suggestionB.suggested_text }}</div>
+          <textarea
+            class="tg-draft-edit"
+            *ngIf="suggestionB.editing"
+            rows="3"
+            [(ngModel)]="suggestionB.editText"></textarea>
+
+          <div class="tg-draft-why" *ngIf="suggestionB.match_reason">{{ suggestionB.match_reason }}</div>
+
+          <div class="tg-draft-actions">
+            <button type="button" class="ok" [disabled]="sending" (click)="sendSuggestion(suggestionB)">
+              <i class="material-icons">send</i> Yuborish
+            </button>
+            <button type="button" *ngIf="!suggestionB.editing" (click)="editSuggestion(suggestionB)">
+              <i class="material-icons">edit</i> Tahrirlash
+            </button>
+            <button type="button" class="no" (click)="dismissSuggestion(suggestionB)">
+              <i class="material-icons">close</i> Kerak emas
+            </button>
+          </div>
+
+          <button type="button" class="tg-trace-toggle" (click)="toggleTrace(suggestionB)"
+                  [attr.aria-expanded]="suggestionB.traceOpen">
+            <i class="material-icons">{{ suggestionB.traceOpen ? 'expand_less' : 'expand_more' }}</i>
+            Qanday tayyorlandi?
+          </button>
+          <ul class="tg-trace" *ngIf="suggestionB.traceOpen">
+            <li *ngFor="let line of suggestionB.traceLines; trackBy: trackTraceLine">{{ line }}</li>
+            <li class="tg-trace-blocked" *ngIf="suggestionB.blockedText">
+              Yuborilmadi: “{{ suggestionB.blockedText }}”
+            </li>
+          </ul>
+        </div>
+      </ng-container>
 
       <!-- ───── composer ───── -->
       <footer class="tg-composer">

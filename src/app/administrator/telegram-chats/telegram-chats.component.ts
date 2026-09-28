@@ -15,6 +15,8 @@ import {
   TgMessage,
   TgEntity,
   TgSegment,
+  TgDraft,
+  TgDraftTraceStep,
 } from "../../services/telegram-chat.service";
 import { showBackendError } from "../../shared/backend-error";
 import swal from "sweetalert2";
@@ -134,7 +136,8 @@ export class TelegramChatsComponent implements OnInit, OnDestroy {
     this.cancelLinking();
     this.client = null;
     this.parcels = [];
-    this.suggestion = null;
+    this.suggestionA = null;
+    this.suggestionB = null;
     this.linkHint = null;
     if (this.clientPanelOpen) this.loadClient();
     this.loadSuggestion(chat.id);
@@ -586,7 +589,14 @@ export class TelegramChatsComponent implements OnInit, OnDestroy {
 
   // ------------------------------------------------------------- assistant
 
-  suggestion: any = null;
+  /** Assistant A's pending suggestion -- unchanged from before B existed. */
+  suggestionA: TgDraft | null = null;
+  /**
+   * Assistant B's pending suggestion, shown alongside A only when the backend
+   * turns on side-by-side cards (`b_mode === "cards"`); otherwise it stays
+   * null and the page behaves exactly as it did with one assistant.
+   */
+  suggestionB: TgDraft | null = null;
   suggestionLoading = false;
 
   /**
@@ -595,11 +605,76 @@ export class TelegramChatsComponent implements OnInit, OnDestroy {
    */
   private loadSuggestion(chatId: number): void {
     this.chatService.getDraft(chatId).subscribe({
-      next: (res: any) => {
-        if (this.openChat?.id === chatId) this.suggestion = res.draft;
+      next: (res) => {
+        if (this.openChat?.id !== chatId) return;
+        this.suggestionA = res.draft;
+        this.suggestionB =
+          res.b_mode === "cards" ? this.decorateB(res.draft_b) : null;
       },
-      error: () => (this.suggestion = null),
+      error: () => {
+        this.suggestionA = null;
+        this.suggestionB = null;
+      },
     });
+  }
+
+  /** Builds the plain-Uzbek trace lines once, rather than on every render. */
+  private decorateB(draft: TgDraft | null): TgDraft | null {
+    if (!draft) return null;
+    draft.traceLines = this.buildTraceLines(draft.trace);
+    const decision = draft.trace?.find((s) => s.step === "decision");
+    draft.blockedText = decision?.blocked_text || null;
+    return draft;
+  }
+
+  private buildTraceLines(trace: TgDraftTraceStep[] | null | undefined): string[] {
+    if (!trace || !trace.length) return [];
+    const lines: string[] = [];
+    for (const step of trace) {
+      switch (step.step) {
+        case "route":
+          lines.push(`Yo'nalish: ${step.to || "—"} (${step.why || "—"})`);
+          break;
+        case "inputs": {
+          const parts: string[] = [];
+          if (step.handbook) parts.push("qo'llanma");
+          if (step.context) parts.push("suhbat konteksti");
+          if (step.linked) parts.push("bog'langan mijoz");
+          lines.push(`Ma'lumotlar: ${parts.length ? parts.join(", ") : "yo'q"}`);
+          break;
+        }
+        case "model": {
+          const cache = step.cache_read ? ", keshdan" : "";
+          lines.push(`Model: ${step.turn ?? "—"}-chaqiruv, ${step.ms ?? "—"} ms${cache}`);
+          break;
+        }
+        case "tool":
+          lines.push(
+            `Qidiruv: ${step.name || "—"} ${step.ok ? "✓" : "✗" + (step.error ? `: ${step.error}` : "")}`,
+          );
+          break;
+        case "fact_check":
+          lines.push(
+            step.ok
+              ? "Fakt tekshiruvi: o'tdi"
+              : `Fakt tekshiruvi: o'tmadi${step.failures?.length ? `: ${step.failures.join(", ")}` : ""}`,
+          );
+          break;
+        case "decision":
+          lines.push(
+            `Qaror: ${step.action || "—"}${step.cost_usd != null ? ` · $${step.cost_usd}` : ""}`,
+          );
+          break;
+        default:
+          break;
+      }
+    }
+    return lines;
+  }
+
+  toggleTrace(draft: TgDraft | null): void {
+    if (!draft) return;
+    draft.traceOpen = !draft.traceOpen;
   }
 
   requestSuggestion(): void {
@@ -608,10 +683,10 @@ export class TelegramChatsComponent implements OnInit, OnDestroy {
     this.suggestionLoading = true;
 
     this.chatService.makeDraft(chatId).subscribe({
-      next: (res: any) => {
+      next: (res) => {
         this.suggestionLoading = false;
         if (this.openChat?.id !== chatId) return;
-        this.suggestion = res.draft;
+        this.suggestionA = res.draft;
         // No suggestion is a normal outcome, not a failure -- a thank-you
         // needing no reply, an answer already sent -- so it is said as
         // information. The error popup made "no reply needed" look broken.
@@ -626,23 +701,19 @@ export class TelegramChatsComponent implements OnInit, OnDestroy {
     });
   }
 
-  /** Open the suggestion for editing before it goes out. */
-  editSuggestion(): void {
-    if (!this.suggestion) return;
-    this.suggestion.editing = true;
-    this.suggestion.editText = this.suggestion.suggested_text;
+  /** Open a suggestion for editing before it goes out. */
+  editSuggestion(suggestion: TgDraft | null): void {
+    if (!suggestion) return;
+    suggestion.editing = true;
+    suggestion.editText = suggestion.suggested_text;
   }
 
-  sendSuggestion(): void {
-    if (!this.suggestion || !this.openChat) return;
-    const text = (
-      this.suggestion.editText ||
-      this.suggestion.suggested_text ||
-      ""
-    ).trim();
+  sendSuggestion(suggestion: TgDraft | null): void {
+    if (!suggestion || !this.openChat) return;
+    const text = (suggestion.editText || suggestion.suggested_text || "").trim();
     if (!text) return;
 
-    const draftId = this.suggestion.id;
+    const draftId = suggestion.id;
     const chatId = this.openChat.id;
     this.sending = true;
 
@@ -657,7 +728,10 @@ export class TelegramChatsComponent implements OnInit, OnDestroy {
             error: () => {},
           });
         }
-        this.suggestion = null;
+        // Sending either variant closes the other's pending draft for the
+        // same message on the server -- clear both rather than guess which.
+        this.suggestionA = null;
+        this.suggestionB = null;
         this.loadMessagesTail();
       },
       error: (err) => {
@@ -667,9 +741,13 @@ export class TelegramChatsComponent implements OnInit, OnDestroy {
     });
   }
 
-  /** A reply is owed and no approved answer exists: staff write it. */
-  get needsAnswer(): boolean {
-    return this.suggestion?.kind === "needs_answer";
+  /** A reply is owed and no approved (or fact-checked) answer exists: staff write it. */
+  isNotice(suggestion: TgDraft | null): boolean {
+    return (
+      suggestion?.kind === "needs_answer" ||
+      suggestion?.kind === "b_handover" ||
+      suggestion?.kind === "b_blocked"
+    );
   }
 
   /** Straight to the message box, for a reply no template covers. */
@@ -678,17 +756,20 @@ export class TelegramChatsComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Hides the "needs an answer" notice without recording a verdict: it is not
+   * Hides a "needs an answer" notice without recording a verdict: it is not
    * a suggestion staff can reject. It expires on its own once staff reply.
    */
-  hideNotice(): void {
-    this.suggestion = null;
+  hideNotice(suggestion: TgDraft | null): void {
+    if (!suggestion) return;
+    if (suggestion.variant === "A") this.suggestionA = null;
+    else this.suggestionB = null;
   }
 
-  dismissSuggestion(): void {
-    if (!this.suggestion) return;
-    const draftId = this.suggestion.id;
-    this.suggestion = null;
+  dismissSuggestion(suggestion: TgDraft | null): void {
+    if (!suggestion) return;
+    const draftId = suggestion.id;
+    if (suggestion.variant === "A") this.suggestionA = null;
+    else this.suggestionB = null;
     if (!draftId) return;
     this.chatService.decideDraft(draftId, "dismissed").subscribe({
       next: () => {},
@@ -848,5 +929,9 @@ export class TelegramChatsComponent implements OnInit, OnDestroy {
 
   trackMessage(_: number, message: TgMessage): string {
     return message.id;
+  }
+
+  trackTraceLine(index: number): number {
+    return index;
   }
 }
