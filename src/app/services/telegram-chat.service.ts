@@ -57,6 +57,12 @@ export interface TgMedia {
   skip_reason: string | null;
   url: string | null;
   thumb_url: string | null;
+  /** Speech-to-text of a voice/audio message; null for every other kind. */
+  transcript: string | null;
+  /** done | failed | skipped | too_long | null -- only set for voice/audio. */
+  transcript_status: "done" | "failed" | "skipped" | "too_long" | null;
+  /** UI-only: the "to'liq" expand was pressed for this message's transcript. */
+  transcriptExpanded?: boolean;
 }
 
 export interface TgEntity {

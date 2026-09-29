@@ -297,6 +297,32 @@
                   <span class="tg-media-note">{{ mediaNote(m) }}</span>
                 </div>
 
+                <!-- Transcript of a voice/audio message, so staff can read it
+                     instead of listening. -->
+                <ng-container *ngIf="media.kind === 'voice' || media.kind === 'audio'">
+                  <div class="tg-transcript" *ngIf="media.transcript_status === 'done' && media.transcript">
+                    <span class="tg-transcript-label">📝 Matn:</span>
+                    <p
+                      class="tg-transcript-text"
+                      [class.clamped]="!media.transcriptExpanded">{{ media.transcript }}</p>
+                    <button
+                      type="button"
+                      class="tg-transcript-more"
+                      *ngIf="!media.transcriptExpanded && isTranscriptLong(media.transcript)"
+                      (click)="expandTranscript(media)">
+                      to'liq
+                    </button>
+                  </div>
+
+                  <div class="tg-transcript tg-transcript-note" *ngIf="media.transcript_status === 'too_long'">
+                    Ovozli xabar juda uzun — matnga o'girilmadi
+                  </div>
+
+                  <div class="tg-transcript tg-transcript-note" *ngIf="media.transcript_status === 'failed'">
+                    Matnga o'girib bo'lmadi
+                  </div>
+                </ng-container>
+
                 <div class="tg-photo" *ngIf="media.kind === 'animation' && media.url">
                   <video [src]="mediaUrl(media.url)" autoplay loop muted playsinline></video>
                 </div>

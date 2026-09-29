@@ -17,6 +17,7 @@ import {
   TgSegment,
   TgDraft,
   TgDraftTraceStep,
+  TgMedia,
 } from "../../services/telegram-chat.service";
 import { showBackendError } from "../../shared/backend-error";
 import swal from "sweetalert2";
@@ -415,6 +416,21 @@ export class TelegramChatsComponent implements OnInit, OnDestroy {
     const m = Math.floor(seconds / 60);
     const s = seconds % 60;
     return `${m}:${String(s).padStart(2, "0")}`;
+  }
+
+  /**
+   * Whether a transcript is long enough to hide behind "to'liq" -- roughly six
+   * lines at the width a voice/audio bubble renders at. Character count is an
+   * approximation rather than a real layout measurement, which would need
+   * measuring the rendered DOM on every message.
+   */
+  isTranscriptLong(text: string | null): boolean {
+    return !!text && text.length > 260;
+  }
+
+  /** Reveals a transcript clamped by `isTranscriptLong`. Never re-collapses. */
+  expandTranscript(media: TgMedia): void {
+    media.transcriptExpanded = true;
   }
 
   /** Why a file has no bytes, in words rather than a status code. */
