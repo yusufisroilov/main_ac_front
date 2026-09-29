@@ -25,8 +25,9 @@ export class TelegramAnalyticsComponent implements OnInit {
   days = 30;
 
   /** "speed" = response times (free, SQL). "topics" = what clients ask (paid).
-   * "compare" = assistant A vs B, plan B's side-by-side test (free, SQL). */
-  tab: "speed" | "topics" | "compare" = "speed";
+   * "compare" = assistant A vs B, plan B's side-by-side test (free, SQL).
+   * "cost" = what the AI assistants spend (free, SQL). */
+  tab: "speed" | "topics" | "compare" | "cost" = "speed";
 
   topicReport: any = null;
   topicsLoading = false;
@@ -51,7 +52,7 @@ export class TelegramAnalyticsComponent implements OnInit {
     else this.loadPreview();
   }
 
-  setTab(tab: "speed" | "topics" | "compare"): void {
+  setTab(tab: "speed" | "topics" | "compare" | "cost"): void {
     this.tab = tab;
     if (tab === "topics" && !this.topicReport) this.loadTopics();
     if (tab === "topics") this.loadPreview();

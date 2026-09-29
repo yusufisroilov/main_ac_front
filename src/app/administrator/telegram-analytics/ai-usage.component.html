@@ -1,0 +1,167 @@
+<div class="au-root">
+
+  <div class="au-head">
+    <div>
+      <h4>AI xarajatlari</h4>
+      <small>Telegram AI yordamchilarining token va dollar sarfi — kun va funksiya bo'yicha</small>
+    </div>
+    <div class="au-ranges">
+      <button type="button" *ngFor="let r of ranges"
+              [class.on]="days === r.days" [disabled]="loading" (click)="setDays(r.days)">
+        {{ r.label }}
+      </button>
+    </div>
+  </div>
+
+  <div class="au-loading" *ngIf="loading">Yuklanmoqda…</div>
+
+  <!-- Before the usage migration runs: a plain notice, not a scary error. -->
+  <div class="au-notready" *ngIf="!loading && notReady">
+    <i class="material-icons">info_outline</i>
+    <span>{{ notReady }}</span>
+  </div>
+
+  <div class="au-error" *ngIf="!loading && loadError">
+    <i class="material-icons">error_outline</i>
+    <span>Ma'lumotlarni yuklab bo'lmadi.</span>
+    <button type="button" (click)="load()">Qayta urinish</button>
+  </div>
+
+  <ng-container *ngIf="!loading && !notReady && !loadError && data as d">
+
+    <div class="au-empty" *ngIf="d.total.calls === 0">
+      Bu davrda AI ishlatilmagan.
+    </div>
+
+    <ng-container *ngIf="d.total.calls > 0">
+
+      <!-- ───────────────────────── top cards ───────────────────────── -->
+      <div class="au-cards">
+        <div class="au-card">
+          <span class="lbl">Jami xarajat</span>
+          <span class="val">{{ cost(d.total.cost_usd) }}</span>
+          <span class="sub">{{ days }} kun ichida · {{ d.total.calls | number }} chaqiruv</span>
+        </div>
+
+        <div class="au-card">
+          <span class="lbl">Kesh samaradorligi</span>
+          <span class="val">{{ percent(d.cache_hit_pct) }}</span>
+          <span class="sub">o'qishning keshdan bajarilgan qismi</span>
+          <span class="sub warn" *ngIf="lowCacheHit(d)">Kesh kam ishlayapti — xarajat oshadi</span>
+        </div>
+
+        <div class="au-card au-today">
+          <span class="lbl">Bugun</span>
+          <span class="val">{{ d.today.calls }} / {{ d.today.limit }} chaqiruv</span>
+          <div class="au-progress">
+            <div class="au-progress-bar" [ngClass]="todayState()" [style.width.%]="todayPct()"></div>
+          </div>
+          <span class="sub bad" *ngIf="todayState() === 'bad'">
+            Avtomatik AI ertagacha to'xtatildi; 🤖 tugmasi ishlaydi
+          </span>
+          <span class="sub warn" *ngIf="todayState() === 'warn'">Kunlik limitga yaqinlashmoqda</span>
+        </div>
+      </div>
+
+      <!-- ───────────────────────── reading / writing / thinking ───────────────────────── -->
+      <section class="au-box" *ngIf="readWrite as rw">
+        <h5>Xarajat qayerga ketyapti <small>— {{ days }} kun</small></h5>
+
+        <div class="au-split">
+          <div class="au-split-row">
+            <div class="au-split-head">
+              <span class="au-split-label"
+                    title="input_tokens (keshsiz) + cache_read_tokens (keshdan, 10× arzon) + cache_write_tokens (keshga yozish)">
+                O'qish
+              </span>
+              <span class="au-split-nums">
+                {{ rw.reading.tokens | number }} token · {{ cost(rw.reading.costUsd) }} · {{ percent(rw.reading.pct) }}
+              </span>
+            </div>
+            <div class="au-bar-track">
+              <div class="au-bar reading" [style.width.%]="rw.reading.pct"></div>
+            </div>
+          </div>
+
+          <div class="au-split-row">
+            <div class="au-split-head">
+              <span class="au-split-label" title="Modelning javobi va fikrlashi — token boshiga eng qimmati">
+                Yozish
+              </span>
+              <span class="au-split-nums">
+                {{ rw.writing.tokens | number }} token · {{ cost(rw.writing.costUsd) }} · {{ percent(rw.writing.pct) }}
+              </span>
+            </div>
+            <div class="au-bar-track">
+              <div class="au-bar writing" [style.width.%]="rw.writing.pct"></div>
+            </div>
+          </div>
+
+          <div class="au-split-row au-split-sub" *ngIf="thinking as th">
+            <div class="au-split-head">
+              <span class="au-split-label"
+                    title="Taxminiy — API fikrlashni alohida ko'rsatmaydi, u yozish ichida hisoblanadi">
+                ≈ Fikrlash
+              </span>
+              <span class="au-split-nums">
+                ≈{{ th.tokens | number }} token · ≈{{ cost(th.costUsd) }} · yozishning {{ percent(th.pctOfWriting) }}
+              </span>
+            </div>
+            <div class="au-bar-track">
+              <div class="au-bar thinking" [style.width.%]="th.pctOfWriting"></div>
+            </div>
+            <p class="au-note">
+              Taxminiy — API fikrlashni alohida ko'rsatmaydi, u yozish ichida hisoblanadi.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ───────────────────────── by feature ───────────────────────── -->
+      <section class="au-box" *ngIf="d.by_feature.length">
+        <h5>Funksiya bo'yicha <small>— eng qimmatidan boshlab</small></h5>
+        <table class="au-table">
+          <thead>
+            <tr>
+              <th>Funksiya</th>
+              <th>Chaqiruv</th>
+              <th>O'qish</th>
+              <th>Yozish</th>
+              <th>≈ Fikrlash</th>
+              <th>$</th>
+              <th>%</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let f of d.by_feature; trackBy: trackFeature">
+              <td class="k">{{ featureLabel(f.feature) }}</td>
+              <td>{{ f.calls | number }}</td>
+              <td>{{ readingTokens(f) | number }}</td>
+              <td>{{ f.output_tokens | number }}</td>
+              <td>≈{{ f.thinking_tokens_est | number }}</td>
+              <td>{{ cost(f.cost_usd) }}</td>
+              <td>{{ percent(featureShare(f)) }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- ───────────────────────── by day ───────────────────────── -->
+      <section class="au-box" *ngIf="d.by_day.length">
+        <h5>Kun bo'yicha <small>— yangisidan eskisiga</small></h5>
+        <div class="au-days">
+          <div class="au-day" *ngFor="let day of d.by_day; trackBy: trackDay">
+            <span class="au-day-date">{{ dayLabel(day.day) }}</span>
+            <div class="au-bar-track">
+              <div class="au-bar cost" [style.width.%]="dayBarPct(day)"></div>
+            </div>
+            <span class="au-day-calls">{{ day.calls }} chaqiruv</span>
+            <span class="au-day-cost">{{ cost(day.cost_usd) }}</span>
+          </div>
+        </div>
+      </section>
+
+    </ng-container>
+  </ng-container>
+
+</div>

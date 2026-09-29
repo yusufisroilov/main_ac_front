@@ -27,6 +27,9 @@
       <button type="button" [class.on]="tab === 'compare'" (click)="setTab('compare')">
         AI taqqoslash
       </button>
+      <button type="button" [class.on]="tab === 'cost'" (click)="setTab('cost')">
+        AI xarajatlari
+      </button>
     </div>
 
     <div class="ta-loading" *ngIf="loading && tab === 'speed'">Yuklanmoqda…</div>
@@ -356,6 +359,10 @@
          Always mounted (hidden, not removed) so switching tabs never loses
          the loaded report -- same reason as the learning inbox next door. -->
     <app-assistant-compare [hidden]="tab !== 'compare'"></app-assistant-compare>
+
+    <!-- ───────────────────────── AI xarajatlari ─────────────────────────
+         Always mounted (hidden, not removed) -- same reason as compare. -->
+    <app-ai-usage [hidden]="tab !== 'cost'"></app-ai-usage>
 
   </div>
 </div>

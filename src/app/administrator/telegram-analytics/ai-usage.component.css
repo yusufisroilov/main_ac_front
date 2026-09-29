@@ -1,0 +1,329 @@
+/* "AI xarajatlari" -- what the Telegram assistants cost, per day and per
+   feature. Same visual language as the rest of the analytics page (ta-*,
+   ac-*), its own "au-" prefix since it lives in its own component. */
+
+.au-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+.au-head h4 {
+  margin: 0;
+  font-weight: 600;
+  color: #1f2933;
+}
+.au-head small {
+  color: #8a95a1;
+  font-size: 12px;
+}
+
+.au-ranges {
+  display: flex;
+  gap: 4px;
+  background: #eef1f5;
+  border-radius: 9px;
+  padding: 3px;
+}
+.au-ranges button {
+  border: 0;
+  background: none;
+  border-radius: 7px;
+  padding: 6px 14px;
+  font-size: 13px;
+  color: #64707d;
+  cursor: pointer;
+}
+.au-ranges button.on {
+  background: #fff;
+  color: #1f2933;
+  font-weight: 600;
+  box-shadow: 0 1px 3px rgba(16, 32, 56, 0.12);
+}
+.au-ranges button:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+
+.au-loading,
+.au-empty {
+  padding: 40px;
+  text-align: center;
+  color: #9aa5b1;
+}
+
+.au-notready {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: #fff8e8;
+  border: 1px solid #ffe0a3;
+  border-radius: 10px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  font-size: 13px;
+  color: #8a5a00;
+  line-height: 1.45;
+}
+.au-notready i {
+  font-size: 19px;
+  flex: 0 0 auto;
+}
+
+.au-error {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #fdecea;
+  border: 1px solid #f6d0cb;
+  border-radius: 10px;
+  padding: 14px 16px;
+  color: #c0392b;
+  font-size: 13px;
+}
+.au-error button {
+  margin-left: auto;
+  border: 1px solid #c0392b;
+  background: #fff;
+  color: #c0392b;
+  border-radius: 8px;
+  padding: 6px 14px;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* ── top cards ── */
+
+.au-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.au-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 16px 18px;
+  box-shadow: 0 2px 10px rgba(16, 32, 56, 0.07);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.au-card .lbl {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: #9aa5b1;
+  font-weight: 600;
+}
+.au-card .val {
+  font-size: 24px;
+  font-weight: 700;
+  color: #1f2933;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.25;
+}
+.au-card .sub {
+  font-size: 11.5px;
+  color: #8a95a1;
+}
+.au-card .sub.warn {
+  color: #9a6400;
+  font-weight: 600;
+}
+.au-card .sub.bad {
+  color: #c0392b;
+  font-weight: 600;
+}
+
+.au-progress {
+  height: 7px;
+  background: #eef1f5;
+  border-radius: 4px;
+  overflow: hidden;
+  margin: 6px 0 3px;
+}
+.au-progress-bar {
+  height: 100%;
+  border-radius: 4px;
+  background: #2f8f4e;
+  transition: width 0.2s ease;
+}
+.au-progress-bar.warn {
+  background: #e0a100;
+}
+.au-progress-bar.bad {
+  background: #c0392b;
+}
+
+/* ── panels ── */
+
+.au-box {
+  background: #fff;
+  border-radius: 12px;
+  padding: 16px 18px 18px;
+  box-shadow: 0 2px 10px rgba(16, 32, 56, 0.07);
+  margin-bottom: 14px;
+  overflow-x: auto;
+}
+.au-box h5 {
+  margin: 0 0 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #46525f;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+.au-box h5 small {
+  text-transform: none;
+  letter-spacing: 0;
+  color: #9aa5b1;
+  font-weight: 400;
+}
+
+/* ── reading / writing / thinking split ── */
+
+.au-split {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.au-split-row.au-split-sub {
+  margin-top: -4px;
+  padding-left: 18px;
+  border-left: 2px solid #f1e4c8;
+}
+.au-split-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 5px;
+}
+.au-split-label {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #1f2933;
+  cursor: help;
+}
+.au-split-sub .au-split-label {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: #8a6a1f;
+}
+.au-split-nums {
+  font-size: 12px;
+  color: #64707d;
+  font-variant-numeric: tabular-nums;
+}
+
+.au-bar-track {
+  height: 9px;
+  background: #eef1f5;
+  border-radius: 5px;
+  overflow: hidden;
+}
+.au-bar {
+  height: 100%;
+  border-radius: 5px;
+}
+.au-bar.reading { background: #3390ec; }
+.au-bar.writing { background: #d9822b; }
+.au-bar.thinking { background: #f0c48a; }
+.au-bar.cost { background: #3390ec; }
+
+.au-note {
+  margin: 6px 0 0;
+  font-size: 11.5px;
+  color: #9a8354;
+  line-height: 1.4;
+}
+
+/* ── tables ── */
+
+.au-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.au-table th {
+  text-align: right;
+  font-size: 11px;
+  font-weight: 600;
+  color: #9aa5b1;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  padding: 0 8px 8px;
+  white-space: nowrap;
+}
+.au-table th:first-child,
+.au-table td:first-child {
+  text-align: left;
+}
+.au-table td {
+  text-align: right;
+  padding: 8px;
+  border-top: 1px solid #f1f4f8;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.au-table td.k {
+  font-weight: 500;
+  color: #1f2933;
+  white-space: normal;
+}
+
+/* ── by day ── */
+
+.au-days {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.au-day {
+  display: grid;
+  grid-template-columns: 82px 1fr auto auto;
+  align-items: center;
+  gap: 10px;
+  font-size: 12.5px;
+}
+.au-day-date {
+  color: #64707d;
+  font-variant-numeric: tabular-nums;
+}
+.au-day-calls {
+  color: #9aa5b1;
+  white-space: nowrap;
+}
+.au-day-cost {
+  font-weight: 600;
+  color: #1f2933;
+  font-variant-numeric: tabular-nums;
+  min-width: 62px;
+  text-align: right;
+}
+
+/* ── responsive ── */
+
+@media (max-width: 576px) {
+  .au-cards {
+    grid-template-columns: 1fr;
+  }
+  .au-table th,
+  .au-table td {
+    padding: 7px 5px;
+    font-size: 12px;
+  }
+  .au-day {
+    grid-template-columns: 64px 1fr auto auto;
+    gap: 6px;
+    font-size: 11.5px;
+  }
+  .au-day-cost {
+    min-width: 50px;
+  }
+}

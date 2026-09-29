@@ -425,6 +425,52 @@ export interface TgAssistantComparisonResponse {
   examples: TgAssistantExample[];
 }
 
+// ------------------------------------------------------------ AI usage / cost
+
+/**
+ * Token and dollar counts shared by the period total, each day and each
+ * feature row. `thinking_tokens_est` is an estimate included inside
+ * `output_tokens`, not additional to it -- the API doesn't report thinking
+ * separately.
+ */
+export interface TgAiUsageTotals {
+  calls: number;
+  input_tokens: number;
+  cache_read_tokens: number;
+  cache_write_tokens: number;
+  output_tokens: number;
+  thinking_tokens_est: number;
+  cost_usd: number;
+}
+
+export interface TgAiUsageByDay extends TgAiUsageTotals {
+  /** "2026-09-29" */
+  day: string;
+}
+
+export interface TgAiUsageByFeature extends TgAiUsageTotals {
+  feature: string;
+}
+
+export interface TgAiUsageToday {
+  day: string;
+  calls: number;
+  limit: number;
+}
+
+export interface TgAiUsageResponse {
+  status: string;
+  days: number;
+  total: TgAiUsageTotals;
+  /** Share of reading served from the cache; null with no reading yet. */
+  cache_hit_pct: number | null;
+  /** Newest first. */
+  by_day: TgAiUsageByDay[];
+  /** Most expensive first. */
+  by_feature: TgAiUsageByFeature[];
+  today: TgAiUsageToday;
+}
+
 /**
  * Reads the Telegram conversations mirrored from staff accounts.
  *
@@ -722,6 +768,19 @@ export class TelegramChatService {
   getAssistantComparison(days = 7): Observable<TgAssistantComparisonResponse> {
     return this.http.get<TgAssistantComparisonResponse>(
       `${this.apiUrl}/telegram/analytics/assistants`,
+      { headers: this.getHeaders(), params: new HttpParams().set("days", String(days)) },
+    );
+  }
+
+  /**
+   * What the Telegram AI assistants cost over the last `days` (1-90, default
+   * 30): reading/writing/thinking tokens and dollars, per day and per
+   * feature, plus today's calls against the daily limit. 503 before the
+   * usage-logging migration has run.
+   */
+  getAiUsage(days = 30): Observable<TgAiUsageResponse> {
+    return this.http.get<TgAiUsageResponse>(
+      `${this.apiUrl}/telegram/analytics/ai-usage`,
       { headers: this.getHeaders(), params: new HttpParams().set("days", String(days)) },
     );
   }
