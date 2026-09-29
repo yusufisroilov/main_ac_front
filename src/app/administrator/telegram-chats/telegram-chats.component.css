@@ -1240,6 +1240,34 @@
    until a person presses Yuborish, so it must never be mistaken for
    something already on its way to the client. */
 
+/* The suggestions area: never taller than about half the pane, scrolls inside. */
+.tg-drafts {
+  flex: 0 1 auto;
+  max-height: 55vh;
+  overflow-y: auto;
+}
+
+/* A and B together: side by side where there is room, each a little shorter. */
+.tg-drafts-pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  padding: 0 16px;
+  align-items: start;
+}
+.tg-drafts-pair .tg-draft {
+  margin: 0 0 8px;
+  min-width: 0;
+}
+.tg-drafts-pair .tg-draft-body {
+  max-height: 150px;
+}
+@media (max-width: 1100px) {
+  .tg-drafts-pair {
+    grid-template-columns: 1fr;
+  }
+}
+
 .tg-draft {
   margin: 0 16px 8px;
   border: 1px solid #cfe3f7;

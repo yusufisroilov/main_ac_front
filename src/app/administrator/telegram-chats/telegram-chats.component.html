@@ -364,6 +364,10 @@
            person decides whether it goes out, and can rewrite it first.
            B appears beside A only when the backend turns on side-by-side
            cards; otherwise only A ever renders here, exactly as before. -->
+      <!-- Both drafts together: side by side on a wide screen so they can be
+           compared, stacked on a narrow one; the area scrolls instead of
+           pushing the second card off the screen. -->
+      <div class="tg-drafts" [class.tg-drafts-pair]="suggestionA && suggestionB" *ngIf="suggestionA || suggestionB">
       <ng-container *ngIf="suggestionA">
         <!-- Owed a reply, nothing approved gives it: a notice for staff to
              answer themselves, never a message to send. -->
@@ -502,6 +506,7 @@
           </ul>
         </div>
       </ng-container>
+      </div>
 
       <!-- ───── composer ───── -->
       <footer class="tg-composer">
