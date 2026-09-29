@@ -185,8 +185,7 @@
   gap: 8px;
   margin-top: 18px;
 }
-.fq-actions button,
-.fq-gap button {
+.fq-actions button {
   border: 1px solid #dde4ec;
   background: #fff;
   border-radius: 8px;
@@ -195,12 +194,10 @@
   color: #46525f;
   cursor: pointer;
 }
-.fq-actions button:hover,
-.fq-gap button:hover {
+.fq-actions button:hover {
   background: #f4f7fb;
 }
-.fq-actions button.ok,
-.fq-gap button.ok {
+.fq-actions button.ok {
   background: #3390ec;
   border-color: #3390ec;
   color: #fff;
@@ -328,128 +325,4 @@
   font-size: 11px;
 }
 
-/* ───────────────────────────── gaps ───────────────────────────── */
-
-.fq-gaps {
-  background: #fffaf2;
-  border: 1px solid #ffe0a3;
-  border-radius: 12px;
-  padding: 16px 18px 18px;
-  margin-top: 20px;
-}
-.fq-gaps h5 {
-  margin: 0 0 12px;
-  font-size: 13px;
-  font-weight: 600;
-  color: #8a5a00;
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
-}
-.fq-gaps h5 small {
-  display: block;
-  text-transform: none;
-  letter-spacing: 0;
-  font-weight: 400;
-  color: #b08a45;
-  margin-top: 2px;
-}
-
-.fq-gap {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background: #fff;
-  border-radius: 8px;
-  padding: 9px 12px;
-  margin-bottom: 6px;
-}
-.fq-gap-count {
-  flex: 0 0 auto;
-  min-width: 32px;
-  text-align: center;
-  font-size: 11.5px;
-  font-weight: 700;
-  color: #8a95a1;
-  background: #f1f4f8;
-  border-radius: 9px;
-  padding: 2px 7px;
-}
-/* Asked more than twice: that is a pattern, not a one-off. */
-.fq-gap-count.hot {
-  background: #fdecea;
-  color: #c0392b;
-}
-.fq-gap-text {
-  flex: 1;
-  font-size: 13px;
-  color: #1f2933;
-  min-width: 0;
-  word-wrap: break-word;
-}
-.fq-gap button {
-  padding: 6px 12px;
-  font-size: 12.5px;
-}
-.fq-gap button i {
-  font-size: 16px;
-  display: block;
-}
-
-/* How staff answered a gap in the chat: set apart under the question. */
-.fq-gap {
-  flex-wrap: wrap;
-}
-.fq-gap-reply {
-  flex-basis: 100%;
-  margin: 8px 0 2px 36px;
-  padding: 10px 12px;
-  border-left: 3px solid #3390ec;
-  border-radius: 8px;
-  background: #f3f8fe;
-}
-.fq-gap-reply-head {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 12px;
-  font-weight: 600;
-  color: #2f6fb8;
-  margin-bottom: 4px;
-}
-.fq-gap-reply-head i {
-  font-size: 16px;
-}
-.fq-gap-reply-head em {
-  font-style: normal;
-  font-weight: 400;
-  color: #8a95a1;
-}
-.fq-gap-reply-text {
-  white-space: pre-line;
-  font-size: 13px;
-  color: #33404d;
-  margin-bottom: 8px;
-}
-.fq-gap-reply button i {
-  font-size: 16px;
-  vertical-align: -3px;
-}
-
-/* A reply from one client's chat is about to become everyone's answer. */
-.fq-learn-warn {
-  display: flex;
-  gap: 8px;
-  align-items: flex-start;
-  margin: 12px 0 4px;
-  padding: 10px 12px;
-  border: 1px solid #ffe0a3;
-  border-radius: 8px;
-  background: #fff8e8;
-  font-size: 12.5px;
-  color: #8a5a00;
-  line-height: 1.45;
-}
-.fq-learn-warn i {
-  font-size: 18px;
-}
 

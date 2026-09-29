@@ -137,8 +137,7 @@ export class TelegramChatsComponent implements OnInit, OnDestroy {
     this.cancelLinking();
     this.client = null;
     this.parcels = [];
-    this.suggestionA = null;
-    this.suggestionB = null;
+    this.suggestion = null;
     this.linkHint = null;
     if (this.clientPanelOpen) this.loadClient();
     this.loadSuggestion(chat.id);
@@ -648,14 +647,8 @@ export class TelegramChatsComponent implements OnInit, OnDestroy {
 
   // ------------------------------------------------------------- assistant
 
-  /** Assistant A's pending suggestion -- unchanged from before B existed. */
-  suggestionA: TgDraft | null = null;
-  /**
-   * Assistant B's pending suggestion, shown alongside A only when the backend
-   * turns on side-by-side cards (`b_mode === "cards"`); otherwise it stays
-   * null and the page behaves exactly as it did with one assistant.
-   */
-  suggestionB: TgDraft | null = null;
+  /** The pending suggestion for the open chat's newest unanswered message. */
+  suggestion: TgDraft | null = null;
   suggestionLoading = false;
 
   /**
@@ -666,19 +659,16 @@ export class TelegramChatsComponent implements OnInit, OnDestroy {
     this.chatService.getDraft(chatId).subscribe({
       next: (res) => {
         if (this.openChat?.id !== chatId) return;
-        this.suggestionA = res.draft;
-        this.suggestionB =
-          res.b_mode === "cards" ? this.decorateB(res.draft_b) : null;
+        this.suggestion = this.decorateDraft(res.draft);
       },
       error: () => {
-        this.suggestionA = null;
-        this.suggestionB = null;
+        this.suggestion = null;
       },
     });
   }
 
   /** Builds the plain-Uzbek trace lines once, rather than on every render. */
-  private decorateB(draft: TgDraft | null): TgDraft | null {
+  private decorateDraft(draft: TgDraft | null): TgDraft | null {
     if (!draft) return null;
     draft.traceLines = this.buildTraceLines(draft.trace);
     const decision = draft.trace?.find((s) => s.step === "decision");
@@ -745,7 +735,7 @@ export class TelegramChatsComponent implements OnInit, OnDestroy {
       next: (res) => {
         this.suggestionLoading = false;
         if (this.openChat?.id !== chatId) return;
-        this.suggestionA = res.draft;
+        this.suggestion = this.decorateDraft(res.draft);
         // No suggestion is a normal outcome, not a failure -- a thank-you
         // needing no reply, an answer already sent -- so it is said as
         // information. The error popup made "no reply needed" look broken.
@@ -787,10 +777,7 @@ export class TelegramChatsComponent implements OnInit, OnDestroy {
             error: () => {},
           });
         }
-        // Sending either variant closes the other's pending draft for the
-        // same message on the server -- clear both rather than guess which.
-        this.suggestionA = null;
-        this.suggestionB = null;
+        this.suggestion = null;
         this.loadMessagesTail();
       },
       error: (err) => {
@@ -820,15 +807,13 @@ export class TelegramChatsComponent implements OnInit, OnDestroy {
    */
   hideNotice(suggestion: TgDraft | null): void {
     if (!suggestion) return;
-    if (suggestion.variant === "A") this.suggestionA = null;
-    else this.suggestionB = null;
+    this.suggestion = null;
   }
 
   dismissSuggestion(suggestion: TgDraft | null): void {
     if (!suggestion) return;
     const draftId = suggestion.id;
-    if (suggestion.variant === "A") this.suggestionA = null;
-    else this.suggestionB = null;
+    this.suggestion = null;
     if (!draftId) return;
     this.chatService.decideDraft(draftId, "dismissed").subscribe({
       next: () => {},

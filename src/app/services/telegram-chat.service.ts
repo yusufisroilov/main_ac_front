@@ -145,22 +145,24 @@ export interface TgDraftTraceStep {
 }
 
 /**
- * A pending suggestion for the open chat's newest unanswered message, from
- * either assistant. `variant` tells the two apart; B additionally carries how
- * it got there. Never sent on its own -- a person decides.
+ * The pending suggestion for the open chat's newest unanswered message. B is
+ * the only assistant, so a suggestion is always its own draft. Never sent on
+ * its own -- a person decides. `variant`, `message_id`, `created_at` and
+ * `never_auto_send` come from the GET endpoint; the button's POST returns a
+ * narrower shape without them.
  */
 export interface TgDraft {
   id: string;
-  variant: "A" | "B";
-  message_id: string;
+  variant?: "A" | "B";
+  message_id?: string;
   kind: string;
   suggested_text: string;
   confidence: string;
   match_reason: string | null;
   requires_human: boolean;
-  created_at: string;
+  created_at?: string;
   category: string | null;
-  never_auto_send: boolean | null;
+  never_auto_send?: boolean | null;
   cost_usd?: string | number | null;
   trace?: TgDraftTraceStep[] | null;
   /** Filled in by the component once, rather than on every change detection. */
@@ -168,20 +170,16 @@ export interface TgDraft {
   /** UI-only: whether the composer holds this draft's edited text. */
   editing?: boolean;
   editText?: string;
-  /** UI-only: whether B's "Qanday tayyorlandi?" panel is expanded. */
+  /** UI-only: whether the "Qanday tayyorlandi?" panel is expanded. */
   traceOpen?: boolean;
-  /** UI-only: the text B generated but did not send, when a decision step blocked it. */
+  /** UI-only: the text generated but not sent, when a decision step blocked it. */
   blockedText?: string | null;
 }
 
 export interface TgDraftResponse {
   status: string;
-  /** Assistant A's pending draft, or null when there is none. */
+  /** The pending draft, or null when there is none. */
   draft: TgDraft | null;
-  /** Assistant B's pending draft. Present only when B is enabled at all. */
-  draft_b: TgDraft | null;
-  /** Whether B's card should be shown to staff at all. */
-  b_mode: "off" | "shadow" | "cards";
 }
 
 // ------------------------------------------------------------ knowledge base
@@ -335,100 +333,6 @@ export interface TgKnowledgeStyle {
 
 export interface TgKnowledgeStylesResponse {
   styles: TgKnowledgeStyle[];
-}
-
-// ------------------------------------------------------------ assistant comparison (plan B)
-
-/** How many of a variant's decided drafts ended in each outcome. */
-export interface TgAssistantStatusCounts {
-  sent: number;
-  edited: number;
-  dismissed: number;
-  not_chosen: number;
-  expired: number;
-  pending: number;
-  shadow: number;
-}
-
-/**
- * One assistant's numbers over the compared window: how its drafts were
- * decided, the plan's B-vs-A measure (`unchanged_or_light_pct`, staff-seen
- * drafts only) and the same measure taken silently against what staff wrote
- * back on their own (`shadow_*`, for while B ran unseen), plus speed,
- * fact-check blocks and cost.
- */
-export interface TgAssistantSummary {
-  drafts: number;
-  replies: number;
-  notices: number;
-  status: TgAssistantStatusCounts;
-  unchanged_or_light_pct: number | null;
-  decided: number;
-  median_edit_similarity: number | null;
-  shadow_compared: number;
-  shadow_light_pct: number | null;
-  shadow_median_similarity: number | null;
-  median_draft_seconds: number | null;
-  blocked: number;
-  /** A blocked text sent anyway -- staff can only do this by typing it themselves. */
-  sent_after_block: number;
-  no_reply: number;
-  no_reply_overridden: number;
-  cost_usd: number | null;
-  cost_per_draft_usd: number | null;
-}
-
-export interface TgAssistantComparisonSummary {
-  A: TgAssistantSummary;
-  B: TgAssistantSummary;
-  /** B minus A, in percentage points; null when either side has nothing decided. */
-  difference_points: number | null;
-  /** The similarity that counts as "unchanged or lightly edited" (0.8). */
-  light_threshold: number;
-}
-
-export type TgAssistantBKind = "b_reply" | "b_ask" | "b_handover" | "b_blocked" | "b_no_reply";
-export type TgAssistantDraftStatus =
-  | "pending"
-  | "sent"
-  | "edited"
-  | "dismissed"
-  | "not_chosen"
-  | "expired"
-  | "shadow";
-
-export interface TgAssistantExampleB {
-  kind: TgAssistantBKind;
-  status: TgAssistantDraftStatus;
-  text: string | null;
-  cost_usd: number | string | null;
-}
-
-/** A's kinds/statuses are its own (faq, needs_answer, ...) -- not the fixed B set above. */
-export interface TgAssistantExampleA {
-  kind: string;
-  status: string;
-  text: string | null;
-}
-
-/** One message where B drafted, A's draft for the same message beside it (if
- * any), and what staff actually sent -- newest first, up to 40. */
-export interface TgAssistantExample {
-  at: string;
-  chat_name: string;
-  client_text: string | null;
-  b: TgAssistantExampleB;
-  a: TgAssistantExampleA | null;
-  staff_text: string | null;
-  b_similarity: number | null;
-  a_similarity: number | null;
-}
-
-export interface TgAssistantComparisonResponse {
-  status: string;
-  days: number;
-  summary: TgAssistantComparisonSummary;
-  examples: TgAssistantExample[];
 }
 
 // ------------------------------------------------------------ AI usage / cost
@@ -606,23 +510,29 @@ export class TelegramChatService {
 
   /**
    * Ask for a suggestion for the newest unanswered message. Costs a model call,
-   * so it is only ever triggered by a person pressing something. Always
-   * produces assistant A's draft only.
+   * so it is only ever triggered by a person pressing something. `message`
+   * explains a null draft to staff (already in Uzbek); `reason` is the same
+   * outcome in code form.
    */
   makeDraft(
     chatId: number,
-  ): Observable<{ status: string; draft: TgDraft | null; message?: string }> {
-    return this.http.post<{ status: string; draft: TgDraft | null; message?: string }>(
-      `${this.apiUrl}/telegram/chats/${chatId}/draft`,
-      {},
-      { headers: this.getHeaders() },
-    );
+  ): Observable<{
+    status: string;
+    draft: TgDraft | null;
+    message: string | null;
+    reason: string | null;
+  }> {
+    return this.http.post<{
+      status: string;
+      draft: TgDraft | null;
+      message: string | null;
+      reason: string | null;
+    }>(`${this.apiUrl}/telegram/chats/${chatId}/draft`, {}, { headers: this.getHeaders() });
   }
 
   /**
    * Record what the human did. Sending edited text stores the edit, which is
-   * the clearest signal of where the assistant is wrong. Sending one variant
-   * closes the other's pending draft for the same message on the server.
+   * the clearest signal of where the assistant is wrong.
    */
   decideDraft(
     draftId: string,
@@ -765,18 +675,6 @@ export class TelegramChatService {
   }
 
   // ------------------------------------------------------------ analytics
-
-  /**
-   * Assistant A vs B over the last `days` (1-60, default 7): the plan's
-   * success measure and the latest examples side by side, for the owner's
-   * one-week side-by-side test.
-   */
-  getAssistantComparison(days = 7): Observable<TgAssistantComparisonResponse> {
-    return this.http.get<TgAssistantComparisonResponse>(
-      `${this.apiUrl}/telegram/analytics/assistants`,
-      { headers: this.getHeaders(), params: new HttpParams().set("days", String(days)) },
-    );
-  }
 
   /**
    * What the Telegram AI assistants cost over the last `days` (1-90, default

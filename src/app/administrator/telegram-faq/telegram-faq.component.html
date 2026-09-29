@@ -35,7 +35,6 @@
     <div class="fq-stats" *ngIf="!loading">
       <span><b>{{ visibleEntries.length }}</b> ta faol javob</span>
       <span><b>{{ lockedCount }}</b> ta qulflangan</span>
-      <span><b>{{ gaps.length }}</b> ta javobsiz savol</span>
       <label class="fq-toggle">
         <input type="checkbox" [(ngModel)]="showRetired" />
         o‘chirilganlarni ko‘rsatish
@@ -46,9 +45,7 @@
 
     <!-- ───────────────────────── editor ───────────────────────── -->
     <section class="fq-editor" *ngIf="editing">
-      <h5>
-        {{ editing.id ? 'Javobni tahrirlash' : (fromGapId ? 'Savolga javob yozish' : 'Yangi javob') }}
-      </h5>
+      <h5>{{ editing.id ? 'Javobni tahrirlash' : 'Yangi javob' }}</h5>
 
       <label class="fq-label">Kalit so‘z <em>(ichki nom, mijoz ko‘rmaydi)</em></label>
       <input
@@ -74,17 +71,6 @@
       <small class="fq-hint">
         Mijozlar qanday yozsa, shunday yozing — o‘zbekcha, ruscha, xato imlo bilan ham.
       </small>
-
-      <!-- Taken from one client's chat: it may name them, their weight, their
-           price. Every future client would be told the same, so it is said. -->
-      <div class="fq-learn-warn" *ngIf="fromAdminReply" role="note">
-        <i class="material-icons">warning_amber</i>
-        <span>
-          Bu matn bitta mijozga yozilgan javobdan olindi. Saqlashdan oldin shu mijozga
-          xos ma'lumotlarni (ismi, yuk vazni, narxi, sanasi) olib tashlang — endi u
-          <b>barcha mijozlarga</b> shu holda yuboriladi.
-        </span>
-      </div>
 
       <label class="fq-label">Javob matni <em>(mijozga aynan shu boradi)</em></label>
       <textarea
@@ -151,42 +137,7 @@
       </div>
     </div>
 
-    <!-- ───────────────────────── gaps ───────────────────────── -->
-    <section class="fq-gaps" *ngIf="gaps.length">
-      <h5>
-        Javobsiz savollar
-        <small>mijozlar so‘radi, lekin hech bir javob to‘g‘ri kelmadi</small>
-      </h5>
-
-      <div class="fq-gap" *ngFor="let g of gaps; trackBy: trackGap">
-        <span class="fq-gap-count" [class.hot]="g.occurrences > 2">
-          {{ g.occurrences }}×
-        </span>
-        <span class="fq-gap-text">{{ g.question_text }}</span>
-        <button type="button" class="ok" (click)="answerGap(g)">
-          Javob yozish
-        </button>
-        <button type="button" (click)="dismissGap(g)" title="Kerak emas">
-          <i class="material-icons">close</i>
-        </button>
-
-        <!-- How staff actually answered it in the chat: one click turns it
-             into an approved answer, after a person has read it. -->
-        <div class="fq-gap-reply" *ngIf="g.admin_reply as r">
-          <div class="fq-gap-reply-head">
-            <i class="material-icons">forum</i>
-            Admin javob berdi
-            <em>{{ r.chat_name }} · {{ r.at | date: 'dd.MM HH:mm' : '+0500' }}</em>
-          </div>
-          <div class="fq-gap-reply-text">{{ r.text }}</div>
-          <button type="button" class="ok" (click)="answerGap(g, true)">
-            <i class="material-icons">school</i> Shu javobdan foydalanish
-          </button>
-        </div>
-      </div>
-    </section>
-
-    <div class="fq-empty" *ngIf="!loading && !gaps.length && !visibleEntries.length">
+    <div class="fq-empty" *ngIf="!loading && !visibleEntries.length">
       Hali javoblar yo‘q.
     </div>
 

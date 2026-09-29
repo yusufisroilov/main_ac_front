@@ -12,9 +12,7 @@ import swal from "sweetalert2";
  * editing a price here changes what every client is told from the next message
  * onward.
  *
- * Two halves. Above: the answers that exist. Below: questions clients asked
- * that nothing covered — which is the list of answers worth writing next,
- * collected automatically rather than guessed at.
+ * The answers that exist -- what the model chooses from, never writes itself.
  */
 @Component({
   selector: "app-telegram-faq",
@@ -23,14 +21,11 @@ import swal from "sweetalert2";
 })
 export class TelegramFaqComponent implements OnInit {
   entries: any[] = [];
-  gaps: any[] = [];
   loading = false;
   saving = false;
 
   /** The entry open in the editor, or null. */
   editing: any = null;
-  /** Set when the editor was opened from a gap, so answering closes the gap. */
-  fromGapId: number | null = null;
 
   showRetired = false;
 
@@ -70,13 +65,6 @@ export class TelegramFaqComponent implements OnInit {
           showBackendError(err);
         },
       });
-
-    this.http
-      .get<any>(`${GlobalVars.baseUrl}/telegram/gaps`, { headers: this.headers() })
-      .subscribe({
-        next: (res) => (this.gaps = res.gaps || []),
-        error: () => (this.gaps = []),
-      });
   }
 
   get visibleEntries(): any[] {
@@ -92,8 +80,6 @@ export class TelegramFaqComponent implements OnInit {
   // ------------------------------------------------------------------ editor
 
   newEntry(): void {
-    this.fromGapId = null;
-    this.fromAdminReply = false;
     this.editing = {
       id: null,
       category: "",
@@ -105,8 +91,6 @@ export class TelegramFaqComponent implements OnInit {
   }
 
   edit(entry: any): void {
-    this.fromGapId = null;
-    this.fromAdminReply = false;
     this.editing = {
       ...entry,
       // One phrasing per line is far easier to scan and edit than a JSON array.
@@ -114,51 +98,8 @@ export class TelegramFaqComponent implements OnInit {
     };
   }
 
-  /** Set while the editor holds a reply taken from a chat, to show the warning. */
-  fromAdminReply = false;
-
-  /**
-   * Open the editor prefilled from a question nobody could answer. With
-   * `useReply`, the answer staff actually gave in the chat is the starting
-   * text -- to be read and cleaned before it is saved for everyone.
-   */
-  answerGap(gap: any, useReply = false): void {
-    const reply = useReply ? gap.admin_reply : null;
-    this.fromGapId = gap.id;
-    this.fromAdminReply = !!reply;
-    // The client's own wording is kept: it is better matching material than
-    // anything invented afterwards -- and with a reply, what they literally wrote.
-    const variants = [gap.question_text, reply?.client_text]
-      .filter((v: string | null) => v && v.trim())
-      .filter((v: string, i: number, all: string[]) => all.indexOf(v) === i);
-    this.editing = {
-      id: null,
-      category: reply ? this.suggestCategory(gap.question_text) : "",
-      answer: reply ? reply.text : "",
-      variantText: variants.join("\n"),
-      never_auto_send: false,
-      is_active: true,
-    };
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }
-
-  /** "Yuk ko'p bo'lsa chegirma bormi" -> "yuk_kop_bolsa_chegirma": a starting name, editable. */
-  private suggestCategory(text: string): string {
-    return (text || "")
-      .toLowerCase()
-      .replace(/[ʻʼ'`‘’]/g, "")
-      .replace(/[^a-z0-9]+/g, "_")
-      .replace(/^_+|_+$/g, "")
-      .split("_")
-      .slice(0, 4)
-      .join("_")
-      .slice(0, 40);
-  }
-
   cancel(): void {
     this.editing = null;
-    this.fromGapId = null;
-    this.fromAdminReply = false;
   }
 
   private variantsFromText(): string[] {
@@ -176,13 +117,6 @@ export class TelegramFaqComponent implements OnInit {
       showBackendError("Javob matni bo'sh", { title: "To'ldiring" });
       return;
     }
-    if (!variants.length) {
-      showBackendError(
-        "Kamida bitta savol varianti kerak — ularsiz bu javob hech qachon topilmaydi",
-        { title: "To'ldiring" },
-      );
-      return;
-    }
 
     this.saving = true;
     const body: any = {
@@ -195,8 +129,6 @@ export class TelegramFaqComponent implements OnInit {
     const done = (res: any) => {
       this.saving = false;
       this.editing = null;
-      this.fromGapId = null;
-      this.fromAdminReply = false;
       // The server decides whether an edit took ownership from the seed file;
       // saying so here stops a manager being surprised later.
       if (res?.took_ownership) {
@@ -213,13 +145,7 @@ export class TelegramFaqComponent implements OnInit {
       showBackendError(err);
     };
 
-    if (this.fromGapId) {
-      this.http
-        .post(`${GlobalVars.baseUrl}/telegram/gaps/${this.fromGapId}/answer`, body, {
-          headers: this.headers(),
-        })
-        .subscribe({ next: done, error: fail });
-    } else if (this.editing.id) {
+    if (this.editing.id) {
       this.http
         .patch(`${GlobalVars.baseUrl}/telegram/faq/${this.editing.id}`, body, {
           headers: this.headers(),
@@ -256,25 +182,11 @@ export class TelegramFaqComponent implements OnInit {
       .subscribe({ next: () => this.load(), error: (e) => showBackendError(e) });
   }
 
-  dismissGap(gap: any): void {
-    this.http
-      .post(
-        `${GlobalVars.baseUrl}/telegram/gaps/${gap.id}/dismiss`,
-        {},
-        { headers: this.headers() },
-      )
-      .subscribe({ next: () => this.load(), error: (e) => showBackendError(e) });
-  }
-
   variantCount(entry: any): number {
     return (entry.variants || []).length;
   }
 
   trackEntry(_: number, e: any): number {
     return e.id;
-  }
-
-  trackGap(_: number, g: any): number {
-    return g.id;
   }
 }
