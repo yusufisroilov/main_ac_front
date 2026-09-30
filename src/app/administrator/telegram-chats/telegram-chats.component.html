@@ -15,7 +15,7 @@
       <i class="material-icons tg-clear" *ngIf="search" (click)="onSearchChange('')">close</i>
     </div>
 
-    <div class="tg-chat-list">
+    <div class="tg-chat-list ps__child--consume">
       <div class="tg-empty" *ngIf="!chatsLoading && chats.length === 0">
         <i class="material-icons">forum</i>
         <p>{{ search ? 'Hech narsa topilmadi' : 'Hozircha suhbatlar yo‘q' }}</p>
@@ -208,7 +208,7 @@
         </button>
       </div>
 
-      <div class="tg-thread" #thread (scroll)="onThreadScroll()">
+      <div class="tg-thread ps__child--consume" #thread (scroll)="onThreadScroll()">
 
         <div class="tg-loading-older" *ngIf="loadingOlder">
           <span class="tg-spin"></span> Yuklanmoqda…
@@ -514,7 +514,7 @@
   </section>
 
   <!-- ─────────────────────────  client panel  ───────────────────────── -->
-  <aside class="tg-client-panel" *ngIf="clientPanelOpen && openChat">
+  <aside class="tg-client-panel ps__child--consume" *ngIf="clientPanelOpen && openChat">
     <div class="tg-cp-head">
       <span>Mijoz</span>
       <i class="material-icons" (click)="toggleClientPanel()">close</i>

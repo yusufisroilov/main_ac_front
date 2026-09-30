@@ -1123,7 +1123,15 @@
   display: flex;
   flex-direction: column;
   overflow-y: auto;
+  /* The layout's PerfectScrollbar takes the mouse wheel; the panel is marked
+     ps__child--consume in the template so it scrolls itself. Rows keep their
+     height instead of squeezing to fit. */
+  min-height: 0;
+  overscroll-behavior: contain;
   padding: 0 0 14px;
+}
+.tg-client-panel > * {
+  flex-shrink: 0;
 }
 .tg-cp-head {
   display: flex;
