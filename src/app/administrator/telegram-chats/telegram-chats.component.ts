@@ -4,6 +4,7 @@ import {
   OnDestroy,
   ViewChild,
   ElementRef,
+  HostListener,
 } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { Subject } from "rxjs";
@@ -76,6 +77,13 @@ export class TelegramChatsComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.closeStream();
+  }
+
+  // A page reload skips ngOnDestroy; closing the live stream first keeps
+  // Firefox from logging "connection … was interrupted while the page was loading".
+  @HostListener("window:beforeunload")
+  onPageUnload(): void {
     this.closeStream();
   }
 
