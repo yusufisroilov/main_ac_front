@@ -719,10 +719,27 @@ export class TelegramChatService {
     mediaToken: string,
     onMessage: (payload: any) => void,
     onDraft?: (payload: any) => void,
+    connection?: { onReconnect?: () => void; onClosed?: () => void },
   ): EventSource {
     const source = new EventSource(
       `${this.apiUrl}/telegram/stream?t=${encodeURIComponent(mediaToken)}`,
     );
+    // A dropped connection (server restart, network blip) is retried by the
+    // browser itself; whatever arrived meanwhile was missed, so the page is
+    // told to catch up once it is back. A refused one (expired token) is
+    // never retried -- the page has to open a new stream.
+    let dropped = false;
+    source.addEventListener("error", () => {
+      dropped = true;
+      if (source.readyState === EventSource.CLOSED && connection?.onClosed) {
+        this.zone.run(() => connection.onClosed!());
+      }
+    });
+    source.addEventListener("open", () => {
+      if (!dropped) return;
+      dropped = false;
+      if (connection?.onReconnect) this.zone.run(() => connection.onReconnect!());
+    });
     source.addEventListener("message", (event: any) => {
       try {
         const payload = JSON.parse(event.data);

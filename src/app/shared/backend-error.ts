@@ -20,12 +20,27 @@ function safeJson(text: string): any {
   }
 }
 
-/** Pull `error` / `message` / `msg` off a parsed body object. */
+/** Pull `error` / `message` / `msg` off a parsed body object -- text only. */
 function pickMessage(body: any): string | null {
   if (body && typeof body === "object") {
-    return body.error || body.message || body.msg || null;
+    for (const v of [body.error, body.message, body.msg]) {
+      if (typeof v === "string" && v.trim()) return v;
+    }
   }
   return null;
+}
+
+export const NETWORK_ERROR_MESSAGE =
+  "Server bilan aloqa yo'q. Internet ulanishini tekshiring yoki birozdan so'ng qayta urinib ko'ring.";
+
+/**
+ * True when the request never got an answer (server down or restarting, no
+ * internet): HttpClient reports status 0 with a ProgressEvent as the body.
+ */
+export function isNetworkError(err: any): boolean {
+  if (!err || typeof err !== "object") return false;
+  if (typeof ProgressEvent !== "undefined" && err.error instanceof ProgressEvent) return true;
+  return err.status === 0;
 }
 
 /**
@@ -39,6 +54,7 @@ export function extractBackendError(
   fallback = "Noma'lum xatolik yuz berdi",
 ): string {
   if (err == null) return fallback;
+  if (isNetworkError(err)) return NETWORK_ERROR_MESSAGE;
 
   // Plain string (possibly a JSON string).
   if (typeof err === "string") {
@@ -75,7 +91,8 @@ export function extractBackendError(
   const direct = pickMessage(err);
   if (direct) return direct;
 
-  return err.statusText || err.message || fallback;
+  const text = err.statusText || err.message;
+  return typeof text === "string" && text.trim() ? text : fallback;
 }
 
 /**
@@ -86,9 +103,10 @@ export function showBackendError(
   err: any,
   opts: { title?: string; fallback?: string } = {},
 ): Promise<SweetAlertResult> {
+  const offline = isNetworkError(err);
   return swal.fire({
-    icon: "error",
-    title: opts.title || "Xatolik",
+    icon: offline ? "warning" : "error",
+    title: opts.title || (offline ? "Aloqa uzildi" : "Xatolik"),
     text: extractBackendError(err, opts.fallback),
   });
 }

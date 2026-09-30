@@ -19,7 +19,7 @@ import {
   TgDraftTraceStep,
   TgMedia,
 } from "../../services/telegram-chat.service";
-import { showBackendError } from "../../shared/backend-error";
+import { isNetworkError, showBackendError } from "../../shared/backend-error";
 import swal from "sweetalert2";
 
 @Component({
@@ -260,6 +260,49 @@ export class TelegramChatsComponent implements OnInit, OnDestroy {
       if (this.openChat && payload.chat_id === this.openChat.id) {
         this.loadSuggestion(this.openChat.id);
       }
+    }, {
+      onReconnect: () => this.catchUp(false),
+      // Refused for good (token expired, server said no): fetch a fresh token
+      // and open a new stream, quietly, a few seconds later.
+      onClosed: () => {
+        this.closeStream();
+        this.scheduleReopen();
+      },
+    });
+  }
+
+  private reopenTimer: any = null;
+
+  private scheduleReopen(): void {
+    clearTimeout(this.reopenTimer);
+    this.reopenTimer = setTimeout(() => this.catchUp(true), 5000);
+  }
+
+  /**
+   * After the stream was down: refresh the list, the open thread and its
+   * suggestion -- events sent meanwhile were lost. With `reopen`, also start a
+   * new stream on the fresh token; if the server is still away, try again.
+   */
+  private catchUp(reopen: boolean): void {
+    this.loadChats();
+    const chat = this.openChat;
+    if (!chat) return;
+    this.chatService.getMessages(chat.id).subscribe({
+      next: (res) => {
+        if (this.openChat?.id !== chat.id) return;
+        const atBottom = this.isNearBottom();
+        const merged = this.decorate((res.messages || []).slice().reverse());
+        const known = new Set(this.messages.map((m) => m.id));
+        const fresh = merged.filter((m) => !known.has(m.id));
+        if (fresh.length) this.messages = [...this.messages, ...fresh];
+        this.mediaToken = res.media_token;
+        if (atBottom) setTimeout(() => this.scrollToBottom(), 0);
+        this.loadSuggestion(chat.id);
+        if (reopen) this.openStream();
+      },
+      error: () => {
+        if (reopen && this.openChat?.id === chat.id) this.scheduleReopen();
+      },
     });
   }
 
@@ -270,6 +313,8 @@ export class TelegramChatsComponent implements OnInit, OnDestroy {
   }
 
   private closeStream(): void {
+    clearTimeout(this.reopenTimer);
+    this.reopenTimer = null;
     if (this.stream) {
       this.stream.close();
       this.stream = null;
@@ -661,8 +706,9 @@ export class TelegramChatsComponent implements OnInit, OnDestroy {
         if (this.openChat?.id !== chatId) return;
         this.suggestion = this.decorateDraft(res.draft);
       },
-      error: () => {
-        this.suggestion = null;
+      error: (err) => {
+        // Server briefly away: keep the card on screen; the stream catches up.
+        if (!isNetworkError(err)) this.suggestion = null;
       },
     });
   }
