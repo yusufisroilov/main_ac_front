@@ -381,6 +381,48 @@ export interface TgAiUsageResponse {
   today: TgAiUsageToday;
 }
 
+// ------------------------------------------------------------ auto-reply settings
+
+/** off = a person always answers; night = the bot answers outside working
+ * hours only; always = the bot answers around the clock. */
+export type TgAutoReplyMode = "off" | "night" | "always";
+
+export interface TgAutoReplyToday {
+  calls: number;
+  limit: number;
+  cost_usd: number;
+  /** null when the split between bot and handed-over isn't tracked yet. */
+  bot_replies: number | null;
+  handed_over: number | null;
+}
+
+/** `key` is the setting that changed; unrecognised keys are still shown,
+ * generically, rather than dropped. */
+export interface TgAutoReplyHistoryEntry {
+  key: "auto_reply_mode" | "daily_limit" | string;
+  before: unknown;
+  after: unknown;
+  user_name: string | null;
+  created_at: string;
+}
+
+export interface TgAutoReplySettings {
+  /** What was chosen. */
+  mode: TgAutoReplyMode;
+  /** What is actually running -- lower than `mode` when the server caps it. */
+  effective_mode: TgAutoReplyMode;
+  /** The highest mode the server will run, regardless of what is chosen. */
+  max_mode: TgAutoReplyMode;
+  daily_limit: number;
+  /** False for anyone but OWNER/MANAGER -- the UI must still render, disabled. */
+  can_edit: boolean;
+  updated_at: string | null;
+  updated_by_name: string | null;
+  today: TgAutoReplyToday;
+  /** Newest first. */
+  history: TgAutoReplyHistoryEntry[];
+}
+
 /**
  * Reads the Telegram conversations mirrored from staff accounts.
  *
@@ -686,6 +728,29 @@ export class TelegramChatService {
     return this.http.get<TgAiUsageResponse>(
       `${this.apiUrl}/telegram/analytics/ai-usage`,
       { headers: this.getHeaders(), params: new HttpParams().set("days", String(days)) },
+    );
+  }
+
+  // -------------------------------------------------------- auto-reply settings
+
+  /** Current automatic-reply mode/limit, today's usage against it, and the
+   * audit trail of who changed what. */
+  getAutoReplySettings(): Observable<TgAutoReplySettings> {
+    return this.http.get<TgAutoReplySettings>(
+      `${this.apiUrl}/telegram/settings/auto-reply`,
+      { headers: this.getHeaders() },
+    );
+  }
+
+  /** Send only the field that changed -- a mode switch and a limit save are
+   * two different actions in the UI, never combined into one request. */
+  updateAutoReplySettings(
+    patch: { mode?: TgAutoReplyMode; daily_limit?: number },
+  ): Observable<TgAutoReplySettings> {
+    return this.http.patch<TgAutoReplySettings>(
+      `${this.apiUrl}/telegram/settings/auto-reply`,
+      patch,
+      { headers: this.getHeaders() },
     );
   }
 

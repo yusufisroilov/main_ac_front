@@ -11,6 +11,9 @@
         <small *ngIf="activeTab === 'kb'">
           Bu yerdagi faktlarni yordamchi B o‘qiydi va shulardan javob tuzadi.
         </small>
+        <small *ngIf="activeTab === 'auto'">
+          Bot mijozlarga odam tekshirmasdan qachon o‘zi javob berishini shu yerdan boshqarasiz.
+        </small>
       </div>
       <button type="button" class="fq-new" *ngIf="activeTab === 'faq'" (click)="newEntry()">
         <i class="material-icons">add</i> Yangi javob
@@ -26,9 +29,15 @@
               (click)="switchTab('kb')">
         Bilimlar bazasi
       </button>
+      <button type="button" class="fq-tab-btn" [class.active]="activeTab === 'auto'"
+              (click)="switchTab('auto')">
+        Avtomatik javob
+      </button>
     </div>
 
     <app-knowledge-base *ngIf="activeTab === 'kb'"></app-knowledge-base>
+
+    <app-auto-reply *ngIf="activeTab === 'auto'"></app-auto-reply>
 
     <ng-container *ngIf="activeTab === 'faq'">
 

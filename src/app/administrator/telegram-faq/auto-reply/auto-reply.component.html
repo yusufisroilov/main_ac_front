@@ -1,0 +1,117 @@
+<div class="ar-root">
+
+  <div class="ar-loading" *ngIf="loading">Yuklanmoqda…</div>
+
+  <div class="ar-error" *ngIf="!loading && loadError">
+    <i class="material-icons">error_outline</i>
+    <span>Sozlamalarni yuklab bo'lmadi.</span>
+    <button type="button" (click)="load()">Qayta urinish</button>
+  </div>
+
+  <ng-container *ngIf="!loading && !loadError && data as d">
+
+    <!-- ───────────────────────── status banner ───────────────────────── -->
+    <div class="ar-banner" [ngClass]="d.effective_mode">
+      <i class="material-icons">
+        {{ d.effective_mode === 'off' ? 'smart_toy' : (d.effective_mode === 'night' ? 'nightlight' : 'bolt') }}
+      </i>
+      <div class="ar-banner-body">
+        <span class="ar-banner-text">{{ statusText[d.effective_mode] }}</span>
+        <span class="ar-banner-note" *ngIf="d.mode !== d.effective_mode">
+          Siz tanlagan rejim -- <b>{{ modeLabel(d.mode) }}</b> -- serverda cheklangan
+          (TELEGRAM_AUTO_REPLY_MAX={{ d.max_mode }}); shu sabab amalda
+          <b>{{ modeLabel(d.effective_mode) }}</b> ishlayapti.
+        </span>
+      </div>
+    </div>
+
+    <div class="ar-readonly-note" *ngIf="!d.can_edit">
+      <i class="material-icons">lock</i>
+      <span>Faqat OWNER yoki MANAGER o'zgartira oladi.</span>
+    </div>
+
+    <button type="button" class="ar-off-now" *ngIf="d.effective_mode !== 'off'"
+            [disabled]="!d.can_edit || saving" (click)="turnOffNow()">
+      <i class="material-icons">power_settings_new</i> Hoziroq o'chirish
+    </button>
+
+    <!-- ───────────────────────── mode options ───────────────────────── -->
+    <section class="ar-box">
+      <h5>Rejimni tanlash</h5>
+      <div class="ar-options">
+        <button type="button" class="ar-option" *ngFor="let opt of options; trackBy: trackOption"
+                [class.selected]="d.mode === opt.mode"
+                [attr.aria-pressed]="d.mode === opt.mode"
+                [disabled]="!d.can_edit || saving || isDisabledOption(opt.mode)"
+                (click)="selectMode(opt.mode)">
+          <span class="ar-option-head">
+            <i class="material-icons">{{ d.mode === opt.mode ? 'radio_button_checked' : 'radio_button_unchecked' }}</i>
+            <b>{{ opt.label }}</b>
+          </span>
+          <span class="ar-option-desc">{{ opt.desc }}</span>
+          <span class="ar-option-disabled" *ngIf="isDisabledOption(opt.mode)">
+            Serverda ruxsat berilmagan (TELEGRAM_AUTO_REPLY_MAX={{ d.max_mode }})
+          </span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ───────────────────────── daily limit ───────────────────────── -->
+    <section class="ar-box">
+      <h5>Kunlik AI limiti</h5>
+      <div class="ar-limit-row">
+        <label class="ar-limit-label" for="ar-daily-limit">Kuniga avtomatik chaqiruv</label>
+        <input id="ar-daily-limit" type="number" min="0" max="2000" step="1"
+               class="ar-limit-input"
+               [(ngModel)]="dailyLimitInput"
+               [disabled]="!d.can_edit || saving" />
+        <button type="button" class="ar-save" [disabled]="!d.can_edit || saving" (click)="saveDailyLimit()">
+          {{ saving ? 'Saqlanmoqda…' : 'Saqlash' }}
+        </button>
+      </div>
+      <p class="ar-hint">
+        Avtomatik AI chaqiruvlari kuniga shundan oshmaydi; 🤖 tugmasi bunga kirmaydi.
+      </p>
+    </section>
+
+    <!-- ───────────────────────── today ───────────────────────── -->
+    <section class="ar-box">
+      <h5>Bugun</h5>
+      <div class="ar-stats">
+        <div class="ar-stat">
+          <span class="lbl">Chaqiruvlar</span>
+          <span class="val">{{ d.today.calls }} / {{ d.today.limit }}</span>
+        </div>
+        <div class="ar-stat">
+          <span class="lbl">Xarajat</span>
+          <span class="val">{{ cost(d.today.cost_usd) }}</span>
+        </div>
+        <div class="ar-stat">
+          <span class="lbl">Bot javoblari</span>
+          <span class="val">{{ d.today.bot_replies ?? '—' }}</span>
+        </div>
+        <div class="ar-stat">
+          <span class="lbl">Adminga uzatilgan</span>
+          <span class="val">{{ d.today.handed_over ?? '—' }}</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───────────────────────── history ───────────────────────── -->
+    <section class="ar-box">
+      <h5>O'zgarishlar tarixi</h5>
+
+      <div class="ar-history-entry" *ngFor="let h of recentHistory; trackBy: trackHistory">
+        <div class="ar-history-head">
+          <b>{{ historyKeyLabel(h.key) }}</b>
+          <span>{{ changedByLabel(h.user_name) }} · {{ h.created_at | date: 'dd.MM.yyyy HH:mm' : '+0500' }}</span>
+        </div>
+        <div class="ar-history-line">{{ historyLine(h) }}</div>
+      </div>
+
+      <div class="ar-empty" *ngIf="!recentHistory.length">Tarix yo'q.</div>
+    </section>
+
+  </ng-container>
+
+</div>

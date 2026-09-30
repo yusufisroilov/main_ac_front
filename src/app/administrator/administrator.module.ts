@@ -45,6 +45,7 @@ import { AiUsageComponent } from "./telegram-analytics/ai-usage.component";
 import { TelegramFaqComponent } from "./telegram-faq/telegram-faq.component";
 import { KnowledgeBaseComponent } from "./telegram-faq/knowledge-base/knowledge-base.component";
 import { LearningInboxComponent } from "./telegram-faq/knowledge-base/learning-inbox/learning-inbox.component";
+import { AutoReplyComponent } from "./telegram-faq/auto-reply/auto-reply.component";
 import { VideoLessonsComponent } from "./video-lessons/video-lessons.component";
 
 // import { FlexLayoutModule } from '@angular/flex-layout';
@@ -97,6 +98,7 @@ import { VideoLessonsComponent } from "./video-lessons/video-lessons.component";
     TelegramFaqComponent,
     KnowledgeBaseComponent,
     LearningInboxComponent,
+    AutoReplyComponent,
   ],
 })
 export class AdminstratorModule {}

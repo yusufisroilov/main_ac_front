@@ -29,12 +29,13 @@ export class TelegramFaqComponent implements OnInit {
 
   showRetired = false;
 
-  /** "Javoblar" (today's approved answers) or "Bilimlar bazasi" (facts assistant B reads). */
-  activeTab: "faq" | "kb" = "faq";
+  /** "Javoblar" (today's approved answers), "Bilimlar bazasi" (facts assistant
+   * B reads), or "Avtomatik javob" (the bot's own on/off switch). */
+  activeTab: "faq" | "kb" | "auto" = "faq";
 
   constructor(private http: HttpClient) {}
 
-  switchTab(tab: "faq" | "kb"): void {
+  switchTab(tab: "faq" | "kb" | "auto"): void {
     this.activeTab = tab;
   }
 

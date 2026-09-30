@@ -1,0 +1,341 @@
+/* "Avtomatik javob" -- the bot answers customers with nobody checking first
+   once this is above "off", so the current state must be unmistakable and
+   turning it on deliberate. Same visual language as the rest of this module
+   (au-*, kb-*, fq-*), its own "ar-" prefix since it lives in its own
+   component. */
+
+.ar-loading,
+.ar-empty {
+  padding: 40px;
+  text-align: center;
+  color: #9aa5b1;
+}
+
+.ar-error {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #fdecea;
+  border: 1px solid #f6d0cb;
+  border-radius: 10px;
+  padding: 14px 16px;
+  color: #c0392b;
+  font-size: 13px;
+  margin-bottom: 14px;
+}
+.ar-error button {
+  margin-left: auto;
+  border: 1px solid #c0392b;
+  background: #fff;
+  color: #c0392b;
+  border-radius: 8px;
+  padding: 6px 14px;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* ───────────────────────────── status banner ───────────────────────────── */
+
+.ar-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  border-radius: 12px;
+  padding: 16px 18px;
+  margin-bottom: 12px;
+}
+.ar-banner i {
+  font-size: 26px;
+  flex: 0 0 auto;
+}
+.ar-banner-body {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+.ar-banner-text {
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+.ar-banner-note {
+  font-size: 12.5px;
+  line-height: 1.45;
+  opacity: 0.9;
+}
+
+/* off: neutral -- nothing is happening automatically. */
+.ar-banner.off {
+  background: #eef1f5;
+  color: #46525f;
+}
+.ar-banner.off i {
+  color: #8a95a1;
+}
+
+/* night: amber -- the bot answers, but only while nobody is watching. */
+.ar-banner.night {
+  background: #fff8e8;
+  border: 1px solid #ffe0a3;
+  color: #8a5a00;
+}
+.ar-banner.night i {
+  color: #d9822b;
+}
+
+/* always: strong green -- the bot answers everyone, all the time. */
+.ar-banner.always {
+  background: #2f8f4e;
+  color: #fff;
+}
+.ar-banner.always i {
+  color: #fff;
+}
+
+.ar-readonly-note {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #eef1f5;
+  color: #64707d;
+  border-radius: 9px;
+  padding: 9px 14px;
+  font-size: 12.5px;
+  margin-bottom: 12px;
+}
+.ar-readonly-note i {
+  font-size: 17px;
+}
+
+.ar-off-now {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border: 0;
+  border-radius: 9px;
+  background: #c0392b;
+  color: #fff;
+  padding: 11px 20px;
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-bottom: 16px;
+}
+.ar-off-now:hover:not(:disabled) {
+  background: #a5311f;
+}
+.ar-off-now:disabled {
+  background: #d6b9b4;
+  cursor: default;
+}
+.ar-off-now i {
+  font-size: 19px;
+}
+
+/* ───────────────────────────── panels ───────────────────────────── */
+
+.ar-box {
+  background: #fff;
+  border-radius: 12px;
+  padding: 16px 18px 18px;
+  box-shadow: 0 2px 10px rgba(16, 32, 56, 0.07);
+  margin-bottom: 14px;
+}
+.ar-box h5 {
+  margin: 0 0 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #46525f;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+/* ── mode options ── */
+
+.ar-options {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+.ar-option {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  text-align: left;
+  border: 1px solid #dde4ec;
+  border-radius: 10px;
+  background: #fff;
+  padding: 12px 14px;
+  cursor: pointer;
+  font-family: inherit;
+}
+.ar-option:hover:not(:disabled) {
+  border-color: #3390ec;
+}
+.ar-option:focus-visible {
+  outline: 2px solid #3390ec;
+  outline-offset: 2px;
+}
+.ar-option.selected {
+  border-color: #3390ec;
+  background: #eef5fd;
+}
+.ar-option:disabled {
+  cursor: default;
+  opacity: 0.55;
+}
+.ar-option-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 13.5px;
+  color: #1f2933;
+}
+.ar-option-head i {
+  font-size: 19px;
+  color: #9aa5b1;
+}
+.ar-option.selected .ar-option-head i {
+  color: #3390ec;
+}
+.ar-option-desc {
+  font-size: 12px;
+  color: #64707d;
+  line-height: 1.4;
+}
+.ar-option-disabled {
+  font-size: 11px;
+  color: #c0392b;
+  line-height: 1.4;
+}
+
+/* ── daily limit ── */
+
+.ar-limit-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.ar-limit-label {
+  font-size: 12.5px;
+  color: #46525f;
+  font-weight: 600;
+}
+.ar-limit-input {
+  width: 110px;
+  border: 1px solid #dde4ec;
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 13.5px;
+  font-family: inherit;
+  outline: 0;
+}
+.ar-limit-input:focus-visible {
+  border-color: #3390ec;
+  outline: 2px solid #3390ec;
+  outline-offset: 1px;
+}
+.ar-limit-input:disabled {
+  background: #f4f6f9;
+  color: #8a95a1;
+}
+.ar-save {
+  border: 1px solid #3390ec;
+  background: #3390ec;
+  color: #fff;
+  border-radius: 8px;
+  padding: 8px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.ar-save:hover:not(:disabled) {
+  background: #2481da;
+}
+.ar-save:disabled {
+  background: #c9d2dc;
+  border-color: #c9d2dc;
+  cursor: default;
+}
+.ar-hint {
+  margin: 10px 0 0;
+  font-size: 11.5px;
+  color: #9aa5b1;
+  line-height: 1.4;
+}
+
+/* ── today stats ── */
+
+.ar-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+}
+.ar-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.ar-stat .lbl {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: #9aa5b1;
+  font-weight: 600;
+}
+.ar-stat .val {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1f2933;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── history ── */
+
+.ar-history-entry {
+  padding: 9px 0;
+  border-top: 1px solid #f1f4f8;
+  font-size: 12.5px;
+}
+.ar-history-entry:first-child {
+  border-top: 0;
+}
+.ar-history-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  color: #1f2933;
+}
+.ar-history-head span {
+  color: #9aa5b1;
+  font-size: 11.5px;
+}
+.ar-history-line {
+  color: #64707d;
+  margin-top: 3px;
+}
+
+/* ───────────────────────────── responsive ───────────────────────────── */
+
+@media (max-width: 640px) {
+  .ar-options {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .ar-stats {
+    grid-template-columns: 1fr 1fr;
+  }
+  .ar-limit-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .ar-limit-input {
+    width: 100%;
+  }
+}
